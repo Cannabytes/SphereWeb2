@@ -3056,18 +3056,32 @@ return array (
     'page' => '',
     'comment' => '',
   ),
-  231 =>
-  array(
-		'enable' => 1,
-		'method' => 'POST',
-		'pattern' => '/admin/statistic/donate/clear',
-		'func' => 'controller\\admin\\statistic::donateClear',
-		'access' => [
-			0 => 'admin',
-		],
-		'weight' => 0,
-		'page' => '',
-		'comment' => 'Admin clear donate by date range',
+  231 => 
+  array (
+    'enable' => 1,
+    'method' => 'POST',
+    'pattern' => '/admin/statistic/donate/clear',
+    'func' => 'controller\\admin\\statistic::donateClear',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Admin clear donate by date range',
+  ),
+  232 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/statistic/remote',
+    'func' => 'controller\\statistic\\statistic::show_json_stats',
+    'access' => 
+    array (
+      0 => 'any',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
   ),
 );
-

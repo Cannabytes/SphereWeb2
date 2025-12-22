@@ -1383,18 +1383,6 @@ class tpl
             return statistic_model::get_castle($server_id);
         }));
 
-        $twig->addFunction(new TwigFunction('remote_statistic', function () {
-            $servers = server::getServerAll();
-            $all_stats = [];
-            foreach ($servers as $server) {
-                $data = $server->getCache('statistic');
-                if ($data != null) {
-                    $all_stats[$server->getId()] = $data;
-                }
-            }
-            return $all_stats;
-        }));
-
         $twig->addFunction(new TwigFunction('clan_icon', function (null|string|array $data = null) {
             if ($data == null) {
                 return null;

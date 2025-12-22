@@ -7,16 +7,8 @@
 
 namespace Ofey\Logan22\controller\statistic;
 
-use Ofey\Logan22\component\alert\board;
-use Ofey\Logan22\component\chronicle\race_class;
-use Ofey\Logan22\component\lang\lang;
-use Ofey\Logan22\component\redirect;
-use Ofey\Logan22\controller\page\error;
-use Ofey\Logan22\model\admin\validation;
-use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\statistic\statistic as statistic_model;
-use Ofey\Logan22\model\user\auth\auth;
-use Ofey\Logan22\template\tpl;
+use Ofey\Logan22\model\server\server;
 
 class statistic {
 
@@ -39,6 +31,24 @@ class statistic {
 
     public static function castle_ajax() {
         echo json_encode(statistic_model::get_castle());
+    }
+
+    public static function show_json_stats() {
+        $servers = server::getServerAll();
+        $all_stats = [];
+        foreach ($servers as $server) {
+            $data = $server->getCache('statistic');
+            if ($data != null) {
+                $meta['server_name'] = $server->getName();
+                $meta['chronicle'] = $server->getChronicle();
+                $meta['rate_exp'] = $server->getRateExp();
+                $all_stats[$server->getName()] = [
+                    'meta' => $meta,
+                    'statistic' => $data
+                ];
+            }
+        }
+        echo json_encode($all_stats);
     }
 
 }
