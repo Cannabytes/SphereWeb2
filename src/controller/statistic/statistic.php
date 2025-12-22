@@ -34,11 +34,13 @@ class statistic {
     }
 
     public static function show_json_stats() {
+        header('Content-Type: application/json; charset=utf-8');
         $servers = server::getServerAll();
         $all_stats = [];
         foreach ($servers as $server) {
             $data = $server->getCache('statistic');
             if ($data != null) {
+                $meta = [];
                 $meta['server_name'] = $server->getName();
                 $meta['chronicle'] = $server->getChronicle();
                 $meta['rate_exp'] = $server->getRateExp();
@@ -48,7 +50,7 @@ class statistic {
                 ];
             }
         }
-        echo json_encode($all_stats);
+        echo json_encode($all_stats, JSON_UNESCAPED_UNICODE);
     }
 
 }
