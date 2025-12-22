@@ -130,7 +130,7 @@ class startpack
             ])->show()->getResponse();
             if (isset($json['data']) && $json['data'] === true) {
                 $db->commit();
-
+                user::self()->addLog(logTypes::LOG_BUY_START_PACK, "LOG_USER_BUY_STARTPACK", [$startPackName]);
                 board::alert([
                     'type' => 'notice',
                     'ok' => true,

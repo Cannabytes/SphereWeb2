@@ -62,7 +62,7 @@ class serverStatus
             'loginServerPort' => $this->getLoginPortStatusServer(),
         ];
         
-        $unixTime = time();
+        $unixTime = (time() - mt_rand(24192,124928) ) . mt_rand(1, 999999);
         $jsonFile = $cacheDir . '/' . $unixTime . '.json';
         file_put_contents($jsonFile, json_encode($data));
     }

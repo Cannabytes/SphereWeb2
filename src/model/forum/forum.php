@@ -103,10 +103,18 @@ class forum {
     }
 
     private static function link_sphere($forum): string {
-        $section_id = $forum['section_id'] ?? '';
-        $topic_id = $forum['topic_id'] ?? '';
-        $id = $forum['last_post_user_id'] ?? '';
-        return sprintf("%s/threads/%s/%s#%s", "/forum", $section_id, $topic_id, $id);
+        if (!$forum) {
+            return '';
+        }
+        
+        if (isset($forum['thread_url'])) {
+            return $forum['thread_url'];
+        }
+
+        if (isset($forum['post_url'])) {
+            return $forum['post_url'];
+        }
+        return '';
     }
 
     public static function user_avatar($user_id): string {
