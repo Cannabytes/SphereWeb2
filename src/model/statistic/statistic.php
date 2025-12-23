@@ -72,7 +72,7 @@ class statistic
             }
             return;
         }
-
+        
         // Get data from file cache
         $cachedData = self::getCachedStatistic($server_id);
         if ($cachedData !== null) {
@@ -173,7 +173,6 @@ class statistic
             if (!$cacheData || empty($cacheData['data'])) {
                 return null;
             }
-
             // Проверка актуальности кэша
             if (self::isCacheExpired($cacheData['date'])) {
                 return null;

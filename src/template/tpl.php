@@ -1323,7 +1323,6 @@ class tpl
                 $server_id = user::self()->getServerId();
             }
             $pvpStats = statistic_model::get_pvp($server_id);
-
             return $pvpStats ? ($limit > 0 ? array_slice($pvpStats, 0, $limit) : $pvpStats) : null;
         }));
 

@@ -384,6 +384,9 @@
     $('#typeRouteLink_custom').hide();
     $('#typeRouteMethod_custom').hide();
 
+    // Disable hidden inputs by default to avoid duplicate name collisions
+    $('#file_custom, #link_custom, #edit_file_custom, #edit_link_custom').prop('disabled', true);
+
     $('#routeCustomTable').DataTable({
       responsive: false,
       autoWidth: false,
@@ -416,16 +419,20 @@
   });
 
   $('#typeRoute_custom').on('change', function () {
+    // Hide all sections and disable inputs by default
     $('#typeRouteFile_custom').hide();
     $('#typeRouteLink_custom').hide();
     $('#typeRouteMethod_custom').hide();
+    $('#file_custom, #link_custom').prop('disabled', true);
     let getType = $(this).val();
     switch (getType) {
       case 'file':
         $('#typeRouteFile_custom').show();
+        $('#file_custom').prop('disabled', false);
         break;
       case 'link':
         $('#typeRouteLink_custom').show();
+        $('#link_custom').prop('disabled', false);
         break;
       case 'method':
         AjaxSend('/admin/route/custom/get/file', 'POST', { dir: '' }, true).then(function (response) {
@@ -438,24 +445,29 @@
         $('#typeRouteMethod_custom').show();
         break;
       case 'debug':
-        $('#typeRouteFile_custom').hidden();
-        $('#typeRouteLink_custom').hidden();
-        $('#typeRouteMethod_custom').hidden();
+        // Keep all hidden and inputs disabled
+        $('#typeRouteFile_custom').hide();
+        $('#typeRouteLink_custom').hide();
+        $('#typeRouteMethod_custom').hide();
         break;
     }
   });
 
   $('#edit_typeRoute_custom').on('change', function () {
+    // Hide all sections and disable inputs by default
     $('#edit_typeRouteFile_custom').hide();
     $('#edit_typeRouteLink_custom').hide();
     $('#edit_typeRouteMethod_custom').hide();
+    $('#edit_file_custom, #edit_link_custom').prop('disabled', true);
     let getType = $(this).val();
     switch (getType) {
       case 'file':
         $('#edit_typeRouteFile_custom').show();
+        $('#edit_file_custom').prop('disabled', false);
         break;
       case 'link':
         $('#edit_typeRouteLink_custom').show();
+        $('#edit_link_custom').prop('disabled', false);
         break;
       case 'method':
         AjaxSend('/admin/route/custom/get/file', 'POST', { dir: '' }, true).then(function (response) {
@@ -468,9 +480,10 @@
         $('#edit_typeRouteMethod_custom').show();
         break;
       case 'debug':
-        $('#edit_typeRouteFile_custom').hidden();
-        $('#edit_typeRouteLink_custom').hidden();
-        $('#edit_typeRouteMethod_custom').hidden();
+        // Keep all hidden and inputs disabled
+        $('#edit_typeRouteFile_custom').hide();
+        $('#edit_typeRouteLink_custom').hide();
+        $('#edit_typeRouteMethod_custom').hide();
         break;
     }
   });

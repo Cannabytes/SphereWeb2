@@ -159,6 +159,7 @@ class time {
 
     public static function timeHasPassed($seconds, $reduce = false): string
     {
+        $seconds = (int)$seconds;
         $days = floor($seconds / 86400);
         $seconds %= 86400;
         $hours = floor($seconds / 3600);

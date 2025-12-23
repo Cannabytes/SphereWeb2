@@ -209,25 +209,33 @@ class custom_route
     private static function createRoute(
       string $method,
       string $pattern,
-      ?string $func,
+            ?string $func,
       array $access,
       int $weight,
       string $page,
       string $comment,
       bool $enable = true
     ): array {
-        $func = str_replace('\\\\', "\\", $func);
+                // Normalize empty string to null so saved routes use NULL not empty string
+                if ($func === '') {
+                        $func = null;
+                }
 
-        return [
-          'enable'  => $enable,
-          'method'  => $method,
-          'pattern' => $pattern,
-          'func'    => $func,
-          'access'  => $access,
-          'weight'  => $weight,
-          'page'    => $page,
-          'comment' => $comment,
-        ];
+                // Only perform replacement when func is a string
+                if ($func !== null) {
+                        $func = str_replace('\\\\', "\\", $func);
+                }
+
+                return [
+                    'enable'  => $enable,
+                    'method'  => $method,
+                    'pattern' => $pattern,
+                    'func'    => $func,
+                    'access'  => $access,
+                    'weight'  => $weight,
+                    'page'    => $page,
+                    'comment' => $comment,
+                ];
     }
 
     /**

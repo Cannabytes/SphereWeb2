@@ -1075,6 +1075,7 @@ class serverModel
 
         // Создаем директорию если её нет
         if (!$this->ensureDirectoryExists($cacheDir)) {
+            $this->appendErrorToErrosTxt("Failed to ensure cache directory {$cacheDir} for server {$server_id}, type {$type}");
             return false;
         }
 
@@ -1092,10 +1093,12 @@ class serverModel
 
             $fileHandle = fopen($tempFile, 'w');
             if ($fileHandle === false) {
+                $this->appendErrorToErrosTxt("Failed to open temp file {$tempFile} for writing (server {$server_id}, type {$type})");
                 return false;
             }
 
             if (!flock($fileHandle, LOCK_EX)) {
+                $this->appendErrorToErrosTxt("Failed to obtain exclusive lock on {$tempFile} (server {$server_id}, type {$type})");
                 fclose($fileHandle);
                 @unlink($tempFile);
                 return false;
@@ -1107,22 +1110,22 @@ class serverModel
             fclose($fileHandle);
 
             if ($bytesWritten === false) {
+                $this->appendErrorToErrosTxt("Failed to write content to {$tempFile} (server {$server_id}, type {$type})");
                 @unlink($tempFile);
                 return false;
             }
 
             // Атомарное перемещение файла
             if (!rename($tempFile, $cacheFilePath)) {
+                $this->appendErrorToErrosTxt("Failed to rename {$tempFile} to {$cacheFilePath} (server {$server_id}, type {$type})");
                 @unlink($tempFile);
                 return false;
             }
 
-            // Установка прав доступа
-            @chmod($cacheFilePath, 0644);
-
             return true;
 
         } catch (Exception $e) {
+            $this->appendErrorToErrosTxt("Cache write exception for server {$server_id}, type {$type}: " . $e->getMessage());
             error_log("Cache write error for server {$server_id}, type {$type}: " . $e->getMessage());
             @unlink($tempFile ?? '');
             return false;
@@ -1226,10 +1229,34 @@ class serverModel
         }
 
         try {
-            return mkdir($directory, 0755, true);
+            $result = mkdir($directory, 0755, true);
+            if ($result === false) {
+                $this->appendErrorToErrosTxt("Failed to create directory: {$directory}");
+            }
+            return $result;
         } catch (Exception $e) {
             error_log("Directory creation error: " . $e->getMessage());
+            $this->appendErrorToErrosTxt("Directory creation exception for {$directory}: " . $e->getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Append an error message to uploads/cache/erros.txt (fallback to error_log on failure)
+     */
+    private function appendErrorToErrosTxt(string $message): void
+    {
+        try {
+            $cacheDir = fileSys::get_dir('/uploads/cache');
+            if (!is_dir($cacheDir)) {
+                @mkdir($cacheDir, 0755, true);
+            }
+            $errorFile = 'erros.txt';
+            $timestamp = date('Y-m-d H:i:s');
+            $entry = "[{$timestamp}] " . $message . PHP_EOL;
+            @file_put_contents($errorFile, $entry, FILE_APPEND | LOCK_EX);
+        } catch (Exception $e) {
+            error_log("Failed to append to erros.txt: " . $e->getMessage());
         }
     }
 
