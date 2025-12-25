@@ -394,6 +394,8 @@ return [
     '351' => 'Abiertos',
     '352' => 'Cerrados',
     '353' => 'Buscar',
+    'search_by_email_or_login' => 'Buscar por correo electrónico / login',
+    'min_query_length_2' => 'Longitud mínima de la consulta — 2 caracteres',
     '354' => 'No se ha encontrado nada para «%s»',
     '355' => 'Tickets',
     '356' => 'Tickets abiertos',
@@ -1134,6 +1136,13 @@ Siempre puedes escribir en el <a class=\'text-info\' href=\'https://t.me/shperew
     'generate' => 'Generar',
     'generate_codes' => 'Generar códigos',
     'generated_bonus_codes' => 'Códigos de bono generados',
+    'bonus_codes_disabled' => 'Los códigos de bono están deshabilitados en la configuración.',
+    'bonus_code_disposable_question' => '¿Hacer el código de un solo uso?',
+    'bonus_code_disposable_desc' => 'El código de un solo uso se elimina después de usarlo; de lo contrario, cada usuario podrá usarlo una vez.',
+    'promo_server_label' => 'Para qué servidor(es) se puede usar el código promocional',
+    'all_servers' => 'Todos los servidores',
+    'reuse_code_after_seconds' => 'Reutilizar código después de N segundos',
+    'reuse_code_after_seconds_help' => 'Introduzca el número de segundos tras los cuales el código se podrá reutilizar. 0 — sin límite.',
     'generated_codes' => 'Códigos generados',
     'get_bonus' => 'Obtener bono',
     'go to launcher settings' => 'Ir a la configuración de lanzadores',
@@ -2481,6 +2490,7 @@ Contraseña: %%password%%',
     'finger_login_failed' => 'No se pudo iniciar sesión con la huella.',
 
     // Startpack cooldown message
+    'code_reuse_after_seconds' => 'La reutilización del código será posible después de %s segundos',
     'startpack_cooldown' => 'Podrás comprar el siguiente paquete en %s',
 
 ];

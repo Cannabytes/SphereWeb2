@@ -385,6 +385,8 @@ return [
 	'351' => 'Open',
 	'352' => 'Closed',
 	'353' => 'Search',
+	'search_by_email_or_login' => 'Search by email / login',
+	'min_query_length_2' => 'Minimum query length — 2 characters',
 	'354' => 'Nothing found for \'%s\'',
 	'355' => 'Tickets',
 	'356' => 'Open tickets',
@@ -1133,6 +1135,14 @@ you can always write to the <a class=\'text-info\' href=\'https://t.me/shpereweb
 	'generate' => 'Generate',
 	'generate_codes' => 'Generate codes',
 	'generated_bonus_codes' => 'Generated bonus codes',
+	'bonus_codes_disabled' => 'Bonus codes are disabled in settings.',
+	'bonus_code_disposable_question' => 'Make the code disposable?',
+	'bonus_code_disposable_desc' => 'Disposable codes are removed after use; otherwise each user will be able to use it once.',
+	'promo_server_label' => 'Server(s) for which the promo code can be used',
+	'all_servers' => 'All servers',
+	'reuse_code_after_seconds' => 'Reuse bonus-code after N seconds',
+	'reuse_code_after_seconds_help' => 'Enter number of seconds after which the code can be reused. 0 — no limit.',
+
 	'generated_codes' => 'Generated codes',
 	'get_bonus' => 'Get bonus',
 	'go to launcher settings' => 'Go to launcher settings',
@@ -2517,6 +2527,7 @@ Password: %%password%%',
 	'finger_login_failed' => 'Failed to sign in with fingerprint.',
 
 	// Startpack cooldown message
+	'code_reuse_after_seconds' => 'Code reuse possible after %s seconds',
 	'startpack_cooldown' => 'You will be able to purchase the next pack in %s',
 
 ];

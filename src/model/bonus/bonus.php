@@ -6,10 +6,13 @@ use Exception;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\image\client_icon;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\admin\telegram;
+use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\log\logTypes;
+use DateTime;
 use Ofey\Logan22\model\user\user;
 
 class bonus
@@ -204,6 +207,17 @@ class bonus
         $currentTime = time();
         $currentServerId = user::self()->getServerId();
         $logs = user::self()->getLogs(logTypes::LOG_BONUS_CODE);
+
+        $lastLogBonus = reset($logs);
+        $lastLogBonusTime = $lastLogBonus['time'] ?? 0;
+        if ($lastLogBonusTime != 0) {
+           $date = new DateTime('now', time::getServerTimezone());
+           $t =  $date->format('Y-m-d H:i:s');
+           $outtime = time::diff($t, $lastLogBonusTime);
+           if ($outtime < config::load()->other()->getReuseCodeAfterSeconds()) {
+                board::error(lang::get_phrase('code_reuse_after_seconds', config::load()->other()->getReuseCodeAfterSeconds() - $outtime));
+           }
+        }
 
         foreach ($bonusCodes as $bonus) {
             // Проверка временных ограничений

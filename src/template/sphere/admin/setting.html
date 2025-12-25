@@ -1196,7 +1196,6 @@
                                 </script>
 
                                 <li class="list-group-item">
-
                                     <div class="col-xl-12">
                                         <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
                                             <div>
@@ -1206,6 +1205,25 @@
                                             <div class="col-xl-2">
                                                 <input value="{{ config().other().getMaxAccount() }}" type="number"
                                                     step="1" class="form-control" id="max_account" placeholder="100">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="list-group-item">
+                                    <div class="col-xl-12">
+                                        <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                                            <div>
+                                                <p class="fs-14 mb-1 fw-semibold">
+                                                    {{phrase('reuse_code_after_seconds')}} 
+                                                </p>
+                                                <p class="fs-12 mb-0 text-muted">
+                                                    {{phrase('reuse_code_after_seconds_help')|raw}}
+                                                </p>
+                                            </div>
+                                            <div class="col-xl-2">
+                                                <input value="{{ config().other().getReuseCodeAfterSeconds() }}" type="number"
+                                                    step="1" class="form-control" id="reuseCodeAfterSeconds" placeholder="100">
                                             </div>
                                         </div>
                                     </div>

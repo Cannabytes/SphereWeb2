@@ -51,6 +51,8 @@ class other
 
     private int $maxAccount = 10;
 
+    private int $reuseCodeAfterSeconds = 120;
+
     private string $contactAdmin = "";
     private string $balanceNotice = "";
 
@@ -85,6 +87,7 @@ class other
         $this->isEnableMenuPageLink = filter_var($setting['isEnableMenuPageLink'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->linkMainPage = $setting['linkMainPage'] ?? $this->linkMainPage;
         $this->maxAccount = (int)(is_array($setting) ? ($setting['max_account'] ?? $this->maxAccount) : $this->maxAccount);
+        $this->reuseCodeAfterSeconds = (int)(is_array($setting) ? ($setting['reuseCodeAfterSeconds'] ?? $this->reuseCodeAfterSeconds) : $this->reuseCodeAfterSeconds);
         $this->contactAdmin = $setting['contactAdmin'] ?? $this->contactAdmin;
         $this->balanceNotice = $setting['balanceNotice'] ?? $this->balanceNotice;
         $this->autoUpdate = filter_var($setting['autoUpdate'] ?? true, FILTER_VALIDATE_BOOLEAN);
@@ -232,6 +235,11 @@ class other
         return $this->maxAccount;
     }
 
+    public function getReuseCodeAfterSeconds(): int
+    {
+        return $this->reuseCodeAfterSeconds;
+    }
+
     public function getContactAdmin(): string
     {
         return $this->contactAdmin;
@@ -260,6 +268,7 @@ class other
             'keywords' => $this->keywords,
             'linkMainPage' => $this->linkMainPage,
             'max_account' => $this->maxAccount,
+            'reuseCodeAfterSeconds' => $this->reuseCodeAfterSeconds,
             'contactAdmin' => trim($this->contactAdmin),
             'balanceNotice' => trim($this->balanceNotice),
         ]);

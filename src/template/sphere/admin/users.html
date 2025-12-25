@@ -34,12 +34,12 @@
         </div>
         <div class="card-body">
           <div id="user-search-wrapper" class="mb-4">
-            <label for="user-search" class="form-label mb-1">Поиск по email</label>
+            <label for="user-search" class="form-label mb-1">{{ phrase('search_by_email_or_login') }}</label>
             <div class="position-relative">
               <input type="text" id="user-search" class="form-control" autocomplete="off" placeholder="Введите email">
               <div id="user-search-results" class="list-group user-search-results shadow-sm d-none"></div>
             </div>
-            <small class="text-muted">Поиск выполняется мгновенно, минимальная длина запроса — 2 символа.</small>
+            <small class="text-muted">{{ phrase('min_query_length_2') }}</small>
           </div>
 
           <div class="table-responsive">

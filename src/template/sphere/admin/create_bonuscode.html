@@ -19,7 +19,7 @@
         <div class="card-body">
 
           {% if config().enabled().isEnableBonusCode() == false %}
-            <div class="alert alert-danger" role="alert"><a href="/admin/setting#functionsdata">Бонус коды отключены в настройках.</a></div>
+            <div class="alert alert-danger" role="alert"><a href="/admin/setting#functionsdata">{{ phrase('bonus_codes_disabled') }}</a></div>
           {% endif %}
 
           <div class="row row-cols-lg-auto align-items-center">
@@ -114,24 +114,24 @@
 
         <div class="card-body">
 
-        <div class="form-check">
+          <div class="form-check">
           <input class="form-check-input" type="checkbox" value="" id="disposable" checked="">
           <label class="form-check-label" for="disposable">
-            Сделать код одноразовым?
+            {{ phrase('bonus_code_disposable_question') }}
           </label>
         </div>
 
           <div class="alert alert-info" role="alert">
-            Одноразовый код удаляется после использования, иначе его сможет использовать каждый пользователь один раз.
+            {{ phrase('bonus_code_disposable_desc') }}
           </div>
 
       </div>
 
 
         <div class="card-body ">
-          <label for="serverPromo" class="form-label">Для какого сервера можно использовать промокод</label>
+            <label for="serverPromo" class="form-label">{{ phrase('promo_server_label') }}</label>
           <select id="serverPromo" name="serverPromo" class="form-select">
-              <option value="0">Все сервера</option>
+              <option value="0">{{ phrase('all_servers') }}</option>
             {% for server in getServerAll() %}
               <option {% if getUser().getServerId() == server.getId() %}selected{% endif %} value="{{server.getId()}}" >{{server.getName()}} x{{server.getRateExp()}}</option>
             {% endfor %}

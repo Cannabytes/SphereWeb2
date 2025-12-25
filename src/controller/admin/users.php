@@ -65,7 +65,18 @@ class users
         // Определяем порядок сортировки на основе параметра
         $orderSQL = self::getOrderBySQL($sortParam);
 
-        $totalUsers = (int)sql::getValue("SELECT COUNT(*) FROM users");
+        // Поддержка поиска по email или имени (nickname)
+        $searchQuery = trim((string)($_GET['q'] ?? $_GET['search'] ?? ''));
+        $whereSQL = '';
+        $params = [];
+        if ($searchQuery !== '') {
+            $like = '%' . $searchQuery . '%';
+            $whereSQL = 'WHERE (email LIKE ? OR name LIKE ?)';
+            $params[] = $like;
+            $params[] = $like;
+        }
+
+        $totalUsers = (int)sql::getValue("SELECT COUNT(*) FROM users $whereSQL", $params ?: []);
         $totalPages = max(1, (int)ceil($totalUsers / $perPage));
         if ($page > $totalPages) {
             $page = $totalPages;
@@ -73,9 +84,11 @@ class users
 
         $offset = ($page - 1) * $perPage;
 
+        // Запрос списка пользователей с учетом фильтра и сортировки
+        $paramsForSelect = array_merge($params, [$offset, $perPage]);
         $users = sql::getRows(
-            "SELECT id, email, name, donate_point, avatar, date_create, last_activity, access_level FROM users $orderSQL LIMIT ?, ?",
-            [$offset, $perPage]
+            "SELECT id, email, name, donate_point, avatar, date_create, last_activity, access_level FROM users $whereSQL $orderSQL LIMIT ?, ?",
+            $paramsForSelect
         );
 
         foreach ($users as &$user) {
@@ -179,8 +192,8 @@ class users
 
         try {
             $rows = sql::getRows(
-                "SELECT id, email, name, avatar, last_activity FROM users WHERE email LIKE ? ORDER BY email ASC LIMIT $limit",
-                [$like]
+                "SELECT id, email, name, avatar, last_activity, donate_point FROM users WHERE (email LIKE ? OR name LIKE ?) ORDER BY email ASC LIMIT $limit",
+                [$like, $like]
             );
         } catch (\Throwable $e) {
             echo json_encode([
