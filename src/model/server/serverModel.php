@@ -292,6 +292,7 @@ class serverModel
             'stackableItem' => $this->stackableItem()->toArray(),
             'bonus' => $this->bonus()->toArray(),
             'maxOnline' => $this->maxOnline,
+            'resetItemsToWarehouse' => $this->resetItemsToWarehouse,
             'itemsSendAvailableFrom' => $this->itemsSendAvailableFrom,
             'itemsSendShowTime' => $this->itemsSendShowTime,
         ];
@@ -328,6 +329,8 @@ class serverModel
             'launcher_enabled' => $this->getLauncherEnabled(),
             'timezone' => $this->getTimezone(),
             'itemsSendAvailableFrom' => $this->itemsSendAvailableFrom,
+            'itemsSendShowTime' => $this->itemsSendShowTime,
+            'resetItemsToWarehouse' => $this->resetItemsToWarehouse,
         ];
     }
 

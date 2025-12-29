@@ -373,10 +373,6 @@ class options
         $collection = $_POST['collection'] ?? board::error("Set l2j emulator");
         $showStatusBar = filter_var($_POST['showStatusBar'] ?? false, FILTER_VALIDATE_BOOL);
         $enableStatusServer = filter_var($_POST['enableStatusServer'] ?? false, FILTER_VALIDATE_BOOL);
-        $statusLoginServerIP = $_POST['statusLoginServerIP'] ?? "";
-        $statusLoginServerPort = (int)$_POST['statusLoginServerPort'] ?? 2106;
-        $statusGameServerIP = $_POST['statusGameServerIP'] ?? "";
-        $statusGameServerPort = (int)$_POST['statusGameServerPort'] ?? 7777;
         $platform = $_POST['platform'] ?? null;
         $cached_ip = $_POST['cached_ip'] ?? null;
         $cached_port = $_POST['cached_port'] ?? null;
@@ -396,35 +392,17 @@ class options
             }
         }
 
-        $statusLoginServerIP = preg_replace("/^https?:\/\//", "", $statusLoginServerIP);
-        $statusGameServerIP = preg_replace("/^https?:\/\//", "", $statusGameServerIP);
-
-        if (!filter_var($statusLoginServerIP, FILTER_VALIDATE_IP)) {
-            $resolvedIP = gethostbyname($statusLoginServerIP);
-            if (!filter_var($resolvedIP, FILTER_VALIDATE_IP)) {
-                if ($enableStatusServer) {
-                    board::error("IP адрес или домен логин-сервера недействителен.");
-                }
-            }
-        }
-
-        if (!filter_var($statusGameServerIP, FILTER_VALIDATE_IP)) {
-            $resolvedIP = gethostbyname($statusGameServerIP);
-            if (!filter_var($resolvedIP, FILTER_VALIDATE_IP)) {
-                if ($enableStatusServer) {
-                    board::error("Указанный адрес игрового сервера недействителен.");
-                }
-            }
-        }
-
         $loginServerID = $_POST['loginserver'] ?? board::error("Set DB LoginServer");
         $gameserverID = $_POST['gameserver'] ?? board::error("Set DB GameServer");
+
+
         $dateStartServer = $_POST['dateStartServer'] ?? null;
         $knowledge_base = $_POST['knowledge_base'] ?? board::error("Select the knowledge base for your game version");
         $maxOnline = $_POST['max_online'] ?? 200;
         $timezone = $_POST['timezone_server'] ?? "Europe/Kyiv";
-        $resetHWID = $_POST['resetHWID'] ?? false;
-        $showOnlineInStatusServer = $_POST['showOnlineInStatusServer'] ?? false;
+        $resetHWID = (bool)filter_var($_POST['resetHWID'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $showOnlineInStatusServer = (bool)filter_var($_POST['showOnlineInStatusServer'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $resetItemsToWarehouse = (bool)filter_var($_POST['resetItemsToWarehouse'], FILTER_VALIDATE_BOOLEAN);
 
         if (!\Ofey\Logan22\model\server\server::getServer($serverId)) {
             board::error("Server not find");
@@ -432,10 +410,6 @@ class options
 
         $statusServer = [
             "enable" => $enableStatusServer,
-            "statusLoginServerIP" => $statusLoginServerIP,
-            "statusLoginServerPort" => $statusLoginServerPort,
-            "statusGameServerIP" => $statusGameServerIP,
-            "statusGameServerPort" => $statusGameServerPort,
         ];
 
         $server = \Ofey\Logan22\model\server\server::getServer($serverId);
@@ -462,6 +436,7 @@ class options
             'position' => $server->getPosition(),
             'platform' => $platform,
             'showOnlineInStatusServer' => $showOnlineInStatusServer,
+            'resetItemsToWarehouse' => $resetItemsToWarehouse,
         ];
 
         $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -480,10 +455,6 @@ class options
             "collection" => $collection,
             "statusServer" => [
                 "enable" => (bool)filter_var($enableStatusServer, FILTER_VALIDATE_BOOLEAN),
-                "statusLoginServerIP" => $statusLoginServerIP,
-                "statusLoginServerPort" => (int)$statusLoginServerPort,
-                "statusGameServerIP" => $statusGameServerIP,
-                "statusGameServerPort" => (int)$statusGameServerPort,
             ],
             "platform" => $platform,
             "cachedIP" => $cached_ip,
