@@ -2453,5 +2453,5 @@ Password: %%password%%',
     'finger_login_failed' => 'Απέτυχε η σύνδεση με δακτυλικό αποτύπωμα.',
 
     'startpack_cooldown' => 'Θα μπορείτε να αγοράσετε το επόμενο πακέτο σε %s',
-
+    'discount' => 'Έκπτωση',
 ];

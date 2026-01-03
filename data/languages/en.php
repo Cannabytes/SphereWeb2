@@ -2529,5 +2529,5 @@ Password: %%password%%',
 	// Startpack cooldown message
 	'code_reuse_after_seconds' => 'Code reuse possible after %s seconds',
 	'startpack_cooldown' => 'You will be able to purchase the next pack in %s',
-
+	'discount' => 'Discount',
 ];

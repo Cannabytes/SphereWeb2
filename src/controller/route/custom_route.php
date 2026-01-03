@@ -72,6 +72,9 @@ class custom_route
     private static function loadRoutesFromFile($userAccessLevel): array
     {
         $filePath        = fileSys::get_dir(self::CUSTOM_ROUTES_FILE);
+        if (!file_exists($filePath)) {
+            return [];
+        }
         $routes          = file_exists($filePath) ? include $filePath : [];
         self::$routesAll = $routes;
         if ($userAccessLevel === null) {

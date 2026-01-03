@@ -2492,5 +2492,5 @@ Contraseña: %%password%%',
     // Startpack cooldown message
     'code_reuse_after_seconds' => 'La reutilización del código será posible después de %s segundos',
     'startpack_cooldown' => 'Podrás comprar el siguiente paquete en %s',
-
+    'discount' => 'Descuento',
 ];

@@ -149,7 +149,11 @@ class sql
     public static function getRows($query, array $args = []): array
     {
         self::$countRequest++;
-        return self::run($query, $args)->fetchAll();
+        $result = self::run($query, $args);
+        if ($result instanceof PDOStatement) {
+            return $result->fetchAll();
+        }
+        return [];
     }
 
     /**
@@ -187,7 +191,7 @@ class sql
             }
             self::$error     = true;
             self::$exception = $e;
-            return $e;
+            return null;
         }
     }
 
@@ -249,7 +253,11 @@ class sql
      */
     public static function getColumn($query, $args = []): array
     {
-        return self::run($query, $args)->fetchAll(PDO::FETCH_COLUMN);
+        $result = self::run($query, $args);
+        if ($result instanceof PDOStatement) {
+            return $result->fetchAll(PDO::FETCH_COLUMN);
+        }
+        return [];
     }
 
     public static function sql($query, array $args = []): false|PDOStatement|null

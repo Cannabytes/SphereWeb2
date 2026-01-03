@@ -264,6 +264,13 @@
                                         <img src="{{ template('/assets/images/race/' ~ sex(player.sex) ~ '/' ~ get_class_race(player.class_id)) ~ '.jpg' }}" alt="img">
                                        </span>
                                        <span class="tooltip-level" data-level="{{ player.level }}">{{player.player_name}}</span>
+                                       {% if player.rank_change == 'up' %}
+                                            <i class="fa-solid fa-arrow-up text-success" ></i>
+                                       {% elseif player.rank_change == 'down' %}
+                                            <i class="fa-solid fa-arrow-down text-danger" ></i>
+                                       {% elseif player.rank_change == 'new' %}
+                                            <span class="badge bg-info" style="font-size: 0.6rem;">New</span>
+                                       {% endif %}
                                     </div>
                                 </th>
                                 <td><span class="badge bg-success-transparent">{{player.pvp}}</span></td>
@@ -316,6 +323,13 @@
                                         <img src="{{ template('/assets/images/race/' ~ sex(player.sex) ~ '/' ~ get_class_race(player.class_id)) ~ '.jpg' }}" alt="img">
                                        </span>
                                        <span class="tooltip-level" data-level="{{ player.level }}">{{player.player_name}}</span>
+                                       {% if player.rank_change == 'up' %}
+                                            <i class="fa-solid fa-arrow-up text-success" ></i>
+                                       {% elseif player.rank_change == 'down' %}
+                                            <i class="fa-solid fa-arrow-down text-danger" ></i>
+                                       {% elseif player.rank_change == 'new' %}
+                                            <span class="badge bg-info" style="font-size: 0.6rem;">New</span>
+                                       {% endif %}
                                     </div>
                                 </th>
                                 <td><span class="badge bg-success-transparent">{{player.pvp}}</span></td>
@@ -370,6 +384,13 @@
                                         <img src="{{ template('/assets/images/race/' ~ sex(player.sex) ~ '/' ~ get_class_race(player.class_id)) ~ '.jpg' }}" alt="img">
                                        </span>
                                        <span class="tooltip-level" data-level="{{ player.level }}">{{player.player_name}}</span>
+                                       {% if player.rank_change == 'up' %}
+                                            <i class="fa-solid fa-arrow-up text-success" ></i>
+                                       {% elseif player.rank_change == 'down' %}
+                                            <i class="fa-solid fa-arrow-down text-danger" ></i>
+                                       {% elseif player.rank_change == 'new' %}
+                                            <span class="badge bg-info" style="font-size: 0.6rem;">New</span>
+                                       {% endif %}
                                     </div>
                                 </th>
                                 <td><span class="badge" style="background-color: rgba(79, 70, 229, 0.2); color: #818cf8;">{{ timeHasPassed(player.time_in_game, true) }}</span></td>
@@ -420,6 +441,13 @@
                                         <img src="{{ template('/assets/images/race/' ~ sex(player.sex) ~ '/' ~ get_class_race(player.class_id)) ~ '.jpg' }}" alt="img">
                                        </span>
                                        <span class="tooltip-level" data-level="{{ player.level }}">{{player.player_name}}</span>
+                                       {% if player.rank_change == 'up' %}
+                                            <i class="fa-solid fa-arrow-up text-success"></i>
+                                       {% elseif player.rank_change == 'down' %}
+                                            <i class="fa-solid fa-arrow-down text-danger"></i>
+                                       {% elseif player.rank_change == 'new' %}
+                                            <span class="badge bg-info" style="font-size: 0.6rem;">New</span>
+                                       {% endif %}
                                     </div>
                                 </th>
                                 <td><span class="badge" style="background-color: rgba(79, 70, 229, 0.2); color: #818cf8;">{{ timeHasPassed(player.time_in_game, true) }}</span></td>
@@ -466,7 +494,15 @@
                                         {{i+1}}
                                     {% endif %}
                                 </th>
-                                <td>{{clan_icon(clan)|raw}} <span class="clan-name">{{clan.clan_name}}</span> <span class="badge bg-light text-dark">{{ clan.clan_level }}</span> </td>
+                                <td>{{clan_icon(clan)|raw}} <span class="clan-name">{{clan.clan_name}}</span>
+                                    {% if clan.rank_change == 'up' %}
+                                        <i class="fa-solid fa-arrow-up text-success" ></i>
+                                    {% elseif clan.rank_change == 'down' %}
+                                        <i class="fa-solid fa-arrow-down text-danger" ></i>
+                                    {% elseif clan.rank_change == 'new' %}
+                                        <span class="badge bg-info" style="font-size: 0.6rem;">New</span>
+                                    {% endif %}
+                                    <span class="badge bg-light text-dark">{{ clan.clan_level }}</span> </td>
                                 <td><span class="badge bg-danger-transparent">{{ format_number_fr(clan.reputation_score) }}</span></td>
                                 <td><span class="badge bg-info-transparent" style="background-color: rgba(59, 130, 246, 0.2); color: #60a5fa;">{{ clan.clan_count_members }}</span></td>
                             </tr>

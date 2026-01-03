@@ -2478,5 +2478,6 @@ Password: %%password%%',
 	'code_reuse_after_seconds' => 'A reutilização do código será possível após %s segundos',
 
     'startpack_cooldown' => 'Você poderá adquirir o próximo pacote em %s',
+    'discount' => 'Desconto',
 
 ];

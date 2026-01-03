@@ -6,15 +6,6 @@
 
 <div class="container-fluid">
 
-  <div class="card custom-card">
-    <div class="card-body">
-      <h6 class="card-title fw-semibold mb-2">{{ phrase('This is useful to know') }}</h6>
-      <p class="card-subtitle mb-3 text-muted">{{ phrase('cost of SphereWeb CMS')|raw }}</p>
-
-    </div>
-
-  </div>
-
   <div class="row">
     <div class="col-xl-12">
       <div class="card custom-card">
@@ -97,10 +88,8 @@
             <div class="tab-pane text-muted " id="monobank" role="tabpanel">
 
               <div class="card-body">
-                  Вы можете <a href="https://send.monobank.ua/jar/PnDrfaRdF" class="text-success" target="_blank">пополнить банку</a>, на 12.5$ предположительно на 600-650 грн.<br>
-                  Укажите в комментариях свой сайт, чтоб я знал на какой зачислить Вам донат.<br>
-                  Я Вам пополню лицевой счёт при первой возможности.<br>
-                  Если будут вопросы -> <a href="https://t.me/Cannabytes" target="_blank">https://t.me/Cannabytes</a>
+                  Вы можете <a href="https://send.monobank.ua/jar/PnDrfaRdF" class="text-success" target="_blank">пополнить банку</a>, на необходимую сумму.<br>
+                  Оповестить меня (чтоб я вам продлил) -> <a href="https://t.me/Cannabytes" target="_blank">https://t.me/Cannabytes</a> , сразу пишите сумму отправки и Ваш сайт.
               </div>
 
             </div>
@@ -109,7 +98,9 @@
 
               <div class="card-body">
                   Как вариант перечислить средства можно и по USDT.<br>
-                Информация тут -> <a href="https://t.me/shpereweb/1/1213" target="_blank">https://t.me/shpereweb/1/1213</a><br>
+                  <code style="cursor: pointer;" class="copy-clipboard">TXxZjq9WwieGeRvjVcwUgajC7GxE3BJZsF</code>
+                  Tron (TRC20).<br>
+                  <br>
                   Оповестить меня (чтоб я вам продлил) -> <a href="https://t.me/Cannabytes" target="_blank">https://t.me/Cannabytes</a> , сразу пишите сумму отправки и Ваш сайт.
               </div>
 
@@ -133,6 +124,16 @@
 
 {% block js %}
 <script>
+  $(document).on("click", ".copy-clipboard", function () {
+    let text = $(this).text();
+    let $temp = $("<input>");
+    $("body").append($temp);
+    $temp.val(text).select();
+    document.execCommand("copy");
+    $temp.remove();
+    noticeSuccess("{{ phrase('copied') }}");
+  });
+
   $(document).on("click", "#pay", function () {
     AjaxSend("/admin/balance/pay/invoice", "POST", {
       amount: $("#amount").val()

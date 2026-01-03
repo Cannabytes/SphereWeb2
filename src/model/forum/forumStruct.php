@@ -122,7 +122,7 @@ class forumStruct {
                                         t.id AS thread_id,
                                         u.name AS username,
                                         u.id AS user_id,
-                                        u.avatar AS avatar_date, 
+                                        u.avatar, 
                                         CONCAT('forums/threads/', t.id, '/posts/', p.id) AS post_url
                                     FROM
                                         forum_posts AS p

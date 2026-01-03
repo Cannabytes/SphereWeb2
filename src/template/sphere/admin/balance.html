@@ -26,11 +26,6 @@
             <div class="card custom-card  text-fixed-white">
                 <div class="card-body p-0">
                     <div class="d-flex align-items-top p-4 flex-wrap">
-                        <div class="me-3 lh-1">
-                                        <span class="avatar avatar-md avatar-rounded bg-white text-primary shadow-sm">
-                                            <i class="ti ti-coin fs-18"></i>
-                                        </span>
-                        </div>
                         <div class="flex-fill">
                             <a href="/admin/balance/pay"><h5 class="fw-semibold mb-1 text-danger">{{ phrase(69) }}</h5>
                             </a>
@@ -135,78 +130,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div class="card custom-card overflow-hidden">
-                    <div class="card-body p-0">
-                        <div class="p-4">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div class="d-flex">
-                                    <i class="ti ti-api-app  fs-24 text-primary me-1"></i>
-                                    <div class="fs-18 fw-semibold">{{ phrase('amateur') }}
-</div>
-                                </div>
-                                <div>
-                                                                <span class="badge bg-success-transparent">
-                                                                    {{ phrase('for_server_building_beginners') }}
-
-                                                                </span>
-                                </div>
-                            </div>
-                            <div class="fs-25 fw-bold mb-1">$12.5<sub class="text-muted fw-semibold fs-11">/ {{ phrase('per_month') }}</sub></div>
-                            <ul class="list-unstyled mb-0">
-                                <li class="d-flex align-items-center mb-3">
-                                    <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
-                                    <span>{{ phrase('max_connectable_servers_count')|raw }}
-</span>
-                                </li>
-
-                                <li class="d-flex align-items-center mb-3">
-                                    <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
-                                        <span>{{ phrase('max_game_accounts_per_day')|raw }}
-</span>
-                                </li>
-
-                                <li class="d-flex align-items-center mb-3">
-                                    <span class="me-2"><i class="ri-checkbox-circle-line fs-15 text-success"></i></span>
-                                    <span>{{phrase('game_updater_program')|raw}}</span>
-                                </li>
-
-                                <li class="d-flex align-items-center mb-3">
-                                     <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
-                                    <span>{{phrase('items_raffle_feature')|raw}}</span>
-                                </li>
-
-                                <li class="d-flex align-items-center mb-3">
-                                     <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
-                                    <span>{{phrase('tracking_increasing_items_count')}}</span>
-                                </li>
-
-                                <li class="d-flex align-items-center mb-3">
-                                     <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
-                                    <span>{{ phrase(62) }}</span>
-                                </li>
-
-                                <li class="d-flex align-items-center mb-3">
-                                     <span class="me-2"><i class="ri-close-circle-line fs-15 text-muted op-3"></i></span>
-                                    <span>{{ phrase('winroll') }}</span>
-                                </li>
-
-                                <li class="d-grid">
-                                    <button id="amateur" class="btn btn-info btn-wave" type="button">{{ phrase('pay') }}</button>
-                                    <script>
-                                        $("#amateur").on("click", function () {
-                                            AjaxSend("/admin/balance/pay/renewlicense", "POST", {
-                                                months: 1
-                                            }, false);
-                                        });
-                                    </script>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6 col-sm-12">
+            <!-- Amateur plan removed. Kept for history. -->
+            <div class="col-xxl-8 col-xl-6 col-lg-6 col-md-6 col-sm-12">
                 <div class="custom-card  border border-primary rounded card">
                     <div class="d-flex flex-column p-0">
                         <div class="card-body p-0">
@@ -274,63 +199,104 @@
                                 </li>
 
                                 <li class="d-grid">
-                                    <button id="buyprofessional" class="btn btn-info btn-wave buy-button" type="button">{{ phrase('pay') }}</button>
+                                    <div class="mb-3">
+                                        <select id="monthsSelect" class="form-select">
+                                            <option value="1">1 {{ phrase('month') }} — $20 ({{ phrase('discount') }} -0%)</option>
+                                            <option selected value="3">3 {{ phrase('months') }} — $50 ({{ phrase('discount') }} -17%)</option>
+                                            <option value="6">6 {{ phrase('months') }} — $90 ({{ phrase('discount') }} -25%)</option>
+                                            <option value="12">12 {{ phrase('months') }} — $170 ({{ phrase('discount') }} -29%)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <div class="fs-18">{{ phrase('price') }}: <strong id="calculatedPrice">$20</strong></div>
+                                        <div class="fs-14 text-muted">
+                                            <s id="originalPrice">$20</s>
+                                            <span id="discountText" class="text-success ms-2">-0%</span>
+                                        </div>
+                                    </div>
+                                    <button id="buyprofessional" class="btn btn-info btn-wave buy-button" type="button">{{ phrase('pay') }} — <span id="buttonPrice">$20</span></button>
                                     <script>
-                                        $("#buyprofessional").on("click", function () {
-                                            AjaxSend("/admin/balance/pay/pack", "POST", {
-                                                type: "professional",
-                                                months: 1
-                                            }, true).then(function (response) {
-                                                responseAnalysis(response);
-                                                if (response.ok) {
-                                                    $(this).prop('disabled', true);
-                                                    $('.rainbow-border').css('opacity', 1);
-                                                    createSuccessCircle();
-                                                    gsap.to('.celebration-text', {
-                                                        duration: 0.5,
-                                                        opacity: 1,
-                                                        scale: 1.2,
-                                                        ease: 'back.out',
-                                                        onComplete: function() {
+                                        (function(){
+                                            const basePerMonth = 20;
+                                            const pricing = {1:20,3:50,6:90,12:170};
+                                            function updatePrice(){
+                                                const months = parseInt($('#monthsSelect').val());
+                                                const price = pricing[months] || pricing[1];
+                                                const baseTotal = months * basePerMonth;
+                                                const discount = baseTotal > 0 ? Math.round((baseTotal - price) / baseTotal * 100) : 0;
+                                                $('#calculatedPrice').text('$' + price);
+                                                $('#buttonPrice').text('$' + price);
+                                                $('#originalPrice').text('$' + baseTotal);
+                                                $('#discountText').text(discount > 0 ? ('-' + discount + '%') : '-');
+                                                $('#buyprofessional').data('price', price);
+                                            }
+
+                                            $('#monthsSelect').on('change', updatePrice);
+                                            updatePrice();
+
+                                            $("#buyprofessional").on("click", function () {
+                                                const months = parseInt($('#monthsSelect').val()) || 1;
+                                                const that = this;
+                                                AjaxSend("/admin/balance/pay/pack", "POST", {
+                                                    type: "professional",
+                                                    months: months
+                                                }, true).then(function (response) {
+                                                    responseAnalysis(response);
+                                                    if (response.ok) {
+                                                        $(that).prop('disabled', true);
+                                                        $('.rainbow-border').css('opacity', 1);
+                                                        createSuccessCircle();
+                                                        gsap.to('.celebration-text', {
+                                                            duration: 0.5,
+                                                            opacity: 1,
+                                                            scale: 1.2,
+                                                            ease: 'back.out',
+                                                            onComplete: function() {
+                                                                setTimeout(function() {
+                                                                    gsap.to('.celebration-text', {
+                                                                        duration: 0.5,
+                                                                        opacity: 0,
+                                                                        scale: 0.8
+                                                                    });
+                                                                }, 4500);
+                                                            }
+                                                        });
+                                                        const windowWidth = $(window).width();
+                                                        const windowHeight = $(window).height();
+                                                        for (let i = 0; i < 8; i++) {
                                                             setTimeout(function() {
-                                                                gsap.to('.celebration-text', {
-                                                                    duration: 0.5,
-                                                                    opacity: 0,
-                                                                    scale: 0.8
-                                                                });
-                                                            }, 4500);
+                                                                const x = Math.random() * windowWidth;
+                                                                const y = Math.random() * (windowHeight * 0.7);
+                                                                createFirework(x, y);
+                                                            }, i * 200);
                                                         }
-                                                    });
-                                                    const windowWidth = $(window).width();
-                                                    const windowHeight = $(window).height();
-                                                    for (let i = 0; i < 8; i++) {
-                                                        setTimeout(function() {
-                                                            const x = Math.random() * windowWidth;
-                                                            const y = Math.random() * (windowHeight * 0.7);
-                                                            createFirework(x, y);
-                                                        }, i * 200);
-                                                    }
-                                                    for (let i = 0; i < 20; i++) {
-                                                        setTimeout(createStar, i * 100);
-                                                    }
-                                                    for (let i = 0; i < 50; i++) {
-                                                        setTimeout(createConfetti, i * 50);
-                                                    }
-                                                    for (let i = 0; i < 15; i++) {
+                                                        for (let i = 0; i < 20; i++) {
+                                                            setTimeout(createStar, i * 100);
+                                                        }
+                                                        for (let i = 0; i < 50; i++) {
+                                                            setTimeout(createConfetti, i * 50);
+                                                        }
+                                                        for (let i = 0; i < 15; i++) {
+                                                            setTimeout(() => {
+                                                                const x = Math.random() * windowWidth;
+                                                                const y = windowHeight * 0.7;
+                                                                createEmoji(x, y);
+                                                            }, i * 150);
+                                                        }
                                                         setTimeout(() => {
-                                                            const x = Math.random() * windowWidth;
-                                                            const y = windowHeight * 0.7;
-                                                            createEmoji(x, y);
-                                                        }, i * 150);
+                                                            $(that).prop('disabled', false);
+                                                            $('.rainbow-border').css('opacity', 0);
+                                                        }, 4000);
                                                     }
-                                                    setTimeout(() => {
-                                                        $(this).prop('disabled', false);
-                                                        $('.rainbow-border').css('opacity', 0);
-                                                    }, 4000);
-                                                }
+                                                });
                                             });
-                                        });
+                                        })();
                                     </script>
+
+                                    <span class="mt-3 text-muted fs-12">
+                                      От разработчика : Я благодарю Вас за поддержку моего проекта, поддержка помогает закупать дополнительные необходимые расходники и улучшать проект, развивать его.
+                                    </span>
+                                    
                                 </li>
                             </ul>
                             </div>

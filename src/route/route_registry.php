@@ -60,34 +60,37 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
 
         // Загрузка кастомных роутеров администратора сайта
         $customRoutes = custom_route::getRoutes($userAccessLevel);
-        foreach ($customRoutes as $dbRoute) {
-            if (custom_route::getDisabledRoutes($dbRoute['pattern'])) {
-                continue;
+        // Если $customRoutes вернул не пустой массив
+        if (!empty($customRoutes)) {
+            foreach ($customRoutes as $dbRoute) {
+                if (custom_route::getDisabledRoutes($dbRoute['pattern'])) {
+                    continue;
+                }
+                $access  = $dbRoute['access'];
+                $method  = $dbRoute['method'];
+                $pattern = $dbRoute['pattern'];
+                $func    = $dbRoute['func'];
+                if ( ! $func) {
+                    $func = function (...$data) use ($dbRoute) {
+                        foreach ($data as $key => $value) {
+                            tpl::addVar("get_" . $key, $value);
+                        }
+                        tpl::display($dbRoute['page']);
+                    };
+                } elseif ($func == 'debug') {
+                    $func = function (...$data) {
+                        var_dump($_REQUEST, $data);
+                        exit;
+                    };
+                } elseif ($func == 'link') {
+                    $func = function (...$data) use ($dbRoute) {
+                        \Ofey\Logan22\component\redirect::location($dbRoute['page']);
+                    };
+                } else {
+                    $func = 'Ofey\\Logan22\\' . $func;
+                }
+                $route->$method($pattern, $func);
             }
-            $access  = $dbRoute['access'];
-            $method  = $dbRoute['method'];
-            $pattern = $dbRoute['pattern'];
-            $func    = $dbRoute['func'];
-            if ( ! $func) {
-                $func = function (...$data) use ($dbRoute) {
-                    foreach ($data as $key => $value) {
-                        tpl::addVar("get_" . $key, $value);
-                    }
-                    tpl::display($dbRoute['page']);
-                };
-            } elseif ($func == 'debug') {
-                $func = function (...$data) {
-                    var_dump($_REQUEST, $data);
-                    exit;
-                };
-            } elseif ($func == 'link') {
-                $func = function (...$data) use ($dbRoute) {
-                    \Ofey\Logan22\component\redirect::location($dbRoute['page']);
-                };
-            } else {
-                $func = 'Ofey\\Logan22\\' . $func;
-            }
-            $route->$method($pattern, $func);
         }
     }
 } else {

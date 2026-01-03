@@ -2551,5 +2551,5 @@ Password: %%password%%',
 	// Startpack cooldown message
 	'code_reuse_after_seconds' => 'Повторное использование кода возможно через %s секунд',
 	'startpack_cooldown' => 'Вы сможете приобрести следующий набор через %s',
-
+	'discount' => 'Скидка'
 );

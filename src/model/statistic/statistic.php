@@ -18,6 +18,7 @@ class statistic
 {
 
     private static null|false|array $statistic = null;
+    private static null|false|array $statistic_old = null;
 
     public static function get_pvp($server_id = 0)
     {
@@ -25,7 +26,10 @@ class statistic
             $server_id = user::self()->getServerId();
         }
         self::getStatistic($server_id);
-        return self::$statistic[$server_id]['pvp'] ?? null;
+        if (!is_array(self::$statistic) || !isset(self::$statistic[$server_id])) {
+            return [];
+        }
+        return self::compareRanks(self::$statistic[$server_id]['pvp'] ?? [], self::$statistic_old[$server_id]['pvp'] ?? [], 'player_name');
     }
 
     /**
@@ -41,10 +45,14 @@ class statistic
         if (self::$statistic === null) {
             self::$statistic = [];
         }
+        if (self::$statistic_old === null) {
+            self::$statistic_old = [];
+        }
 
         // Check if servers exist
         if (server::get_count_servers() === 0) {
             self::$statistic = false;
+            self::$statistic_old = false;
             return;
         }
 
@@ -61,6 +69,13 @@ class statistic
 
         // Return if already cached in memory
         if (self::isStatisticCachedInMemory($server_id)) {
+            // Если основная статистика в памяти, но старая нет - пробуем загрузить старую
+            if (!isset(self::$statistic_old[$server_id])) {
+                $oldCachedData = self::getCachedStatistic($server_id, 'statistic_old');
+                if ($oldCachedData !== null) {
+                    self::$statistic_old[$server_id] = $oldCachedData;
+                }
+            }
             return;
         }
 
@@ -77,6 +92,19 @@ class statistic
         $cachedData = self::getCachedStatistic($server_id);
         if ($cachedData !== null) {
             self::$statistic[$server_id] = $cachedData;
+            
+            // Также загружаем старую статистику
+            $oldCachedData = self::getCachedStatistic($server_id, 'statistic_old');
+            if ($oldCachedData !== null) {
+                self::$statistic_old[$server_id] = $oldCachedData;
+            } else {
+                // Если старой статистики нет, создадим её из текущей, чтобы файл появился
+                $server = server::getServer($server_id);
+                if ($server) {
+                    $server->setCache('statistic_old', $cachedData);
+                    self::$statistic_old[$server_id] = $cachedData;
+                }
+            }
             return;
         }
 
@@ -159,9 +187,10 @@ class statistic
      * Получает кэшированную статистику
      *
      * @param int $server_id
+     * @param string $type
      * @return array|null
      */
-    private static function getCachedStatistic(int $server_id): ?array
+    private static function getCachedStatistic(int $server_id, string $type = 'statistic'): ?array
     {
         try {
             $server = server::getServer($server_id);
@@ -169,20 +198,19 @@ class statistic
                 return null;
             }
 
-            $cacheData = $server->getCache(type: 'statistic', onlyData: false);
+            $cacheData = $server->getCache(type: $type, onlyData: false);
             if (!$cacheData || empty($cacheData['data'])) {
                 return null;
             }
-            // Проверка актуальности кэша
-            if (self::isCacheExpired($cacheData['date'])) {
+            // Проверка актуальности кэша только для основной статистики
+            if ($type === 'statistic' && self::isCacheExpired($cacheData['date'])) {
                 return null;
             }
 
-            self::$statistic[$server_id] = $cacheData['data'];
-            return self::$statistic[$server_id];
+            return $cacheData['data'];
 
         } catch (Exception $e) {
-            error_log("Cache read error for server {$server_id}: " . $e->getMessage());
+            error_log("Cache read error for server {$server_id} type {$type}: " . $e->getMessage());
             return null;
         }
     }
@@ -225,6 +253,17 @@ class statistic
                     if ($cache && !empty($cache['data'])) {
                         if (!self::isCacheExpired($cache['date'])) {
                             self::$statistic[$server_id] = $cache['data'];
+                            
+                            // Загружаем старую статистику для сравнения
+                            $oldCache = $server->getCache(type: 'statistic_old', onlyData: true);
+                            if ($oldCache) {
+                                self::$statistic_old[$server_id] = $oldCache;
+                            } else {
+                                // Если старой статистики нет, создадим её из текущей
+                                $server->setCache('statistic_old', $cache['data']);
+                                self::$statistic_old[$server_id] = $cache['data'];
+                            }
+                            
                             return self::$statistic[$server_id];
                         }
                     }
@@ -245,16 +284,6 @@ class statistic
             }
 
             self::processStatisticsData($statistics);
-
-            // Гарантированно сохранить кэш для этого сервера (processStatisticsData
-            // уже вызывает сохранение, но дублируем для надёжности)
-            if ($server && isset(self::$statistic[$server_id])) {
-                try {
-                    $server->setCache('statistic', self::$statistic[$server_id]);
-                } catch (Exception $e) {
-                    error_log("Error saving statistic cache for server {$server_id}: " . $e->getMessage());
-                }
-            }
 
             return self::$statistic[$server_id] ?? false;
 
@@ -310,39 +339,40 @@ class statistic
             }
 
             $server_id = (int) $server_id;
-
-            // Инициализация массива для сервера если не существует
-            if (!isset(self::$statistic[$server_id])) {
-                self::$statistic[$server_id] = [];
+            $server = server::getServer($server_id);
+            if (!$server) {
+                continue;
             }
 
-            // Обработка статистики по типам
-            foreach ($serverData as $type => $statistic) {
-                if ($statistic !== null) {
-                    self::$statistic[$server_id][$type] = $statistic;
+            // Получаем текущий кэш из файла для сравнения
+            $currentCache = $server->getCache('statistic', onlyData: true);
+
+            // Если текущий кэш есть и он отличается от новых данных
+            if ($currentCache !== null && $currentCache != $serverData) {
+                // Данные изменились! Сохраняем старые данные в statistic_old
+                $server->setCache('statistic_old', $currentCache);
+                self::$statistic_old[$server_id] = $currentCache;
+            } elseif ($currentCache !== null && !isset(self::$statistic_old[$server_id])) {
+                // Если данные не изменились, но в памяти нет старой статистики, попробуем загрузить её из файла
+                $oldCache = $server->getCache('statistic_old', onlyData: true);
+                if ($oldCache) {
+                    self::$statistic_old[$server_id] = $oldCache;
+                } else {
+                    // Если файла старой статистики вообще нет, создадим его из текущего кэша
+                    $server->setCache('statistic_old', $currentCache);
+                    self::$statistic_old[$server_id] = $currentCache;
                 }
             }
 
-            // Сохранение в кэш
-            self::saveStatisticToCache($server_id);
-        }
-    }
+            // Обновляем данные в памяти
+            self::$statistic[$server_id] = $serverData;
 
-    /**
-     * Сохраняет статистику в кэш
-     *
-     * @param int $server_id
-     * @return void
-     */
-    private static function saveStatisticToCache(int $server_id): void
-    {
-        try {
-            $server = server::getServer($server_id);
-            if ($server && isset(self::$statistic[$server_id])) {
-                $server->setCache("statistic", self::$statistic[$server_id]);
+            // Сохраняем новые данные в основной кэш (statistic.php)
+            try {
+                $server->setCache("statistic", $serverData);
+            } catch (Exception $e) {
+                error_log("Cache save error for server {$server_id}: " . $e->getMessage());
             }
-        } catch (Exception $e) {
-            error_log("Cache save error for server {$server_id}: " . $e->getMessage());
         }
     }
 
@@ -359,10 +389,14 @@ class statistic
             if (isset(self::$statistic[$server_id])) {
                 unset(self::$statistic[$server_id]);
             }
+            if (isset(self::$statistic_old[$server_id])) {
+                unset(self::$statistic_old[$server_id]);
+            }
 
             // Очистка файлового кэша
             $server = server::getServer($server_id);
             if ($server) {
+                $server->deleteCache('statistic_old');
                 return $server->deleteCache('statistic');
             }
 
@@ -371,6 +405,46 @@ class statistic
             error_log("Clear statistic cache error for server {$server_id}: " . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Сравнивает текущую статистику с предыдущей и вычисляет изменение ранга
+     *
+     * @param array $current Текущая статистика
+     * @param array $old Предыдущая статистика
+     * @param string $identifierKey Ключ для идентификации объекта (например, 'player_name' или 'clan_name')
+     * @return array
+     */
+    private static function compareRanks(array $current, array $old, string $identifierKey): array
+    {
+        if (empty($old)) {
+            return $current;
+        }
+
+        $oldPositions = [];
+        foreach ($old as $index => $item) {
+            if (isset($item[$identifierKey])) {
+                $oldPositions[$item[$identifierKey]] = $index;
+            }
+        }
+
+        foreach ($current as $index => &$item) {
+            $name = $item[$identifierKey] ?? null;
+            if ($name && isset($oldPositions[$name])) {
+                $oldIndex = $oldPositions[$name];
+                if ($index < $oldIndex) {
+                    $item['rank_change'] = 'up';
+                } elseif ($index > $oldIndex) {
+                    $item['rank_change'] = 'down';
+                } else {
+                    $item['rank_change'] = 'none';
+                }
+            } else {
+                $item['rank_change'] = 'new';
+            }
+        }
+
+        return $current;
     }
 
     /**
@@ -386,8 +460,10 @@ class statistic
             return false;
         }
 
-        // Очищаем кэш
-        self::clearStatisticCache($server_id);
+        // Очищаем основной кэш в памяти
+        if (isset(self::$statistic[$server_id])) {
+            unset(self::$statistic[$server_id]);
+        }
 
         // Получаем свежие данные
         return self::fetchFreshStatistic($server_id);
@@ -398,7 +474,10 @@ class statistic
             $server_id = user::self()->getServerId();
         }
         self::getStatistic($server_id);
-        return self::$statistic[$server_id]['pk'] ?? [];
+        if (!is_array(self::$statistic) || !isset(self::$statistic[$server_id])) {
+            return [];
+        }
+        return self::compareRanks(self::$statistic[$server_id]['pk'] ?? [], self::$statistic_old[$server_id]['pk'] ?? [], 'player_name');
     }
 
     public static function get_players_online_time($server_id = 0)
@@ -407,7 +486,10 @@ class statistic
             $server_id = user::self()->getServerId();
         }
         self::getStatistic($server_id);
-        return self::$statistic[$server_id]['online'] ?? [];
+        if (!is_array(self::$statistic) || !isset(self::$statistic[$server_id])) {
+            return [];
+        }
+        return self::compareRanks(self::$statistic[$server_id]['online'] ?? [], self::$statistic_old[$server_id]['online'] ?? [], 'player_name');
     }
 
     public static function get_exp($server_id = 0)
@@ -416,7 +498,10 @@ class statistic
             $server_id = user::self()->getServerId();
         }
         self::getStatistic($server_id);
-        return self::$statistic[$server_id]['exp'] ?? [];
+        if (!is_array(self::$statistic) || !isset(self::$statistic[$server_id])) {
+            return [];
+        }
+        return self::compareRanks(self::$statistic[$server_id]['exp'] ?? [], self::$statistic_old[$server_id]['exp'] ?? [], 'player_name');
     }
 
     public static function get_clan($server_id = 0)
@@ -425,7 +510,10 @@ class statistic
             $server_id = user::self()->getServerId();
         }
         self::getStatistic($server_id);
-        return self::$statistic[$server_id]['clan'] ?? [];
+        if (!is_array(self::$statistic) || !isset(self::$statistic[$server_id])) {
+            return [];
+        }
+        return self::compareRanks(self::$statistic[$server_id]['clan'] ?? [], self::$statistic_old[$server_id]['clan'] ?? [], 'clan_name');
     }
 
     public static function get_castle($server_id = 0)
@@ -434,6 +522,9 @@ class statistic
             $server_id = user::self()->getServerId();
         }
         self::getStatistic($server_id);
+        if (!is_array(self::$statistic) || !isset(self::$statistic[$server_id])) {
+            return [];
+        }
         return self::$statistic[$server_id]['castle'] ?? [];
     }
 
