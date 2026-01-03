@@ -269,7 +269,7 @@
                                        {% elseif player.rank_change == 'down' %}
                                             <i class="fa-solid fa-arrow-down text-danger" ></i>
                                        {% elseif player.rank_change == 'new' %}
-                                            <span class="badge bg-info" style="font-size: 0.6rem;">New</span>
+                                            <i class="fa-solid fa-arrow-up text-success" ></i>
                                        {% endif %}
                                     </div>
                                 </th>
@@ -328,7 +328,7 @@
                                        {% elseif player.rank_change == 'down' %}
                                             <i class="fa-solid fa-arrow-down text-danger" ></i>
                                        {% elseif player.rank_change == 'new' %}
-                                            <span class="badge bg-info" style="font-size: 0.6rem;">New</span>
+                                            <i class="fa-solid fa-arrow-up text-success" ></i>
                                        {% endif %}
                                     </div>
                                 </th>
@@ -389,7 +389,7 @@
                                        {% elseif player.rank_change == 'down' %}
                                             <i class="fa-solid fa-arrow-down text-danger" ></i>
                                        {% elseif player.rank_change == 'new' %}
-                                            <span class="badge bg-info" style="font-size: 0.6rem;">New</span>
+                                            <i class="fa-solid fa-arrow-up text-success" ></i>
                                        {% endif %}
                                     </div>
                                 </th>
@@ -446,7 +446,7 @@
                                        {% elseif player.rank_change == 'down' %}
                                             <i class="fa-solid fa-arrow-down text-danger"></i>
                                        {% elseif player.rank_change == 'new' %}
-                                            <span class="badge bg-info" style="font-size: 0.6rem;">New</span>
+                                            <i class="fa-solid fa-arrow-up text-success" ></i>
                                        {% endif %}
                                     </div>
                                 </th>
@@ -500,7 +500,7 @@
                                     {% elseif clan.rank_change == 'down' %}
                                         <i class="fa-solid fa-arrow-down text-danger" ></i>
                                     {% elseif clan.rank_change == 'new' %}
-                                        <span class="badge bg-info" style="font-size: 0.6rem;">New</span>
+                                        <i class="fa-solid fa-arrow-up text-success" ></i>
                                     {% endif %}
                                     <span class="badge bg-light text-dark">{{ clan.clan_level }}</span> </td>
                                 <td><span class="badge bg-danger-transparent">{{ format_number_fr(clan.reputation_score) }}</span></td>
