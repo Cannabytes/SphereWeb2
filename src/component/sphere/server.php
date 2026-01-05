@@ -443,13 +443,14 @@ class server
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true); // Указываем, что это POST запрос
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $json); // Передаем JSON данные
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Возвращаем результат в переменную
+        curl_setopt($ch, CURLOPT_POST, true); 
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, self::$timeout);
         curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
         self::$countRequest++;
         $response = curl_exec($ch);
+
         if ($response === false) {
             self::$codeError = "sphereapi_unavailable";
             self::$error = 'Ошибка соединения с Sphere API. Попробуйте еще раз. Возможно сервер на перезагрузке либо указаны неверные данные подключения к Sphere API. Если ошибка повторится, обратитесь в службу поддержки.';

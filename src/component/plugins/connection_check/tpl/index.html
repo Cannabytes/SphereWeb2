@@ -1,0 +1,330 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        {{ get_phrase('connection_check.title') }}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="host" class="form-label">{{ get_phrase('connection_check.host_label') }}</label>
+                            <input type="text" class="form-control" id="host" name="host" placeholder="например, 1.2.3.4" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="port" class="form-label">{{ get_phrase('connection_check.port_label') }}</label>
+                            <input type="text" class="form-control" id="port" name="port" value="3306">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="user" class="form-label">{{ get_phrase('connection_check.user_label') }}</label>
+                            <input type="text" class="form-control" id="user" name="user" placeholder="root">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="password" class="form-label">{{ get_phrase('connection_check.password_label') }}</label>
+                            <input type="password" class="form-control" id="password" name="password">
+                        </div>
+                        <div class="col-md-12">
+                            <label for="check_ports" class="form-label">{{ get_phrase('connection_check.check_ports_label') }}</label>
+                            <input type="text" class="form-control" id="check_ports" name="check_ports" value="7777, 2016">
+                        </div>
+                        <div class="col-md-12">
+                            <button type="button" class="btn btn-primary" id="checkBtn">
+                                <span id="btnText">{{ get_phrase('connection_check.button_check') }}</span>
+                                <span id="btnLoader" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                        <div id="loadingArea" class="mt-4 d-none text-center">
+                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Загрузка...</span>
+                        </div>
+                        <p class="mt-2">{{ get_phrase('connection_check.loading') }}</p>
+                    </div>
+
+                    <div id="resultsArea" class="mt-4 d-none">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="mb-0">{{ get_phrase('connection_check.results_title') }}</h5>
+                            <span class="badge bg-light text-dark border" id="responseTime"></span>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card shadow-none border mb-3">
+                                    <div class="card-header bg-light py-2">
+                                        <h6 class="mb-0"><i class="bi bi-hdd-network me-2"></i>{{ get_phrase('connection_check.network_status') | default('Network & Connectivity') }}</h6>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-hover mb-0">
+                                                <tbody id="networkResults"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card shadow-none border mb-3">
+                                    <div class="card-header bg-light py-2">
+                                        <h6 class="mb-0"><i class="bi bi-database me-2"></i>{{ get_phrase('connection_check.mysql_status') | default('MySQL Server Info') }}</h6>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-hover mb-0">
+                                                <tbody id="mysqlResults"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 d-none" id="dbListContainer">
+                                <div class="card shadow-none border mb-3">
+                                    <div class="card-header bg-light py-2">
+                                        <h6 class="mb-0"><i class="bi bi-list-ul me-2"></i>{{ get_phrase('connection_check.mysql_databases') }}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="dbList" class="d-flex flex-wrap gap-2"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="accordion" id="debugAccordion">
+                                    <div class="accordion-item border shadow-none">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed py-2 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDebug">
+                                                <small class="text-muted"><i class="bi bi-bug me-2"></i>Debug Information (Raw JSON)</small>
+                                            </button>
+                                        </h2>
+                                        <div id="collapseDebug" class="accordion-collapse collapse" data-bs-parent="#debugAccordion">
+                                            <div class="accordion-body p-0">
+                                                <pre id="rawResponse" class="bg-dark text-success p-3 mb-0 small" style="max-height: 300px; overflow: auto;"></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).on('click', '#checkBtn', function () {
+        const checkBtn = $('#checkBtn');
+        const btnText = $('#btnText');
+        const btnLoader = $('#btnLoader');
+        const loadingArea = $('#loadingArea');
+        const resultsArea = $('#resultsArea');
+        const networkResults = $('#networkResults');
+        const mysqlResults = $('#mysqlResults');
+        const dbList = $('#dbList');
+        const dbListContainer = $('#dbListContainer');
+
+        // Сброс состояния
+        checkBtn.prop('disabled', true);
+        btnText.text('{{ get_phrase('connection_check.checking') }}');
+        btnLoader.removeClass('d-none');
+        loadingArea.removeClass('d-none');
+        resultsArea.addClass('d-none');
+        networkResults.empty();
+        mysqlResults.empty();
+        dbList.empty();
+        dbListContainer.addClass('d-none');
+
+        const startTime = Date.now();
+
+        $.ajax({
+            url: '/admin/plugin/connection/check/process',
+            type: 'POST',
+            data: {
+                host: $('#host').val(),
+                port: $('#port').val(),
+                user: $('#user').val(),
+                password: $('#password').val(),
+                check_ports: $('#check_ports').val()
+            },
+            dataType: 'json',
+            success: function (data) {
+                const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+                $('#responseTime').text('Total time: ' + duration + 's');
+                $('#rawResponse').text(JSON.stringify(data, null, 4));
+
+                if (data === null || data.error) {
+                    resultsArea.removeClass('d-none');
+                    addSimpleRow(networkResults, '{{ get_phrase('connection_check.error_label') }}', 'danger', data ? data.error : '{{ get_phrase('connection_check.error_empty_response') }}');
+                    if (data && data.raw_response) {
+                         console.log("Raw API Response:", data.raw_response);
+                    }
+                    return;
+                }
+
+                // Handle notice-style responses (e.g., rate limits) clearly for user
+                if (data && data.type && (data.ok === false || data.ok === 'false') && data.message) {
+                    resultsArea.removeClass('d-none');
+                    // remove previous notice if any
+                    $('#apiNotice').remove();
+                    const noticeHtml = `
+                        <div id="apiNotice" class="alert alert-warning d-flex justify-content-between align-items-center">
+                            <div><strong>{{ get_phrase('connection_check.error_label') }}:</strong>&nbsp;${data.message}</div>
+                            <div><button type="button" class="btn btn-sm btn-outline-primary" id="retryBtn">{{ get_phrase('connection_check.button_check') }}</button></div>
+                        </div>
+                    `;
+                    resultsArea.prepend(noticeHtml);
+                    // fill raw response for diagnostics
+                    $('#rawResponse').text(JSON.stringify(data, null, 4));
+
+                    // stop loader and re-enable button
+                    checkBtn.prop('disabled', false);
+                    btnText.text('{{ get_phrase('connection_check.button_check') }}');
+                    btnLoader.addClass('d-none');
+                    loadingArea.addClass('d-none');
+
+                    // retry handler
+                    $(document).off('click', '#retryBtn').on('click', '#retryBtn', function () {
+                        $('#checkBtn').trigger('click');
+                    });
+
+                    return;
+                }
+
+                resultsArea.removeClass('d-none');
+
+                // 1. Network & Connectivity
+                if (typeof data.api_reachable !== 'undefined') {
+                    addSimpleRow(networkResults, '{{ get_phrase('connection_check.api_reachable') }}', data.api_reachable ? 'success' : 'danger', data.api_reachable ? '{{ get_phrase('connection_check.yes') }}' : '{{ get_phrase('connection_check.no') }}');
+                }
+                
+                // MySQL Port
+                var mysqlLatency = (data.mysql_port_status && data.mysql_port_status.latency !== undefined && data.mysql_port_status.latency !== null) ? data.mysql_port_status.latency : null;
+                // normalize latency to string for display; show dash when not available
+                var mysqlLatencyStr = (mysqlLatency === null || mysqlLatency === '') ? '—' : '' + mysqlLatency;
+                var mysqlPortError = (data.mysql_port_status && data.mysql_port_status.error && data.mysql_port_status.error.length > 0) 
+                    ? data.mysql_port_status.error 
+                    : '{{ get_phrase('connection_check.unknown_error') }}';
+
+                var mysqlPortDetails = "";
+                if (data.mysql_port_status && data.mysql_port_status.open) {
+                    // Prefer language template if it contains %s, otherwise build manual string
+                    var openPhrase = '{{ get_phrase('connection_check.port_open') }}';
+                    if (openPhrase.includes('%s')) {
+                        mysqlPortDetails = openPhrase.replace('%s', mysqlLatencyStr);
+                    } else {
+                        mysqlPortDetails = openPhrase + ' (' + mysqlLatencyStr + 'ms)';
+                    }
+                } else {
+                    var phraseClosed = '{{ get_phrase('connection_check.port_closed') }}';
+                    mysqlPortDetails = phraseClosed.includes('%s') ? phraseClosed.replace('%s', mysqlPortError) : (phraseClosed + ' ' + mysqlPortError);
+                }
+                
+                addSimpleRow(networkResults, '{{ get_phrase('connection_check.mysql_port') }} (' + (data.mysql_port_status.port || '3306') + ')',
+                    (data.mysql_port_status && data.mysql_port_status.open) ? 'success' : 'danger',
+                    mysqlPortDetails
+                );
+
+                // Other Ports
+                if (data.ports_status) {
+                    data.ports_status.forEach(function(port) {
+                        var platency = (port && port.latency !== undefined && port.latency !== null) ? port.latency : null;
+                        var platencyStr = (platency === null || platency === '') ? '—' : '' + platency;
+                        var pError = (port && port.error && port.error.length > 0) ? port.error : '{{ get_phrase('connection_check.unknown_error') }}';
+                        var pdetail = "";
+                        if (port && port.open) {
+                            var openPhrase = '{{ get_phrase('connection_check.port_open') }}';
+                            pdetail = openPhrase.includes('%s') ? openPhrase.replace('%s', platencyStr) : (openPhrase + ' (' + platencyStr + 'ms)');
+                        } else {
+                            var pPhraseClosed = '{{ get_phrase('connection_check.port_closed') }}';
+                            pdetail = pPhraseClosed.includes('%s') ? pPhraseClosed.replace('%s', pError) : (pPhraseClosed + ' ' + pError);
+                        }
+                        addSimpleRow(networkResults, '{{ get_phrase('connection_check.port_label_short') }} ' + port.port,
+                            port.open ? 'success' : 'danger',
+                            pdetail
+                        );
+                    });
+                }
+
+                // 2. MySQL Status
+                var mysqlConnError = (data.mysql_error && data.mysql_error.length > 0) ? data.mysql_error : '{{ get_phrase('connection_check.unknown_error') }}';
+                var mysqlConnDetails = "";
+                if (data.mysql_connect) {
+                    mysqlConnDetails = '{{ get_phrase('connection_check.mysql_connection_success') }}';
+                } else {
+                    var phraseFail = '{{ get_phrase('connection_check.mysql_connection_fail') }}';
+                    mysqlConnDetails = phraseFail.includes('%s') ? phraseFail.replace('%s', mysqlConnError) : (phraseFail + ' ' + mysqlConnError);
+                }
+
+                addSimpleRow(mysqlResults, '{{ get_phrase('connection_check.mysql_connection') }}',
+                    data.mysql_connect ? 'success' : 'danger',
+                    mysqlConnDetails
+                );
+
+                if (data.mysql_info) {
+                    const info = data.mysql_info;
+                    if (info.version) addSimpleRow(mysqlResults, '{{ get_phrase('connection_check.mysql_version') }}', 'info', info.version);
+                    if (info.threads_connected !== undefined) addSimpleRow(mysqlResults, '{{ get_phrase('connection_check.mysql_threads_connected') }}', 'info', info.threads_connected);
+                    if (info.threads_running !== undefined) addSimpleRow(mysqlResults, '{{ get_phrase('connection_check.mysql_threads_running') }}', 'info', info.threads_running);
+                    if (info.connections !== undefined) addSimpleRow(mysqlResults, '{{ get_phrase('connection_check.mysql_connections') }}', 'info', info.connections);
+                    if (info.max_connections !== undefined) addSimpleRow(mysqlResults, '{{ get_phrase('connection_check.mysql_max_connections') }}', 'info', info.max_connections);
+                    if (info.uptime !== undefined) {
+                        const uptimeStr = info.uptime + ' {{ get_phrase('connection_check.seconds') }}';
+                        addSimpleRow(mysqlResults, '{{ get_phrase('connection_check.mysql_uptime') }}', 'info', uptimeStr);
+                    }
+                    if (info.open_tables !== undefined) addSimpleRow(mysqlResults, '{{ get_phrase('connection_check.mysql_open_tables') }}', 'info', info.open_tables);
+
+                    // Databases
+                    if (info.databases && info.databases.length > 0) {
+                        dbListContainer.removeClass('d-none');
+                        info.databases.forEach(db => {
+                            dbList.append(`<span class="badge bg-outline-primary border text-primary">${db}</span>`);
+                        });
+                    }
+                }
+            },
+            error: function (xhr, status, error) {
+                resultsArea.removeClass('d-none');
+                addSimpleRow(networkResults, 'System Error', 'danger', error || 'AJAX request failed');
+            },
+            complete: function () {
+                checkBtn.prop('disabled', false);
+                btnText.text('{{ get_phrase('connection_check.button_check') }}');
+                btnLoader.addClass('d-none');
+                loadingArea.addClass('d-none');
+            }
+        });
+    });
+
+    function addSimpleRow(target, label, status, details) {
+        let badgeClass = 'bg-info';
+        let icon = 'bi-info-circle';
+        let statusText = '{{ get_phrase('connection_check.info') }}';
+
+        if (status === 'success') {
+            badgeClass = 'bg-success';
+            icon = 'bi-check-circle';
+            statusText = 'OK';
+        } else if (status === 'danger') {
+            badgeClass = 'bg-danger';
+            icon = 'bi-exclamation-triangle';
+            statusText = 'FAIL';
+        }
+
+        const row = `
+            <tr>
+                <td class="ps-3 py-2" style="width: 40%;">${label}</td>
+                <td class="py-2" style="width: 15%;"><span class="badge ${badgeClass}"><i class="bi ${icon} me-1"></i>${statusText}</span></td>
+                <td class="py-2 text-muted small">${details}</td>
+            </tr>
+        `;
+        target.append(row);
+    }
+</script>
+{% endblock %}
