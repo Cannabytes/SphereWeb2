@@ -1061,7 +1061,7 @@
                                 <div class="border rounded-3 p-3">
                                     <p class="fs-15 fw-semibold mb-2">Webhook</p>
                                     <p class="fs-12 text-muted">На сайте платежной системы в качестве уведомлений после успешной оплаты укажите POST запрос на адрес:</p>
-                                    /api/webhook/{{ donateInfo.name }}
+                                    {{ HTTP_HOST() }}{{ donateInfo.webhook }}
                                 </div>
 
                                 <input type="hidden" value="{{ currentIndex }}" id="sort_{{ donateInfo.name }}" class="sort-input">

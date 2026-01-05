@@ -78,17 +78,20 @@ class setDonateServer
             if (method_exists($system, 'inputs')) {
                 $inputs = $system::inputs();
             }
+            $webhook = $system::getWebhook() ?? "/donate/webhook/" . basename($system);
             if (method_exists($system, 'getDescription')) {
                 $donateSysNames[] = [
                     'name' => basename($system),
                     'desc' => $system::getDescription(),
                     'inputs' => $inputs,
+                    'webhook' => $webhook,
                 ];
             } else {
                 $donateSysNames[] = [
                     'name' => basename($system),
                     'desc' => basename($system),
                     'inputs' => $inputs,
+                    'webhook' => $webhook,
                 ];
             }
         }

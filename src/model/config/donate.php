@@ -218,12 +218,18 @@ class donate
             $sort = $system[$systemName]['sort'] ?? 1000;
             $country = $system[$systemName]['country'] ?? [];
             $currency = $system[$systemName]['currency'] ?? null;
+            $webhook = $system[$systemName]['webhook'] ?? null;
+            if ($webhook === null) {
+                if (class_exists($systemName)) {
+                    $webhook = $systemName::getWebhook();
+                }
+            }
             if(!isset($system[$systemName]['customName']) or empty($system[$systemName]['customName'])){
                 $customName = $systemName;
             }else{
                 $customName = $system[$systemName]['customName'] ?? $systemName;
             }
-            $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, sort: $sort, country: $country, customName: $customName, currency: $currency);
+            $donateSys[] = new donateSystem($enable, $systemName, $inputs, $description, $forAdmin, $webhook, sort: $sort, country: $country, customName: $customName, currency: $currency);
         }
         $donateSys = array_merge($donateSys, $fileDonateSys);
         usort($donateSys, function ($a, $b) {
