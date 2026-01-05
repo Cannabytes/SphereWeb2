@@ -418,8 +418,15 @@
             previewImage(this, 'backgroundPreview', 2 * 1024 * 1024);
         });
 
-        // Обработка создания клана
+        // Обработка создания клана с блокировкой кнопки по клику
         $('#createClanBtn').on('click', function() {
+            const $btn = $(this);
+            if ($btn.data('submitting')) return; // уже отправляется
+            $btn.data('submitting', true);
+            $btn.prop('disabled', true);
+            const origHtml = $btn.html();
+            $btn.html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>' + origHtml + '...');
+
             // Create a new FormData object
             const formData = new FormData($('#createClanForm')[0]);
 
@@ -434,8 +441,11 @@
                     responseAnalysis(response);
                 },
                 error: function(xhr, status, error) {
-                    // Handle errors
+                    // Handle errors and re-enable button
                     noticeError('Ошибка при создании клана: ' + error);
+                    $btn.data('submitting', false);
+                    $btn.prop('disabled', false);
+                    $btn.html(origHtml);
                 }
             });
         });

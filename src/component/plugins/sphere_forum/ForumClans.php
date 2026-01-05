@@ -91,10 +91,22 @@ class ForumClans
         }
     }
 
-    private function validateClanData($data)
+    private function validateClanData($data, $currentClanId = null)
     {
         if (!isset($data['clanName']) || mb_strlen($data['clanName']) < 3 || mb_strlen($data['clanName']) > 16) {
             board::error('Название клана должно содержать от 3 до 16 символов');
+        }
+
+        $existingClan = $this->getClanInfoByName($data['clanName']);
+        if ($existingClan && $existingClan->getId() !== $currentClanId) {
+            board::error('Клан с таким названием уже существует');
+        }
+
+        if ($currentClanId === null) {
+            $isMember = sql::getValue("SELECT 1 FROM forum_clan_members WHERE user_id = ?", [user::self()->getId()]);
+            if ($isMember) {
+                board::error('Вы уже состоите в клане');
+            }
         }
 
         if (!isset($data['clanDescription']) || strlen($data['clanDescription']) > 255) {
@@ -292,7 +304,7 @@ class ForumClans
             if(!$userOwnerClan->getOwnerId()) {
                 board::error("У Вас нет клана");
             }
-            $this->validateClanData($data);
+            $this->validateClanData($data, $userOwnerClan->getId());
 
             // Обработка изображений
             $logoPath = isset($_FILES['clanLogo']) ? $this->handleImage($_FILES['clanLogo'], 'logo_') : null;
@@ -642,7 +654,7 @@ class ForumClans
                 sql::run("DELETE FROM forum_clans WHERE id = ?", [$clanId]);
 
                 // Удаляем переменную clanId у всех пользователей клана
-                sql::run("DELETE FROM forum_clans WHERE `val` = 'clanId' AND user_id = ?", [user::self()->getId()]);
+                sql::run("DELETE FROM user_variables WHERE `var` = 'clanId' AND `val` = ?", [$clanId]);
             });
 
             board::redirect("/forum/clans");
