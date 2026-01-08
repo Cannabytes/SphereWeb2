@@ -40,21 +40,21 @@ class stream
     public static function add()
     {
         if ( ! isset($_POST['channel']) || empty(trim($_POST['channel']))) {
-            board::error("Не выбран канал");
+            board::error(lang::get_phrase('stream_no_channel'));
         } elseif ( ! filter_var($_POST['channel'], FILTER_VALIDATE_URL)) {
-            board::error("Канал должен быть корректным URL адресом");
+            board::error(lang::get_phrase('stream_invalid_channel'));
         }
 
         $link = self::stream_get_platform($_POST['channel']);
         if($link == 'unknown'){
-            board::error("Поддерживается только стримы сайтов Youtube и Twitch, Kick, Trovo");
+            board::error(lang::get_phrase('stream_unsupported_platform'));
         }
 
         $rows = sql::getRows("SELECT * FROM `streams` WHERE `user_id` = ?", [user::self()->getId()]);
         if ($rows) {
             foreach($rows as $row) {
                 if ($row['confirmed'] == 0) {
-                    board::error("Ваш стрим ещё не был одобрен, по этому нельзя добавлять новую ссылку. Ожидайте одобрение администратора.");
+                    board::error(lang::get_phrase('stream_not_approved_cant_add'));
                 }
             }
         }
@@ -79,7 +79,7 @@ class stream
             telegram::sendTelegramMessage($msg, \Ofey\Logan22\controller\config\config::load()->notice()->getAddStreamThreadId());
         }
 
-        board::success("Стрим добавлен. Ожидайте одобрение администратора.");
+        board::success(lang::get_phrase('stream_added_waiting_approval'));
     }
 
     public static function show()
@@ -171,18 +171,18 @@ class stream
     {
         $streamId = $_POST['id'] ?? null;
         if($streamId == null){
-            board::error("Не выбран стрим");
+            board::error(lang::get_phrase('stream_not_selected'));
         }
         $getStream = "SELECT * FROM `streams` WHERE `id` = ?";
         $streamData = sql::getRow($getStream, [$streamId]);
         if ($streamData == null) {
-            board::error("Нет данных о стриме");
+            board::error(lang::get_phrase('stream_no_data'));
         }
         if(user::self()->getId() == $streamData['user_id']){
             sql::run("DELETE FROM `streams` WHERE `id` = ?", [$streamId]);
-            board::success("Стрим удален");
+            board::success(lang::get_phrase('stream_deleted'));
         }else{
-            board::error("Вы не можете удалить этот стрим");
+            board::error(lang::get_phrase('stream_cannot_delete'));
         }
     }
 

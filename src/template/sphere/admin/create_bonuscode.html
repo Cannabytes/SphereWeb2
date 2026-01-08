@@ -32,7 +32,20 @@
             </div>
           </div>
 
-          <div class="form-check form-check-lg d-flex align-items-center">
+          <div class="row row-cols-lg-auto align-items-center mt-2">
+            <span class="fw-semibold mb-1 text-muted">{{ phrase('group_name') }} ({{ phrase('optional') }})</span>
+            <div class="col-4">
+              <div class="col-sm">
+                <input type="text" class="form-control" id="group_name" value="" placeholder="starter_pack"
+                       aria-label="Group Name">
+              </div>
+            </div>
+            <div class="col-12 mt-1">
+              <small class="text-muted">Если указано, пользователь сможет активировать только ОДИН код из этой группы.</small>
+            </div>
+          </div>
+
+          <div class="form-check form-check-lg d-flex align-items-center mt-3">
             <input id="autocreatecode" class="form-check-input" type="checkbox" value="">
             <label class="form-check-label" for="autocreatecode">
               {{phrase('bonus_code_autocreate')}}
@@ -221,6 +234,7 @@
       start_date_code: startDate,
       end_date_code: endDate,
       prefix: $("#prefix").val(),
+      group_name: $("#group_name").val(),
     }, true).then(function (response) {
       if (Array.isArray(response)) {
         $('#bonus_codes').val(response.join('\n'));

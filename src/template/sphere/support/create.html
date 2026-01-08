@@ -11,7 +11,7 @@
             <div class="mail-info-header p-1 d-xxl-flex align-items-center">
                 <div class="mail-option-read d-md-flex d-block">
                     <a aria-label="anchor" href="/support" class="vertical-phone" data-bs-toggle="tooltip"
-                        data-bs-original-title="Назад">
+                        data-bs-original-title="{{phrase(417)}}">
                         <i class="bx bx-left-arrow-alt"></i>
                     </a>
                 </div>
@@ -22,8 +22,7 @@
                 {% if not getUser().isAdmin() and not isUserModerator %}
                 <div class="alert alert-success mb-3">
                     <i class="ri-check-line me-2"></i>
-                    <strong>Добро пожаловать в техническую поддержку!</strong>
-                    Это ваше первое обращение. Опишите вашу проблему как можно подробнее.
+                    {{ phrase('support_welcome')|raw }}
                 </div>
                 {% endif %}
 

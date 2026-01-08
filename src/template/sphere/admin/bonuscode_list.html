@@ -48,6 +48,9 @@
                 {% if data[0].server_id == 0 %}
                 <span class="badge bg-success-transparent ms-2">ALL SERVERS</span>
                 {% endif %}
+                {% if data[0].group_name %}
+                <span class="badge bg-info-transparent ms-2">Group: {{ data[0].group_name }}</span>
+                {% endif %}
               </th>
               <td>
 

@@ -37,7 +37,8 @@ class bonuscode {
         count,
         start_date_code,
         end_date_code,
-        server_id 
+        server_id,
+        group_name
     FROM
         bonus_code 
     WHERE 

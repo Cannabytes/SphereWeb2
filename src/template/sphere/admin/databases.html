@@ -409,6 +409,8 @@
 <script>
     $(document).ready(function () {
         const collectionInfo = JSON.parse('{{collections|raw}}');
+        const collectionsPTS = JSON.parse('{{collectionsPTS|raw}}');
+        const clientList = JSON.parse('{{ client_list_default|json_encode|raw }}');
 
         $(".deleteGameServer").on("click", function () {
             let gameServerId = $(this).attr("data-game-id");
@@ -544,12 +546,15 @@
             if (connectServer === "0") {
                 additionalFields = `
                     <div class="mb-3">
-                        <label for="version_client" class="form-label">Chronicle</label>
-                        <select class="form-control" id="version_client">
-                            {% for client in client_list_default %}
-                            <option data-protocol='{{ client.protocol|json_encode }}'>{{ client.name }}</option>
-                            {% endfor %}
+                        <label for="collection_env" class="form-label">Тип сборок</label>
+                        <select class="form-control" id="collection_env">
+                            <option value="java">Java</option>
+                            <option value="pts">PTS</option>
                         </select>
+                    </div>
+                    <div class="mb-3 java-only">
+                        <label for="version_client" class="form-label">Chronicle</label>
+                        <select class="form-control" id="version_client"></select>
                     </div>
                     <div class="mb-3">
                         <label for="collection" class="form-label">Сборка сервера</label>
@@ -579,6 +584,39 @@
                     showCancelButton: true,
                     focusConfirm: false,
                     confirmButtonText: '<i class="fe fe-download"></i> Начать импортирование',
+                    didOpen: () => {
+                        // Заполняем список хроник только теми, под которые есть сборки
+                        try {
+                            const filteredClients = clientList.filter(client =>
+                                collectionInfo.some(collection =>
+                                    collection.protocols.some(p => (client.protocol || []).includes(p))
+                                )
+                            );
+
+                            const $version = $("#version_client");
+                            $version.empty();
+
+                            if (filteredClients.length > 0) {
+                                filteredClients.forEach(c => {
+                                    const opt = $('<option>', {
+                                        text: c.name,
+                                        'data-protocol': JSON.stringify(c.protocol || [])
+                                    });
+                                    $version.append(opt);
+                                });
+                                // Инициалически подтянем сборки для первой хроники (по умолчанию Java)
+                                const firstProtocols = $version.find('option').first().attr('data-protocol');
+                                $('#collection_env').val('java');
+                                updateCollections(firstProtocols);
+                            } else {
+                                $version.append($('<option>', { text: 'Нет доступных хроник', disabled: true, selected: true }));
+                                $('#collection').empty().append($('<option>', { text: 'Нет доступных сборок', disabled: true, selected: true }));
+                            }
+                        } catch (e) {
+                            console.error('Ошибка при заполнении хроник:', e);
+                        }
+                    },
+
                 }).then((result) => {
                     if (result.isConfirmed) {
                         noticeSuccess("Началось загрузка аккаунтов. Ожидайте.");
@@ -586,11 +624,15 @@
                         $.ajax({
                             url: "/admin/database/account/load",
                             method: "POST",
-                            data: {
-                                loginId: loginId,
-                                collection: collection,
-                                file: $("#import_accounts").val()
-                            },
+                            data: (function(){
+                                const envVal = $('#collection_env').length ? $('#collection_env').val() : 'java';
+                                return {
+                                    loginId: loginId,
+                                    collection: collection,
+                                    file: $("#import_accounts").val(),
+                                    env: envVal
+                                };
+                            })(),
                             dataType: "json",
                             success: function (response) {
                                 console.log(response)
@@ -705,6 +747,36 @@
         $(document).on('change', '#version_client', function() {
             const protocols = $(this).find('option:selected').attr('data-protocol');
             updateCollections(protocols);
+        });
+
+        // Populate collection list from collectionsPTS
+        function populateCollectionsPTS() {
+            const $collectionSelect = $('#collection');
+            $collectionSelect.empty();
+            if (!Array.isArray(collectionsPTS) || collectionsPTS.length === 0) {
+                $collectionSelect.append($('<option>', { text: 'Нет доступных сборок PTS', disabled: true, selected: true }));
+                return;
+            }
+            const $fragment = $(document.createDocumentFragment());
+            collectionsPTS.forEach(c => {
+                $('<option>', { value: c.name, text: c.name }).appendTo($fragment);
+            });
+            $collectionSelect.append($fragment).trigger('change').show();
+        }
+
+        // Switch between Java and PTS collections
+        $(document).on('change', '#collection_env', function() {
+            const val = $(this).val();
+            if (val === 'pts') {
+                // hide chronicle selector
+                $('.java-only').hide();
+                populateCollectionsPTS();
+            } else {
+                $('.java-only').show();
+                // use currently selected chronicle to populate java collections
+                const protocols = $('#version_client').find('option:selected').attr('data-protocol');
+                updateCollections(protocols);
+            }
         });
 
         $(document).on("change", "#fileInput", function () {

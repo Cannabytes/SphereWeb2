@@ -63,6 +63,61 @@ class databases
             'loginServers' => $loginServers,
             'client_list_default' => client::all(),
             "collections" => json_encode($collections['collections']),
+            "collectionsPTS" => json_encode([
+                [
+                    "id" => 0,
+                    "name" => "AdvExt",
+                    "desc" => "ПТС сборка",
+                    "hash" => "",
+                    "protocols" => [
+                        //GF
+                        83,
+                        87,
+                        83,
+
+                        // Epilogue
+                        148,
+                        152,
+                        146,
+
+                        // HF
+                        267,
+                        268,
+                        271,
+                        273,
+                        253,
+                        268,
+
+                        // ИЛ
+                        737,
+                        740,
+                        744,
+                        746,
+                    ],
+                ],
+                [
+                    "id" => 1,
+                    "name" => "Vaganth",
+                    "desc" => "ПТС сборка",
+                    "hash" => "",
+                    "protocols" => [
+                        // ИЛ
+                        737,
+                        740,
+                        744,
+                        746,
+                    ],
+                ],
+                [
+                    "id" => 2,
+                    "name" => "PTS HighFive Strix",
+                    "desc" => "ПТС сборка",
+                    "hash" => "",
+                    "protocols" => [
+                        273, 196, 388,
+                    ],
+                ],
+            ]),
         ]);
         tpl::display("/admin/databases.html");
     }
@@ -123,6 +178,7 @@ class databases
         $file    = $_POST['file'] ?? board::error("Not accounts");
         $loginId = $_POST['loginId'] ?? board::error("Not loginId");
         $collection = $_POST['collection'];
+        $env = $_POST['env'] ?? 'java';
         $encrypt = "sphere";
 
         $parsedData   = [];
@@ -159,6 +215,7 @@ class databases
         $responseData = \Ofey\Logan22\component\sphere\server::send(type::LOAD_ACCOUNTS, [
             'loginId'  => (int)$loginId,
             'collection' => $collection,
+            'env' => $env,
             'encrypt'  => $encrypt,
             'accounts' => $parsedData,
         ])->show()->getResponse();

@@ -99,9 +99,9 @@ class options
         $showStatusBar = filter_var($_POST['showStatusBar'] ?? false, FILTER_VALIDATE_BOOL);
         $enableStatusServer = filter_var($_POST['enableStatusServer'] ?? false, FILTER_VALIDATE_BOOL);
         $statusLoginServerIP = $_POST['statusLoginServerIP'] ?? "";
-        $statusLoginServerPort = (int)$_POST['statusLoginServerPort'] ?? 2106;
+        $statusLoginServerPort = (int)filter_var($_POST['statusLoginServerPort'], FILTER_VALIDATE_INT) ?? 2106;
         $statusGameServerIP = $_POST['statusGameServerIP'] ?? "";
-        $statusGameServerPort = (int)$_POST['statusGameServerPort'] ?? 7777;
+        $statusGameServerPort = (int)filter_var($_POST['statusGameServerPort'], FILTER_VALIDATE_INT) ?? 7777;
         $platform = $_POST['platform'] ?? null;
         $cached_ip = $_POST['cached_ip'] ?? null;
         $cached_port = $_POST['cached_port'] ?? null;
@@ -377,6 +377,11 @@ class options
         $cached_ip = $_POST['cached_ip'] ?? null;
         $cached_port = $_POST['cached_port'] ?? null;
         $cached_WebAdmin = $_POST['cached_WebAdmin'] ?? null;
+        
+        $statusLoginServerIP = $_POST['statusLoginServerIP'];
+        $statusLoginServerPort =  (int)filter_var($_POST['statusLoginServerPort'], FILTER_VALIDATE_INT);
+        $statusGameServerIP = $_POST['statusGameServerIP'];
+        $statusGameServerPort = (int)filter_var($_POST['statusGameServerPort'], FILTER_VALIDATE_INT);
 
         if($platform == "pts"){
             if (!filter_var($cached_ip, FILTER_VALIDATE_IP)) {
@@ -407,9 +412,13 @@ class options
         if (!\Ofey\Logan22\model\server\server::getServer($serverId)) {
             board::error("Server not find");
         }
-
+        
         $statusServer = [
             "enable" => $enableStatusServer,
+            "statusLoginServerIP" => $statusLoginServerIP,
+            "statusLoginServerPort" => $statusLoginServerPort,
+            "statusGameServerIP" => $statusGameServerIP,
+            "statusGameServerPort" => $statusGameServerPort,
         ];
 
         $server = \Ofey\Logan22\model\server\server::getServer($serverId);
@@ -455,6 +464,10 @@ class options
             "collection" => $collection,
             "statusServer" => [
                 "enable" => (bool)filter_var($enableStatusServer, FILTER_VALIDATE_BOOLEAN),
+                "statusLoginServerIP" => $statusLoginServerIP,
+                "statusLoginServerPort" => $statusLoginServerPort,
+                "statusGameServerIP" => $statusGameServerIP,
+                "statusGameServerPort" => $statusGameServerPort,
             ],
             "platform" => $platform,
             "cachedIP" => $cached_ip,

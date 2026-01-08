@@ -32,6 +32,10 @@ class bonus
         $countGenBonusCode = $_POST["count_codes"] ?? 100;
         $items = $_POST['items'];
         $prefix = trim($_POST['prefix']) ?? '';
+        $group_name = trim($_POST['group_name']) ?? null;
+        if (empty($group_name)) {
+            $group_name = null;
+        }
         $autocreatecode = (bool) filter_input(INPUT_POST, 'autocreatecode', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
         $disposable = (int) filter_input(INPUT_POST, 'disposable', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
         if (!$autocreatecode) {
@@ -64,7 +68,7 @@ class bonus
                     $count = $item['count'];
                     $enchant = 0;
                     sql::run(
-                        "INSERT INTO `bonus_code` (`server_id`, `code`, `item_id`, `count`, `enchant`, `phrase`, `start_date_code`, `end_date_code`, `disposable`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        "INSERT INTO `bonus_code` (`server_id`, `code`, `item_id`, `count`, `enchant`, `phrase`, `start_date_code`, `end_date_code`, `disposable`, `group_name`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         [
                             $server_id,
                             $code,
@@ -75,6 +79,7 @@ class bonus
                             $start_date_code,
                             $end_date_code,
                             $disposable,
+                            $group_name,
                         ]
                     );
                 }
@@ -87,7 +92,7 @@ class bonus
                 $count = $item['count'];
                 $enchant = 0;
                 sql::run(
-                    "INSERT INTO `bonus_code` (`server_id`, `code`, `item_id`, `count`, `enchant`, `phrase`, `start_date_code`, `end_date_code`, `disposable`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO `bonus_code` (`server_id`, `code`, `item_id`, `count`, `enchant`, `phrase`, `start_date_code`, `end_date_code`, `disposable`, `group_name`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     [
                         $server_id,
                         $prefix,
@@ -98,6 +103,7 @@ class bonus
                         $start_date_code,
                         $end_date_code,
                         $disposable,
+                        $group_name,
                     ]
                 );
             }
@@ -156,6 +162,15 @@ class bonus
             foreach ($bonusCodes as $bonus) {
                 // Применяем бонус и получаем информацию для отображения
                 $result = self::applyBonus($bonus);
+
+                // Записываем активацию группы, если она есть
+                if (!empty($bonus['group_name'])) {
+                    sql::run("INSERT INTO bonus_code_activated (user_id, code_id, group_name) VALUES (?, ?, ?)", [
+                        user::self()->getId(),
+                        $bonus['id'],
+                        $bonus['group_name']
+                    ]);
+                }
 
                 // Добавляем данные для отображения
                 $bonusNames .= $result['htmlDisplay'];
@@ -232,6 +247,17 @@ class bonus
             // Проверка сервера
             if ($bonus['server_id'] != 0 && $bonus['server_id'] != $currentServerId) {
                 throw new Exception(lang::get_phrase('code_created_for_another_server'));
+            }
+
+            // Проверка группового ограничения
+            if (!empty($bonus['group_name'])) {
+                $isActivatedGroup = sql::getRow("SELECT id FROM bonus_code_activated WHERE user_id = ? AND group_name = ?", [
+                    user::self()->getId(),
+                    $bonus['group_name']
+                ]);
+                if ($isActivatedGroup) {
+                    throw new Exception(lang::get_phrase("bonus_code_group_already_activated", $bonus['group_name']));
+                }
             }
 
             // Проверка на повторное использование многоразовых кодов

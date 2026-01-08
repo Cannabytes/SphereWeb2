@@ -460,11 +460,11 @@
                 {% if not getUser().isAdmin() and not isUserModerator %}
                 <div class="alert alert-info mb-3">
                     <i class="ri-information-line me-2"></i>
-                    <strong>Ваши обращения:</strong>
+                    <strong>{{phrase("Your requests")}}:</strong>
                     {% if currentSection is defined and currentSection != null %}
-                    Здесь отображаются ваши обращения в категории "{{ phrase(sections[currentSection].thread_name) }}".
+                        {{ phrase("Here are your requests in category") }} "{{ phrase(sections[currentSection].thread_name) }}"
                     {% else %}
-                    Здесь отображаются все ваши обращения в техническую поддержку.
+                        {{ phrase("Here are all your requests to technical support") }}
                     {% endif %}
                 </div>
                 {% endif %}

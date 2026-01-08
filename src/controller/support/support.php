@@ -328,7 +328,7 @@ class support
             }
 
             board::redirect($link);
-            board::success("Создано");
+            board::success(lang::get_phrase('Создано'));
 
         } catch (Exception $exception) {
             error::show($exception);

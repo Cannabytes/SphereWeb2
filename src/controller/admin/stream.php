@@ -3,6 +3,7 @@
 namespace Ofey\Logan22\controller\admin;
 
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\template\tpl;
 
@@ -12,18 +13,18 @@ class stream
     static function satisfy(): void
     {
         if ( ! isset($_POST['streamId']) || empty(trim($_POST['streamId']))) {
-            board::error("Не выбран канал");
+            board::error(lang::get_phrase('stream_no_channel'));
         } elseif ( ! filter_var($_POST['streamId'], FILTER_VALIDATE_INT)) {
-            board::error("Канал должен быть корректным URL адресом");
+            board::error(lang::get_phrase('stream_invalid_channel'));
         }
         $streamId = $_POST['streamId'];
 
         $streamData = sql::getRow("SELECT * FROM `streams` WHERE `id` = ?", [$streamId]);
         if ( ! $streamData) {
-            board::error("Нет данных о стриме");
+            board::error(lang::get_phrase('stream_no_data'));
         }
         sql::run("UPDATE `streams` SET `confirmed` = 1 WHERE `id` = ?", [$streamId]);
-        board::success("Стрим одобрен");
+        board::success(lang::get_phrase('stream_approved'));
     }
 
     static function show()
@@ -58,7 +59,7 @@ class stream
     {
         $streamId = $_POST['streamId'];
         sql::run("DELETE FROM `streams` WHERE `id` = ?", [$streamId]);
-        board::success("Стрим удален");
+        board::success(lang::get_phrase('stream_deleted'));
     }
 
 }

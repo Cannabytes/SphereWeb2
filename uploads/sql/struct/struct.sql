@@ -36,12 +36,29 @@ CREATE TABLE `bonus_code`  (
   `start_date_code` datetime NULL DEFAULT NULL,
   `end_date_code` datetime NULL DEFAULT NULL,
   `disposable` int(11) NOT NULL DEFAULT 1,
+  `group_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of bonus_code
 -- ----------------------------
+
+-- ----------------------------
+-- Table structure for bonus_code_activated
+-- ----------------------------
+DROP TABLE IF EXISTS `bonus_code_activated`;
+CREATE TABLE `bonus_code_activated` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `code_id` int NOT NULL,
+  `group_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `activated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_user_group` (`user_id`, `group_name`),
+  INDEX `idx_code_activation` (`user_id`, `code_id`)
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
 
 -- ----------------------------
 -- Table structure for bonus_pack_codes
