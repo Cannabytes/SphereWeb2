@@ -119,10 +119,10 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
     function webhook(): void
     {
         try {
-            // if (!(config::load()->donate()->getDonateSystems('unitpay')?->isEnable() ?? false)) {
-            // $this->sendJsonResponse(['error' => ['message' => 'Service disabled']]);
-            // return;
-            // }
+            if (!(config::load()->donate()->getDonateSystems('unitpay')?->isEnable() ?? false)) {
+                $this->sendJsonResponse(['error' => ['message' => 'Service disabled']]);
+                return;
+            }
 
             \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 
