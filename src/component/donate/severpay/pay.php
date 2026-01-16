@@ -100,6 +100,11 @@ class severpay extends \Ofey\Logan22\model\donate\pay_abstract {
 
     //Получение информации об оплате
     function webhook(): void {
+        if (!(config::load()->donate()->getDonateSystems('severpay')?->isEnable() ?? false)) {
+             echo 'disabled';
+            exit;
+        }
+
         // \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
         $inputJSON = file_get_contents('php://input');
 
