@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Конструктор Лаунчера и Конфигурации{% endblock %}
+{% block title %}{{ phrase('sl2_constructor_and_config') }}{% endblock %}
 
 {% block content %}
 
@@ -11,22 +11,21 @@
         <div class="col-xl-6">
             <div class="card">
                 <div class="card-body">
-                    <h2 class="mb-4 fw-semibold">Скомпилировать Лаунчер</h2>
-                    <h5 class="lh-base fw-normal">В этом разделе вы можете скомпилировать Sphere Launcher.</h5>
+                    <h2 class="mb-4 fw-semibold">{{ phrase('sl2_compile_launcher') }}</h2>
+                    <h5 class="lh-base fw-normal">{{ phrase('sl2_compile_launcher_desc') }}</h5>
                     <p class="lh-base">
                     </p>
-                    <a href="/admin/plugin/sphereLauncher2/compile" class="btn btn-primary mt-2">Перейти</a>
+                    <a href="/admin/plugin/sphereLauncher2/compile" class="btn btn-primary mt-2">{{ phrase('sl2_go_to') }}</a>
                 </div>
             </div>
         </div>
         <div class="col-xl-6">
             <div class="card">
                 <div class="card-body">
-                    <h2 class="mb-4 fw-semibold">Создать конфигурацию launcher.json</h2>
-                    <h5 class="lh-base fw-normal">Файл необходим для того чтоб Sphere Launcher знал с какого источника
-                        загружать файлы игры.</h5>
-                    <p class="lh-base">Этот файл необходимо будет загрузить на Ваш FTP.</p>
-                    <a href="/admin/plugins/sphereLauncher2/config" class="btn btn-primary mt-2">Перейти</a>
+                    <h2 class="mb-4 fw-semibold">{{ phrase('sl2_create_json_config') }}</h2>
+                    <h5 class="lh-base fw-normal">{{ phrase('sl2_json_config_desc') }}</h5>
+                    <p class="lh-base">{{ phrase('sl2_upload_to_ftp_desc') }}</p>
+                    <a href="/admin/plugins/sphereLauncher2/config" class="btn btn-primary mt-2">{{ phrase('sl2_go_to') }}</a>
                 </div>
             </div>
         </div>
@@ -38,10 +37,10 @@
             <div class="card custom-card">
                 <div class="card-header justify-content-between">
                     <div class="card-title">
-                        Вопрос / Ответ
+                        {{ phrase('sl2_faq') }}
                     </div>
                     <div class="prism-toggle">
-                        <button class="btn btn-sm btn-primary-light">Show Code<i
+                        <button class="btn btn-sm btn-primary-light">{{ phrase('sl2_show_code') }}<i
                                 class="ri-code-line ms-2 d-inline-block align-middle"></i></button>
                     </div>
                 </div>
@@ -51,14 +50,13 @@
                             <h2 class="accordion-header" id="faq1-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#faq1" aria-expanded="false" aria-controls="faq1">
-                                    Как создать архивы моей игры?
+                                    {{ phrase('sl2_how_to_create_archives') }}
                                 </button>
                             </h2>
                             <div id="faq1" class="accordion-collapse collapse" aria-labelledby="faq1-header"
                                 data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    Скомпилируйте себе лаунчер, запустите его и чтоб открыть страницу создания архивов
-                                    игры, нажмите в лаунчере F1.<br>
+                                    {{ phrase('sl2_how_to_create_archives_desc') }}<br>
                                 </div>
                             </div>
                         </div>
@@ -66,17 +64,15 @@
                             <h2 class="accordion-header" id="faq2-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">
-                                    Доступна ли загрузка архивов на FTP ?
+                                    {{ phrase('sl2_ftp_upload_available') }}
                                 </button>
                             </h2>
                             <div id="faq2" class="accordion-collapse collapse" aria-labelledby="faq2-header"
                                 data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    Да, на странице создания архивов есть возможность подключиться к FTP указать
-                                    директорию сохранения.<br>
-                                    Архивы будут загружены на FTP после создания их.<br>
-                                    Если вы обновляете уже папку с архивом, тогда будут загружаться только новые
-                                    (измененные) архивы на FTP.
+                                    {{ phrase('sl2_ftp_upload_available_desc1') }}<br>
+                                    {{ phrase('sl2_ftp_upload_available_desc2') }}<br>
+                                    {{ phrase('sl2_ftp_upload_available_desc3') }}
                                 </div>
                             </div>
                         </div>
@@ -84,17 +80,15 @@
                             <h2 class="accordion-header" id="faq3-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">
-                                    Что за файл archive.csv ?
+                                    {{ phrase('sl2_what_is_archive_csv') }}
                                 </button>
                             </h2>
                             <div id="faq3" class="accordion-collapse collapse" aria-labelledby="faq3-header"
                                 data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    Файл archive.csv создается после создания архивов, в нем содержится реестр файлов,
-                                    их размер, хэш.<br>
-                                    Сфера Лаунчер использует для проверки актуальности файлов у пользователя именно этот
-                                    файл.<br>
-                                    Ссылка на него указывается в launcher.json.<br>
+                                    {{ phrase('sl2_archive_csv_desc1') }}<br>
+                                    {{ phrase('sl2_archive_csv_desc2') }}<br>
+                                    {{ phrase('sl2_archive_csv_desc3') }}<br>
                                 </div>
                             </div>
                         </div>
@@ -102,37 +96,31 @@
                             <h2 class="accordion-header" id="faq4-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#faq4" aria-expanded="false" aria-controls="faq4">
-                                    На сколько времени активируется лаунчер?
+                                    {{ phrase('sl2_activation_duration') }}
                                 </button>
                             </h2>
                             <div id="faq4" class="accordion-collapse collapse" aria-labelledby="faq4-header"
                                 data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
                                     <p>
-                                        <strong>Лаунчер входит в стандартную лицензию SphereWeb</strong> и будет
-                                        активирован до даты окончания лицензии.
+                                        <strong>{{ phrase('sl2_standard_license_desc') }}</strong> {{ phrase('sl2_activated_until_license_end') }}
                                     </p>
                                     <p>
-                                        <strong>Если у вас нет платной подписки на SphereWeb</strong>, тогда лаунчер
-                                        будет активирован на несколько дней.
+                                        <strong>{{ phrase('sl2_no_subscription_desc') }}</strong>, {{ phrase('sl2_activated_for_few_days') }}
                                     </p>
                                     <p>
-                                        Проще говоря: если лицензия Сферы заканчивается <span
-                                            class="text-primary"><b>17.08.2025</b></span>, тогда лаунчер будет
-                                        активирован до <span class="text-primary"><b>17.08.2025</b></span>. Дата
-                                        окончания лаунчера будет зашита в само приложение.
+                                        {{ phrase('sl2_simply_put_license_ends') }} <span
+                                            class="text-primary"><b>17.08.2025</b></span>, {{ phrase('sl2_launcher_activated_until') }} <span class="text-primary"><b>17.08.2025</b></span>. {{ phrase('sl2_expiration_date_hardcoded') }}
                                     </p>
                                     <ul> 
                                         <li>
-                                            Даже если вы пополните баланс Сферы, это <u>не повлияет</u> на дату
-                                            окончания лаунчера у конечных пользователей.
+                                            {{ phrase('sl2_balance_wont_affect_desc') }}
                                         </li>
                                         <li>
-                                            В таких случаях необходимо будет <b>перекомпилировать лаунчер</b> и заменить
-                                            его на новый.
+                                            {{ phrase('sl2_recompile_needed_desc') }}
                                         </li>
                                         <li>
-                                            Через автообновление лаунчер обновится у пользователей автоматически.
+                                            {{ phrase('sl2_auto_update_desc') }}
                                         </li>
                                     </ul>
                                 </div>
@@ -142,24 +130,22 @@
                             <h2 class="accordion-header" id="faq5-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#faq5" aria-expanded="false" aria-controls="faq5">
-                                    Как преобрести лаунчер?
+                                    {{ phrase('sl2_how_to_purchase') }}
                                 </button>
                             </h2>
                             <div id="faq5" class="accordion-collapse collapse" aria-labelledby="faq5-header"
                                 data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    Двумя путями:
+                                    {{ phrase('sl2_two_ways') }}
                                     <ul>
-                                        <li>Купить лицензию в Сфере (12$ / 20$), автоматически вы сможете использовать
-                                            лаунчер.</li>
-                                        <li>Купить отдельно лаунчер на неограниченный срок (100 USDT).</li>
+                                        <li>{{ phrase('sl2_purchase_way1') }}</li>
+                                        <li>{{ phrase('sl2_purchase_way2') }}</li>
                                     </ul>
                                     <p>
-                                        Для покупки свяжитесь с разработчиком SphereWeb.
+                                        {{ phrase('sl2_contact_developer') }}
                                     </p>
                                     <p>
-                                        После оплаты лицензии, вы получите ссылку на скачивание лаунчера и инструкцию по
-                                        активации.
+                                        {{ phrase('sl2_purchase_instructions') }}
                                     </p>
                                 </div>
                             </div>
