@@ -255,6 +255,8 @@ class update
 
                 // Проверка специальных заголовков от сервера — только проверяем наличие ключей
                 $headerFileOk = false;
+                // Инициализируем причину неудачи как null, чтобы избежать предупреждений при дальнейшем сравнении
+                $failureReason = null;
                 if (isset($parsedHeaders['x-file-ok']) && isset($parsedHeaders['x-served-by'])) {
                     $headerFileOk = true;
                 }
