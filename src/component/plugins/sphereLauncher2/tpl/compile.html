@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Конструктор Лаунчера и Конфигурации{% endblock %}
+{% block title %}{{ phrase('sl2_constructor_and_config') }}{% endblock %}
 
 {% block content %}
 
@@ -10,23 +10,23 @@
             <div class="card custom-card">
                 <div class="card-header">
                     <div class="card-title">
-                        Конструктор Лаунчера (Бинарный файл)
+                        {{ phrase('sl2_launcher_constructor_binary') }}
                     </div>
                 </div>
                 <div class="card-body">
                     <form id="compile-form">
 
-                        <!-- Основные настройки -->
+                        <!-- Basic Settings -->
                         <div class="settings-section">
                             <h5 class="section-title">
                                 <i class="ri-settings-3-line"></i>
-                                Основные настройки
+                                {{ phrase('sl2_basic_settings') }}
                             </h5>
 
                             <div class="row g-3">
                                 <div class="col-md-12">
                                     <label class="form-label" for="dataUrl">
-                                        Ссылка на launcher.json <i class="text-danger">*</i>
+                                        {{ phrase('sl2_link_to_launcher_json') }} <i class="text-danger">*</i>
                                     </label>
                                     <input class="form-control" id="dataUrl"
                                         placeholder="https://example.com/launcher.json" type="text"
@@ -35,41 +35,39 @@
 
                                 <div class="col-md-8">
                                     <label class="form-label"
-                                        data-bs-content="<img src='{{template_plugin}}/img/title.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
+                                        data-bs-content="<img src='{{template_plugin}}/img/title.jpg' alt='{{ phrase('sl2_tooltip_example') }}' style='max-width: 300px; border-radius: 5px;'>"
                                         data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
                                         for="pageTitle" tabindex="0">
-                                        Название программы <i class="text-danger">*</i> <i
+                                        {{ phrase('sl2_program_name') }} <i class="text-danger">*</i> <i
                                             class="ri-information-line"></i>
                                     </label>
                                     <input class="form-control" id="pageTitle"
-                                        placeholder="Введите название окна лаунчера" type="text" value="Мой Лаунчер">
+                                        placeholder="{{ phrase('sl2_enter_launcher_window_name') }}" type="text" value="{{ phrase('sl2_my_launcher') }}">
                                 </div>
 
                                 <div class="col-md-4">
                                     <label class="form-label" for="launcherVersion">
-                                        Версия лаунчера
+                                        {{ phrase('sl2_launcher_version') }}
                                     </label>
-                                    <input class="form-control" id="launcherVersion" placeholder="например, 1.0.0"
+                                    <input class="form-control" id="launcherVersion" placeholder="{{ phrase('sl2_eg_version') }}"
                                         type="text" value="1.0.0">
                                 </div>
 
                                 <div class="col-md-12">
-                                    <label class="form-label">Иконка лаунчера</label>
+                                    <label class="form-label">{{ phrase('sl2_launcher_icon') }}</label>
                                     <input accept=".png,.ico" class="form-control" id="iconUpload" type="file">
-                                    <div class="form-text">Форматы: PNG, ICO. Максимальный размер: 100 КБ. Разрешение:
-                                        до 128x128 пикселей.</div>
+                                    <div class="form-text">{{ phrase('sl2_icon_format_desc') }}</div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Выбор шаблона -->
+                        <!-- Template Selection -->
                         <div class="settings-section">
                             <h5 class="section-title">
                                 <i class="ri-palette-line"></i>
-                                Выбор шаблона лаунчера
+                                {{ phrase('sl2_select_launcher_template') }}
                             </h5>
-                            <p class="text-muted mb-3">Выберите визуальный стиль лаунчера. Каждый шаблон автоматически
-                                настроит оптимальные параметры окна.</p>
+                            <p class="text-muted mb-3">{{ phrase('sl2_select_template_desc') }}</p>
 
                             <div class="template-selector" id="templateSelector">
 
@@ -82,7 +80,7 @@
                                     <div class="template-radio">
                                         <input type="radio" name="template" value="vistor" id="template-vistor">
                                     </div>
-                                    <img src="{{template_plugin}}/tpl/screen/vistor.jpg" alt="vistor template"
+                                    <img src="{{template_plugin}}/tpl/screen/vistor.jpg" alt="{{ phrase('sl2_vistor_template') }}"
                                         class="template-image"
                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                     <div class="template-image-fallback vistor">
@@ -90,7 +88,7 @@
                                     </div>
                                     <div class="template-content">
                                         <div class="template-title">vistor</div>
-                                        <div class="template-description">Анимированный дизайн высокого качества</div>
+                                        <div class="template-description">{{ phrase('sl2_animated_high_quality_design') }}</div>
                                     </div>
                                 </div>
 
@@ -102,7 +100,7 @@
                                     <div class="template-radio">
                                         <input type="radio" name="template" value="custom" id="template-custom">
                                     </div>
-                                    <div class="template-badge">Свой</div>
+                                    <div class="template-badge">{{ phrase('sl2_own') }}</div>
                                     <img src="{{template_plugin}}/tpl/screen/custom.jpg" alt="Custom template"
                                         class="template-image"
                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -110,8 +108,8 @@
                                         <i class="ri-upload-cloud-line"></i>
                                     </div>
                                     <div class="template-content">
-                                        <div class="template-title">Свой шаблон</div>
-                                        <div class="template-description">Загрузите собственные файлы шаблона</div>
+                                        <div class="template-title">{{ phrase('sl2_own_template') }}</div>
+                                        <div class="template-description">{{ phrase('sl2_upload_own_template_files') }}</div>
                                     </div>
                                 </div>
 
@@ -120,79 +118,78 @@
                             </div>
                         </div>
 
-                        <!-- Кастомные файлы шаблона -->
+                        <!-- Custom Template Files -->
                         <div class="settings-section" id="custom-template-section" style="display: none;">
                             <h5 class="section-title">
                                 <i class="ri-upload-cloud-2-line"></i>
-                                Файлы пользовательского шаблона
+                                {{ phrase('sl2_custom_template_files') }}
                             </h5>
                             <div class="custom-template-upload">
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label for="customHtmlFile" class="form-label">
-                                            Файл шаблона (index.html) <i class="text-danger">*</i>
+                                            {{ phrase('sl2_template_file_index_html') }} <i class="text-danger">*</i>
                                         </label>
                                         <input class="form-control" type="file" id="customHtmlFile" accept=".html">
                                         <div class="form-text">
-                                            Обязательный файл. Должен называться index.html и быть не больше 100 КБ.
+                                            {{ phrase('sl2_index_html_desc') }}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="customCssFile" class="form-label">
-                                            Файл стилей (launcher.css)
+                                            {{ phrase('sl2_style_file_launcher_css') }}
                                         </label>
                                         <input class="form-control" type="file" id="customCssFile" accept=".css">
                                         <div class="form-text">
-                                            Опционально. Должен называться launcher.css и быть не больше 100 КБ.
+                                            {{ phrase('sl2_launcher_css_desc') }}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="customLangFile" class="form-label">
-                                            Файл локализации (lang.json)
+                                            {{ phrase('sl2_localization_file_lang_json') }}
                                         </label>
                                         <input class="form-control" type="file" id="customLangFile" accept=".json">
                                         <div class="form-text">
-                                            Опционально. Должен называться lang.json и быть не больше 100 КБ.
+                                            {{ phrase('sl2_lang_json_desc') }}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="customLogoFile" class="form-label">
-                                            Изображение лого
+                                            {{ phrase('sl2_logo_image') }}
                                         </label>
                                         <input class="form-control" type="file" id="customLogoFile"
                                             accept=".png,.jpg,.jpeg,.gif,.bmp,.svg">
                                         <div class="form-text">
-                                            Опционально. Форматы: PNG, JPG, JPEG, GIF, BMP, SVG. До 250 КБ.
+                                            {{ phrase('sl2_logo_image_desc') }}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Настройки окна -->
+                        <!-- Window Settings -->
                         <div class="settings-section">
                             <h5 class="section-title">
                                 <button class="btn btn-link p-0 text-decoration-none section-collapse-btn" type="button"
                                     data-bs-toggle="collapse" data-bs-target="#windowSettingsCollapse"
                                     aria-expanded="false" aria-controls="windowSettingsCollapse">
                                     <i class="ri-window-line"></i>
-                                    Настройки окна лаунчера
+                                    {{ phrase('sl2_launcher_window_settings') }}
                                     <i class="ri-arrow-down-s-line collapse-icon ms-2"></i>
                                 </button>
                             </h5>
 
                             <div class="collapse" id="windowSettingsCollapse">
-                                <p class="text-muted mb-3">Настройки автоматически применяются при выборе шаблона, но вы
-                                    можете их изменить.</p>
+                                <p class="text-muted mb-3">{{ phrase('sl2_settings_apply_auto_desc') }}</p>
 
                                 <div class="row g-3">
-                                    <!-- Размеры по умолчанию -->
+                                    <!-- Default dimensions -->
                                     <div class="col-md-6">
                                         <label class="form-label"
-                                            data-bs-content="<img src='{{template_plugin}}/img/min.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
+                                            data-bs-content="<img src='{{template_plugin}}/img/min.jpg' alt='{{ phrase('sl2_tooltip_example') }}' style='max-width: 300px; border-radius: 5px;'>"
                                             data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
                                             for="windowWidth" tabindex="0">
-                                            Ширина окна <i class="ri-information-line"></i>
+                                            {{ phrase('sl2_window_width') }} <i class="ri-information-line"></i>
                                         </label>
                                         <div class="input-group">
                                             <input class="form-control" id="windowWidth" type="number" value="900">
@@ -202,10 +199,10 @@
 
                                     <div class="col-md-6">
                                         <label class="form-label"
-                                            data-bs-content="<img src='{{template_plugin}}/img/max.jpg' alt='Пример подсказки' style='max-width: 300px; border-radius: 5px;'>"
+                                            data-bs-content="<img src='{{template_plugin}}/img/max.jpg' alt='{{ phrase('sl2_tooltip_example') }}' style='max-width: 300px; border-radius: 5px;'>"
                                             data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
                                             for="windowHeight" tabindex="0">
-                                            Высота окна <i class="ri-information-line"></i>
+                                            {{ phrase('sl2_window_height') }} <i class="ri-information-line"></i>
                                         </label>
                                         <div class="input-group">
                                             <input class="form-control" id="windowHeight" type="number" value="700">
@@ -213,9 +210,9 @@
                                         </div>
                                     </div>
 
-                                    <!-- Минимальные размеры -->
+                                    <!-- Minimum dimensions -->
                                     <div class="col-md-6">
-                                        <label class="form-label" for="minWidth">Мин. ширина окна</label>
+                                        <label class="form-label" for="minWidth">{{ phrase('sl2_min_window_width') }}</label>
                                         <div class="input-group">
                                             <input class="form-control" id="minWidth" type="number" value="900">
                                             <span class="input-group-text">px</span>
@@ -223,16 +220,16 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label class="form-label" for="minHeight">Мин. высота окна</label>
+                                        <label class="form-label" for="minHeight">{{ phrase('sl2_min_window_height') }}</label>
                                         <div class="input-group">
                                             <input class="form-control" id="minHeight" type="number" value="700">
                                             <span class="input-group-text">px</span>
                                         </div>
                                     </div>
 
-                                    <!-- Максимальные размеры -->
+                                    <!-- Maximum dimensions -->
                                     <div class="col-md-6">
-                                        <label class="form-label" for="maxWidth">Макс. ширина окна</label>
+                                        <label class="form-label" for="maxWidth">{{ phrase('sl2_max_window_width') }}</label>
                                         <div class="input-group">
                                             <input class="form-control" id="maxWidth" type="number" value="900">
                                             <span class="input-group-text">px</span>
@@ -240,7 +237,7 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label class="form-label" for="maxHeight">Макс. высота окна</label>
+                                        <label class="form-label" for="maxHeight">{{ phrase('sl2_max_window_height') }}</label>
                                         <div class="input-group">
                                             <input class="form-control" id="maxHeight" type="number" value="700">
                                             <span class="input-group-text">px</span>
@@ -250,14 +247,14 @@
                             </div>
                         </div>
 
-                        <!-- Настройки поведения -->
+                        <!-- Behavior Settings -->
                         <div class="settings-section">
                             <h5 class="section-title">
                                 <button class="btn btn-link p-0 text-decoration-none section-collapse-btn" type="button"
                                     data-bs-toggle="collapse" data-bs-target="#behaviorSettingsCollapse"
                                     aria-expanded="false" aria-controls="behaviorSettingsCollapse">
                                     <i class="ri-settings-5-line"></i>
-                                    Настройки поведения
+                                    {{ phrase('sl2_behavior_settings') }}
                                     <i class="ri-arrow-down-s-line collapse-icon ms-2"></i>
                                 </button>
                             </h5>
@@ -266,67 +263,60 @@
                                 <div class="row g-3">
                                     <div class="col-lg-4 col-md-6">
                                         <div class="setting-card">
-                                            <label class="form-label">Полноэкранный режим</label>
-                                            <small class="d-block text-muted mb-2">Запускать лаунчер в полноэкранном
-                                                режиме</small>
+                                            <label class="form-label">{{ phrase('sl2_fullscreen_mode') }}</label>
+                                            <small class="d-block text-muted mb-2">{{ phrase('sl2_launch_fullscreen_desc') }}</small>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" id="fullscreenSwitch" role="switch"
                                                     type="checkbox">
-                                                <label class="form-check-label" for="fullscreenSwitch">Включить по
-                                                    умолчанию</label>
+                                                <label class="form-check-label" for="fullscreenSwitch">{{ phrase('sl2_enable_by_default') }}</label>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-lg-4 col-md-6">
                                         <div class="setting-card">
-                                            <label class="form-label">Рамка Windows</label>
-                                            <small class="d-block text-muted mb-2">Системная рамка с кнопками управления
-                                                окном</small>
+                                            <label class="form-label">{{ phrase('sl2_windows_frame') }}</label>
+                                            <small class="d-block text-muted mb-2">{{ phrase('sl2_windows_frame_desc') }}</small>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" id="frameless" role="switch"
                                                     type="checkbox">
-                                                <label class="form-check-label" for="frameless">Включить рамку</label>
+                                                <label class="form-check-label" for="frameless">{{ phrase('sl2_enable_frame') }}</label>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-lg-4 col-md-6">
                                         <div class="setting-card">
-                                            <label class="form-label">Изменение размера</label>
-                                            <small class="d-block text-muted mb-2">Возможность растягивать окно
-                                                лаунчера</small>
+                                            <label class="form-label">{{ phrase('sl2_resize') }}</label>
+                                            <small class="d-block text-muted mb-2">{{ phrase('sl2_allow_resize_desc') }}</small>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" id="disableResize" role="switch"
                                                     type="checkbox">
-                                                <label class="form-check-label" for="disableResize">Запретить
-                                                    изменение</label>
+                                                <label class="form-check-label" for="disableResize">{{ phrase('sl2_disable_resize') }}</label>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-lg-4 col-md-6">
                                         <div class="setting-card">
-                                            <label class="form-label">Перетаскивание</label>
-                                            <small class="d-block text-muted mb-2">Перетаскивание окна за элементы с
-                                                классом "drag"</small>
+                                            <label class="form-label">{{ phrase('sl2_dragging') }}</label>
+                                            <small class="d-block text-muted mb-2">{{ phrase('sl2_dragging_desc') }}</small>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" id="CSSDragProperty" role="switch"
                                                     type="checkbox">
-                                                <label class="form-check-label" for="CSSDragProperty">Включить</label>
+                                                <label class="form-check-label" for="CSSDragProperty">{{ phrase('sl2_enable') }}</label>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-lg-4 col-md-6">
                                         <div class="setting-card">
-                                            <label class="form-label">Режим администратора</label>
-                                            <small class="d-block text-muted mb-2">Доступ к странице создания архивов по
-                                                F1, изменения в реал-тайме шаблона</small>
+                                            <label class="form-label">{{ phrase('sl2_admin_mode') }}</label>
+                                            <small class="d-block text-muted mb-2">{{ phrase('sl2_admin_mode_desc') }}</small>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" id="enableAdminMode" role="switch"
                                                     type="checkbox">
-                                                <label class="form-check-label" for="enableAdminMode">Включить</label>
+                                                <label class="form-check-label" for="enableAdminMode">{{ phrase('sl2_enable') }}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -339,12 +329,12 @@
                         <div class="settings-section">
                             <h5 class="section-title">
                                 <i class="ri-links-line"></i>
-                                Дополнительные ссылки
+                                {{ phrase('sl2_additional_links') }}
                             </h5>
 
                             <div class="row g-3">
                                 <div class="col-md-4">
-                                    <label class="form-label" for="accountLink">Ссылка на личный кабинет</label>
+                                    <label class="form-label" for="accountLink">{{ phrase('sl2_account_link') }}</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="ri-account-circle-line"></i></span>
                                         <input class="form-control" id="accountLink"
@@ -353,7 +343,7 @@
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label class="form-label" for="registerLink">Ссылка на регистрацию</label>
+                                    <label class="form-label" for="registerLink">{{ phrase('sl2_register_link') }}</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="ri-user-add-line"></i></span>
                                         <input class="form-control" id="registerLink"
@@ -362,13 +352,46 @@
                                 </div>
 
                                 <div class="col-md-4">
-                                    <label class="form-label" for="forumLink">Ссылка на форум</label>
+                                    <label class="form-label" for="forumLink">{{ phrase('sl2_forum_link') }}</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="ri-question-answer-line"></i></span>
                                         <input class="form-control" id="forumLink"
                                             placeholder="https://example.com/forum" type="url">
                                     </div>
                                 </div>
+
+                                
+                                <div class="col-md-4">
+                                    <label class="form-label" for="supportLink">{{ phrase('sl2_support_link') }}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="ri-question-answer-line"></i></span>
+                                        <input class="form-control" id="supportLink"
+                                            placeholder="https://example.com/support" type="url">
+                                    </div>
+                                </div>
+
+                                
+                                <div class="col-md-4">
+                                    <label class="form-label" for="descriptionLink">{{ phrase('sl2_description_link') }}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="ri-question-answer-line"></i></span>
+                                        <input class="form-control" id="descriptionLink"
+                                            placeholder="https://example.com/description" type="url">
+                                    </div>
+                                </div>
+
+                                
+                                <div class="col-md-4">
+                                    <label class="form-label" for="donateLink">{{ phrase('sl2_donate_link') }}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="ri-question-answer-line"></i></span>
+                                        <input class="form-control" id="donateLink"
+                                            placeholder="https://example.com/donate" type="url">
+                                    </div>
+                                </div>
+
+
+
                             </div>
                         </div>
 
@@ -377,7 +400,7 @@
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                 <button class="btn btn-primary btn-lg" id="compile-btn" type="submit">
                                     <i class="ri-rocket-line"></i>
-                                    Начать компиляцию лаунчера
+                                    {{ phrase('sl2_start_launcher_compilation') }}
                                 </button>
                             </div>
                         </div>
@@ -389,28 +412,28 @@
                             <div class="card-body">
                                 <h5 class="card-title">
                                     <i class="ri-settings-2-line"></i>
-                                    Статус сборки
+                                    {{ phrase('sl2_build_status') }}
                                 </h5>
                                 <div class="progress mb-3" style="height: 25px;">
                                     <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="0"
                                         class="progress-bar progress-bar-striped progress-bar-animated"
                                         id="progress-bar" role="progressbar" style="width: 0%;">0%</div>
                                 </div>
-                                <p class="text-muted" id="status-message">Ожидание запуска задачи...</p>
+                                <p class="text-muted" id="status-message">{{ phrase('sl2_waiting_for_task_start') }}</p>
 
                                 <div class="mt-3" id="result-container" style="display: none;">
                                     <a class="btn btn-success disabled" href="#" id="download-btn">
-                                        <i class="ri-download-2-line"></i> Скачать готовый лаунчер
+                                        <i class="ri-download-2-line"></i> {{ phrase('sl2_download_ready_launcher') }}
                                     </a>
                                     <button class="btn btn-secondary ms-2" id="new-build-btn">
-                                        <i class="ri-refresh-line"></i> Собрать новый
+                                        <i class="ri-refresh-line"></i> {{ phrase('sl2_build_new') }}
                                     </button>
                                 </div>
 
                                 <div class="alert alert-danger mt-3" id="error-container" style="display: none;">
-                                    <strong>Ошибка!</strong> <span id="error-message"></span>
+                                    <strong>{{ phrase('sl2_error') }}</strong> <span id="error-message"></span>
                                     <button class="btn btn-warning btn-sm float-end" id="retry-build-btn">
-                                        <i class="ri-refresh-line"></i> Попробовать снова
+                                        <i class="ri-refresh-line"></i> {{ phrase('sl2_retry') }}
                                     </button>
                                 </div>
                             </div>
@@ -430,8 +453,8 @@
         const GO_SERVER_ADDRESS = '{{go_server_address|raw}}';
 
         if (!GO_SERVER_ADDRESS) {
-            console.error("Критическая ошибка: Адрес Go-сервера не был передан из PHP. Убедитесь, что в PHP-шаблонизаторе установлена переменная 'go_server_address'.");
-            alert("Критическая ошибка конфигурации UI. Свяжитесь с администратором.");
+            console.error("{{ phrase('sl2_go_server_error') }}");
+            alert("{{ phrase('sl2_ui_config_error') }}");
             return;
         }
 
@@ -712,6 +735,9 @@
                 accountLink: document.getElementById('accountLink').value,
                 registrationLink: document.getElementById('registerLink').value,
                 forumLink: document.getElementById('forumLink').value,
+                supportLink: document.getElementById('supportLink').value,
+                descriptionLink: document.getElementById('descriptionLink').value,
+                donateLink: document.getElementById('donateLink').value,
                 fullscreen: document.getElementById('fullscreenSwitch').checked,
                 frameless: !document.getElementById('frameless').checked, // Инвертируем логику!
                 disableResize: document.getElementById('disableResize').checked,
