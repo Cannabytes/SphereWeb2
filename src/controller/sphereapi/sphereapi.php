@@ -37,9 +37,29 @@ class sphereapi
         if (empty($ip)) {
             board::error(lang::get_phrase('IP address not specified'));
         }
-        if (!filter_var($ip, FILTER_VALIDATE_IP)) {
-            board::error(lang::get_phrase('Invalid IP address format'));
-        }
+            $ip = trim($_POST['ip'] ?? '');
+            if (filter_var($ip, FILTER_VALIDATE_URL) || preg_match('#^[a-zA-Z][a-zA-Z0-9+\-.]*://#', $ip)) {
+                $host = parse_url($ip, PHP_URL_HOST);
+                if ($host === null) {
+                    board::error(lang::get_phrase('Invalid IP address format'));
+                }
+                $ip = $host;
+            } else {
+                if (strpos($ip, '/') !== false) {
+                    $parts = explode('/', $ip, 2);
+                    $ip = $parts[0];
+                }
+                if (preg_match('/^\[(.*)\](?::\d+)?$/', $ip, $m)) {
+                    $ip = $m[1];
+                } elseif (strpos($ip, ':') !== false && substr_count($ip, ':') === 1) {
+                    $parts = explode(':', $ip, 2);
+                    $ip = $parts[0];
+                }
+            }
+
+            if (!filter_var($ip, FILTER_VALIDATE_IP) && !filter_var($ip, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
+                board::error(lang::get_phrase('Invalid IP address format'));
+            }
         if (!is_numeric($port) || $port < 1 || $port > 65535) {
             board::error(lang::get_phrase('incorrect_port'));
         }

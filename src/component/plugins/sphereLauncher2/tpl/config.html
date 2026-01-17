@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}Конструктор Лаунчера и Конфигурации{% endblock %}
+{% block title %}{{ phrase('sl2_json_config_generator') }}{% endblock %}
 
 {% block content %}
 
@@ -10,7 +10,7 @@
             <div class="card custom-card">
                 <div class="card-header">
                     <div class="card-title">
-                        1. Генератор JSON Конфигурации (launcher.json)
+                        1. {{ phrase('sl2_json_config_generator_launcher') }}
                     </div>
                 </div>
                 <div class="card-body">
@@ -18,13 +18,10 @@
                     <div class="shadow p-3 mb-5 bg-body rounded">
                         <div class="row align-items-center">
                             <div class="col-md-8">
-                                <h6 class="fw-bold text-primary mb-2">О конфигурации лаунчера</h6>
-                                <p class="mb-2">Эта форма для создания конфигурации лаунчера. Лаунчер будет использовать
-                                    данные из этих настроек, которые вы укажите тут.</p>
-                                <p class="mb-2">Параметры этого файла можно в любой момент менять.</p>
-                                <p class="mb-0">В этой конфигурации определите из какого места будут загружаться список
-                                    архивов и сами архивы, кнопки запуска игры, создавать свою ленту новостей для
-                                    лаунчера.</p>
+                                <h6 class="fw-bold text-primary mb-2">{{ phrase('sl2_about_launcher_config') }}</h6>
+                                <p class="mb-2">{{ phrase('sl2_launcher_config_desc_1') }}</p>
+                                <p class="mb-2">{{ phrase('sl2_launcher_config_desc_2') }}</p>
+                                <p class="mb-0">{{ phrase('sl2_launcher_config_desc_3') }}</p>
                             </div>
 
                             <div class="col-md-4">
@@ -32,19 +29,19 @@
                                     class="json-drop-zone-compact border border-2 border-dashed border-info rounded p-3 text-center">
                                     <div class="drop-zone-content">
                                         <i class="ri-file-upload-line fs-1 text-info mb-2"></i>
-                                        <h6 class="text-info mb-1">Загрузить JSON</h6>
-                                        <p class="small text-muted mb-2">Перетащите launcher.json</p>
+                                        <h6 class="text-info mb-1">{{ phrase('sl2_upload_json') }}</h6>
+                                        <p class="small text-muted mb-2">{{ phrase('sl2_drag_launcher_json') }}</p>
                                         <input type="file" id="json-file-input" accept=".json" style="display: none;">
                                         <button type="button" class="btn btn-outline-info btn-sm"
                                             onclick="document.getElementById('json-file-input').click()">
-                                            <i class="ri-folder-open-line me-1"></i>Выбрать
+                                            <i class="ri-folder-open-line me-1"></i>{{ phrase('sl2_select') }}
                                         </button>
                                     </div>
                                 </div>
                                 <div id="drop-zone-status" class="mt-2" style="display: none;">
                                     <div class="alert alert-success py-2 mb-0 small">
                                         <i class="ri-check-line me-1"></i>
-                                        <span id="loaded-file-name"></span> загружен!
+                                        <span id="loaded-file-name"></span> {{ phrase('sl2_loaded_success') }}
                                     </div>
                                 </div>
                             </div>
@@ -54,67 +51,62 @@
                     <form id="json-generator-form">
                         <div class="row g-3">
                             <div class="col-md-6 border-end">
-                                <h5>Настройки загрузчика</h5>
+                                <h5>{{ phrase('sl2_loader_settings') }}</h5>
                                 <div class="mb-3">
-                                    <label class="form-label">Ссылки на CSV</label>
+                                    <label class="form-label">{{ phrase('sl2_csv_links') }}</label>
                                     <div class="input-group">
                                         <input class="form-control" id="csv-input"
                                             placeholder="https://example.com/updates.csv" type="url">
                                         <button class="btn btn-outline-secondary" id="add-csv-btn"
-                                            type="button">Добавить ещё</button>
+                                            type="button">{{ phrase('sl2_add_more') }}</button>
                                     </div>
                                     <ul class="list-group mt-2" id="csv-list"></ul>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Ссылки на архивы</label>
+                                    <label class="form-label">{{ phrase('sl2_archive_links') }}</label>
                                     <div class="input-group">
                                         <input class="form-control" id="archive-input"
                                             placeholder="https://example.com/archives/" type="url">
                                         <button class="btn btn-outline-secondary" id="add-archive-btn"
-                                            type="button">Добавить ещё</button>
+                                            type="button">{{ phrase('sl2_add_more') }}</button>
                                     </div>
                                     <ul class="list-group mt-2" id="archive-list"></ul>
                                 </div>
 
                                 <div class="mb-3 mt-3">
-                                    <label class="form-label d-flex justify-content-between align-items-center">Аккаунт
-                                        менеджер
-                                        <small class="text-muted">(autologin)</small>
+                                    <label class="form-label d-flex justify-content-between align-items-center">{{ phrase('sl2_account_manager') }}
+                                        <small class="text-muted">({{ phrase('sl2_autologin') }})</small>
                                     </label>
                                     <div class="p-2 bg-white border rounded">
                                         <div class="form-check mb-2">
                                             <input class="form-check-input" type="checkbox" id="autologin-enable">
-                                            <label class="form-check-label small" for="autologin-enable">Включить
-                                                аккаунт-менеджер</label>
+                                            <label class="form-check-label small" for="autologin-enable">{{ phrase('sl2_enable_account_manager') }}</label>
                                         </div>
 
-                                        Аккаунт менеджер позволяет автоматически подставлять логин, пароль и ник
-                                        персонажа к аргументам при запуске игры.
-                                        У пользователя будет доступно вводить эти данные в лаунчере.
-                                        Внимание: эта опция для тех игровых клиентов, в котором реализован вход через
-                                        аргументы к l2.exe
+                                        {{ phrase('sl2_autologin_desc_1') }}
+                                        {{ phrase('sl2_autologin_desc_2') }}
+                                        {{ phrase('sl2_autologin_warning') }}
 
                                         <div class="mb-2">
-                                            <label class="form-label small">Паттерн</label>
+                                            <label class="form-label small">{{ phrase('sl2_pattern') }}</label>
                                             <input class="form-control form-control-sm" id="autologin-pattern"
                                                 placeholder="-login=%login% -password=%password% -charname=%charname%"
                                                 type="text">
-                                            <small class="text-muted">Используйте плейсхолдеры вида %login%, %password%,
-                                                %charname%</small>
+                                            <small class="text-muted">{{ phrase('sl2_placeholder_autologin') }}</small>
                                         </div>
 
-                                        <!-- Описание автологина удалено по запросу пользователя -->
+                                        <!-- Autologin description removed at user request -->
                                     </div>
                                 </div>
 
-                                <!-- Блок: Перенос файлов при смене языка (translationPaths) - таблица -->
+                                <!-- Block: File transfer on language change (translationPaths) - table -->
                                 <div class="mb-3 mt-3">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <label class="form-label mb-0">Перенос файлов при смене языка</label>
+                                        <label class="form-label mb-0">{{ phrase('sl2_file_transfer_lang') }}</label>
                                         <div class="form-check form-switch m-0">
                                             <input class="form-check-input" type="checkbox" id="tp-enable-checkbox">
                                             <label class="form-check-label small"
-                                                for="tp-enable-checkbox">Включить</label>
+                                                for="tp-enable-checkbox">{{ phrase('sl2_enable') }}</label>
                                         </div>
                                     </div>
                                     <div class="p-2 bg-white border rounded">
@@ -122,10 +114,10 @@
                                             <table class="table table-sm align-middle mb-0" id="tp-table">
                                                 <thead>
                                                     <tr>
-                                                        <th style="width:70px;">Язык</th>
+                                                        <th style="width:70px;">{{ phrase('sl2_language') }}</th>
                                                         <th>Src Path</th>
                                                         <th>Dst Path</th>
-                                                        <th style="width:120px;">По умолчанию</th>
+                                                        <th style="width:120px;">{{ phrase('sl2_default') }}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -192,78 +184,74 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <small class="text-muted">Заполните srcPath и dstPath для нужных языков.
-                                            Отметьте один язык как язык по умолчанию.</small>
+                                        <small class="text-muted">{{ phrase('sl2_fill_tp_desc') }}</small>
                                     </div>
                                 </div>
 
                             </div>
 
                             <div class="col-md-6">
-                                <h5>Приложения для запуска</h5>
+                                <h5>{{ phrase('sl2_apps_to_launch') }}</h5>
                                 <div class="p-3 bg-light rounded">
                                     <div class="mb-3">
-                                        <label class="form-label fw-bold">Названия кнопки для каждого языка:</label>
+                                        <label class="form-label fw-bold">{{ phrase('sl2_button_names_for_langs') }}</label>
                                         <div class="row g-2">
                                             <div class="col-6">
-                                                <label class="form-label small">🇷🇺 Русский (ru)</label>
+                                                <label class="form-label small">🇷🇺 {{ phrase('sl2_russian_ru') }}</label>
                                                 <input class="form-control form-control-sm" id="app-name-ru"
-                                                    placeholder="Играть" type="text" value="Играть">
+                                                    placeholder="{{ phrase('sl2_play') }}" type="text" value="{{ phrase('sl2_play') }}">
                                             </div>
                                             <div class="col-6">
-                                                <label class="form-label small">🇺🇸 English (en)</label>
+                                                <label class="form-label small">🇺🇸 {{ phrase('sl2_english_en') }}</label>
                                                 <input class="form-control form-control-sm" id="app-name-en"
-                                                    placeholder="Play" type="text" value="Play">
+                                                    placeholder="{{ phrase('sl2_play') }}" type="text" value="Play">
                                             </div>
                                             <div class="col-6">
-                                                <label class="form-label small">🇪🇸 Español (es)</label>
+                                                <label class="form-label small">🇪🇸 {{ phrase('sl2_spanish_es') }}</label>
                                                 <input class="form-control form-control-sm" id="app-name-es"
-                                                    placeholder="Jugar" type="text" value="Jugar">
+                                                    placeholder="{{ phrase('sl2_play') }}" type="text" value="Jugar">
                                             </div>
                                             <div class="col-6">
-                                                <label class="form-label small">🇵🇹 Português (pt)</label>
+                                                <label class="form-label small">🇵🇹 {{ phrase('sl2_portuguese_pt') }}</label>
                                                 <input class="form-control form-control-sm" id="app-name-pt"
-                                                    placeholder="Jogar" type="text" value="Jogar">
+                                                    placeholder="{{ phrase('sl2_play') }}" type="text" value="Jogar">
                                             </div>
                                             <div class="col-6">
-                                                <label class="form-label small">🇺🇦 Українська (uk)</label>
+                                                <label class="form-label small">🇺🇦 {{ phrase('sl2_ukrainian_uk') }}</label>
                                                 <input class="form-control form-control-sm" id="app-name-uk"
-                                                    placeholder="Грати" type="text" value="Грати">
+                                                    placeholder="{{ phrase('sl2_play') }}" type="text" value="Грати">
                                             </div>
                                             <div class="col-6">
-                                                <label class="form-label small">🇬🇷 Ελληνικά (el)</label>
+                                                <label class="form-label small">🇬🇷 {{ phrase('sl2_greek_el') }}</label>
                                                 <input class="form-control form-control-sm" id="app-name-el"
-                                                    placeholder="Παίξτε" type="text" value="Παίξτε">
+                                                    placeholder="{{ phrase('sl2_play') }}" type="text" value="Παίξτε">
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="row g-2">
                                         <div class="col-12">
-                                            <label class="form-label">Путь к исполняемому файлу</label>
+                                            <label class="form-label">{{ phrase('sl2_executable_file_path') }}</label>
                                             <input value="system/l2.exe" class="form-control" id="app-exe-input"
-                                                placeholder="Путь к exe (напр. system/l2.exe)" type="text"
+                                                placeholder="{{ phrase('sl2_exe_path_placeholder') }}" type="text"
                                                 value="system/l2.exe">
                                         </div>
                                         <div class="col-12">
-                                            <label class="form-label">Аргументы запуска (опционально)</label>
+                                            <label class="form-label">{{ phrase('sl2_launch_args_optional') }}</label>
                                             <input class="form-control" id="app-args-input" placeholder="" type="text">
                                         </div>
                                         <div class="col-12">
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <label class="form-label mb-0">Триггеры (опционально)</label>
+                                                <label class="form-label mb-0">{{ phrase('sl2_triggers_optional') }}</label>
                                                 <button type="button" class="btn btn-outline-secondary btn-sm"
-                                                    id="add-trigger-btn">Добавить триггер</button>
+                                                    id="add-trigger-btn">{{ phrase('sl2_add_trigger') }}</button>
                                             </div>
                                             <div id="trigger-container" class="vstack gap-2"></div>
-                                            <small class="text-muted">Вы можете добавить несколько триггеров. Пока
-                                                доступны типы <code>copy</code>, <code>WindowMinimize</code> и
-                                                <code>WindowClose</code> (без
-                                                параметров).</small>
+                                            <small class="text-muted">{{ phrase('sl2_triggers_desc') }}</small>
                                         </div>
                                         <div class="col-12 text-end">
                                             <button class="btn btn-outline-primary btn-sm" id="add-app-btn"
-                                                type="button">Добавить приложение</button>
+                                                type="button">{{ phrase('sl2_add_app') }}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -273,11 +261,11 @@
                             <hr class="my-4">
 
                             <div class="col-md-6">
-                                <label class="form-label" for="json-launcher-version">Версия лаунчера</label>
+                                <label class="form-label" for="json-launcher-version">{{ phrase('sl2_launcher_version') }}</label>
                                 <input class="form-control" id="json-launcher-version" type="text" value="1.0.0">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label" for="json-launcher-link">Ссылка на скачивание лаунчера</label>
+                                <label class="form-label" for="json-launcher-link">{{ phrase('sl2_launcher_download_link') }}</label>
                                 <input class="form-control" id="json-launcher-link"
                                     placeholder="https://example.com/launcher.exe" type="url">
                             </div>
@@ -285,38 +273,38 @@
                             <hr class="my-4">
 
                             <div class="col-12">
-                                <h5>Лента новостей</h5>
+                                <h5>{{ phrase('sl2_news_feed') }}</h5>
                                 <div class="p-3 bg-light rounded">
                                     <div class="row g-3">
                                         <div class="col-md-2">
-                                            <label class="form-label">Язык</label>
+                                            <label class="form-label">{{ phrase('sl2_language') }}</label>
                                             <select class="form-select" id="news-lang-select">
-                                                <option selected value="ru">Русский (ru)</option>
-                                                <option value="en">English (en)</option>
-                                                <option value="es">Español (es)</option>
-                                                <option value="pt">Português (pt)</option>
-                                                <option value="uk">Українська (uk)</option>
-                                                <option value="el">Ελληνικά (el)</option>
+                                                <option selected value="ru">{{ phrase('sl2_russian_ru') }}</option>
+                                                <option value="en">{{ phrase('sl2_english_en') }}</option>
+                                                <option value="es">{{ phrase('sl2_spanish_es') }}</option>
+                                                <option value="pt">{{ phrase('sl2_portuguese_pt') }}</option>
+                                                <option value="uk">{{ phrase('sl2_ukrainian_uk') }}</option>
+                                                <option value="el">{{ phrase('sl2_greek_el') }}</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-5"><label class="form-label">Заголовок</label><input
+                                        <div class="col-md-5"><label class="form-label">{{ phrase('sl2_title') }}</label><input
                                                 class="form-control" id="news-name-input"
-                                                placeholder="Заголовок новости" type="text"></div>
-                                        <div class="col-md-5"><label class="form-label">Дата</label><input
-                                                class="form-control" id="news-date-input" placeholder="дд.мм.гггг"
+                                                placeholder="{{ phrase('sl2_news_title') }}" type="text"></div>
+                                        <div class="col-md-5"><label class="form-label">{{ phrase('sl2_date') }}</label><input
+                                                class="form-control" id="news-date-input" placeholder="{{ phrase('sl2_date_format') }}"
                                                 type="text"></div>
-                                        <div class="col-12"><label class="form-label">Описание</label><textarea
+                                        <div class="col-12"><label class="form-label">{{ phrase('sl2_description') }}</label><textarea
                                                 class="form-control" id="news-desc-input"
-                                                placeholder="Краткое описание (до ~140 символов)" rows="2"></textarea>
+                                                placeholder="{{ phrase('sl2_news_desc_placeholder') }}" rows="2"></textarea>
                                         </div>
-                                        <div class="col-md-6"><label class="form-label">URL изображения</label><input
+                                        <div class="col-md-6"><label class="form-label">{{ phrase('sl2_image_url') }}</label><input
                                                 class="form-control" id="news-image-input"
                                                 placeholder="https://example.com/image.png" type="url"></div>
-                                        <div class="col-md-6"><label class="form-label">URL ссылки</label><input
+                                        <div class="col-md-6"><label class="form-label">{{ phrase('sl2_link_url') }}</label><input
                                                 class="form-control" id="news-link-input"
                                                 placeholder="https://example.com/full-news" type="url"></div>
                                         <div class="col-12 text-end"><button class="btn btn-outline-primary btn-sm"
-                                                id="add-news-btn" type="button">Добавить новость</button></div>
+                                                id="add-news-btn" type="button">{{ phrase('sl2_add_news') }}</button></div>
                                     </div>
                                 </div>
                                 <div class="mt-3" id="news-container"></div>
@@ -326,13 +314,13 @@
 
                             <div class="col-12 text-center">
                                 <button class="btn btn-success btn-lg" id="generate-json-btn" type="button">
-                                    <i class="ri-file-download-line"></i> Сгенерировать и скачать launcher.json
+                                    <i class="ri-file-download-line"></i> {{ phrase('sl2_generate_and_download_json') }}
                                 </button>
                                 <br>
 
                                 <small class="d-block text-muted">
-                                    Загрузите launcher.json себе на сайт.<br>
-                                    И в конструкторе лаунчера укажите ссылку на файл launcher.json
+                                    {{ phrase('sl2_upload_json_to_site_note') }}<br>
+                                    {{ phrase('sl2_specify_link_in_constructor') }}
                                 </small>
                             </div>
                         </div>
@@ -378,13 +366,13 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 
-        // === ФУНКЦИОНАЛЬНОСТЬ ЗАГРУЗКИ JSON ФАЙЛА ===
+        // === JSON FILE UPLOAD FUNCTIONALITY ===
         const dropZone = document.getElementById('json-drop-zone');
         const fileInput = document.getElementById('json-file-input');
         const dropZoneStatus = document.getElementById('drop-zone-status');
         const loadedFileName = document.getElementById('loaded-file-name');
 
-        // Обработка drag and drop
+        // Handle drag and drop
         dropZone.addEventListener('click', () => fileInput.click());
 
         dropZone.addEventListener('dragover', (e) => {
@@ -414,7 +402,7 @@
 
         function handleJsonFile(file) {
             if (!file.name.toLowerCase().endsWith('.json')) {
-                showError('Пожалуйста, выберите JSON файл.');
+                showError('{{ phrase('sl2_select_json_file_error') }}');
                 return;
             }
 
@@ -425,7 +413,7 @@
                     loadJsonData(jsonData);
                     showSuccess(file.name);
                 } catch (error) {
-                    showError('Ошибка чтения JSON файла: ' + error.message);
+                    showError('{{ phrase('sl2_json_read_error') }}' + error.message);
                 }
             };
             reader.readAsText(file);
@@ -438,7 +426,7 @@
             dropZoneStatus.innerHTML = `
             <div class="alert alert-success py-2 mb-0 small">
                 <i class="ri-check-line me-1"></i>
-                <span>${fileName}</span> загружен!
+                <span>${fileName}</span> {{ phrase('sl2_loaded_success') }}
             </div>
         `;
         }
@@ -455,24 +443,24 @@
         }
 
         function loadJsonData(data) {
-            // Очищаем все существующие данные
+            // {{ phrase('sl2_clear_all_data') }}
             clearAllData();
 
-            // Загружаем CSV URLs
+            // {{ phrase('sl2_loading') }} CSV URLs
             if (data.download && data.download.csv) {
                 data.download.csv.forEach(url => {
                     addToList('csv-list', url);
                 });
             }
 
-            // Загружаем Archive URLs
+            // {{ phrase('sl2_loading') }} Archive URLs
             if (data.download && data.download.archives) {
                 data.download.archives.forEach(url => {
                     addToList('archive-list', url);
                 });
             }
 
-            // Загружаем информацию о лаунчере
+            // {{ phrase('sl2_loading') }} launcher info
             if (data.lastLauncherVersion) {
                 document.getElementById('json-launcher-version').value = data.lastLauncherVersion;
             }
@@ -480,14 +468,14 @@
                 document.getElementById('json-launcher-link').value = data.launcherLink;
             }
 
-            // Загружаем приложения
+            // {{ phrase('sl2_loading') }} applications
             if (data.application && Array.isArray(data.application)) {
                 data.application.forEach(app => {
                     loadApplicationData(app);
                 });
             }
 
-            // Загружаем новости
+            // {{ phrase('sl2_loading') }} news
             if (data.news) {
                 Object.keys(data.news).forEach(lang => {
                     if (Array.isArray(data.news[lang])) {
@@ -497,7 +485,7 @@
                     }
                 });
             }
-            // Загружаем autologin
+            // {{ phrase('sl2_loading') }} autologin
             if (data.autologin) {
                 const ag = data.autologin;
                 if (ag.pattern) {
@@ -508,7 +496,7 @@
                 document.getElementById('autologin-enable').checked = true;
             }
 
-            // Загружаем translationPaths в таблицу (если включено в JSON)
+            // {{ phrase('sl2_loading') }} translationPaths
             const tpEnableCheckboxLoad = document.getElementById('tp-enable-checkbox');
             if (data.translationPaths) {
                 // If helper exists, apply immediately, otherwise store pending for later
@@ -620,15 +608,15 @@
                     }
                     return t.name || '';
                 });
-                triggersSummary = `<small class="d-block text-warning">Триггеры: ${parts.join(', ')}</small>`;
+                triggersSummary = `<small class="d-block text-warning">{{ phrase('sl2_triggers') }}: ${parts.join(', ')}</small>`;
             }
 
             listItem.innerHTML = `
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <strong>Приложение: ${app.exe || ''}</strong>
-                    <small class="d-block text-muted">Аргументы: ${app.args || 'нет'}</small>
-                    <small class="d-block text-info">Названия: ${namesDisplay}</small>
+                    <strong>{{ phrase('sl2_application') }}: ${app.exe || ''}</strong>
+                    <small class="d-block text-muted">{{ phrase('sl2_arguments') }}: ${app.args || '{{ phrase('sl2_none') }}'}</small>
+                    <small class="d-block text-info">{{ phrase('sl2_names') }}: ${namesDisplay}</small>
                     ${triggersSummary}
                 </div>
                 <button type="button" class="btn btn-danger btn-sm remove-btn">
@@ -649,7 +637,7 @@
                 langGroup.className = 'news-language-group mb-3';
                 langGroup.dataset.lang = lang;
                 langGroup.innerHTML = `
-                <h5>Новости (${lang})</h5>
+                <h5>{{ phrase('sl2_news') }} (${lang})</h5>
                 <ul class="list-group"></ul>
             `;
                 newsContainer.appendChild(langGroup);
@@ -670,7 +658,7 @@
                 <div>
                     <strong>${newsItem.name || ''}</strong> <small class="text-muted">(${newsItem.date || ''})</small>
                     <p class="mb-1 text-break">${newsItem.description || ''}</p>
-                    <small class="text-muted text-break">Картинка: ${newsItem.image || 'нет'}<br>Ссылка: ${newsItem.link || 'нет'}</small>
+                    <small class="text-muted text-break">{{ phrase('sl2_image') }}: ${newsItem.image || '{{ phrase('sl2_none') }}'}<br>{{ phrase('sl2_link') }}: ${newsItem.link || '{{ phrase('sl2_none') }}'}</small>
                 </div>
                 <button type="button" class="btn btn-danger btn-sm remove-btn ms-2">
                     <i class="ri-delete-bin-line"></i>
@@ -687,7 +675,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 
-        // --- Управление простыми списками (CSV, Архивы) ---
+        // --- {{ phrase('sl2_simple_lists_management') }} (CSV, {{ phrase('sl2_archives') }}) ---
         function setupSimpleList(inputId, btnId, listId) {
             const input = document.getElementById(inputId);
             const addBtn = document.getElementById(btnId);
@@ -773,7 +761,7 @@
                 const listGroup = listItem.parentElement;
                 listItem.remove();
 
-                // Если это группа новостей и она стала пустой, удаляем всю группу
+                // {{ phrase('sl2_remove_empty_news_group') }}
                 if (listGroup.children.length === 0 && listGroup.parentElement.classList.contains('news-language-group')) {
                     listGroup.parentElement.remove();
                 }
@@ -794,9 +782,9 @@
             div.innerHTML = `
             <div class="row g-2 align-items-end">
                 <div class="col-md-3">
-                    <label class="form-label small mb-1">Тип</label>
+                    <label class="form-label small mb-1">{{ phrase('sl2_type') }}</label>
                     <select class="form-select form-select-sm trigger-type">
-                        <option value="">-- не выбрано --</option>
+                        <option value="">-- {{ phrase('sl2_not_selected') }} --</option>
                         <option value="copy">copy</option>
                         <option value="WindowMinimize">WindowMinimize</option>
                         <option value="WindowClose">WindowClose</option>
@@ -804,11 +792,11 @@
                     </select>
                 </div>
                 <div class="col-md-4 copy-fields d-none">
-                    <label class="form-label small mb-1">Исходная папка</label>
+                    <label class="form-label small mb-1">{{ phrase('sl2_src_folder') }}</label>
                     <input type="text" class="form-control form-control-sm trigger-src" placeholder="system/files/x1">
                 </div>
                 <div class="col-md-4 copy-fields d-none">
-                    <label class="form-label small mb-1">Папка назначения</label>
+                    <label class="form-label small mb-1">{{ phrase('sl2_dst_folder') }}</label>
                     <input type="text" class="form-control form-control-sm trigger-dst" placeholder="system/">
                 </div>
                 <div class="col-md-6 url-field d-none">
@@ -816,11 +804,11 @@
                     <input type="text" class="form-control form-control-sm trigger-url" placeholder="https://example.com/api">
                 </div>
                 <div class="col-md-1 text-end">
-                    <button type="button" class="btn btn-outline-danger btn-sm remove-trigger-btn" title="Удалить триггер"><i class="ri-close-line"></i></button>
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-trigger-btn" title="{{ phrase('sl2_delete_trigger') }}"><i class="ri-close-line"></i></button>
                 </div>
                 <div class="col-12 mt-2">
                     <div class="alert alert-secondary py-2 mb-0 small trigger-description" style="min-height:40px;">
-                        <strong>Описание:</strong> <span class="desc-text">Выберите тип триггера для просмотра описания.</span>
+                        <strong>{{ phrase('sl2_description') }}:</strong> <span class="desc-text">{{ phrase('sl2_select_type_desc') }}</span>
                     </div>
                 </div>
             </div>`;
@@ -877,19 +865,19 @@
             if (type === 'copy') {
                 const src = row.querySelector('.trigger-src').value.trim();
                 const dst = row.querySelector('.trigger-dst').value.trim();
-                const srcText = src ? `<code>${escapeHtml(src)}</code>` : '<em>не указана</em>';
-                const dstText = dst ? `<code>${escapeHtml(dst)}</code>` : '<em>не указана</em>';
-                descEl.innerHTML = `Скопировать файлы из ${srcText} в ${dstText}. Запустится до старта приложения.`;
+                const srcText = src ? `<code>${escapeHtml(src)}</code>` : '<em>{{ phrase('sl2_not_specified') }}</em>';
+                const dstText = dst ? `<code>${escapeHtml(dst)}</code>` : '<em>{{ phrase('sl2_not_specified') }}</em>';
+                descEl.innerHTML = `{{ phrase('sl2_copy_files_from') }} ${srcText} {{ phrase('sl2_to') }} ${dstText}. {{ phrase('sl2_copy_files_desc') }}`;
             } else if (type === 'WindowMinimize') {
-                descEl.textContent = 'Свернуть окно лаунчера при запуске приложения. Параметры не требуются.';
+                descEl.textContent = '{{ phrase('sl2_minimize_desc') }}';
             } else if (type === 'WindowClose') {
-                descEl.textContent = 'Закрыть окно лаунчера при запуске приложения. Параметры не требуются.';
+                descEl.textContent = '{{ phrase('sl2_close_desc') }}';
             } else if (type === 'StartGameReport') {
                 const url = row.querySelector('.trigger-url').value.trim();
-                const urlText = url ? `<code>${escapeHtml(url)}</code>` : '<em>не указан</em>';
-                descEl.innerHTML = `Отправить статистику старта игры на URL: ${urlText}. Выполняется при запуске приложения.`;
+                const urlText = url ? `<code>${escapeHtml(url)}</code>` : '<em>{{ phrase('sl2_not_specified') }}</em>';
+                descEl.innerHTML = `{{ phrase('sl2_start_report_desc') }}: ${urlText}. {{ phrase('sl2_start_report_desc_2') }}`;
             } else {
-                descEl.textContent = 'Выберите тип триггера для просмотра описания.';
+                descEl.textContent = '{{ phrase('sl2_select_type_desc') }}';
             }
         }
 
@@ -916,15 +904,15 @@
                 }
             });
             if (!hasAnyName || !exe) {
-                alert('Пожалуйста, укажите хотя бы одно название кнопки и путь к исполняемому файлу.');
+                alert('{{ phrase('sl2_fill_app_fields') }}');
                 return;
             }
-            // Сбор триггеров
+            // Trigger collection
             const triggers = [];
             let triggerError = false;
             triggerContainer.querySelectorAll('.trigger-row').forEach(row => {
                 const type = row.querySelector('.trigger-type').value;
-                if (!type) return; // пропускаем пустые
+                if (!type) return; // skip empty
                 if (type === 'copy') {
                     const src = row.querySelector('.trigger-src').value.trim();
                     const dst = row.querySelector('.trigger-dst').value.trim();
@@ -936,7 +924,7 @@
                 } else if (type === 'WindowMinimize') {
                     // No parameters required for WindowMinimize
                     triggers.push({ name: 'WindowMinimize' });
-                } // Добавим новый триггер WindowClose
+                } // Adding a new WindowClose trigger
                 else if (type === 'WindowClose') {
                     triggers.push({ name: 'WindowClose' });
                 } else if (type === 'StartGameReport') {
@@ -949,7 +937,7 @@
                 }
             });
             if (triggerError) {
-                alert('Заполните все поля для триггеров copy или удалите незаполненные.');
+                alert('{{ phrase('sl2_fill_trigger_fields') }}');
                 return;
             }
             const listItem = document.createElement('li');
@@ -965,14 +953,14 @@
             let triggersSummary = '';
             if (triggers.length) {
                 const parts = triggers.map(t => t.name === 'copy' ? `copy(${t.src} -> ${t.dst})` : t.name);
-                triggersSummary = `<small class=\"d-block text-warning\">Триггеры: ${parts.join(', ')}<\/small>`;
+                triggersSummary = `<small class=\"d-block text-warning\">{{ phrase('sl2_triggers') }}: ${parts.join(', ')}<\/small>`;
             }
             listItem.innerHTML = `
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <strong>Приложение: ${exe}</strong>
-                        <small class="d-block text-muted">Аргументы: ${args || 'нет'}</small>
-                        <small class="d-block text-info">Названия: ${namesDisplay}</small>
+                        <strong>{{ phrase('sl2_application') }}: ${exe}</strong>
+                        <small class="d-block text-muted">{{ phrase('sl2_arguments') }}: ${args || '{{ phrase('sl2_none') }}'}</small>
+                        <small class="d-block text-info">{{ phrase('sl2_names') }}: ${namesDisplay}</small>
                         ${triggersSummary}
                     </div>
                     <button type="button" class="btn btn-danger btn-sm remove-btn">
@@ -983,7 +971,7 @@
             appList.appendChild(listItem);
             appExeInput.value = '';
             appArgsInput.value = '';
-            triggerContainer.innerHTML = ''; // очищаем триггеры для следующего приложения
+            triggerContainer.innerHTML = ''; // clear triggers for next application
         });
 
 
@@ -1004,7 +992,7 @@
             const image = newsImageInput.value.trim();
             const link = newsLinkInput.value.trim();
             if (!lang || !name || !date || !description) {
-                alert('Заполните обязательные поля новости: Язык, Заголовок, Дата, Описание.');
+                alert('{{ phrase('sl2_fill_news_fields') }}');
                 return;
             }
             let langGroup = newsContainer.querySelector(`.news-language-group[data-lang="${lang}"]`);
@@ -1012,7 +1000,7 @@
                 langGroup = document.createElement('div');
                 langGroup.className = 'news-language-group mb-3';
                 langGroup.dataset.lang = lang;
-                langGroup.innerHTML = `<h5>Новости (${lang})</h5><ul class="list-group"></ul>`;
+                langGroup.innerHTML = `<h5>{{ phrase('sl2_news') }} (${lang})</h5><ul class="list-group"></ul>`;
                 newsContainer.appendChild(langGroup);
             }
             const newsList = langGroup.querySelector('.list-group');
@@ -1028,7 +1016,7 @@
                     <div>
                         <strong>${name}</strong> <small class="text-muted">(${date})</small>
                         <p class="mb-1 text-break">${description}</p>
-                        <small class="text-muted text-break">Картинка: ${image || 'нет'}<br>Ссылка: ${link || 'нет'}</small>
+                        <small class="text-muted text-break">{{ phrase('sl2_image') }}: ${image || '{{ phrase('sl2_none') }}'}<br>{{ phrase('sl2_link') }}: ${link || '{{ phrase('sl2_none') }}'}</small>
                     </div>
                     <button type="button" class="btn btn-danger btn-sm remove-btn ms-2">
                         <i class="ri-delete-bin-line"></i>
@@ -1045,7 +1033,7 @@
 
         const generateJsonBtn = document.getElementById('generate-json-btn');
         generateJsonBtn.addEventListener('click', () => {
-            // Получаем список языков, он нам понадобится для приложений
+            // {{ phrase('sl2_get_supported_langs') }}
             const supportedLanguages = ['ru', 'en', 'es', 'pt', 'uk', 'el'];
 
             const config = {
@@ -1059,36 +1047,36 @@
                 news: {}
             };
 
-            // --- 1. Сбор ссылок на CSV ---
-            // Сначала берем уже добавленные из списка
+            // --- 1. {{ phrase('sl2_collecting') }} CSV URLs ---
+            // {{ phrase('sl2_from_list') }}
             document.querySelectorAll('#csv-list li').forEach(item => {
                 const span = item.querySelector('span');
                 if (span && span.textContent.trim()) {
                     config.download.csv.push(span.textContent.trim());
                 }
             });
-            // НОВОЕ: Проверяем поле для ввода на случай, если там есть недобавленная ссылка
+            // {{ phrase('sl2_from_input') }}
             const csvInput = document.getElementById('csv-input');
             if (csvInput.value.trim()) {
                 config.download.csv.push(csvInput.value.trim());
             }
 
-            // --- 2. Сбор ссылок на архивы ---
-            // Аналогично CSV, сначала из списка
+            // --- 2. {{ phrase('sl2_collecting') }} Archive URLs ---
+            // {{ phrase('sl2_from_list') }}
             document.querySelectorAll('#archive-list li').forEach(item => {
                 const span = item.querySelector('span');
                 if (span && span.textContent.trim()) {
                     config.download.archives.push(span.textContent.trim());
                 }
             });
-            // НОВОЕ: И потом из поля для ввода
+            // {{ phrase('sl2_from_input') }}
             const archiveInput = document.getElementById('archive-input');
             if (archiveInput.value.trim()) {
                 config.download.archives.push(archiveInput.value.trim());
             }
 
-            // --- 3. Сбор приложений ---
-            // Из списка
+            // --- 3. {{ phrase('sl2_collecting') }} applications ---
+            // {{ phrase('sl2_from_list') }}
             document.querySelectorAll('#app-list li').forEach(item => {
                 if (item.dataset.exe && item.dataset.translations) {
                     const translations = JSON.parse(item.dataset.translations || '{}');
@@ -1104,7 +1092,7 @@
                     config.application.push(appObj);
                 }
             });
-            // НОВОЕ: Проверяем поля для ввода нового приложения
+            // {{ phrase('sl2_from_input') }}
             const appExeInput = document.getElementById('app-exe-input');
             if (appExeInput.value.trim()) {
                 const nameTranslations = {};
@@ -1116,9 +1104,9 @@
                         hasAnyName = true;
                     }
                 });
-                // Добавляем, только если указан exe и хотя бы одно название
+                // {{ phrase('sl2_add_if_exe_and_name') }}
                 if (hasAnyName) {
-                    // Собираем (ещё не добавленные) триггеры из UI если есть
+                    // {{ phrase('sl2_collect_triggers_from_ui') }}
                     const triggers = [];
                     triggerContainer.querySelectorAll('.trigger-row').forEach(row => {
                         const type = row.querySelector('.trigger-type').value;
@@ -1146,8 +1134,8 @@
                 }
             }
 
-            // --- 4. Сбор новостей ---
-            // Из уже созданных групп
+            // --- 4. {{ phrase('sl2_collecting') }} news ---
+            // {{ phrase('sl2_from_created_groups') }}
             document.querySelectorAll('.news-language-group').forEach(group => {
                 const lang = group.dataset.lang;
                 if (lang) {
@@ -1167,11 +1155,11 @@
                     });
                 }
             });
-            // НОВОЕ: Проверяем поля для ввода новой новости
+            // {{ phrase('sl2_from_input') }}
             const newsNameInput = document.getElementById('news-name-input');
             const newsDescInput = document.getElementById('news-desc-input');
             const newsDateInput = document.getElementById('news-date-input');
-            // Добавляем, только если заполнены обязательные поля
+            // {{ phrase('sl2_add_if_obligatory_filled') }}
             if (newsNameInput.value.trim() && newsDescInput.value.trim() && newsDateInput.value.trim()) {
                 const lang = document.getElementById('news-lang-select').value;
                 const newsItem = {
@@ -1187,7 +1175,7 @@
                 config.news[lang].push(newsItem);
             }
 
-            // --- 6. Сбор translationPaths из таблицы (только если включено) ---
+            // --- 6. {{ phrase('sl2_collecting') }} translationPaths ---
             const tpEnable = document.getElementById('tp-enable-checkbox') && document.getElementById('tp-enable-checkbox').checked;
             if (tpEnable) {
                 const tpRows = document.querySelectorAll('#tp-table tbody tr');
@@ -1215,14 +1203,14 @@
                     }
                 });
                 if (defaultCount !== 1) {
-                    alert('Пожалуйста, выберите ровно один язык по умолчанию для translationPaths и укажите пути для выбранного языка.');
+                    alert('{{ phrase('sl2_select_one_default_tp') }}');
                     return;
                 }
             }
 
 
-            // --- 5. Генерация и скачивание файла ---
-            // Autologin: добавляем только если галочка включена И поле паттерна не пустое
+            // --- 5. {{ phrase('sl2_generate_and_download') }} ---
+            // Autologin: {{ phrase('sl2_add_if_checked_and_pattern') }}
             const autologinEnable = document.getElementById('autologin-enable').checked;
             const autologinPattern = document.getElementById('autologin-pattern').value.trim();
             if (autologinEnable && autologinPattern) {

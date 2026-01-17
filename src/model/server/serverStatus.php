@@ -113,8 +113,15 @@ class serverStatus
     public function setOnline(int $online, bool $isCache = false ): void
     {
         $onlineCheating = config::load()->onlineCheating()->isEnabled();
-        $minOnline = config::load()->onlineCheating()->getMinOnlineShow();
-        $maxOnline = config::load()->onlineCheating()->getMaxOnlineShow();
+        $minOnline = (int)config::load()->onlineCheating()->getMinOnlineShow();
+        $maxOnline = (int)config::load()->onlineCheating()->getMaxOnlineShow();
+
+        if ($minOnline < 0) {
+            $minOnline = 0;
+        }
+        if ($maxOnline < $minOnline) {
+            $maxOnline = $minOnline;
+        }
 
         if ($isCache) {
             $this->online = $online;
@@ -124,36 +131,43 @@ class serverStatus
         } else {
             if ($onlineCheating && $online == 0) {
                 $online = mt_rand($minOnline, $maxOnline);
-            }else{
-                    if (config::load()->onlineCheating()->isEnabled()) {
-                        $cheatingDetails = config::load()->onlineCheating()->getCheatingDetails();
-                        $currentTime = new DateTime();
-                        foreach ($cheatingDetails as $key => $details) {
-                            foreach ($details as $index => $detail) {
-                                if ($detail->getTime() == "" or $detail->getMultiplier() == "") {
-                                    continue;
-                                }
-                                $startTime = DateTime::createFromFormat('H:i', $detail->getTime());
-                                $startTime->setDate($currentTime->format('Y'), $currentTime->format('m'), $currentTime->format('d'));
-                                
-                                $nextIndex = $index + 1;
-                                if ($nextIndex < count($details)) {
-                                    $endTime = DateTime::createFromFormat('H:i', $details[$nextIndex]->getTime());
-                                    $endTime->setDate($currentTime->format('Y'), $currentTime->format('m'), $currentTime->format('d'));
-                                } else {
+            } else {
+                if ($onlineCheating) {
+                    $cheatingDetails = config::load()->onlineCheating()->getCheatingDetails();
+                    $currentTime = new DateTime();
+                    foreach ($cheatingDetails as $key => $details) {
+                        foreach ($details as $index => $detail) {
+                            if ($detail->getTime() == "" or $detail->getMultiplier() == "") {
+                                continue;
+                            }
+                            $startTime = DateTime::createFromFormat('H:i', $detail->getTime());
+                            if ($startTime === false) {
+                                continue;
+                            }
+                            $startTime->setDate($currentTime->format('Y'), $currentTime->format('m'), $currentTime->format('d'));
+                            
+                            $nextIndex = $index + 1;
+                            if ($nextIndex < count($details)) {
+                                $endTime = DateTime::createFromFormat('H:i', $details[$nextIndex]->getTime());
+                                if ($endTime === false) {
                                     $endTime = (clone $startTime)->add(new DateInterval('P1D'))->setTime(0, 0, 0);
+                                } else {
+                                    $endTime->setDate($currentTime->format('Y'), $currentTime->format('m'), $currentTime->format('d'));
                                 }
-                                if ($currentTime >= $startTime && $currentTime < $endTime) {
-                                    $online *= (float)$detail->getMultiplier();
-                                    break 2;
-                                }
+                            } else {
+                                $endTime = (clone $startTime)->add(new DateInterval('P1D'))->setTime(0, 0, 0);
+                            }
+                            if ($currentTime >= $startTime && $currentTime < $endTime) {
+                                $online *= (float)$detail->getMultiplier();
+                                break 2;
                             }
                         }
                     }
                 }
+            }
         }
 
-        if(!$this->gameServer and $online >= 1){
+        if (!$this->gameServer && $online >= 1) {
             $this->gameServer = true;
         }
 

@@ -87,6 +87,15 @@ class server
         self::$installLink = $link;
     }
 
+    public static function getApiHost(): string
+    {
+        if (self::$installLink != null) {
+            return self::$installLink;
+        }
+
+        return config::load()->sphereApi()->getIp() . ':' . config::load()->sphereApi()->getPort();
+    }
+
 
 
     private static int $timeout = 5;
@@ -183,9 +192,11 @@ class server
 
         if ($response === false) {
             self::$codeError = "sphereapi_unavailable";
-            self::$error = 'Ошибка соединения с Sphere API. Попробуйте еще раз. Возможно сервер на перезагрузке либо указаны неверные данные подключения к Sphere API. Если ошибка повторится, обратитесь в службу поддержки.';
+            $curlError = curl_error($ch);
+            $curlErrno = curl_errno($ch);
+            self::$error = 'Ошибка соединения с Sphere API (' . $curlError . '). Попробуйте еще раз. Возможно сервер на перезагрузке либо указаны неверные данные подключения к Sphere API. Если ошибка повторится, обратитесь в службу поддержки.';
             self::$isOfflineServer = true;
-
+            error_log("[sphereServer] Curl error: " . $curlError . " (code: " . $curlErrno . ") for URL: " . $url);
             return $instance;
         }
 
@@ -381,7 +392,7 @@ class server
             return $instance;
         }
 
-    static public function sendCustom(string $url, array $arr = []): self
+    static public function sendCustom(string $url, $arr = []): self
     {
         self::isOffline();
         $instance = new self();
@@ -577,8 +588,6 @@ class server
             self::$isOfflineServer = true;
             self::$error = 'Ошибка соединения со Sphere API при скачивании файла: ' . $curlError;
         }
-
-        curl_close($ch);
 
         return [
             'content' => $responseContent,
