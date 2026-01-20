@@ -2610,5 +2610,6 @@ Password: %%password%%',
 	'stream_added_wait_approval' => 'Стрим добавлен. Ожидайте одобрения администратора',
 	'stream_not_selected' => 'Не выбран стрим',
 	'stream_cannot_delete' => 'Вы не можете удалить этот стрим',
-	'discount' => 'Скидка'
+	'discount' => 'Скидка',
+
 );

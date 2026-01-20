@@ -1,0 +1,1041 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="bi bi-database-fill-down"></i> {{ phrase('server_backup_title') }}
+                    </h6>
+                    <small class="text-muted d-block mt-2">
+                        {{ phrase('server_backup_server_time') }}: <strong id="serverTime">{{ currentTime }}</strong>
+                    </small>
+                </div>
+                <div class="card-body">
+                    <!-- Tab Navigation -->
+                    <ul class="nav nav-tabs mb-4" id="backupTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule-content" type="button">
+                                <i class="bi bi-calendar-event"></i> {{ phrase('server_backup_schedule') }}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs-content" type="button">
+                                <i class="bi bi-file-text"></i> {{ phrase('server_backup_logs') }}
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="backupTabContent">
+                        <!-- Schedule Tab -->
+                        <div class="tab-pane fade show active" id="schedule-content" role="tabpanel">
+                            <!-- Server Selection Table -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6 class="mb-3">{{ phrase('server_backup_select_server') }}</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-sm" id="serversTable">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th style="width: 40px;"></th>
+                                                    <th style="width: 40px;">
+                                                        <i class="bi bi-cloud-download"></i>
+                                                    </th>
+                                                    <th>{{ phrase('name') }}</th>
+                                                    <th>{{ phrase('status') }}</th>
+                                                    <th style="width: 100px;">{{ phrase('action') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for server in userServers %}
+                                                <tr data-server-id="{{ server.getId() }}" data-server-name="{{ server.getName() }}" class="server-row">
+                                                    <td><i class="bi bi-server"></i></td>
+                                                    <td>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input backup-toggle" type="checkbox" 
+                                                                   data-server-id="{{ server.getId() }}" 
+                                                                   id="backup_{{ server.getId() }}">
+                                                        </div>
+                                                    </td>
+                                                    <td><strong>{{ server.getName() }}</strong></td>
+                                                    <td>
+                                                        <span id="status_{{ server.getId() }}">
+                                                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>Loading...
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-primary select-server-btn">
+                                                            <i class="bi bi-chevron-right"></i> {{ phrase('select') }}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        {% if userServers|length == 0 %}
+                                        <div class="alert alert-warning">{{ phrase('server_backup_no_servers') }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Schedule Configuration Form -->
+                            <div id="scheduleForm" style="display: none;">
+                                <div class="card bg-light mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">{{ phrase('server_backup_schedule_config') }}: <strong id="selectedServerName"></strong></h6>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="changeServerBtn">
+                                            <i class="bi bi-arrow-left"></i> {{ phrase('server_backup_select_another') }}
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        
+                                        <!-- Backup Info Alert -->
+                                        <div class="alert alert-info mb-3" id="backupInfoAlert">
+                                            <strong>{{ phrase('server_backup_next_run') }}:</strong> <span id="nextRunTime">—</span>
+                                            <br>
+                                            <strong>{{ phrase('server_backup_last_run') }}:</strong> <span id="lastRunTime">—</span>
+                                            <span id="lastRunStatus"></span>
+                                        </div>
+
+                                        <!-- Backup Time -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="backupTime" class="form-label">{{ phrase('server_backup_time') }}</label>
+                                                <input type="time" class="form-control" id="backupTime" value="00:00">
+                                                <small class="text-muted">{{ phrase('server_backup_time_hint') }}</small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="maxBackupDays" class="form-label">{{ phrase('server_backup_max_days') }}</label>
+                                                <input type="number" class="form-control" id="maxBackupDays" value="7" min="1" max="365">
+                                                <small class="text-muted">{{ phrase('server_backup_max_days_hint') }}</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- FTP Configuration -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <h6 class="text-primary">{{ phrase('server_backup_enable_ftp') }}</h6>
+                                                <small class="text-muted d-block mb-3">{{ phrase('server_backup_ftp_required') }}</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- FTP Settings -->
+                                        <div id="ftpSettings">
+                                            <div class="card bg-white border-primary mb-3">
+                                                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                                    <h6 class="mb-0">FTP {{ phrase('server_backup_settings') }}</h6>
+                                                    <small id="ftpStatusBadge"></small>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <label for="ftpHost" class="form-label">{{ phrase('server_backup_ftp_host') }} <span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" id="ftpHost" placeholder="ftp.example.com" required>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="ftpPort" class="form-label">{{ phrase('server_backup_ftp_port') }}</label>
+                                                            <input type="number" class="form-control" id="ftpPort" value="21" min="1" max="65535">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <label for="ftpUser" class="form-label">{{ phrase('server_backup_ftp_user') }} <span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" id="ftpUser" required>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="ftpPassword" class="form-label">{{ phrase('server_backup_ftp_password') }} <span class="text-danger">*</span></label>
+                                                            <div class="input-group">
+                                                                <input type="password" class="form-control" id="ftpPassword" placeholder="(пусто = не изменять)" />
+                                                                <button class="btn btn-outline-secondary" type="button" id="ftpPasswordToggle" title="{{ phrase('server_backup_toggle_password') }}">
+                                                                    <i class="bi bi-eye"></i>
+                                                                </button>
+                                                            </div>
+                                                            <small class="text-muted">{{ phrase('server_backup_password_hint') }}</small>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <label for="ftpPath" class="form-label">{{ phrase('server_backup_ftp_path') }}</label>
+                                                            <input type="text" class="form-control" id="ftpPath" value="/" placeholder="/backups/">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <button type="button" class="btn btn-sm btn-info" id="testFtpBtn">
+                                                                <i class="bi bi-exclamation-triangle"></i> {{ phrase('server_backup_test_ftp') }}
+                                                            </button>
+                                                            <button type="button" class="btn btn-sm btn-secondary" id="listFtpFoldersBtn">
+                                                                <i class="bi bi-folder"></i> {{ phrase('server_backup_list_folders') }}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Removed non-modal 'Create New Folder' control - folder creation kept in modal only -->
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Save Button -->
+                                        <div class="row mt-4">
+                                            <div class="col-md-12">
+                                                <button type="button" class="btn btn-primary" id="saveScheduleBtn">
+                                                    <i class="bi bi-check-circle"></i> {{ phrase('server_backup_save_schedule') }}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Logs Tab -->
+                        <div class="tab-pane fade" id="logs-content" role="tabpanel">
+                            <div class="mb-3">
+                                <h6 class="mb-0">{{ phrase('server_backup_logs') }}</h6>
+                                <small class="text-muted">{{ phrase('server_backup_all_available_runs') }}</small>
+                            </div>
+                            <div id="logsContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status notifications now use noticeError/noticeSuccess; modal removed -->
+<!-- FTP Browser Modal -->
+<div class="modal fade" id="ftpBrowserModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ phrase('server_backup_ftp_browser') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2" id="ftpBreadcrumb"></ol>
+                </nav>
+                <div id="ftpBrowserList" class="list-group"></div>
+                <div id="ftpBrowserEmpty" class="text-muted mt-2" style="display:none">{{ phrase('none') }}</div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <div class="input-group w-50">
+                    <input type="text" id="ftpNewFolderName" class="form-control" placeholder="{{phrase('create_new_folder')}}" />
+                    <button class="btn btn-outline-success" type="button" id="ftpBrowserCreateFolderBtn">OK</button>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase('close') }}</button>
+                    <button type="button" class="btn btn-primary" id="ftpSelectFolderBtn">{{ phrase('select') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+const serverBackupSchedulesData = {{ schedules|default([])|json_encode|raw }};
+const serverBackupSchedules = Array.isArray(serverBackupSchedulesData) ? serverBackupSchedulesData : [];
+const serverBackupScheduleMap = {};
+
+const serverBackupLogsPayload = {{ logs|default([])|json_encode|raw }};
+let serverBackupLogs = (serverBackupLogsPayload && Array.isArray(serverBackupLogsPayload.logs))
+    ? serverBackupLogsPayload.logs
+    : (Array.isArray(serverBackupLogsPayload) ? serverBackupLogsPayload : []);
+
+serverBackupSchedules.forEach(schedule => {
+    if (!schedule || (typeof schedule.server_id === 'undefined' || schedule.server_id === null)) {
+        return;
+    }
+    serverBackupScheduleMap[String(schedule.server_id)] = schedule;
+});
+
+$(document).ready(function() {
+    // Format top server time if present
+    try {
+        const stEl = $('#serverTime');
+        if (stEl && stEl.length) {
+            const raw = stEl.text().trim();
+            if (raw) stEl.text(formatDisplayTime(raw));
+        }
+    } catch (e) {
+        console.warn('serverTime format error', e);
+    }
+    // Load backup status for all servers
+    refreshAllServerStatuses();
+
+    // Server selection from table
+    $(document).on('click', '.select-server-btn', function() {
+        const serverId = $(this).closest('tr').data('server-id');
+        const serverName = $(this).closest('tr').data('server-name');
+        
+        if (serverId) {
+            $('#selectedServerName').text(serverName);
+            loadServerBackupInfo(serverId);
+            $('#scheduleForm').show();
+            
+            // Highlight selected row
+            $('.server-row').removeClass('table-active');
+            $(this).closest('tr').addClass('table-active');
+            
+            // Scroll to form
+            $('html, body').animate({
+                scrollTop: $('#scheduleForm').offset().top - 100
+            }, 500);
+        }
+    });
+    
+    // Change server button
+    $(document).on('click', '#changeServerBtn', function() {
+        $('#scheduleForm').hide();
+        $('.server-row').removeClass('table-active');
+        $('html, body').animate({
+            scrollTop: $('#serversTable').offset().top - 100
+        }, 500);
+    });
+
+    // Backup toggle checkbox
+    $(document).on('change', '.backup-toggle', function() {
+        const serverId = $(this).closest('tr').data('server-id');
+        const isChecked = $(this).is(':checked');
+
+        // Prevent enabling if FTP settings are not filled
+        if (isChecked && !canEnableBackupForServer(serverId)) {
+            showStatus('{{ phrase("error") }}', '{{ phrase("server_backup_ftp_required_fields") }}', 'warning');
+            $(this).prop('checked', false);
+            return;
+        }
+
+        const enabledValue = isChecked ? 1 : 0;
+
+        $.ajax({
+            url: '/admin/plugin/server_backup/api/enable-backup',
+            type: 'POST',
+            data: { server_id: serverId, enabled: enabledValue },
+            dataType: 'json',
+            success: function(response) {
+                if (response.ok) {
+                    const status = enabledValue ? '{{ phrase("enabled") }}' : '{{ phrase("disabled") }}';
+                    showStatus('{{ phrase("success") }}', 'Резервные копии ' + status.toLowerCase(), 'success');
+                    setServerSchedule(serverId, { enabled: enabledValue === 1 });
+                    refreshServerBackupStatus(serverId);
+                } else {
+                    showStatus('{{ phrase("error") }}', response.error || '{{ phrase("error") }}', 'danger');
+                }
+            },
+            error: function() {
+                showStatus('{{ phrase("error") }}', '{{ phrase("error_ajax") }}', 'danger');
+            }
+        });
+    });
+
+    // Test FTP Connection
+    $('#testFtpBtn').on('click', testFTPConnection);
+
+    // List FTP Folders
+    $('#listFtpFoldersBtn').on('click', listFTPFolders);
+
+    // Create FTP Folder (only from modal)
+    $('#ftpBrowserCreateFolderBtn').on('click', createFTPFolder);
+
+    // Save Schedule
+    $('#saveScheduleBtn').on('click', saveSchedule);
+
+    // Toggle FTP password visibility
+    $(document).on('click', '#ftpPasswordToggle', function() {
+        const $input = $('#ftpPassword');
+        const $icon = $(this).find('i');
+        try {
+            if ($input.attr('type') === 'password') {
+                $input.attr('type', 'text');
+                $icon.removeClass('bi-eye').addClass('bi-eye-slash');
+            } else {
+                $input.attr('type', 'password');
+                $icon.removeClass('bi-eye-slash').addClass('bi-eye');
+            }
+        } catch (e) {
+            console.warn('toggle password error', e);
+        }
+    });
+
+    // Delete Old Backups
+
+    renderAllServerLogs(serverBackupLogs);
+
+    $('#logs-tab').on('shown.bs.tab', function() {
+        renderAllServerLogs(serverBackupLogs);
+    });
+});
+
+function refreshAllServerStatuses() {
+    $('.server-row').each(function() {
+        const serverId = $(this).data('server-id');
+        refreshServerBackupStatus(serverId);
+    });
+}
+
+function getServerSchedule(serverId) {
+    if (!serverId) {
+        return null;
+    }
+
+    return serverBackupScheduleMap[String(serverId)] || null;
+}
+
+function setServerSchedule(serverId, updates) {
+    if (!serverId) {
+        return null;
+    }
+
+    const key = String(serverId);
+    const parsedId = parseInt(serverId, 10);
+    const baseSchedule = serverBackupScheduleMap[key] || { server_id: Number.isNaN(parsedId) ? serverId : parsedId };
+    serverBackupScheduleMap[key] = { ...baseSchedule, ...updates };
+    return serverBackupScheduleMap[key];
+}
+
+function refreshServerBackupStatus(serverId) {
+    if (!serverId) {
+        return;
+    }
+
+    const statusEl = $(`#status_${serverId}`);
+    const toggleEl = $(`#backup_${serverId}`);
+    const schedule = getServerSchedule(serverId);
+    const hasSchedule = schedule && typeof schedule.enabled !== 'undefined' && schedule.enabled !== null;
+    const isEnabled = hasSchedule && (schedule.enabled === true || schedule.enabled === 1 || schedule.enabled === '1');
+    const isDisabled = hasSchedule && !isEnabled;
+
+    if (isEnabled) {
+        statusEl.html(`<span class="badge bg-success">{{ phrase('enabled') }}</span>`);
+        toggleEl.prop('checked', true);
+    } else if (isDisabled) {
+        statusEl.html(`<span class="badge bg-danger">{{ phrase('disabled') }}</span>`);
+        toggleEl.prop('checked', false);
+    } else {
+        statusEl.html(`<span class="badge bg-secondary">{{ phrase('not_configured') }}</span>`);
+        toggleEl.prop('checked', false);
+    }
+
+    // Enable checkbox only when FTP settings are present (host + user)
+    try {
+        const ftpHost = (schedule && (schedule.ftp && schedule.ftp.host)) || schedule && schedule.ftp_host || '';
+        const ftpUser = (schedule && (schedule.ftp && schedule.ftp.user)) || schedule && schedule.ftp_user || '';
+        const ftpConfigured = (String(ftpHost).trim() !== '' && String(ftpUser).trim() !== '') || ($('#ftpHost').length && $('#ftpUser').length && String($('#ftpHost').val() || '').trim() !== '' && String($('#ftpUser').val() || '').trim() !== '');
+        toggleEl.prop('disabled', !ftpConfigured);
+        if (!ftpConfigured) {
+            toggleEl.attr('title', '{{ phrase("server_backup_ftp_required_fields") }}');
+        } else {
+            toggleEl.removeAttr('title');
+        }
+    } catch (e) {
+        console.warn('ftp check error', e);
+    }
+}
+
+function canEnableBackupForServer(serverId) {
+    if (!serverId) return false;
+    const schedule = getServerSchedule(serverId) || {};
+    const ftp = schedule.ftp || {};
+    const host = (ftp.host || schedule.ftp_host || '').toString().trim();
+    const user = (ftp.user || schedule.ftp_user || '').toString().trim();
+    if (host && user) return true;
+
+    // If the schedule form for this server is open, allow using current inputs
+    const activeId = $('.server-row.table-active').data('server-id');
+    if (String(activeId) === String(serverId)) {
+        const hostInput = ($('#ftpHost').length ? ($('#ftpHost').val() || '') : '').toString().trim();
+        const userInput = ($('#ftpUser').length ? ($('#ftpUser').val() || '') : '').toString().trim();
+        if (hostInput && userInput) return true;
+    }
+
+    return false;
+}
+
+function loadServerBackupInfo(serverId) {
+    // Try to load schedule from preloaded serverBackupScheduleMap first
+    const localSchedule = getServerSchedule(serverId);
+    if (localSchedule) {
+        const schedule = localSchedule;
+        const ftp = schedule.ftp || {};
+
+        $('#backupTime').val(schedule.backup_time || schedule.backupTime || '00:00');
+        $('#maxBackupDays').val(schedule.max_backup_days || schedule.maxBackupDays || 7);
+
+        const nextRaw = schedule.next_backup_time || schedule.nextBackupTime || schedule.NextBackupTime || '';
+        $('#nextRunTime').text(nextRaw ? formatDisplayTime(nextRaw) : '—');
+
+        const lastRaw = schedule.last_backup_time || schedule.lastBackupTime || schedule.LastBackupTime || '';
+        if (lastRaw) {
+            $('#lastRunTime').text(formatDisplayTime(lastRaw));
+            const statusValue = schedule.last_backup_status || schedule.lastBackupStatus || schedule.LastBackupStatus;
+            if (statusValue) {
+                const statusBadge = `<span class="badge bg-${getStatusColor(statusValue)}">${statusValue}</span>`;
+                $('#lastRunStatus').html(' ' + statusBadge);
+            } else {
+                $('#lastRunStatus').html('');
+            }
+        } else {
+            $('#lastRunTime').text('—');
+            $('#lastRunStatus').html('');
+        }
+
+        // Load FTP settings from nested ftp object or top-level fields
+        $('#ftpHost').val(ftp.host || schedule.ftp_host || '');
+        $('#ftpPort').val(ftp.port || schedule.ftp_port || 21);
+        $('#ftpUser').val(ftp.user || schedule.ftp_user || '');
+        $('#ftpPassword').val(ftp.password || schedule.ftp_password || '');
+        $('#ftpPath').val(ftp.path || schedule.ftp_path || '/');
+
+        const ftpEnabled = (typeof ftp.enabled !== 'undefined') ? ftp.enabled : schedule.ftp_enabled;
+        const ftpBadge = ftpEnabled ? '<span class="badge bg-success">FTP Active</span>' : '<span class="badge bg-secondary">FTP Disabled</span>';
+        $('#ftpStatusBadge').html(ftpBadge);
+
+        // Ensure local map has this schedule canonicalized
+        setServerSchedule(serverId, schedule);
+        // Refresh status badges/toggles
+        refreshServerBackupStatus(serverId);
+        return;
+    }
+
+    // Fallback to AJAX if not preloaded
+    $.ajax({
+        url: '/admin/plugin/server_backup/api/server-backup-info',
+        type: 'POST',
+        data: { server_id: serverId },
+        dataType: 'json',
+        success: function(response) {
+            if (response.ok) {
+                const schedule = response.schedule;
+                const ftpInfo = response.ftp_info;
+                
+                if (schedule) {
+                    $('#backupTime').val(schedule.backup_time || '00:00');
+                    $('#maxBackupDays').val(schedule.max_backup_days || 7);
+                    
+                    // Update next run time
+                    const nextRaw = schedule.next_backup_time || schedule.nextBackupTime || schedule.NextBackupTime || '';
+                    $('#nextRunTime').text(nextRaw ? formatDisplayTime(nextRaw) : '—');
+
+                    const lastRaw = schedule.last_backup_time || schedule.lastBackupTime || schedule.LastBackupTime || '';
+                    if (lastRaw) {
+                        $('#lastRunTime').text(formatDisplayTime(lastRaw));
+                        const statusValue = schedule.last_backup_status || schedule.lastBackupStatus || schedule.LastBackupStatus;
+                        if (statusValue) {
+                            const statusBadge = `<span class="badge bg-${getStatusColor(statusValue)}">${statusValue}</span>`;
+                            $('#lastRunStatus').html(' ' + statusBadge);
+                        } else {
+                            $('#lastRunStatus').html('');
+                        }
+                    } else {
+                        $('#lastRunTime').text('—');
+                        $('#lastRunStatus').html('');
+                    }
+                    
+                    // Load FTP settings
+                    $('#ftpHost').val(schedule.ftp_host || '');
+                    $('#ftpPort').val(schedule.ftp_port || 21);
+                    $('#ftpUser').val(schedule.ftp_user || '');
+                    $('#ftpPassword').val('');
+                    $('#ftpPath').val(schedule.ftp_path || '/');
+                    
+                    // Update FTP status badge
+                    const ftpBadge = schedule.ftp_enabled ? '<span class="badge bg-success">FTP Active</span>' : '<span class="badge bg-secondary">FTP Disabled</span>';
+                    $('#ftpStatusBadge').html(ftpBadge);
+                } else {
+                    // No schedule configured - set defaults
+                    $('#backupTime').val('00:00');
+                    $('#maxBackupDays').val(7);
+                    $('#ftpHost').val('');
+                    $('#ftpPort').val(21);
+                    $('#ftpUser').val('');
+                    $('#ftpPassword').val('');
+                    $('#ftpPath').val('/');
+                    $('#nextRunTime').text('—');
+                    $('#lastRunTime').text('—');
+                    $('#lastRunStatus').html('');
+                    $('#ftpStatusBadge').html('<span class="badge bg-secondary">Not Configured</span>');
+                }
+
+                if (Array.isArray(response.logs) && response.logs.length > 0) {
+                    serverBackupLogs = mergeBackupLogs(serverBackupLogs, response.logs);
+                    if ($('#logs-tab').hasClass('active') || $('#logs-content').hasClass('show')) {
+                        renderAllServerLogs(serverBackupLogs);
+                    }
+                }
+            } else {
+                showStatus('{{ phrase("error") }}', response.error || response.message || 'Error loading schedule', 'danger');
+            }
+        },
+        error: function(xhr, status, error) {
+            showStatus('{{ phrase("error") }}', 'Error loading schedule: ' + error, 'danger');
+        }
+    });
+}
+
+function renderAllServerLogs(logs) {
+    const container = $('#logsContainer');
+
+    if (!Array.isArray(logs) || logs.length === 0) {
+        container.html('<div class="alert alert-info">{{ phrase("server_backup_no_logs") }}</div>');
+        return;
+    }
+
+    const serverNameMap = {};
+    $('.server-row').each(function() {
+        const id = $(this).data('server-id');
+        const name = $(this).data('server-name');
+        if (typeof id !== 'undefined' && id !== null) {
+            serverNameMap[String(id)] = name || ('ID ' + id);
+        }
+    });
+
+    let html = '<div class="table-responsive"><table class="table table-bordered table-hover align-middle"><thead class="table-light"><tr>' +
+        '<th>{{ phrase("name") }}</th>' +
+        '<th>{{ phrase("server_backup_backup_time") }}</th>' +
+        '<th>{{ phrase("server_backup_duration") }}</th>' +
+        '<th>{{ phrase("server_backup_status") }}</th>' +
+        '<th>{{ phrase("server_backup_file_size") }}</th>' +
+        '<th>{{ phrase("server_backup_ftp_status") }}</th>' +
+        '</tr></thead><tbody>';
+
+    logs.forEach(function(log) {
+        const serverName = String(serverNameMap[String(log.server_id)] || ('ID ' + log.server_id));
+        const startRaw = log.start_time || log.startTime || '';
+        const endRaw = log.end_time || log.endTime || '';
+        const startTime = startRaw ? new Date(startRaw) : null;
+        const endTime = endRaw ? new Date(endRaw) : null;
+        const hasStartTime = startTime && !Number.isNaN(startTime.getTime());
+        const hasEndTime = endTime && !Number.isNaN(endTime.getTime());
+        const startDisplay = startRaw ? formatDisplayTime(startRaw) : '—';
+
+        let durationDisplay = '—';
+        if (hasStartTime && hasEndTime) {
+            const durationSeconds = Math.max(0, Math.round((endTime - startTime) / 1000));
+            durationDisplay = durationSeconds + 's';
+        }
+
+        const sizeValue = Number(log.file_size || 0);
+        const fileSize = sizeValue > 0 ? formatBytes(sizeValue) : '—';
+
+        let ftpStatus = '—';
+        const ftpPath = log.ftp_path ? `<br><small class="text-muted">${escapeHtml(String(log.ftp_path))}</small>` : '';
+        if (log.ftp_uploaded) {
+            ftpStatus = `✓ {{ phrase("server_backup_uploaded") }}${ftpPath}`;
+        }
+
+        const statusText = log.status ? escapeHtml(String(log.status)) : '—';
+        const typeLabel = log.backup_type ? `<br><small class="text-muted">${escapeHtml(String(log.backup_type))}</small>` : '';
+        const statusBadge = `<span class="badge bg-${getStatusColor(log.status)}">${statusText}</span>`;
+
+        // Append any error message under FTP status (merge into FTP column)
+        if (log.error_message) {
+            ftpStatus = `<small class="text-danger">${escapeHtml(String(log.error_message))}</small>`;
+        }
+
+        html += `<tr>
+            <td>${escapeHtml(serverName)}</td>
+            <td>${startDisplay}</td>
+            <td>${durationDisplay}</td>
+            <td>${statusBadge}</td>
+            <td>${fileSize}</td>
+            <td>${ftpStatus}</td>
+        </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    container.html(html);
+}
+
+function mergeBackupLogs(existingLogs, incomingLogs) {
+    const merged = new Map();
+
+    (Array.isArray(existingLogs) ? existingLogs : []).forEach(function(log) {
+        if (log && typeof log.id !== 'undefined' && log.id !== null) {
+            merged.set(log.id, log);
+        }
+    });
+
+    (Array.isArray(incomingLogs) ? incomingLogs : []).forEach(function(log) {
+        if (log && typeof log.id !== 'undefined' && log.id !== null) {
+            merged.set(log.id, log);
+        }
+    });
+
+    return Array.from(merged.values()).sort(function(a, b) {
+        const aTime = a && a.start_time ? new Date(a.start_time).getTime() : 0;
+        const bTime = b && b.start_time ? new Date(b.start_time).getTime() : 0;
+        return bTime - aTime;
+    });
+}
+
+function testFTPConnection() {
+    const params = {
+        server_id: $('.server-row.table-active').data('server-id'),
+        ftp_host: $('#ftpHost').val(),
+        ftp_port: parseInt($('#ftpPort').val()),
+        ftp_user: $('#ftpUser').val(),
+        ftp_password: $('#ftpPassword').val()
+    };
+
+    $.ajax({
+        url: '/admin/plugin/server_backup/api/schedule/test-ftp',
+        type: 'POST',
+        data: params,
+        dataType: 'json',
+        success: function(response) {
+            if (response.ok) {
+                showStatus('{{ phrase("success") }}', response.message || '{{ phrase("server_backup_success_ftp_test") }}', 'success');
+            } else {
+                showStatus('{{ phrase("error") }}', response.error || '{{ phrase("error") }}', 'danger');
+            }
+        },
+        error: function() {
+            showStatus('{{ phrase("error") }}', '{{ phrase("error_ajax") }}', 'danger');
+        }
+    });
+}
+
+function listFTPFolders() {
+    const serverId = $('.server-row.table-active').data('server-id');
+    const ftpHost = $('#ftpHost').val();
+    const ftpUser = $('#ftpUser').val();
+    const ftpPassword = $('#ftpPassword').val();
+    
+
+    // Open FTP browser modal for interactive navigation and selection
+    if (!serverId) {
+        showStatus('{{ phrase("error") }}', '{{ phrase("server_backup_select_server") }}', 'warning');
+        return;
+    }
+
+    if (!ftpHost || !ftpUser || !ftpPassword) {
+        showStatus('{{ phrase("error") }}', '{{ phrase("server_backup_ftp_required_fields") }}', 'warning');
+        return;
+    }
+
+    // Initialize browser state and open modal
+    openFTPBrowserModal({
+        server_id: parseInt(serverId),
+        ftp_host: ftpHost,
+        ftp_port: parseInt($('#ftpPort').val()),
+        ftp_user: ftpUser,
+        ftp_password: ftpPassword,
+    });
+}
+
+// FTP Browser state
+let ftpBrowserState = {
+    serverParams: null,
+    currentPath: '/',
+};
+
+function openFTPBrowserModal(params, startPath = '/') {
+    ftpBrowserState.serverParams = params;
+    ftpBrowserState.currentPath = startPath || '/';
+
+    $('#ftpBrowserList').empty();
+    $('#ftpBrowserEmpty').hide();
+    renderFTPBreadcrumb();
+    fetchFTPFolders(ftpBrowserState.currentPath);
+
+    const bs = window.bootstrap || (typeof bootstrap !== 'undefined' ? bootstrap : null);
+    if (bs && bs.Modal) {
+        const el = document.getElementById('ftpBrowserModal');
+        const modal = new bs.Modal(el);
+        modal.show();
+    } else {
+        $('#ftpBrowserModal').modal('show');
+    }
+}
+
+function renderFTPBreadcrumb() {
+    const path = ftpBrowserState.currentPath || '/';
+    const parts = path.split('/').filter(Boolean);
+    let html = '';
+    let acc = '';
+    
+    // Always start with root. Show icon if not in root to avoid double slashes.
+    const isRoot = parts.length === 0;
+    html += `<li class="breadcrumb-item ${isRoot ? 'active' : ''}" data-path="/">` + 
+            (isRoot ? '/' : '<i class="bi bi-house-door"></i>') + 
+            `</li>`;
+
+    parts.forEach((p, idx) => {
+        acc += '/' + p;
+        const isLast = idx === parts.length - 1;
+        html += `<li class="breadcrumb-item ${isLast ? 'active' : ''}" data-path="${acc}">${escapeHtml(p)}</li>`;
+    });
+    $('#ftpBreadcrumb').html(html);
+
+    $('#ftpBreadcrumb').off('click').on('click', 'li', function() {
+        const p = $(this).data('path');
+        if (p && p !== ftpBrowserState.currentPath) {
+            ftpBrowserState.currentPath = p;
+            renderFTPBreadcrumb();
+            fetchFTPFolders(p);
+        }
+    });
+}
+
+function fetchFTPFolders(path) {
+    const params = Object.assign({}, ftpBrowserState.serverParams, { ftp_path: path });
+    $('#ftpBrowserList').html('<div class="text-center py-3"><div class="spinner-border"></div></div>');
+    $.ajax({
+        url: '/admin/plugin/server_backup/api/schedule/ftp-list',
+        type: 'POST',
+        data: JSON.stringify(params),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function(response) {
+            if (response.ok) {
+                const folders = response.folders || [];
+                const list = $('#ftpBrowserList');
+                list.empty();
+
+                // Parent folder link if not root
+                if (ftpBrowserState.currentPath && ftpBrowserState.currentPath !== '/') {
+                    const $up = $(`<button class="list-group-item list-group-item-action"><i class="bi bi-level-up"></i> ..</button>`);
+                    $up.on('click', function() {
+                        const parts = ftpBrowserState.currentPath.split('/').filter(Boolean);
+                        parts.pop();
+                        ftpBrowserState.currentPath = parts.length ? '/' + parts.join('/') : '/';
+                        renderFTPBreadcrumb();
+                        fetchFTPFolders(ftpBrowserState.currentPath);
+                    });
+                    list.append($up);
+                }
+
+                if (folders.length === 0) {
+                    $('#ftpBrowserEmpty').show();
+                } else {
+                    $('#ftpBrowserEmpty').hide();
+                    folders.forEach(folder => {
+                        const $item = $(`<button class="list-group-item list-group-item-action"><i class="bi bi-folder"></i> ${escapeHtml(folder)}</button>`);
+                        $item.on('click', function() {
+                            // Navigate into folder
+                            const folderName = folder;
+                            let newPath = (ftpBrowserState.currentPath === '/' ? '' : ftpBrowserState.currentPath) + '/' + folderName;
+                            newPath = newPath.replace(/\/+/g, '/');
+                            if (newPath === '') newPath = '/';
+                            
+                            ftpBrowserState.currentPath = newPath;
+                            renderFTPBreadcrumb();
+                            fetchFTPFolders(ftpBrowserState.currentPath);
+                        });
+                        list.append($item);
+                    });
+                }
+            } else {
+                showStatus('{{ phrase("error") }}', response.error || response.message || '{{ phrase("error") }}', 'danger');
+            }
+        },
+        error: function(xhr, status, error) {
+            showStatus('{{ phrase("error") }}', '{{ phrase("error_ajax") }}', 'danger');
+        }
+    });
+}
+
+// When user confirms selection in modal
+$('#ftpSelectFolderBtn').on('click', function() {
+    const selected = ftpBrowserState.currentPath || '/';
+    $('#ftpPath').val(selected);
+    const bs = window.bootstrap || (typeof bootstrap !== 'undefined' ? bootstrap : null);
+    if (bs && bs.Modal) {
+        const el = document.getElementById('ftpBrowserModal');
+        const modal = bs.Modal.getInstance(el);
+        if (modal) modal.hide();
+    } else {
+        $('#ftpBrowserModal').modal('hide');
+    }
+});
+
+function createFTPFolder() {
+    // Folder creation available only from modal now
+    const folderName = $('#ftpNewFolderName').val();
+
+    if (!folderName) {
+        showStatus('{{ phrase("error") }}', '{{ phrase("server_backup_folder_name_required") }}', 'warning');
+        return;
+    }
+
+    const serverId = $('.server-row.table-active').data('server-id');
+    const ftpHost = $('#ftpHost').val();
+    const ftpUser = $('#ftpUser').val();
+    const ftpPassword = $('#ftpPassword').val();
+
+    if (!serverId) {
+        showStatus('{{ phrase("error") }}', '{{ phrase("server_backup_select_server") }}', 'warning');
+        return;
+    }
+
+    if (!ftpHost || !ftpUser || !ftpPassword) {
+        showStatus('{{ phrase("error") }}', '{{ phrase("server_backup_ftp_required_fields") }}', 'warning');
+        return;
+    }
+
+    const params = {
+        server_id: parseInt(serverId),
+        ftp_host: ftpHost,
+        ftp_port: parseInt($('#ftpPort').val()),
+        ftp_user: ftpUser,
+        ftp_password: ftpPassword,
+        folder_name: folderName,
+        ftp_path: (typeof ftpBrowserState !== 'undefined' && ftpBrowserState.currentPath) ? ftpBrowserState.currentPath : $('#ftpPath').val() || '/'
+    };
+
+    $.ajax({
+        url: '/admin/plugin/server_backup/api/schedule/ftp-mkdir',
+        type: 'POST',
+        data: JSON.stringify(params),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function(response) {
+            if (response.ok) {
+                showStatus('{{ phrase("success") }}', response.message || '{{ phrase("server_backup_success_ftp_folder") }}', 'success');
+                $('#ftpNewFolderName').val('');
+                fetchFTPFolders(ftpBrowserState.currentPath);
+            } else {
+                showStatus('{{ phrase("error") }}', response.error || response.message || '{{ phrase("error") }}', 'danger');
+            }
+        },
+        error: function(xhr, status, error) {
+            showStatus('{{ phrase("error") }}', '{{ phrase("error_ajax") }}', 'danger');
+        }
+    });
+}
+
+function saveSchedule() {
+    const serverId = $('.server-row.table-active').data('server-id');
+    const backupTime = $('#backupTime').val();
+    const maxBackupDays = parseInt($('#maxBackupDays').val());
+    const ftpHost = $('#ftpHost').val();
+    const ftpPort = parseInt($('#ftpPort').val());
+    const ftpUser = $('#ftpUser').val();
+    const ftpPassword = $('#ftpPassword').val();
+    const ftpPath = $('#ftpPath').val();
+
+    if (!serverId || !backupTime) {
+        showStatus('{{ phrase("error") }}', '{{ phrase("server_backup_fill_all_fields") }}', 'warning');
+        return;
+    }
+
+    if (!ftpHost || !ftpUser) {
+        showStatus('{{ phrase("error") }}', '{{ phrase("server_backup_ftp_required_fields") }}', 'warning');
+        return;
+    }
+
+    const params = {
+        server_id: serverId,
+        backup_time: backupTime,
+        max_backup_days: maxBackupDays,
+        ftp_enabled: '1',
+        ftp_host: ftpHost,
+        ftp_port: ftpPort,
+        ftp_user: ftpUser,
+        ftp_password: ftpPassword || null,
+        ftp_path: ftpPath
+    };
+
+    $.ajax({
+        url: '/admin/plugin/server_backup/api/schedule/save',
+        type: 'POST',
+        data: params,
+        dataType: 'json',
+        success: function(response) {
+            if (response.ok) {
+                showStatus('{{ phrase("success") }}', response.message, 'success');
+                loadServerBackupInfo(serverId);
+                // Reload the page after a short delay so the success notice is visible.
+                // Use try/catch and a href fallback to ensure reload happens in browsers.
+                setTimeout(function() {
+                    try {
+                        if (typeof window !== 'undefined' && typeof window.location !== 'undefined') {
+                            window.location.reload();
+                        } else {
+                            window.location.href = window.location.href;
+                        }
+                    } catch (e) {
+                        try { window.location.href = window.location.href; } catch (e2) { /* ignore */ }
+                    }
+                }, 800);
+            } else {
+                showStatus('{{ phrase("error") }}', response.message || response.error || '{{ phrase("error") }}', 'danger');
+            }
+        },
+        error: function() {
+            showStatus('{{ phrase("error") }}', '{{ phrase("error_ajax") }}', 'danger');
+        }
+    });
+}
+
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+}
+
+function formatDisplayTime(value) {
+    if (!value) return '—';
+    try {
+        const d = (value instanceof Date) ? value : new Date(String(value));
+        if (Number.isNaN(d.getTime())) return String(value);
+        return d.toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    } catch (e) {
+        return String(value);
+    }
+}
+
+function getStatusColor(status) {
+    const colors = {
+        'completed': 'success',
+        'failed': 'danger',
+        'in_progress': 'warning',
+        'pending': 'info'
+    };
+    return colors[status] || 'secondary';
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+function showStatus(title, message, type) {
+    // Prefer noticeSuccess / noticeError instead of modal dialogs
+    var msg = (typeof message === 'string') ? message : (message && message.outerHTML ? message.outerHTML : String(message));
+    try {
+        if (type === 'success' || type === 'info') {
+            if (typeof window.noticeSuccess === 'function') {
+                window.noticeSuccess(msg);
+                return;
+            }
+        } else {
+            if (typeof window.noticeError === 'function') {
+                window.noticeError(msg);
+                return;
+            }
+        }
+    } catch (e) {
+        console.error('notice function error', e);
+    }
+    // Fallback to alert if notice functions aren't available
+    alert(title + ': ' + msg);
+}
+
+</script>
+{% endblock %}
