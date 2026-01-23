@@ -2743,7 +2743,6 @@ class tpl
                             }
                         }
                     }
-
                     self::$allTplVars['licenseCheck'] = $license;
 
                     if ($tplName === 'read.html') {

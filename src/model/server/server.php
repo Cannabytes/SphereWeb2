@@ -229,8 +229,15 @@ class server
                 if (!empty($files)) {
                     rsort($files);
                     $latestFile = $files[0];
-                    $unixTime = (int)basename($latestFile, '.json');
+                    $unixTimeRaw = (int)basename($latestFile, '.json');
                     $currentTime = time();
+                    if ($unixTimeRaw > 100000000000000) {
+                        $unixTime = (int)floor($unixTimeRaw / 1000000);
+                    } elseif ($unixTimeRaw > 100000000000) {
+                        $unixTime = (int)floor($unixTimeRaw / 1000);
+                    } else {
+                        $unixTime = $unixTimeRaw;
+                    }
                     $totalSeconds = $currentTime - $unixTime;
                     if ($totalSeconds < 60) {
                         $cacheData = json_decode(file_get_contents($latestFile), true);
