@@ -2160,7 +2160,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 23,
+    ]
   ],
   13390 => 
   [
@@ -2179,7 +2180,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 28,
+    ]
   ],
   13391 => 
   [
@@ -2198,7 +2200,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 26,
+    ]
   ],
   13392 => 
   [
@@ -2217,7 +2220,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 30,
+    ]
   ],
   13393 => 
   [

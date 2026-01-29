@@ -846,7 +846,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 85,
+      'maxMp' => 33,
+      'waterRes' => 26,
+    ]
   ],
   13741 => 
   [
@@ -865,7 +868,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 85,
+      'maxMp' => 33,
+      'holyRes' => 26,
+    ]
   ],
   13742 => 
   [
@@ -884,7 +890,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 85,
+      'maxMp' => 33,
+      'windRes' => 26,
+    ]
   ],
   13743 => 
   [
@@ -903,7 +912,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 85,
+      'maxMp' => 33,
+      'darkRes' => 26,
+    ]
   ],
   13744 => 
   [
@@ -922,7 +934,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'maxMp' => 33,
+      'earthRes' => 26,
+      'mDef' => 85,
+    ]
   ],
   13745 => 
   [
@@ -941,7 +956,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 85,
+      'maxMp' => 33,
+      'waterRes' => 26,
+    ]
   ],
   13746 => 
   [
@@ -960,7 +978,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 85,
+      'maxMp' => 33,
+      'fireRes' => 26,
+    ]
   ],
   13747 => 
   [
@@ -979,7 +1000,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 85,
+      'maxMp' => 33,
+      'fireRes' => 26,
+    ]
   ],
   13748 => 
   [
@@ -998,7 +1022,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 85,
+      'maxMp' => 33,
+      'windRes' => 26,
+    ]
   ],
   13749 => 
   [
@@ -1056,7 +1083,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 28,
+    ]
   ],
   13752 => 
   [
@@ -2054,7 +2082,7 @@ return [
     'name' => 'Treasure Sack of the Ancient Giants',
     'add_name' => '',
     'description' => 'Contains the treasure of the ancient Giants. Double-click to open it.',
-    'icon' => 'BranchSys2.etc_ancient_treasure_sack_i00',
+    'icon' => 'branchsys2.etc_ancient_treasure_sack_i00',
     'is_stackable' => true,
     'handler' => 'itemskills',
     'item_skill' => 

@@ -508,7 +508,7 @@ return [
     'name' => 'Anniversary Talisman',
     'add_name' => '',
     'description' => '',
-    'icon' => 'ev_L2_soul_ore',
+    'icon' => 'ev_l2_soul_ore',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_sellable' => false,

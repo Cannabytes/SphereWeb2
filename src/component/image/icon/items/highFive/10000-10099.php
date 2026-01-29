@@ -93,7 +93,8 @@ return [
       'mAtk' => 32,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   10004 => 
   [
@@ -127,7 +128,7 @@ return [
       'mAtk' => 151,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   10005 => 
   [
@@ -148,11 +149,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 46,
       'mAtk' => 32,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   10006 => 
   [
@@ -173,11 +175,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => 2,
       'pAtk' => 55,
       'mAtk' => 32,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+    ]
   ],
   10007 => 
   [
@@ -198,11 +201,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 64,
       'mAtk' => 32,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 64,
+    ]
   ],
   10008 => 
   [
@@ -223,11 +227,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   10009 => 
   [
@@ -248,11 +253,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'pAtkSpd' => 350,
+      'accCombat' => 2,
       'pAtk' => 151,
       'mAtk' => 76,
       'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+    ]
   ],
   10010 => 
   [
@@ -273,11 +279,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 176,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   10011 => 
   [
@@ -298,11 +305,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'pAtkSpd' => 379,
+      'accCombat' => 4,
       'pAtk' => 139,
       'mAtk' => 76,
       'critRate' => 4,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10012 => 
   [
@@ -459,7 +467,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 77,
+    ]
   ],
   10020 => 
   [
@@ -480,7 +489,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 48,
+    ]
   ],
   10021 => 
   [
@@ -501,7 +511,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 58,
+    ]
   ],
   10022 => 
   [
@@ -522,7 +533,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 36,
+    ]
   ],
   10023 => 
   [
@@ -543,7 +555,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 39,
+      'maxMp' => 106,
+    ]
   ],
   10024 => 
   [
@@ -564,7 +578,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'maxMp' => 66,
+      'pDef' => 24,
+    ]
   ],
   10025 => 
   [

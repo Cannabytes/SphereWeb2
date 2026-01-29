@@ -229,11 +229,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 169,
-      'mAtk' => 83,
-      'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+    ]
   ],
   14309 => 
   [
@@ -674,11 +671,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 210,
-      'mAtk' => 99,
-      'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+    ]
   ],
   14326 => 
   [
@@ -1061,11 +1055,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 272,
-      'mAtk' => 121,
-      'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+    ]
   ],
   14341 => 
   [
@@ -1108,7 +1099,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 64,
+    ]
   ],
   14343 => 
   [
@@ -1126,7 +1118,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 48,
+    ]
   ],
   14344 => 
   [
@@ -1144,7 +1137,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 32,
+    ]
   ],
   14345 => 
   [
@@ -1162,7 +1156,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 54,
+    ]
   ],
   14346 => 
   [
@@ -1180,7 +1175,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 36,
+    ]
   ],
   14347 => 
   [
@@ -1198,7 +1194,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 72,
+    ]
   ],
   14348 => 
   [
@@ -1216,7 +1213,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 63,
+      'maxMp' => 25,
+    ]
   ],
   14349 => 
   [
@@ -1234,7 +1233,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 42,
+      'maxMp' => 17,
+    ]
   ],
   14350 => 
   [
@@ -1252,7 +1253,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 85,
+      'maxMp' => 33,
+    ]
   ],
   14351 => 
   [

@@ -7,7 +7,7 @@ return [
     'name' => 'Agathion Seal Bracelet - Lantern - 33-day limited period (event]',
     'add_name' => '33-day limited period (event]',
     'description' => 'A bracelet that can summon a Lantern Agathion. The Lantern Agathion\'s gift cannot be received if there is no room in the inventory and carried item weight. Cannot be exchanged, dropped, or destroyed. Item that can be stored in a private warehouse. ',
-    'icon' => 'BranchSys2.event_agathion_han_i00',
+    'icon' => 'branchsys2.event_agathion_han_i00',
     'bodypart' => 'lbracelet',
     'weight' => 150,
     'is_tradable' => false,
@@ -268,7 +268,9 @@ return [
     'time' => 10080,
     'stats' => 
     [
-    ],
+      'maxMp' => 50,
+      'mDef' => 125,
+    ]
   ],
   22212 => 
   [
@@ -285,7 +287,9 @@ return [
     'time' => 10080,
     'stats' => 
     [
-    ],
+      'mDef' => 94,
+      'maxMp' => 37,
+    ]
   ],
   22213 => 
   [
@@ -302,7 +306,9 @@ return [
     'time' => 10080,
     'stats' => 
     [
-    ],
+      'maxMp' => 25,
+      'mDef' => 62,
+    ]
   ],
   22214 => 
   [
@@ -319,7 +325,9 @@ return [
     'time' => 43200,
     'stats' => 
     [
-    ],
+      'mDef' => 125,
+      'maxMp' => 50,
+    ]
   ],
   22215 => 
   [
@@ -336,7 +344,9 @@ return [
     'time' => 43200,
     'stats' => 
     [
-    ],
+      'mDef' => 94,
+      'maxMp' => 37,
+    ]
   ],
   22216 => 
   [
@@ -353,7 +363,9 @@ return [
     'time' => 43200,
     'stats' => 
     [
-    ],
+      'mDef' => 62,
+      'maxMp' => 25,
+    ]
   ],
   22217 => 
   [
@@ -746,7 +758,8 @@ return [
     'is_dropable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 7,
+    ]
   ],
   22238 => 
   [
@@ -815,7 +828,8 @@ return [
     'bodypart' => 'rfinger;lfinger',
     'stats' => 
     [
-    ],
+      'mDef' => 7,
+    ]
   ],
   22244 => 
   [
@@ -977,7 +991,7 @@ return [
     'name' => 'Chic Silver Chapeau',
     'add_name' => '',
     'description' => 'Chic Silver Chapeau. Uses 2 hair accessory slots. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.icon2.pi_silverchaperon',
+    'icon' => 'branchsys2.icon2.pi_silverchaperon',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -992,7 +1006,7 @@ return [
     'name' => 'Fancy Flower Hat',
     'add_name' => '',
     'description' => 'Fancy Flower Hat. Uses 2 hair accessory slots. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.icon2.pi_flowerhat_for_lady',
+    'icon' => 'branchsys2.icon2.pi_flowerhat_for_lady',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1007,7 +1021,7 @@ return [
     'name' => 'Unicorn Horn Circlet',
     'add_name' => '',
     'description' => 'Unicorn Horn Circlet. Uses 2 hair accessory slots. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.icon2.pi_horncirclet_of_unicorn',
+    'icon' => 'branchsys2.icon2.pi_horncirclet_of_unicorn',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1022,7 +1036,7 @@ return [
     'name' => 'Forest Forget-me-not Hat',
     'add_name' => '',
     'description' => 'Forest Forget-me-not Hat. Uses 2 hair accessory slots. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.icon2.pi_forgetmenot_cap',
+    'icon' => 'branchsys2.icon2.pi_forgetmenot_cap',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1037,7 +1051,7 @@ return [
     'name' => 'White Uniform Hat',
     'add_name' => '',
     'description' => 'White Uniform Hat. Uses 2 hair accessory slots. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.icon2.pi_navy_cap',
+    'icon' => 'branchsys2.icon2.pi_navy_cap',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1052,7 +1066,7 @@ return [
     'name' => 'Golden Viking Circlet',
     'add_name' => '',
     'description' => 'Golden Viking Circlet. Uses 2 hair accessory slots. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.icon2.pi_vikingcirclet_gold',
+    'icon' => 'branchsys2.icon2.pi_vikingcirclet_gold',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1067,7 +1081,7 @@ return [
     'name' => 'Mischievous Bee Hat',
     'add_name' => '',
     'description' => 'Mischievous Bee Hat. Uses 2 hair accessory slots. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.icon2.pi_bee_cap',
+    'icon' => 'branchsys2.icon2.pi_bee_cap',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1082,7 +1096,7 @@ return [
     'name' => 'Chic Silver Chapeau',
     'add_name' => 'Event',
     'description' => 'Chic Silver Chapeau. Uses 2 hair accessory slots. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.icon2.pi_silverchaperon',
+    'icon' => 'branchsys2.icon2.pi_silverchaperon',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1097,7 +1111,7 @@ return [
     'name' => 'Fancy Flower Hat',
     'add_name' => 'Event',
     'description' => 'Fancy Flower Hat. Uses 2 hair accessory slots. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.icon2.pi_flowerhat_for_lady',
+    'icon' => 'branchsys2.icon2.pi_flowerhat_for_lady',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1112,7 +1126,7 @@ return [
     'name' => 'Unicorn Horn Circlet',
     'add_name' => 'Event',
     'description' => 'Unicorn Horn Circlet. Uses 2 hair accessory slots. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.icon2.pi_horncirclet_of_unicorn',
+    'icon' => 'branchsys2.icon2.pi_horncirclet_of_unicorn',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1127,7 +1141,7 @@ return [
     'name' => 'Forest Forget-me-not Hat - Event',
     'add_name' => 'Event',
     'description' => 'Forest Forget-me-not Hat. Uses 2 hair accessory slots. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.icon2.pi_forgetmenot_cap',
+    'icon' => 'branchsys2.icon2.pi_forgetmenot_cap',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1142,7 +1156,7 @@ return [
     'name' => 'White Uniform Hat',
     'add_name' => 'Event',
     'description' => 'White Uniform Hat. Uses 2 hair accessory slots. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.icon2.pi_navy_cap',
+    'icon' => 'branchsys2.icon2.pi_navy_cap',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1157,7 +1171,7 @@ return [
     'name' => 'Golden Viking Circlet',
     'add_name' => 'Event',
     'description' => 'Golden Viking Circlet. Uses 2 hair accessory slots. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.icon2.pi_vikingcirclet_gold',
+    'icon' => 'branchsys2.icon2.pi_vikingcirclet_gold',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1172,7 +1186,7 @@ return [
     'name' => 'Mischievous Bee Hat',
     'add_name' => 'Event',
     'description' => 'Mischievous Bee Hat. Uses 2 hair accessory slots. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.icon2.pi_bee_cap',
+    'icon' => 'branchsys2.icon2.pi_bee_cap',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1313,7 +1327,7 @@ return [
     'name' => 'Sujin Transformation Stick - 7-day limited period (event]',
     'add_name' => '7-day limited period (event]',
     'description' => 'Stick that transforms you into the Blessed Child Sujin. The transformation ends when you de-equip the  Cannot be exchanged, dropped, or sold. Can be stored in a private warehouse. Special skill re-use delay is 4 hour(s].',
-    'icon' => 'BranchSys2.br_blessed_taigirl_i00',
+    'icon' => 'branchsys2.br_blessed_taigirl_i00',
     'weapon_type' => 'sword',
     'bodypart' => 'rhand',
     'is_tradable' => false,
@@ -1335,7 +1349,7 @@ return [
     'name' => 'Sujin Transformation Stick 7-Day Pack - Event',
     'add_name' => 'Event',
     'description' => 'It contains a stick that transforms you into the Blessed Child Sujin.',
-    'icon' => 'BranchSys2.br_blessed_taiboy_i00',
+    'icon' => 'branchsys2.br_blessed_taiboy_i00',
     'is_stackable' => true,
   ],
   22283 => 
@@ -1345,7 +1359,7 @@ return [
     'name' => 'Trejuo Transformation Stick - 7-day limited period (event]',
     'add_name' => '7-day limited period (event]',
     'description' => 'Stick that transforms you into the Blessed Child Trejuo. The transformation ends when you de-equip the  Cannot be exchanged, dropped, or sold. Can be stored in a private warehouse. Special skill re-use delay is 4 hour(s].',
-    'icon' => 'BranchSys2.br_blessed_taiboy_i00',
+    'icon' => 'branchsys2.br_blessed_taiboy_i00',
     'weapon_type' => 'sword',
     'bodypart' => 'rhand',
     'is_tradable' => false,
@@ -1367,7 +1381,7 @@ return [
     'name' => 'Trejuo Transformation Stick 7-Day Pack - Event',
     'add_name' => 'Event',
     'description' => 'It contains a stick that transforms you into the Blessed Child Trejuo.',
-    'icon' => 'BranchSys2.br_blessed_taiboy_i00',
+    'icon' => 'branchsys2.br_blessed_taiboy_i00',
     'is_stackable' => true,
   ],
   22285 => 

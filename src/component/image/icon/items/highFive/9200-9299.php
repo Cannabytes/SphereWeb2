@@ -213,11 +213,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 36,
       'mAtk' => 26,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9210 => 
   [
@@ -239,11 +240,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => 2,
       'pAtk' => 43,
       'mAtk' => 26,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+    ]
   ],
   9211 => 
   [
@@ -265,11 +267,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 350,
+      'accCombat' => 2,
       'pAtk' => 43,
       'mAtk' => 26,
       'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+    ]
   ],
   9212 => 
   [
@@ -291,11 +294,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 51,
       'mAtk' => 26,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9213 => 
   [
@@ -317,11 +321,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 46,
       'mAtk' => 32,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9214 => 
   [
@@ -343,11 +348,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 46,
-      'mAtk' => 32,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 46,
+      'mAtk' => 32,
+    ]
   ],
   9215 => 
   [
@@ -373,7 +379,8 @@ return [
       'mAtk' => 32,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   9216 => 
   [
@@ -394,11 +401,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => 2,
       'pAtk' => 55,
       'mAtk' => 32,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+    ]
   ],
   9217 => 
   [
@@ -420,11 +428,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 64,
       'mAtk' => 32,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9218 => 
   [
@@ -446,11 +455,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 58,
       'mAtk' => 39,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9219 => 
   [
@@ -472,11 +482,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 58,
       'mAtk' => 39,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9220 => 
   [
@@ -498,11 +509,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 350,
+      'accCombat' => 2,
       'pAtk' => 69,
       'mAtk' => 39,
       'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+    ]
   ],
   9221 => 
   [
@@ -524,11 +536,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 81,
       'mAtk' => 39,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9222 => 
   [
@@ -550,11 +563,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 72,
       'mAtk' => 47,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9223 => 
   [
@@ -576,11 +590,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 350,
+      'accCombat' => 2,
       'pAtk' => 86,
       'mAtk' => 47,
       'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+    ]
   ],
   9224 => 
   [
@@ -602,11 +617,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 303,
+      'accCombat' => -1,
       'pAtk' => 100,
       'mAtk' => 47,
       'critRate' => 10,
-      'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9225 => 
   [
@@ -628,11 +644,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 83,
       'mAtk' => 54,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 83,
+    ]
   ],
   9226 => 
   [
@@ -654,11 +671,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 100,
       'mAtk' => 54,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+      'pAtk' => 100,
+    ]
   ],
   9227 => 
   [
@@ -684,7 +702,8 @@ return [
       'mAtk' => 54,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   9228 => 
   [
@@ -706,11 +725,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 97,
       'mAtk' => 61,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9229 => 
   [
@@ -749,11 +769,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 97,
       'mAtk' => 61,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9230 => 
   [
@@ -783,11 +804,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 406,
+      'accCombat' => -1,
       'pAtk' => 97,
       'mAtk' => 61,
       'critRate' => 10,
-      'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9231 => 
   [
@@ -817,11 +839,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 97,
       'mAtk' => 61,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 97,
+    ]
   ],
   9232 => 
   [
@@ -843,11 +866,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 350,
+      'accCombat' => 2,
       'pAtk' => 116,
       'mAtk' => 61,
       'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+    ]
   ],
   9233 => 
   [
@@ -877,11 +901,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 116,
       'mAtk' => 61,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+      'pAtk' => 116,
+    ]
   ],
   9234 => 
   [
@@ -911,11 +936,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 116,
       'mAtk' => 61,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+      'pAtk' => 116,
+    ]
   ],
   9235 => 
   [
@@ -945,11 +971,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 2,
       'pAtk' => 116,
       'mAtk' => 61,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+    ]
   ],
   9236 => 
   [
@@ -971,11 +998,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 135,
       'mAtk' => 61,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9237 => 
   [
@@ -1005,11 +1033,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 135,
-      'mAtk' => 61,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 135,
+      'mAtk' => 61,
+    ]
   ],
   9238 => 
   [
@@ -1039,11 +1068,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 135,
       'mAtk' => 61,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9239 => 
   [
@@ -1065,11 +1095,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 135,
       'mAtk' => 61,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9240 => 
   [
@@ -1095,7 +1126,8 @@ return [
       'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   9241 => 
   [
@@ -1125,11 +1157,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 111,
       'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9242 => 
   [
@@ -1163,7 +1196,8 @@ return [
       'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   9243 => 
   [
@@ -1193,11 +1227,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 111,
-      'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 111,
+      'mAtk' => 68,
+    ]
   ],
   9244 => 
   [
@@ -1219,11 +1254,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 111,
       'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9245 => 
   [
@@ -1253,11 +1289,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 111,
       'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9246 => 
   [
@@ -1287,11 +1324,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 111,
-      'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 111,
+      'mAtk' => 68,
+    ]
   ],
   9247 => 
   [
@@ -1321,11 +1359,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 111,
       'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9248 => 
   [
@@ -1347,11 +1386,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 111,
-      'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 111,
+      'mAtk' => 68,
+    ]
   ],
   9249 => 
   [
@@ -1381,11 +1421,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 406,
+      'accCombat' => -1,
       'pAtk' => 111,
       'mAtk' => 68,
       'critRate' => 10,
-      'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9250 => 
   [
@@ -1420,7 +1461,8 @@ return [
       'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   9251 => 
   [
@@ -1454,7 +1496,8 @@ return [
       'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   9252 => 
   [
@@ -1476,11 +1519,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 111,
-      'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 111,
+      'mAtk' => 68,
+    ]
   ],
   9253 => 
   [
@@ -1510,11 +1554,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 406,
+      'accCombat' => -1,
       'pAtk' => 111,
       'mAtk' => 68,
       'critRate' => 10,
-      'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9254 => 
   [
@@ -1545,11 +1590,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 111,
-      'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 111,
+      'mAtk' => 68,
+    ]
   ],
   9255 => 
   [
@@ -1580,11 +1626,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 406,
+      'accCombat' => -1,
       'pAtk' => 111,
       'mAtk' => 68,
       'critRate' => 10,
-      'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9256 => 
   [
@@ -1606,11 +1653,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 155,
-      'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 155,
+      'mAtk' => 68,
+    ]
   ],
   9257 => 
   [
@@ -1640,11 +1688,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 155,
       'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9258 => 
   [
@@ -1667,11 +1716,12 @@ return [
     'reduced_soulshot' => '40,4',
     'stats' => 
     [
+      'pAtkSpd' => 303,
+      'accCombat' => -1,
       'pAtk' => 155,
       'mAtk' => 68,
       'critRate' => 10,
-      'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9259 => 
   [
@@ -1693,11 +1743,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 155,
       'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9260 => 
   [
@@ -1719,11 +1770,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 155,
       'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9261 => 
   [
@@ -1753,11 +1805,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 155,
       'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9262 => 
   [
@@ -1784,7 +1837,8 @@ return [
       'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   9263 => 
   [
@@ -1814,11 +1868,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 155,
       'mAtk' => 68,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 155,
+    ]
   ],
   9264 => 
   [
@@ -1840,11 +1895,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9265 => 
   [
@@ -1874,11 +1930,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9266 => 
   [
@@ -1908,11 +1965,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9267 => 
   [
@@ -1942,11 +2000,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9268 => 
   [
@@ -1968,11 +2027,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 126,
+    ]
   ],
   9269 => 
   [
@@ -2002,11 +2062,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9270 => 
   [
@@ -2036,11 +2097,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 126,
-      'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 126,
+      'mAtk' => 76,
+    ]
   ],
   9271 => 
   [
@@ -2070,11 +2132,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9272 => 
   [
@@ -2096,11 +2159,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 406,
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
-      'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9273 => 
   [
@@ -2130,11 +2194,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 406,
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
-      'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9274 => 
   [
@@ -2168,7 +2233,8 @@ return [
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   9275 => 
   [
@@ -2198,11 +2264,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9276 => 
   [
@@ -2224,11 +2291,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9277 => 
   [
@@ -2258,11 +2326,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9278 => 
   [
@@ -2292,11 +2361,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9279 => 
   [
@@ -2326,11 +2396,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9280 => 
   [
@@ -2352,11 +2423,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9281 => 
   [
@@ -2386,11 +2458,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9282 => 
   [
@@ -2425,7 +2498,8 @@ return [
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   9283 => 
   [
@@ -2455,11 +2529,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 126,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9284 => 
   [
@@ -2481,11 +2556,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => 2,
       'pAtk' => 151,
       'mAtk' => 76,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+    ]
   ],
   9285 => 
   [
@@ -2515,11 +2591,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 2,
       'pAtk' => 151,
       'mAtk' => 76,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+    ]
   ],
   9286 => 
   [
@@ -2549,11 +2626,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 2,
       'pAtk' => 151,
       'mAtk' => 76,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+    ]
   ],
   9287 => 
   [
@@ -2584,11 +2662,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 2,
       'pAtk' => 151,
       'mAtk' => 76,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+    ]
   ],
   9288 => 
   [
@@ -2610,11 +2689,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 176,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9289 => 
   [
@@ -2644,11 +2724,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 176,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9290 => 
   [
@@ -2678,11 +2759,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 176,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 176,
+    ]
   ],
   9291 => 
   [
@@ -2705,11 +2787,12 @@ return [
     'reduced_soulshot' => '32,4',
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 176,
       'mAtk' => 76,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9292 => 
   [
@@ -2731,11 +2814,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 406,
+      'accCombat' => -1,
       'pAtk' => 141,
       'mAtk' => 83,
       'critRate' => 10,
-      'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9293 => 
   [
@@ -2765,11 +2849,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 141,
       'mAtk' => 83,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   9294 => 
   [
@@ -2803,7 +2888,8 @@ return [
       'mAtk' => 83,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   9295 => 
   [
@@ -2833,11 +2919,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 141,
-      'mAtk' => 83,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+      'pAtk' => 141,
+      'mAtk' => 83,
+    ]
   ],
   9296 => 
   [
@@ -2859,11 +2946,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 169,
-      'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+      'pAtk' => 169,
+      'mAtk' => 83,
+    ]
   ],
   9297 => 
   [
@@ -2893,11 +2981,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 2,
       'pAtk' => 169,
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+    ]
   ],
   9298 => 
   [
@@ -2927,11 +3016,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 2,
       'pAtk' => 169,
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+    ]
   ],
   9299 => 
   [
@@ -2961,10 +3051,11 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 350,
+      'accCombat' => 2,
       'pAtk' => 169,
       'mAtk' => 83,
       'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+    ]
   ],
 ];

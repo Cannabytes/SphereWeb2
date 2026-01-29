@@ -95,7 +95,7 @@ return [
     'name' => 'Dye Coupon Lv. 11 (Time-limited]',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchSys3.icon1.g_luckygame_card_trade_i00',
+    'icon' => 'branchsys3.icon1.g_luckygame_card_trade_i00',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_sellable' => false,

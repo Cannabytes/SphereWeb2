@@ -720,7 +720,7 @@ return [
     'name' => 'Package: Einhasad\'s Pendant Lv. 1 (100 pcs.]',
     'add_name' => '',
     'description' => '',
-    'icon' => 'Icon.bm_pendant_pve_white_pack',
+    'icon' => 'icon.bm_pendant_pve_white_pack',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_sellable' => false,

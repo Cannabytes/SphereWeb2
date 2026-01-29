@@ -159,7 +159,7 @@ return [
     'name' => 'Herb of Alacrity',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchSys2.etc_attack_sp_herb_i01',
+    'icon' => 'branchsys2.etc_attack_sp_herb_i01',
     'ex_immediate_effect' => 'true',
     'is_depositable' => false,
     'handler' => 'itemskills',
@@ -219,7 +219,7 @@ return [
     'name' => 'Herb of Speed',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchSys2.etc_move_herb_i01',
+    'icon' => 'branchsys2.etc_move_herb_i01',
     'ex_immediate_effect' => 'true',
     'is_depositable' => false,
     'handler' => 'itemskills',
@@ -1507,11 +1507,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 251,
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 251,
+    ]
   ],
   8679 => 
   [
@@ -1537,7 +1537,7 @@ return [
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8680 => 
   [
@@ -1562,7 +1562,8 @@ return [
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   8681 => 
   [
@@ -1583,11 +1584,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 305,
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 305,
+    ]
   ],
   8682 => 
   [
@@ -1612,7 +1614,8 @@ return [
       'mAtk' => 121,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   8683 => 
   [
@@ -1641,11 +1644,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 251,
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8684 => 
   [
@@ -1668,11 +1672,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 570,
       'mAtk' => 133,
       'critRate' => 12,
       'pAtkSpd' => 227,
-    ],
+    ]
   ],
   8685 => 
   [
@@ -1693,11 +1698,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 305,
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8686 => 
   [
@@ -1723,7 +1729,7 @@ return [
       'mAtk' => 161,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8687 => 
   [
@@ -1745,11 +1751,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 202,
       'mAtk' => 161,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8688 => 
   [
@@ -1771,11 +1778,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 245,
       'mAtk' => 177,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8689 => 
   [
@@ -1804,11 +1812,11 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 361,
       'mAtk' => 137,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 361,
+    ]
   ],
   8690 => 
   [

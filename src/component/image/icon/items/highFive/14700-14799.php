@@ -271,7 +271,7 @@ return [
     'name' => 'Cow Hair Accessory',
     'add_name' => '',
     'description' => 'Hair accessory in the shape of a cow head.',
-    'icon' => 'Accessory2_cow_of_cap_i00',
+    'icon' => 'accessory2_cow_of_cap_i00',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1635,7 +1635,8 @@ return [
     'time' => 20160,
     'stats' => 
     [
-    ],
+      'maxMp' => 15,
+    ]
   ],
   14774 => 
   [
@@ -2099,8 +2100,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-      'critRate' => 8,
-    ],
+      'accCombat' => 2,
+    ]
   ],
   14794 => 
   [

@@ -14,7 +14,9 @@ return [
     'price' => 1870,
     'stats' => 
     [
-    ],
+      'pDef' => 21,
+      'maxMp' => 38,
+    ]
   ],
   1101 => 
   [
@@ -30,7 +32,9 @@ return [
     'price' => 15600,
     'stats' => 
     [
-    ],
+      'pDef' => 30,
+      'maxMp' => 67,
+    ]
   ],
   1102 => 
   [
@@ -46,7 +50,9 @@ return [
     'price' => 28400,
     'stats' => 
     [
-    ],
+      'pDef' => 34,
+      'maxMp' => 86,
+    ]
   ],
   1103 => 
   [
@@ -62,7 +68,9 @@ return [
     'price' => 1170,
     'stats' => 
     [
-    ],
+      'pDef' => 13,
+      'maxMp' => 23,
+    ]
   ],
   1104 => 
   [
@@ -78,7 +86,9 @@ return [
     'price' => 9770,
     'stats' => 
     [
-    ],
+      'pDef' => 19,
+      'maxMp' => 42,
+    ]
   ],
   1105 => 
   [
@@ -94,7 +104,9 @@ return [
     'price' => 17700,
     'stats' => 
     [
-    ],
+      'pDef' => 21,
+      'maxMp' => 54,
+    ]
   ],
   1106 => 
   [
@@ -304,7 +316,8 @@ return [
     'price' => 470,
     'stats' => 
     [
-    ],
+      'pDef' => 11,
+    ]
   ],
   1120 => 
   [
@@ -322,7 +335,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 34,
+    ]
   ],
   1121 => 
   [
@@ -337,7 +351,8 @@ return [
     'price' => 5,
     'stats' => 
     [
-    ],
+      'pDef' => 8,
+    ]
   ],
   1122 => 
   [
@@ -352,7 +367,8 @@ return [
     'price' => 470,
     'stats' => 
     [
-    ],
+      'pDef' => 11,
+    ]
   ],
   1123 => 
   [
@@ -370,7 +386,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 22,
+    ]
   ],
   1124 => 
   [
@@ -388,7 +405,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 27,
+    ]
   ],
   1125 => 
   [
@@ -406,7 +424,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 29,
+    ]
   ],
   1126 => 
   [
@@ -424,7 +443,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 34,
+    ]
   ],
   1127 => 
   [
@@ -442,7 +462,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 36,
+    ]
   ],
   1128 => 
   [
@@ -460,7 +481,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 39,
+    ]
   ],
   1129 => 
   [
@@ -475,7 +497,8 @@ return [
     'price' => 470,
     'stats' => 
     [
-    ],
+      'pDef' => 11,
+    ]
   ],
   1130 => 
   [
@@ -674,11 +697,11 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 18,
       'mAtk' => 21,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   1143 => 
   [
@@ -740,7 +763,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 33,
+    ]
   ],
   1147 => 
   [
@@ -759,7 +783,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 20,
+    ]
   ],
   1148 => 
   [
@@ -774,7 +799,8 @@ return [
     'price' => 14200,
     'stats' => 
     [
-    ],
+      'pDef' => 26,
+    ]
   ],
   1149 => 
   [
@@ -792,7 +818,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 54,
+    ]
   ],
   1150 => 
   [
@@ -1269,11 +1296,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 45,
       'mAtk' => 16,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 45,
+    ]
   ],
   1182 => 
   [
@@ -1293,11 +1321,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 19,
       'mAtk' => 16,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   1183 => 
   [

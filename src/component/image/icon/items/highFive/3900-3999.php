@@ -14,7 +14,9 @@ return [
     'price' => 283000,
     'stats' => 
     [
-    ],
+      'mDef' => 38,
+      'pDef' => 43,
+    ]
   ],
   3901 => 
   [
@@ -30,7 +32,9 @@ return [
     'price' => 412500,
     'stats' => 
     [
-    ],
+      'pDef' => 47,
+      'mDef' => 41,
+    ]
   ],
   3902 => 
   [
@@ -46,9 +50,11 @@ return [
     'price' => 30500,
     'stats' => 
     [
+      'mAtk' => 10,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 11,
+    ]
   ],
   3903 => 
   [
@@ -64,9 +70,11 @@ return [
     'price' => 50000,
     'stats' => 
     [
+      'pAtk' => 16,
+      'mAtk' => 14,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   3904 => 
   [
@@ -82,9 +90,11 @@ return [
     'price' => 80000,
     'stats' => 
     [
+      'pAtk' => 23,
+      'mAtk' => 18,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   3905 => 
   [
@@ -100,9 +110,11 @@ return [
     'price' => 120000,
     'stats' => 
     [
+      'pAtk' => 31,
+      'mAtk' => 24,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   3906 => 
   [
@@ -120,7 +132,9 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 40,
+      'mAtk' => 30,
+    ]
   ],
   3907 => 
   [
@@ -136,9 +150,11 @@ return [
     'price' => 225000,
     'stats' => 
     [
+      'pAtk' => 49,
+      'mAtk' => 36,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   3908 => 
   [
@@ -154,9 +170,11 @@ return [
     'price' => 285000,
     'stats' => 
     [
+      'pAtk' => 58,
+      'mAtk' => 42,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   3909 => 
   [
@@ -174,7 +192,9 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 69,
+      'mAtk' => 50,
+    ]
   ],
   3910 => 
   [
@@ -190,9 +210,11 @@ return [
     'price' => 550000,
     'stats' => 
     [
+      'mAtk' => 58,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 80,
+    ]
   ],
   3911 => 
   [
@@ -208,9 +230,11 @@ return [
     'price' => 750000,
     'stats' => 
     [
+      'pAtk' => 93,
+      'mAtk' => 66,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   3912 => 
   [
@@ -226,7 +250,9 @@ return [
     'price' => 58500,
     'stats' => 
     [
-    ],
+      'mDef' => 26,
+      'pDef' => 26,
+    ]
   ],
   3913 => 
   [
@@ -242,7 +268,9 @@ return [
     'price' => 86000,
     'stats' => 
     [
-    ],
+      'mDef' => 29,
+      'pDef' => 29,
+    ]
   ],
   3914 => 
   [
@@ -258,7 +286,9 @@ return [
     'price' => 113000,
     'stats' => 
     [
-    ],
+      'mDef' => 31,
+      'pDef' => 31,
+    ]
   ],
   3915 => 
   [
@@ -274,7 +304,9 @@ return [
     'price' => 145500,
     'stats' => 
     [
-    ],
+      'mDef' => 33,
+      'pDef' => 33,
+    ]
   ],
   3916 => 
   [
@@ -290,7 +322,9 @@ return [
     'price' => 186000,
     'stats' => 
     [
-    ],
+      'mDef' => 36,
+      'pDef' => 36,
+    ]
   ],
   3917 => 
   [
@@ -306,7 +340,9 @@ return [
     'price' => 283000,
     'stats' => 
     [
-    ],
+      'mDef' => 38,
+      'pDef' => 38,
+    ]
   ],
   3918 => 
   [
@@ -322,7 +358,9 @@ return [
     'price' => 412500,
     'stats' => 
     [
-    ],
+      'mDef' => 41,
+      'pDef' => 41,
+    ]
   ],
   3919 => 
   [
@@ -338,9 +376,11 @@ return [
     'price' => 100000,
     'stats' => 
     [
+      'pAtk' => 8,
+      'mAtk' => 7,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   3920 => 
   [
@@ -358,7 +398,9 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 9,
+      'mAtk' => 10,
+    ]
   ],
   3921 => 
   [
@@ -374,9 +416,11 @@ return [
     'price' => 210000,
     'stats' => 
     [
+      'pAtk' => 10,
+      'mAtk' => 11,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   3922 => 
   [
@@ -392,9 +436,11 @@ return [
     'price' => 285000,
     'stats' => 
     [
+      'mAtk' => 13,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 12,
+    ]
   ],
   3923 => 
   [
@@ -412,7 +458,9 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 13,
+      'mAtk' => 16,
+    ]
   ],
   3924 => 
   [
@@ -430,7 +478,9 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 15,
+      'mAtk' => 18,
+    ]
   ],
   3925 => 
   [
@@ -446,9 +496,11 @@ return [
     'price' => 800000,
     'stats' => 
     [
+      'mAtk' => 21,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 17,
+    ]
   ],
   3926 => 
   [
@@ -720,11 +772,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'accCombat' => -3,
       'pAtk' => 50,
       'mAtk' => 26,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   3938 => 
   [
@@ -753,11 +806,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 50,
       'mAtk' => 26,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   3939 => 
   [
@@ -790,7 +844,8 @@ return [
       'mAtk' => 26,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   3940 => 
   [

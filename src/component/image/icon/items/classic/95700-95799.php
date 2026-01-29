@@ -255,7 +255,7 @@ return [
     'name' => 'Siege Support Box (Time-limited]',
     'add_name' => '',
     'description' => '',
-    'icon' => 'Branchsys2.icon2.g_alegra_box',
+    'icon' => 'branchsys2.icon2.g_alegra_box',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_sellable' => false,

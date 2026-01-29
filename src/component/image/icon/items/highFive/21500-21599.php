@@ -1116,7 +1116,7 @@ return [
     'name' => 'Neolithic Crystal - S84',
     'add_name' => '',
     'description' => 'If you bring it to the Dimensional Merchant, you can exchange an ordinary S84 Grade item for a Masterwork ',
-    'icon' => 'BranchSys2.etc_warding_orb_gold_i00',
+    'icon' => 'branchsys2.etc_warding_orb_gold_i00',
     'weight' => 20,
     'is_stackable' => true,
   ],
@@ -1127,7 +1127,7 @@ return [
     'name' => 'Olf\'s T-shirt',
     'add_name' => '',
     'description' => 'Dimensional  Olf\'s T-shirt Enchant Scroll. Can enhance up to +10 using a Blessed Olf\'s T-shirt Enchant Scroll. Cannot be exchanged or dropped. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.7anni_shirt_i00',
+    'icon' => 'branchsys2.7anni_shirt_i00',
     'bodypart' => 'underwear',
     'weight' => 130,
     'enchant_enabled' => true,
@@ -1135,7 +1135,8 @@ return [
     'is_dropable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 28,
+    ]
   ],
   21581 => 
   [
@@ -1144,7 +1145,7 @@ return [
     'name' => 'Olf\'s T-shirt Enchant Scroll',
     'add_name' => '',
     'description' => 'Enchant scroll exclusive to Olf\'s T-shirt.. Increases the T-shirt\'s P. Def. and M. Def. by 1. Starting from +4, increases P. Def. by 3. Can safely enchant to +3 and up to a max +10. From +4, "basic abilities (CON, MEN, STR, INT, DEX, WIT]" are raised in stages. Addtional options are added at +5, +7, +8 and +9. Cannot be dropped. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.etc_scroll_of_enchant_shirt_i01',
+    'icon' => 'branchsys2.etc_scroll_of_enchant_shirt_i01',
     'etcitem_type' => 'scrl_enchant_am',
     'weight' => 120,
     'is_dropable' => false,
@@ -1166,7 +1167,7 @@ return [
     'name' => 'Blessed Olf\'s T-shirt Enchant Scroll',
     'add_name' => '',
     'description' => 'Dimensional  Enchant scroll exclusive to Olf\'s T-shirt.. Increases the T-shirt\'s P. Def. and M. Def. by 1. Starting from +4, increases P. Def. by 3. Can safely enchant to +3 and up to a max +10. From +4, "basic abilities (CON, MEN, STR, INT, DEX, WIT]" are raised in stages. Additional options are added at +5, +7, +8 and +9. If the enchant fails, the existing enchant value becomes 0. Cannot be dropped. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.etc_scroll_of_enchant_shirt_i00',
+    'icon' => 'branchsys2.etc_scroll_of_enchant_shirt_i00',
     'etcitem_type' => 'bless_scrl_enchant_am',
     'weight' => 120,
     'is_dropable' => false,
@@ -1188,7 +1189,7 @@ return [
     'name' => '7th Anniversary Cloak - Pitch Black',
     'add_name' => '',
     'description' => 'Dimensional  L2 II 7th Anniversary commemorative . When an armor set above the Dynasty level is worn, the Sealed Cloak Slot will be open so that the cloak can be equipped. Enchanting, attribute enhancing, or augmenting are not possible. Cannot be exchanged, dropped or destroyed.',
-    'icon' => 'BranchSys2.Icon.7anni_cloack_i00',
+    'icon' => 'branchsys2.icon.7anni_cloack_i00',
     'bodypart' => 'back',
     'weight' => 220,
     'is_tradable' => false,
@@ -1196,7 +1197,8 @@ return [
     'is_destroyable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 25,
+    ]
   ],
   21584 => 
   [
@@ -1218,7 +1220,7 @@ return [
     'name' => 'Festival\'s Cloak - Pitch Black - Event',
     'add_name' => 'Event',
     'description' => 'Dimensional  Cloak with the feeling of pitch black darkness. When an armor set above the Dynasty level is worn, the Sealed Cloak Slot will be open so that the cloak can be equipped. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.Icon.7anni_cloack_i00',
+    'icon' => 'branchsys2.icon.7anni_cloack_i00',
     'bodypart' => 'back',
     'weight' => 220,
     'is_tradable' => false,
@@ -1227,7 +1229,8 @@ return [
     'is_freightable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 25,
+    ]
   ],
   21586 => 
   [
@@ -1250,7 +1253,7 @@ return [
     'name' => '7th Anniversary Cloak - Blood Red',
     'add_name' => '',
     'description' => 'Dimensional  L2 II 7th anniversary commemorative . Cloak for the true heroes who have made history since the beginning of L2 II. When an armor set above the Dynasty level is worn, the Sealed Cloak Slot will be open so that the cloak can be equipped. Enchanting, attribute enhancing, or augmenting are not possible. Cannot be exchanged, dropped, or destroyed. Can be shared between characters on the same account through the Dimensional Merchant.',
-    'icon' => 'BranchSys2.Icon.7anni_cloack_i01',
+    'icon' => 'branchsys2.icon.7anni_cloack_i01',
     'bodypart' => 'back',
     'weight' => 220,
     'is_tradable' => false,
@@ -1258,7 +1261,8 @@ return [
     'is_destroyable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 25,
+    ]
   ],
   21588 => 
   [
@@ -1267,7 +1271,7 @@ return [
     'name' => '7th Anniversary Cloak - Pearl White',
     'add_name' => '',
     'description' => 'Dimensional  L2 II 7th Anniversary commemorative . When an armor set above the Dynasty level is worn, the Sealed Cloak Slot will be open so that the cloak can be equipped. Enchanting, attribute enhancing, or augmenting are not possible. Cannot be exchanged, dropped or destroyed. Can be shared between characters on the same account through the Dimensional Merchant.',
-    'icon' => 'BranchSys2.Icon.7anni_cloack_i02',
+    'icon' => 'branchsys2.icon.7anni_cloack_i02',
     'bodypart' => 'back',
     'weight' => 220,
     'is_tradable' => false,
@@ -1275,7 +1279,8 @@ return [
     'is_destroyable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 25,
+    ]
   ],
   21589 => 
   [
@@ -1297,7 +1302,7 @@ return [
     'name' => 'Festival\'s Cloak - Pearl White - Event',
     'add_name' => 'Event',
     'description' => 'Dimensional  Cloak with pearly white beauty. When an armor set above the Dynasty level is worn, the Sealed Cloak Slot will be open so that the cloak can be equipped. Cannot be exchanged, dropped, or destroyed. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse. ',
-    'icon' => 'BranchSys2.Icon.7anni_cloack_i02',
+    'icon' => 'branchsys2.icon.7anni_cloack_i02',
     'bodypart' => 'back',
     'weight' => 220,
     'is_tradable' => false,
@@ -1306,7 +1311,8 @@ return [
     'is_freightable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 25,
+    ]
   ],
   21591 => 
   [

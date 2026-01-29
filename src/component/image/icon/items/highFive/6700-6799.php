@@ -212,11 +212,12 @@ return [
     'mp_consume' => 1,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 16,
       'mAtk' => 6,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+    ]
   ],
   6716 => 
   [
@@ -235,11 +236,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 11,
       'mAtk' => 12,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   6717 => 
   [
@@ -257,11 +259,11 @@ return [
     'spiritshots' => 2,
     'stats' => 
     [
-      'pAtk' => 24,
-      'mAtk' => 17,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 24,
+      'mAtk' => 17,
+    ]
   ],
   6718 => 
   [
@@ -279,11 +281,12 @@ return [
     'spiritshots' => 2,
     'stats' => 
     [
-      'pAtk' => 24,
       'mAtk' => 17,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 24,
+    ]
   ],
   6719 => 
   [
@@ -304,11 +307,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'accCombat' => 4,
       'pAtk' => 141,
       'mAtk' => 104,
       'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   6720 => 
   [
@@ -327,11 +331,12 @@ return [
     'mp_consume' => 1,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 16,
       'mAtk' => 6,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+    ]
   ],
   6721 => 
   [
@@ -348,7 +353,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 47,
-    ],
+    ]
   ],
   6722 => 
   [
@@ -372,7 +377,7 @@ return [
       'mAtk' => 99,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   6723 => 
   [
@@ -396,7 +401,7 @@ return [
       'mAtk' => 54,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   6724 => 
   [
@@ -414,7 +419,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 68,
+    ]
   ],
   6725 => 
   [
@@ -432,7 +438,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 46,
+    ]
   ],
   6726 => 
   [
@@ -450,7 +457,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 91,
+    ]
   ],
   6727 => 
   [

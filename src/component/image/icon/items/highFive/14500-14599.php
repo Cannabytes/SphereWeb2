@@ -1019,7 +1019,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 250,
+    ]
   ],
   14521 => 
   [
@@ -1041,7 +1042,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 187,
+    ]
   ],
   14522 => 
   [
@@ -1063,7 +1065,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 125,
+      'maxMp' => 637,
+    ]
   ],
   14523 => 
   [
@@ -1085,7 +1089,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 250,
+    ]
   ],
   14524 => 
   [
@@ -1107,7 +1112,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 187,
+    ]
   ],
   14525 => 
   [
@@ -1129,7 +1135,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 125,
+      'maxMp' => 637,
+    ]
   ],
   14526 => 
   [
@@ -2595,11 +2603,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 334,
-      'mAtk' => 119,
-      'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+    ]
   ],
   14579 => 
   [
@@ -2651,11 +2656,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 334,
-      'mAtk' => 119,
-      'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+    ]
   ],
   14581 => 
   [
@@ -2702,7 +2704,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 73,
+    ]
   ],
   14583 => 
   [
@@ -2722,7 +2725,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 293,
+    ]
   ],
   14584 => 
   [
@@ -2741,7 +2745,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   14585 => 
   [
@@ -2760,7 +2765,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   14586 => 
   [
@@ -2780,7 +2786,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 220,
+    ]
   ],
   14587 => 
   [
@@ -2799,7 +2806,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   14588 => 
   [
@@ -2818,7 +2826,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   14589 => 
   [
@@ -2838,7 +2847,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 147,
+      'maxMp' => 718,
+    ]
   ],
   14590 => 
   [
@@ -2857,7 +2868,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   14591 => 
   [
@@ -2876,7 +2888,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   14592 => 
   [

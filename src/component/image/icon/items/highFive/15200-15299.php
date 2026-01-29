@@ -4074,7 +4074,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 106,
+      'maxMp' => 46,
+      'waterRes' => 30,
+    ]
   ],
   15283 => 
   [
@@ -4093,7 +4096,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 106,
+      'maxMp' => 46,
+      'holyRes' => 30,
+    ]
   ],
   15284 => 
   [
@@ -4112,7 +4118,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 106,
+      'maxMp' => 46,
+      'windRes' => 30,
+    ]
   ],
   15285 => 
   [
@@ -4131,7 +4140,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 106,
+      'maxMp' => 46,
+      'darkRes' => 30,
+    ]
   ],
   15286 => 
   [
@@ -4150,7 +4162,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 106,
+      'maxMp' => 46,
+      'earthRes' => 30,
+    ]
   ],
   15287 => 
   [
@@ -4169,7 +4184,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 106,
+      'maxMp' => 46,
+      'waterRes' => 30,
+    ]
   ],
   15288 => 
   [
@@ -4188,7 +4206,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 106,
+      'maxMp' => 46,
+      'fireRes' => 30,
+    ]
   ],
   15289 => 
   [
@@ -4207,7 +4228,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'fireRes' => 30,
+      'mDef' => 106,
+      'maxMp' => 46,
+    ]
   ],
   15290 => 
   [
@@ -4226,7 +4250,10 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'windRes' => 30,
+      'mDef' => 106,
+      'maxMp' => 46,
+    ]
   ],
   15291 => 
   [

@@ -7,7 +7,7 @@ return [
     'name' => 'Emerald Weapon: Rapier',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchSys3.Icon.g_beam_sword',
+    'icon' => 'branchsys3.icon.g_beam_sword',
     'weapon_type' => 'rapier',
     'bodypart' => 'rhand',
     'crystal_type' => 'b',

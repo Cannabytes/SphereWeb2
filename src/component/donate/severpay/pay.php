@@ -72,8 +72,8 @@ class severpay extends \Ofey\Logan22\model\donate\pay_abstract {
             'client_id' => (string)user::self()->getId(),
             'salt' => $salt,
         ];
-
         ksort($body);
+
         $body['sign'] = hash_hmac("sha256", json_encode($body), $token);
 
         $ch = curl_init('https://severpay.io/api/merchant/payin/create');

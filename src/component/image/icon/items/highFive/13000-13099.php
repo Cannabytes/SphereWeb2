@@ -16,7 +16,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 73,
+    ]
   ],
   13001 => 
   [
@@ -34,7 +35,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 73,
+    ]
   ],
   13002 => 
   [
@@ -1197,7 +1199,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 49,
+      'pDef' => 49,
+    ]
   ],
   13051 => 
   [

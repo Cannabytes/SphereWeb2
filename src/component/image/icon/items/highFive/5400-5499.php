@@ -14,7 +14,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5401 => 
   [
@@ -30,7 +31,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5402 => 
   [
@@ -46,7 +48,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5403 => 
   [
@@ -62,7 +65,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5404 => 
   [
@@ -80,7 +84,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5405 => 
   [
@@ -98,7 +103,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5406 => 
   [
@@ -116,7 +122,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5407 => 
   [
@@ -134,7 +141,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5408 => 
   [
@@ -150,7 +158,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5409 => 
   [
@@ -166,7 +175,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5410 => 
   [
@@ -182,7 +192,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5411 => 
   [
@@ -198,7 +209,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5412 => 
   [
@@ -214,7 +226,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5413 => 
   [
@@ -230,7 +243,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5414 => 
   [
@@ -246,7 +260,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5415 => 
   [
@@ -262,7 +277,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5416 => 
   [
@@ -280,7 +296,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5417 => 
   [
@@ -298,7 +315,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5418 => 
   [
@@ -316,7 +334,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5419 => 
   [
@@ -334,7 +353,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5420 => 
   [
@@ -352,7 +372,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5421 => 
   [
@@ -370,7 +391,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5422 => 
   [
@@ -388,7 +410,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5423 => 
   [
@@ -406,7 +429,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5424 => 
   [
@@ -424,7 +448,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5425 => 
   [
@@ -442,7 +467,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5426 => 
   [
@@ -460,7 +486,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5427 => 
   [
@@ -478,7 +505,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5428 => 
   [
@@ -496,7 +524,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5429 => 
   [
@@ -514,7 +543,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5430 => 
   [
@@ -532,7 +562,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5431 => 
   [
@@ -550,7 +581,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5432 => 
   [
@@ -568,7 +600,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5433 => 
   [
@@ -586,7 +619,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5434 => 
   [
@@ -604,7 +638,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5435 => 
   [
@@ -622,7 +657,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5436 => 
   [
@@ -640,7 +676,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5437 => 
   [
@@ -658,7 +695,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5438 => 
   [
@@ -676,7 +714,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5439 => 
   [
@@ -694,7 +733,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5440 => 
   [
@@ -712,7 +752,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5441 => 
   [
@@ -730,7 +771,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5442 => 
   [
@@ -748,7 +790,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5443 => 
   [
@@ -766,7 +809,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5444 => 
   [
@@ -784,7 +828,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5445 => 
   [
@@ -802,7 +847,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5446 => 
   [
@@ -820,7 +866,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5447 => 
   [
@@ -838,7 +885,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5448 => 
   [
@@ -856,7 +904,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5449 => 
   [
@@ -874,7 +923,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5450 => 
   [
@@ -892,7 +942,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5451 => 
   [
@@ -910,7 +961,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5452 => 
   [
@@ -928,7 +980,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5453 => 
   [
@@ -946,7 +999,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5454 => 
   [
@@ -962,7 +1016,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5455 => 
   [
@@ -978,7 +1033,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5456 => 
   [
@@ -996,7 +1052,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5457 => 
   [
@@ -1014,7 +1071,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5458 => 
   [
@@ -1032,7 +1090,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5459 => 
   [
@@ -1050,7 +1109,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5460 => 
   [
@@ -1068,7 +1128,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5461 => 
   [
@@ -1086,7 +1147,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5462 => 
   [
@@ -1104,7 +1166,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5463 => 
   [
@@ -1122,7 +1185,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5464 => 
   [
@@ -1140,7 +1204,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5465 => 
   [
@@ -1158,7 +1223,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5466 => 
   [
@@ -1176,7 +1242,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5467 => 
   [
@@ -1194,7 +1261,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5468 => 
   [
@@ -1212,7 +1280,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5469 => 
   [
@@ -1230,7 +1299,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5470 => 
   [
@@ -1248,7 +1318,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5471 => 
   [
@@ -1266,7 +1337,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5472 => 
   [
@@ -1284,7 +1356,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5473 => 
   [
@@ -1302,7 +1375,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5474 => 
   [
@@ -1320,7 +1394,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5475 => 
   [
@@ -1338,7 +1413,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5476 => 
   [
@@ -1356,7 +1432,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5477 => 
   [
@@ -1374,7 +1451,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5478 => 
   [
@@ -1539,7 +1617,7 @@ return [
     'name' => 'Phoenix Necklace Beads',
     'add_name' => '',
     'description' => 'An essential ingredient needed by a Dwarf to make Phoenix Armor. It can be sold at a regular store.',
-    'icon' => 'BranchSys2.etc_phoenixnecklace_beads_i00',
+    'icon' => 'branchsys2.etc_phoenixnecklace_beads_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 9185,
@@ -1552,7 +1630,7 @@ return [
     'name' => 'Inferno Necklace Beads',
     'add_name' => '',
     'description' => 'An essential ingredient needed by a Dwarf to make an Inferno Necklace. It can be sold at a regular store.',
-    'icon' => 'BranchSys2.etc_majesticnecklace_beads_i00',
+    'icon' => 'branchsys2.etc_majesticnecklace_beads_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 13114,

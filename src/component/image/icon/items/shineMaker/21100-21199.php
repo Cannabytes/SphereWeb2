@@ -19,7 +19,7 @@ return [
     'name' => 'Wedding Bouquet',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchSys2.br_wedding_bouquet_i00',
+    'icon' => 'branchsys2.br_wedding_bouquet_i00',
     'weapon_type' => 'etc',
     'bodypart' => 'rhand',
     'weight' => 1600,

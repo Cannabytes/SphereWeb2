@@ -643,7 +643,7 @@ return [
     'name' => 'Black Ore Necklace Beads',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchSys2.etc_blackorenecklace_beads_i00',
+    'icon' => 'branchsys2.etc_blackorenecklace_beads_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'is_stackable' => true,

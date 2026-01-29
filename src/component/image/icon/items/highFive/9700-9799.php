@@ -412,7 +412,8 @@ return [
       'mAtk' => 10,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   9721 => 
   [
@@ -1406,7 +1407,7 @@ return [
     'name' => 'Transformation Sealbook: Onyx Beast',
     'add_name' => '',
     'description' => 'A sealed letter that carries powers and seals of initial transformation magic. If you give it to 2nd floor of the Ivory Tower to the Wizard of Transformation, you can be transformed.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_sellable' => false,

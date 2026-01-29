@@ -148,7 +148,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 26,
+    ]
   ],
   10208 => 
   [
@@ -174,7 +175,9 @@ return [
     ],
     'stats' => 
     [
-    ],
+      'pDef' => 30,
+      'maxMp' => 70,
+    ]
   ],
   10209 => 
   [
@@ -199,7 +202,8 @@ return [
     ],
     'stats' => 
     [
-    ],
+      'maxMp' => 60,
+    ]
   ],
   10210 => 
   [
@@ -224,7 +228,8 @@ return [
     ],
     'stats' => 
     [
-    ],
+      'maxMp' => 120,
+    ]
   ],
   10211 => 
   [
@@ -250,7 +255,8 @@ return [
     ],
     'stats' => 
     [
-    ],
+      'mDef' => 24,
+    ]
   ],
   10212 => 
   [
@@ -267,11 +273,11 @@ return [
     'spiritshots' => 2,
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 31,
       'mAtk' => 21,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10213 => 
   [
@@ -304,7 +310,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 170,
+    ]
   ],
   10215 => 
   [
@@ -331,7 +338,7 @@ return [
       'mAtk' => 163,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10216 => 
   [
@@ -357,7 +364,8 @@ return [
       'mAtk' => 163,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   10217 => 
   [
@@ -384,7 +392,7 @@ return [
       'mAtk' => 217,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10218 => 
   [
@@ -411,7 +419,7 @@ return [
       'mAtk' => 163,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   10219 => 
   [
@@ -441,11 +449,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 363,
       'mAtk' => 163,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   10220 => 
   [
@@ -467,11 +476,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 363,
       'mAtk' => 163,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10221 => 
   [
@@ -493,11 +503,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 442,
       'mAtk' => 163,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   10222 => 
   [
@@ -520,11 +531,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 290,
       'mAtk' => 217,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10223 => 
   [
@@ -548,11 +560,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 689,
       'mAtk' => 163,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 689,
+    ]
   ],
   10224 => 
   [
@@ -579,7 +592,8 @@ return [
       'mAtk' => 163,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   10225 => 
   [
@@ -602,11 +616,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 350,
+      'accCombat' => 2,
       'pAtk' => 393,
       'mAtk' => 163,
       'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+    ]
   ],
   10226 => 
   [
@@ -629,11 +644,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 422,
       'mAtk' => 163,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   10227 => 
   [
@@ -653,7 +669,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 226,
+    ]
   ],
   10228 => 
   [
@@ -673,7 +690,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 226,
+    ]
   ],
   10229 => 
   [
@@ -693,7 +711,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 226,
+    ]
   ],
   10230 => 
   [
@@ -713,7 +732,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 226,
+    ]
   ],
   10231 => 
   [
@@ -733,7 +753,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 226,
+    ]
   ],
   10232 => 
   [
@@ -753,7 +774,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 170,
+    ]
   ],
   10233 => 
   [
@@ -773,7 +795,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 170,
+    ]
   ],
   10234 => 
   [
@@ -793,7 +816,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 170,
+    ]
   ],
   10235 => 
   [
@@ -813,7 +837,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 113,
+      'maxMp' => 592,
+    ]
   ],
   10236 => 
   [
@@ -833,7 +859,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 113,
+      'maxMp' => 592,
+    ]
   ],
   10237 => 
   [
@@ -853,7 +881,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 113,
+      'maxMp' => 592,
+    ]
   ],
   10238 => 
   [
@@ -873,7 +903,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 113,
+      'maxMp' => 592,
+    ]
   ],
   10239 => 
   [
@@ -893,7 +925,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 113,
+      'maxMp' => 592,
+    ]
   ],
   10240 => 
   [
@@ -1062,11 +1096,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
-      'pAtk' => 325,
       'mAtk' => 222,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 325,
+    ]
   ],
   10253 => 
   [
@@ -1092,7 +1127,8 @@ return [
       'mAtk' => 151,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   10254 => 
   [
@@ -1573,11 +1609,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 24,
       'mAtk' => 17,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   10278 => 
   [
@@ -1596,11 +1633,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 73,
       'mAtk' => 37,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 73,
+    ]
   ],
   10279 => 
   [
@@ -1748,7 +1785,7 @@ return [
     'name' => 'Transformation Sealbook: Divine Knight',
     'add_name' => '',
     'description' => 'Allows for transformation into a highly specialized form, by transferring the powerful energy of the subclass to the main class. This item cannot be exchanged, dropped, destroyed, or stored in a warehouse.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'is_tradable' => false,
     'is_dropable' => false,
@@ -1764,7 +1801,7 @@ return [
     'name' => 'Transformation Sealbook: Divine Warrior',
     'add_name' => '',
     'description' => 'Allows for transformation into a highly specialized form, by transferring the powerful energy of the subclass to the main class. This item cannot be exchanged, dropped, destroyed, or stored in a warehouse.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'is_tradable' => false,
     'is_dropable' => false,
@@ -1780,7 +1817,7 @@ return [
     'name' => 'Transformation Sealbook: Divine Rogue',
     'add_name' => '',
     'description' => 'Allows for transformation into a highly specialized form, by transferring the powerful energy of the subclass to the main class. This item cannot be exchanged, dropped, destroyed, or stored in a warehouse.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'is_tradable' => false,
     'is_dropable' => false,
@@ -1796,7 +1833,7 @@ return [
     'name' => 'Transformation Sealbook: Divine Healer',
     'add_name' => '',
     'description' => 'Allows for transformation into a highly specialized form, by transferring the powerful energy of the subclass to the main class. This item cannot be exchanged, dropped, destroyed, or stored in a warehouse.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'is_tradable' => false,
     'is_dropable' => false,
@@ -1812,7 +1849,7 @@ return [
     'name' => 'Transformation Sealbook: Divine Wizard',
     'add_name' => '',
     'description' => 'Allows for transformation into a highly specialized form, by transferring the powerful energy of the subclass to the main class. This item cannot be exchanged, dropped, destroyed, or stored in a warehouse.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'is_tradable' => false,
     'is_dropable' => false,
@@ -1828,7 +1865,7 @@ return [
     'name' => 'Transformation Sealbook: Divine Enchanter',
     'add_name' => '',
     'description' => 'Allows for transformation into a highly specialized form, by transferring the powerful energy of the subclass to the main class. This item cannot be exchanged, dropped, destroyed, or stored in a warehouse.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'is_tradable' => false,
     'is_dropable' => false,
@@ -1844,7 +1881,7 @@ return [
     'name' => 'Transformation Sealbook: Divine Summoner',
     'add_name' => '',
     'description' => 'Allows for transformation into a highly specialized form, by transferring the powerful energy of the subclass to the main class. This item cannot be exchanged, dropped, destroyed, or stored in a warehouse.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'is_tradable' => false,
     'is_dropable' => false,
@@ -1860,7 +1897,7 @@ return [
     'name' => 'Transformation Sealbook: Zaken',
     'add_name' => '',
     'description' => 'Documents the method for transforming into Zaken.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'is_stackable' => true,
   ],
@@ -1871,7 +1908,7 @@ return [
     'name' => 'Transformation Sealbook: Anakim',
     'add_name' => '',
     'description' => 'Documents the method for transforming into Anakim.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'is_stackable' => true,
   ],
@@ -1882,7 +1919,7 @@ return [
     'name' => 'Transformation Sealbook: Venom',
     'add_name' => '',
     'description' => 'Documents the method for transforming into Venom.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'is_stackable' => true,
   ],
@@ -1893,7 +1930,7 @@ return [
     'name' => 'Transformation Sealbook: Gordon',
     'add_name' => '',
     'description' => 'Documents the method for transforming into Gordon.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'is_stackable' => true,
   ],
@@ -1904,7 +1941,7 @@ return [
     'name' => 'Transformation Sealbook: Ranku',
     'add_name' => '',
     'description' => 'Documents the method for transforming into Ranku.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'is_stackable' => true,
   ],

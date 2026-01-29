@@ -520,7 +520,7 @@ return [
     'name' => 'Journeyman Deco Beads',
     'add_name' => '',
     'description' => 'Ingredient item used to make a journeyman\'s ring.',
-    'icon' => 'BranchSys2.etc_Journeyman_deco_beads_i00',
+    'icon' => 'branchsys2.etc_journeyman_deco_beads_i00',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_sellable' => false,

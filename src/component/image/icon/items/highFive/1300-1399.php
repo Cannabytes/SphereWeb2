@@ -22,7 +22,8 @@ return [
       'mAtk' => 6,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   1301 => 
   [
@@ -42,11 +43,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 22,
       'mAtk' => 6,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   1302 => 
   [
@@ -74,11 +76,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 22,
       'mAtk' => 6,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 22,
+    ]
   ],
   1303 => 
   [
@@ -106,11 +109,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 30000,
       'mAtk' => 6,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 30000,
+    ]
   ],
   1304 => 
   [
@@ -130,11 +134,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 15,
-      'mAtk' => 17,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 15,
+      'mAtk' => 17,
+    ]
   ],
   1305 => 
   [
@@ -154,11 +159,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 30000,
       'mAtk' => 6,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   1306 => 
   [
@@ -178,11 +184,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 22,
       'mAtk' => 6,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 22,
+    ]
   ],
   1307 => 
   [
@@ -203,11 +210,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 120,
-      'mAtk' => 6,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 120,
+      'mAtk' => 6,
+    ]
   ],
   1308 => 
   [
@@ -225,7 +233,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 51,
+    ]
   ],
   1309 => 
   [
@@ -243,7 +252,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 51,
+    ]
   ],
   1310 => 
   [
@@ -261,7 +271,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 51,
+      'maxMp' => 96,
+    ]
   ],
   1311 => 
   [
@@ -279,7 +291,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 51,
+    ]
   ],
   1312 => 
   [
@@ -297,7 +310,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 51,
+      'maxMp' => 142,
+    ]
   ],
   1313 => 
   [
@@ -315,7 +330,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 32,
+    ]
   ],
   1314 => 
   [
@@ -333,7 +349,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 32,
+    ]
   ],
   1315 => 
   [
@@ -351,7 +368,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'maxMp' => 60,
+      'pDef' => 32,
+    ]
   ],
   1316 => 
   [
@@ -369,7 +388,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 32,
+    ]
   ],
   1317 => 
   [
@@ -387,7 +407,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 32,
+      'maxMp' => 79,
+    ]
   ],
   1318 => 
   [
@@ -404,7 +426,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 14,
+    ]
   ],
   1319 => 
   [
@@ -421,7 +444,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 14,
+    ]
   ],
   1320 => 
   [
@@ -438,7 +462,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 14,
+    ]
   ],
   1321 => 
   [
@@ -455,7 +480,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 14,
+    ]
   ],
   1322 => 
   [
@@ -472,7 +498,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 14,
+    ]
   ],
   1323 => 
   [
@@ -489,7 +516,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 14,
+    ]
   ],
   1324 => 
   [
@@ -506,7 +534,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 14,
+    ]
   ],
   1325 => 
   [
@@ -523,7 +552,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 14,
+    ]
   ],
   1326 => 
   [
@@ -540,7 +570,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 14,
+    ]
   ],
   1327 => 
   [
@@ -557,7 +588,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 14,
+    ]
   ],
   1328 => 
   [
@@ -576,7 +608,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 71,
-    ],
+    ]
   ],
   1329 => 
   [
@@ -595,7 +627,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 71,
-    ],
+    ]
   ],
   1330 => 
   [
@@ -614,7 +646,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 71,
-    ],
+    ]
   ],
   1331 => 
   [
@@ -633,7 +665,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 71,
-    ],
+    ]
   ],
   1332 => 
   [
@@ -652,7 +684,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 71,
-    ],
+    ]
   ],
   1333 => 
   [
@@ -674,7 +706,7 @@ return [
       'mAtk' => 12,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   1334 => 
   [
@@ -1318,11 +1350,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 50,
       'mAtk' => 26,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   1377 => 
   [

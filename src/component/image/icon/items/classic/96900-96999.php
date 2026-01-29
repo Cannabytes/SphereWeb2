@@ -473,7 +473,7 @@ return [
     'name' => 'Demon King\'s Crossbow',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchSys3.Icon.g_beam_shield',
+    'icon' => 'branchsys3.icon.g_beam_shield',
     'weapon_type' => 'crossbow',
     'bodypart' => 'lrhand',
     'crystal_type' => 'a',

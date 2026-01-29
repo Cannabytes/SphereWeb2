@@ -43,7 +43,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 20,
+    ]
   ],
   14602 => 
   [
@@ -61,7 +62,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 20,
+    ]
   ],
   14603 => 
   [
@@ -78,7 +80,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 20,
+    ]
   ],
   14604 => 
   [
@@ -180,7 +183,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 20,
+    ]
   ],
   14609 => 
   [
@@ -198,7 +202,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 20,
+    ]
   ],
   14610 => 
   [
@@ -216,7 +221,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 20,
+    ]
   ],
   14611 => 
   [
@@ -225,7 +231,7 @@ return [
     'name' => 'Rudolph\'s Nose',
     'add_name' => '',
     'description' => 'Rudolph\'s Nose. 14-day-limited-time  Cannot be exchanged or dropped.',
-    'icon' => 'Accessory_nose_of_rudolph_mask_i00',
+    'icon' => 'accessory_nose_of_rudolph_mask_i00',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -2556,7 +2562,7 @@ return [
     'name' => 'Rudolph\'s Nose',
     'add_name' => '',
     'description' => 'Rudolph\'s Nose. Can be used only during the Christmas season.',
-    'icon' => 'Accessory_nose_of_rudolph_mask_i00',
+    'icon' => 'accessory_nose_of_rudolph_mask_i00',
     'weight' => 10,
     'is_dropable' => false,
   ],

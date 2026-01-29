@@ -31,7 +31,8 @@ return [
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   301 => 
   [
@@ -64,7 +65,8 @@ return [
       'mAtk' => 78,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   302 => 
   [
@@ -93,11 +95,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 107,
       'mAtk' => 61,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 107,
+    ]
   ],
   303 => 
   [
@@ -126,11 +129,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 144,
       'mAtk' => 78,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 144,
+    ]
   ],
   304 => 
   [
@@ -159,11 +163,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 219,
       'mAtk' => 109,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   305 => 
   [
@@ -196,7 +201,8 @@ return [
       'mAtk' => 114,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   306 => 
   [
@@ -225,11 +231,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 251,
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   307 => 
   [
@@ -259,11 +266,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 269,
       'mAtk' => 128,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   308 => 
   [
@@ -282,11 +290,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 6,
       'mAtk' => 8,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   309 => 
   [
@@ -309,7 +317,7 @@ return [
       'mAtk' => 22,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   310 => 
   [
@@ -332,7 +340,7 @@ return [
       'mAtk' => 22,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   311 => 
   [
@@ -351,11 +359,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 25,
       'mAtk' => 28,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   312 => 
   [
@@ -381,7 +389,7 @@ return [
       'mAtk' => 35,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   313 => 
   [
@@ -403,11 +411,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
-      'pAtk' => 32,
       'mAtk' => 35,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 32,
+    ]
   ],
   314 => 
   [
@@ -433,7 +441,7 @@ return [
       'mAtk' => 35,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   315 => 
   [
@@ -459,7 +467,7 @@ return [
       'mAtk' => 43,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   316 => 
   [
@@ -481,11 +489,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 51,
       'mAtk' => 52,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   317 => 
   [
@@ -511,7 +519,7 @@ return [
       'mAtk' => 52,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   318 => 
   [
@@ -533,11 +541,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 63,
       'mAtk' => 63,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   319 => 
   [
@@ -559,11 +567,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 63,
       'mAtk' => 63,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   320 => 
   [
@@ -589,7 +597,7 @@ return [
       'mAtk' => 66,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   321 => 
   [
@@ -615,7 +623,7 @@ return [
       'mAtk' => 66,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   322 => 
   [
@@ -641,7 +649,7 @@ return [
       'mAtk' => 72,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   323 => 
   [
@@ -663,11 +671,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
-      'pAtk' => 74,
-      'mAtk' => 72,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 74,
+      'mAtk' => 72,
+    ]
   ],
   324 => 
   [
@@ -693,7 +701,7 @@ return [
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   325 => 
   [
@@ -715,11 +723,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
-      'pAtk' => 98,
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 98,
+    ]
   ],
   326 => 
   [
@@ -745,7 +753,7 @@ return [
       'mAtk' => 101,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   327 => 
   [
@@ -771,7 +779,7 @@ return [
       'mAtk' => 101,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   328 => 
   [
@@ -793,11 +801,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
-      'pAtk' => 125,
-      'mAtk' => 111,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 125,
+      'mAtk' => 111,
+    ]
   ],
   329 => 
   [
@@ -823,7 +831,7 @@ return [
       'mAtk' => 111,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   330 => 
   [
@@ -849,7 +857,7 @@ return [
       'mAtk' => 111,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   331 => 
   [
@@ -875,7 +883,7 @@ return [
       'mAtk' => 111,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   332 => 
   [
@@ -901,7 +909,7 @@ return [
       'mAtk' => 111,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   333 => 
   [
@@ -927,7 +935,7 @@ return [
       'mAtk' => 111,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   334 => 
   [
@@ -953,7 +961,7 @@ return [
       'mAtk' => 111,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   335 => 
   [
@@ -975,11 +983,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 155,
       'mAtk' => 132,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   336 => 
   [
@@ -1005,7 +1013,7 @@ return [
       'mAtk' => 143,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   337 => 
   [
@@ -1031,7 +1039,7 @@ return [
       'mAtk' => 143,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   338 => 
   [
@@ -1057,7 +1065,7 @@ return [
       'mAtk' => 143,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   339 => 
   [
@@ -1083,7 +1091,7 @@ return [
       'mAtk' => 143,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   340 => 
   [
@@ -1105,11 +1113,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
-      'pAtk' => 170,
       'mAtk' => 143,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 170,
+    ]
   ],
   341 => 
   [
@@ -1131,11 +1139,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 186,
       'mAtk' => 152,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   342 => 
   [
@@ -1161,7 +1169,7 @@ return [
       'mAtk' => 152,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   343 => 
   [
@@ -1187,7 +1195,7 @@ return [
       'mAtk' => 152,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   344 => 
   [
@@ -1213,7 +1221,7 @@ return [
       'mAtk' => 152,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   345 => 
   [
@@ -1239,7 +1247,7 @@ return [
       'mAtk' => 152,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   346 => 
   [
@@ -1261,11 +1269,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
-      'pAtk' => 201,
-      'mAtk' => 162,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 201,
+      'mAtk' => 162,
+    ]
   ],
   347 => 
   [
@@ -1284,7 +1292,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 77,
+    ]
   ],
   348 => 
   [
@@ -1303,7 +1312,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 87,
+    ]
   ],
   349 => 
   [
@@ -1322,7 +1332,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 95,
+    ]
   ],
   350 => 
   [
@@ -1341,7 +1352,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 95,
+    ]
   ],
   351 => 
   [
@@ -1360,7 +1372,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 97,
+    ]
   ],
   352 => 
   [
@@ -1379,7 +1392,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 103,
+    ]
   ],
   353 => 
   [
@@ -1398,7 +1412,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 111,
+    ]
   ],
   354 => 
   [
@@ -1417,7 +1432,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 120,
+    ]
   ],
   355 => 
   [
@@ -1436,7 +1452,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 129,
+    ]
   ],
   356 => 
   [
@@ -1455,7 +1472,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 239,
+    ]
   ],
   357 => 
   [
@@ -1474,7 +1492,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 157,
+    ]
   ],
   358 => 
   [
@@ -1493,7 +1512,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 166,
+    ]
   ],
   359 => 
   [
@@ -1512,7 +1532,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 301,
+    ]
   ],
   360 => 
   [
@@ -1531,7 +1552,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 175,
+    ]
   ],
   361 => 
   [
@@ -1550,7 +1572,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 185,
+    ]
   ],
   362 => 
   [
@@ -1569,7 +1592,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 284,
+    ]
   ],
   363 => 
   [
@@ -1588,7 +1612,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 301,
+    ]
   ],
   364 => 
   [
@@ -1607,7 +1632,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 175,
+    ]
   ],
   365 => 
   [
@@ -1626,7 +1652,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 171,
+    ]
   ],
   366 => 
   [
@@ -1645,7 +1672,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 284,
+    ]
   ],
   367 => 
   [
@@ -1664,7 +1692,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 301,
+    ]
   ],
   368 => 
   [
@@ -1683,7 +1712,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 284,
+    ]
   ],
   369 => 
   [
@@ -1702,7 +1732,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 301,
+    ]
   ],
   370 => 
   [
@@ -1721,7 +1752,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 284,
+    ]
   ],
   371 => 
   [
@@ -1740,7 +1772,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 301,
+    ]
   ],
   372 => 
   [
@@ -1759,7 +1792,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 284,
+    ]
   ],
   373 => 
   [
@@ -1778,7 +1812,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 301,
+    ]
   ],
   374 => 
   [
@@ -1797,7 +1832,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 293,
+    ]
   ],
   375 => 
   [
@@ -1819,7 +1855,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 198,
+    ]
   ],
   376 => 
   [
@@ -1838,7 +1875,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 48,
+    ]
   ],
   377 => 
   [
@@ -1857,7 +1895,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 54,
+    ]
   ],
   378 => 
   [
@@ -1876,7 +1915,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   379 => 
   [
@@ -1895,7 +1935,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   380 => 
   [
@@ -1914,7 +1955,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 70,
+    ]
   ],
   381 => 
   [
@@ -1933,7 +1975,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 75,
+    ]
   ],
   382 => 
   [
@@ -1952,7 +1995,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 80,
+    ]
   ],
   383 => 
   [
@@ -1971,7 +2015,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 98,
+    ]
   ],
   384 => 
   [
@@ -1990,7 +2035,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 109,
+    ]
   ],
   385 => 
   [
@@ -2009,7 +2055,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 109,
+    ]
   ],
   386 => 
   [
@@ -2028,7 +2075,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 116,
+    ]
   ],
   387 => 
   [
@@ -2047,7 +2095,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 109,
+    ]
   ],
   388 => 
   [
@@ -2066,7 +2115,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 107,
+    ]
   ],
   389 => 
   [
@@ -2088,7 +2138,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 122,
+    ]
   ],
   390 => 
   [
@@ -2104,7 +2155,8 @@ return [
     'price' => 15600,
     'stats' => 
     [
-    ],
+      'pDef' => 50,
+    ]
   ],
   391 => 
   [
@@ -2123,7 +2175,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 58,
+    ]
   ],
   392 => 
   [
@@ -2142,7 +2195,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 65,
+    ]
   ],
   393 => 
   [
@@ -2161,7 +2215,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 73,
+    ]
   ],
   394 => 
   [
@@ -2180,7 +2235,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 73,
+    ]
   ],
   395 => 
   [
@@ -2199,7 +2255,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 77,
+    ]
   ],
   396 => 
   [
@@ -2218,7 +2275,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 136,
+    ]
   ],
   397 => 
   [
@@ -2237,7 +2295,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 90,
+    ]
   ],
   398 => 
   [
@@ -2256,7 +2315,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 94,
+    ]
   ],
   399 => 
   [
@@ -2275,6 +2335,7 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 97,
+    ]
   ],
 ];

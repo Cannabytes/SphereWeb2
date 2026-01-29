@@ -428,7 +428,7 @@ return [
     'name' => 'Rare Accessory Pack (Time-limited]',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchSys3.g_cash_fortuna_box_r',
+    'icon' => 'branchsys3.g_cash_fortuna_box_r',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_sellable' => false,

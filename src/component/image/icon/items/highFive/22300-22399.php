@@ -41,7 +41,9 @@ return [
     'time' => 4320,
     'stats' => 
     [
-    ],
+      'mDef' => 94,
+      'maxMp' => 37,
+    ]
   ],
   22303 => 
   [
@@ -59,7 +61,9 @@ return [
     'time' => 10080,
     'stats' => 
     [
-    ],
+      'mDef' => 94,
+      'maxMp' => 37,
+    ]
   ],
   22304 => 
   [
@@ -77,7 +81,9 @@ return [
     'time' => 4320,
     'stats' => 
     [
-    ],
+      'mDef' => 48,
+      'maxMp' => 21,
+    ]
   ],
   22305 => 
   [
@@ -93,7 +99,9 @@ return [
     'time' => 10080,
     'stats' => 
     [
-    ],
+      'maxMp' => 21,
+      'mDef' => 48,
+    ]
   ],
   22306 => 
   [
@@ -146,7 +154,7 @@ return [
     'name' => 'Allegra Box',
     'add_name' => '',
     'description' => 'There is a chance of obtaining a high-grade transformation scroll, Blessed Scroll: Enchant Weapon, and Scroll: Enchant Weapon.',
-    'icon' => 'Branchsys2.icon2.g_alegra_box',
+    'icon' => 'branchsys2.icon2.g_alegra_box',
     'is_stackable' => true,
   ],
   22311 => 
@@ -156,7 +164,7 @@ return [
     'name' => 'Latus Box',
     'add_name' => '',
     'description' => 'A Divine Weapon Enchant Crystal and a high grade Ancient Weapon Enchant Crystal can be acquired at a constant rate.',
-    'icon' => 'Branchsys2.icon2.g-latus_box',
+    'icon' => 'branchsys2.icon2.g-latus_box',
     'is_stackable' => true,
   ],
   22312 => 
@@ -175,7 +183,8 @@ return [
     'is_dropable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 10,
+    ]
   ],
   22313 => 
   [
@@ -193,7 +202,8 @@ return [
     'is_dropable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 10,
+    ]
   ],
   22314 => 
   [

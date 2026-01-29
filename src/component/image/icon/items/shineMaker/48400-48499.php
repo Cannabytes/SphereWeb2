@@ -36,7 +36,7 @@ return [
     'name' => 'Item Unseal Scroll (15-min] Box',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchSys3.g_ev_invite_fantasy_box',
+    'icon' => 'branchsys3.g_ev_invite_fantasy_box',
     'weight' => 10,
     'is_tradable' => false,
     'is_dropable' => false,

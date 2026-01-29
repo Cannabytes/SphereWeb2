@@ -178,6 +178,53 @@ use Ofey\Logan22\model\user\user;
     private bool $is_depositable  = false;
     private bool $is_stackable = true;
     private ?string $crystal_type = null;
+    private ?string $bodypart = null;
+    private ?string $etcitem_type = null;
+    private ?int $crystal_count = null;
+    private ?int $soulshots = null;
+    private ?int $spiritshots = null;
+    private ?int $enchant_enabled = null;
+    private ?array $stats = null;
+
+    public function getSoulshots(): ?int
+    {
+        return $this->soulshots;
+    }
+
+    public function setSoulshots(?int $soulshots): void
+    {
+        $this->soulshots = $soulshots;
+    }
+
+    public function getSpiritshots(): ?int
+    {
+        return $this->spiritshots;
+    }
+
+    public function setSpiritshots(?int $spiritshots): void
+    {
+        $this->spiritshots = $spiritshots;
+    }
+
+    public function getEnchantEnabled(): ?int
+    {
+        return $this->enchant_enabled;
+    }
+
+    public function setEnchantEnabled(?int $enchant_enabled): void
+    {
+        $this->enchant_enabled = $enchant_enabled;
+    }
+
+    public function getStats(): ?array
+    {
+        return $this->stats;
+    }
+
+    public function setStats(?array $stats): void
+    {
+        $this->stats = $stats;
+    }
 
     public function getCrystalType(): ?string
     {
@@ -214,9 +261,35 @@ use Ofey\Logan22\model\user\user;
         return $this->type;
     }
 
+    public function getBodyPart(): ?string {
+        return $this->bodypart;
+    }
+
+    public function setBodyPart(?string $bodypart): void {
+        $this->bodypart = $bodypart;
+    }
+
     public function setType(?string $type): void
     {
         $this->type = $type;
+    }
+
+    public function setEtcitemType(?string $etcitemType): void {
+        $this->etcitem_type = $etcitemType;
+    }
+
+    public function getEtcitemType(): ?string {
+        return $this->etcitem_type;
+    }
+
+    public function getCrystalCount(): ?int
+    {
+        return $this->crystal_count;
+    }
+
+    public function setCrystalCount(?int $crystal_count): void
+    {
+        $this->crystal_count = $crystal_count;
     }
 
     public static function icon($fileIcon = null, $object = "icon")
@@ -268,6 +341,7 @@ use Ofey\Logan22\model\user\user;
             $itemObject->setItemName($item['name']);
             $itemObject->setAddName($item['add_name']);
             $itemObject->setDescription($item['description']);
+            $itemObject->setBodyPart($item['bodypart'] ?? null);
             $itemObject->setCrystalType($item['crystal_type'] ?? null);
             $itemObject->setIsDropable($item['is_dropable'] ?? false);
             $itemObject->setIsSellable($item['is_sellable'] ?? false);
@@ -276,6 +350,12 @@ use Ofey\Logan22\model\user\user;
             $itemObject->setIsDepositable($item['is_depositable'] ?? false);
             $itemObject->setPrice($item['price'] ?? 0);
             $itemObject->setExists(true);
+            $itemObject->setEtcitemType($item['etcitem_type'] ?? null);
+            $itemObject->setCrystalCount($item['crystal_count'] ?? null);
+            $itemObject->setSoulshots($item['soulshots'] ?? null);
+            $itemObject->setSpiritshots($item['spiritshots'] ?? null);
+            $itemObject->setEnchantEnabled($item['enchant_enabled'] ?? null);
+            $itemObject->setStats($item['stats'] ?? null);
 
             if(file_exists("uploads/images/icon/{$id}.webp")){
                 $itemObject->setIcon("{$id}.webp");
@@ -303,6 +383,7 @@ use Ofey\Logan22\model\user\user;
             'itemName' => $this->itemName,
             'addName' => $this->add_name,
             'description' => $this->description,
+            'bodyPart' => $this->bodypart,
             'price' => $this->price,
             'isTradable' => $this->is_tradable,
             'isDropable' => $this->is_dropable,
@@ -311,6 +392,12 @@ use Ofey\Logan22\model\user\user;
             'isDepositable' => $this->is_depositable,
             'isStackable' => $this->is_stackable,
             'isExists' => $this->exists,
+            'etcitemType' => $this->etcitem_type,
+            'crystalCount' => $this->crystal_count,
+            'soulshots' => $this->soulshots,
+            'spiritshots' => $this->spiritshots,
+            'enchantEnabled' => $this->enchant_enabled,
+            'stats' => $this->stats,
         ];
     }
 

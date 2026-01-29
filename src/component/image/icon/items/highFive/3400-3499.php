@@ -490,7 +490,7 @@ return [
     'name' => 'Elf Figure',
     'add_name' => '',
     'description' => '',
-    'icon' => 'etc_figure_FElf_i00',
+    'icon' => 'etc_figure_felf_i00',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_destroyable' => false,
@@ -575,9 +575,11 @@ return [
     'price' => 17000,
     'stats' => 
     [
+      'pAtk' => 7,
+      'mAtk' => 8,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   3440 => 
   [
@@ -965,11 +967,12 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-      'pAtk' => 10,
       'mAtk' => 9,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 10,
+    ]
   ],
   3472 => 
   [

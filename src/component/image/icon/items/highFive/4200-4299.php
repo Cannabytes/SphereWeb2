@@ -41,7 +41,7 @@ return [
       'mAtk' => 1,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   4203 => 
   [
@@ -252,7 +252,7 @@ return [
       'mAtk' => 21,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   4220 => 
   [
@@ -275,11 +275,12 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 27,
       'mAtk' => 21,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   4221 => 
   [
@@ -302,11 +303,12 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
+      'pAtkSpd' => 379,
+      'accCombat' => 4,
       'pAtk' => 31,
       'mAtk' => 21,
       'critRate' => 4,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   4222 => 
   [
@@ -328,7 +330,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 90,
-    ],
+    ]
   ],
   4223 => 
   [
@@ -350,7 +352,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 90,
-    ],
+    ]
   ],
   4224 => 
   [
@@ -370,7 +372,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   4225 => 
   [
@@ -390,7 +393,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 43,
+    ]
   ],
   4226 => 
   [
@@ -409,7 +413,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 17,
+    ]
   ],
   4227 => 
   [
@@ -428,7 +433,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 17,
+    ]
   ],
   4228 => 
   [
@@ -448,7 +454,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   4229 => 
   [
@@ -468,7 +475,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 43,
+    ]
   ],
   4230 => 
   [
@@ -487,7 +495,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 17,
+    ]
   ],
   4231 => 
   [
@@ -506,7 +515,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 17,
+    ]
   ],
   4232 => 
   [
@@ -539,11 +549,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 148,
       'mAtk' => 68,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   4234 => 
   [
@@ -559,7 +570,9 @@ return [
     'price' => 1566000,
     'stats' => 
     [
-    ],
+      'mDef' => 50,
+      'pDef' => 50,
+    ]
   ],
   4235 => 
   [
@@ -575,7 +588,9 @@ return [
     'price' => 4793000,
     'stats' => 
     [
-    ],
+      'mDef' => 58,
+      'pDef' => 58,
+    ]
   ],
   4236 => 
   [
@@ -591,7 +606,9 @@ return [
     'price' => 4793000,
     'stats' => 
     [
-    ],
+      'mDef' => 58,
+      'pDef' => 58,
+    ]
   ],
   4237 => 
   [
@@ -609,7 +626,9 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 24,
+      'mAtk' => 32,
+    ]
   ],
   4238 => 
   [
@@ -625,9 +644,11 @@ return [
     'price' => 9536500,
     'stats' => 
     [
+      'pAtk' => 31,
+      'mAtk' => 43,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   4239 => 
   [

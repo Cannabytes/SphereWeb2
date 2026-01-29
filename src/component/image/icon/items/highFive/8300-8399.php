@@ -717,11 +717,11 @@ return [
     'is_dropable' => false,
     'stats' => 
     [
+      'pAtkSpd' => 325,
       'pAtk' => 1,
       'mAtk' => 1,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8351 => 
   [

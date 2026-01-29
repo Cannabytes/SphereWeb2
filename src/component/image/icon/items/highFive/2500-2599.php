@@ -20,11 +20,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 232,
       'mAtk' => 114,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 232,
+    ]
   ],
   2501 => 
   [
@@ -42,11 +42,12 @@ return [
     'spiritshots' => 2,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 24,
       'mAtk' => 17,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   2502 => 
   [
@@ -71,7 +72,8 @@ return [
       'mAtk' => 68,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   2503 => 
   [
@@ -92,11 +94,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 156,
       'mAtk' => 83,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 156,
+    ]
   ],
   2504 => 
   [
@@ -117,11 +120,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 213,
       'mAtk' => 107,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   2505 => 
   [
@@ -139,7 +143,9 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 4,
+      'mAtk' => 5,
+    ]
   ],
   2506 => 
   [
@@ -155,7 +161,9 @@ return [
     'price' => 3060,
     'stats' => 
     [
-    ],
+      'mDef' => 14,
+      'pDef' => 9,
+    ]
   ],
   2507 => 
   [
@@ -180,7 +188,8 @@ return [
       'mAtk' => 5,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   2508 => 
   [
@@ -371,7 +380,7 @@ return [
       'mAtk' => 37,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2517 => 
   [
@@ -396,7 +405,7 @@ return [
       'mAtk' => 41,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2518 => 
   [
@@ -421,7 +430,7 @@ return [
       'mAtk' => 41,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2519 => 
   [
@@ -446,7 +455,7 @@ return [
       'mAtk' => 41,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2520 => 
   [
@@ -471,7 +480,7 @@ return [
       'mAtk' => 41,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2521 => 
   [
@@ -496,7 +505,7 @@ return [
       'mAtk' => 47,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2522 => 
   [
@@ -521,7 +530,7 @@ return [
       'mAtk' => 47,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2523 => 
   [
@@ -546,7 +555,7 @@ return [
       'mAtk' => 56,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2524 => 
   [
@@ -567,11 +576,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 130,
       'mAtk' => 61,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 130,
+    ]
   ],
   2525 => 
   [
@@ -592,11 +601,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 96,
-      'mAtk' => 47,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 96,
+      'mAtk' => 47,
+    ]
   ],
   2526 => 
   [
@@ -617,11 +626,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 96,
-      'mAtk' => 47,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 96,
+      'mAtk' => 47,
+    ]
   ],
   2527 => 
   [
@@ -642,11 +651,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
       'pAtk' => 96,
       'mAtk' => 47,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2528 => 
   [
@@ -671,7 +680,7 @@ return [
       'mAtk' => 47,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2529 => 
   [
@@ -692,11 +701,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
       'pAtk' => 107,
       'mAtk' => 51,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2530 => 
   [
@@ -721,7 +730,7 @@ return [
       'mAtk' => 51,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2531 => 
   [
@@ -742,11 +751,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
       'pAtk' => 124,
       'mAtk' => 58,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2532 => 
   [
@@ -767,11 +776,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 136,
       'mAtk' => 63,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 136,
+    ]
   ],
   2533 => 
   [
@@ -796,7 +805,7 @@ return [
       'mAtk' => 47,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2534 => 
   [
@@ -821,7 +830,7 @@ return [
       'mAtk' => 47,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2535 => 
   [
@@ -842,11 +851,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 96,
       'mAtk' => 47,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 96,
+    ]
   ],
   2536 => 
   [
@@ -871,7 +880,7 @@ return [
       'mAtk' => 51,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2537 => 
   [
@@ -896,7 +905,7 @@ return [
       'mAtk' => 51,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2538 => 
   [
@@ -917,11 +926,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 124,
-      'mAtk' => 58,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 124,
+      'mAtk' => 58,
+    ]
   ],
   2539 => 
   [
@@ -942,11 +951,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
       'pAtk' => 136,
       'mAtk' => 63,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2540 => 
   [
@@ -971,7 +980,7 @@ return [
       'mAtk' => 47,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2541 => 
   [
@@ -992,11 +1001,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 96,
       'mAtk' => 47,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 96,
+    ]
   ],
   2542 => 
   [
@@ -1021,7 +1030,7 @@ return [
       'mAtk' => 51,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2543 => 
   [
@@ -1046,7 +1055,7 @@ return [
       'mAtk' => 51,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2544 => 
   [
@@ -1071,7 +1080,7 @@ return [
       'mAtk' => 58,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2545 => 
   [
@@ -1092,11 +1101,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 136,
-      'mAtk' => 63,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 136,
+      'mAtk' => 63,
+    ]
   ],
   2546 => 
   [
@@ -1117,11 +1126,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 96,
-      'mAtk' => 47,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 96,
+      'mAtk' => 47,
+    ]
   ],
   2547 => 
   [
@@ -1146,7 +1155,7 @@ return [
       'mAtk' => 51,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2548 => 
   [
@@ -1171,7 +1180,7 @@ return [
       'mAtk' => 51,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2549 => 
   [
@@ -1196,7 +1205,7 @@ return [
       'mAtk' => 58,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2550 => 
   [
@@ -1221,7 +1230,7 @@ return [
       'mAtk' => 63,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2551 => 
   [
@@ -1246,7 +1255,7 @@ return [
       'mAtk' => 56,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2552 => 
   [
@@ -1271,7 +1280,7 @@ return [
       'mAtk' => 56,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2553 => 
   [
@@ -1296,7 +1305,7 @@ return [
       'mAtk' => 63,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2554 => 
   [
@@ -1321,7 +1330,7 @@ return [
       'mAtk' => 68,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2555 => 
   [
@@ -1342,11 +1351,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 118,
       'mAtk' => 56,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 118,
+    ]
   ],
   2556 => 
   [
@@ -1367,11 +1376,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 136,
-      'mAtk' => 63,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 136,
+      'mAtk' => 63,
+    ]
   ],
   2557 => 
   [
@@ -1392,11 +1401,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 148,
       'mAtk' => 68,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 148,
+    ]
   ],
   2558 => 
   [
@@ -1421,7 +1430,7 @@ return [
       'mAtk' => 68,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2559 => 
   [
@@ -1446,7 +1455,7 @@ return [
       'mAtk' => 70,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2560 => 
   [
@@ -1467,11 +1476,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
       'pAtk' => 162,
       'mAtk' => 73,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2561 => 
   [
@@ -1496,7 +1505,7 @@ return [
       'mAtk' => 78,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2562 => 
   [
@@ -1521,7 +1530,7 @@ return [
       'mAtk' => 81,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2563 => 
   [
@@ -1546,7 +1555,7 @@ return [
       'mAtk' => 81,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2564 => 
   [
@@ -1567,11 +1576,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 183,
       'mAtk' => 81,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 183,
+    ]
   ],
   2565 => 
   [
@@ -1596,7 +1605,7 @@ return [
       'mAtk' => 81,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2566 => 
   [
@@ -1617,11 +1626,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 197,
-      'mAtk' => 86,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 197,
+      'mAtk' => 86,
+    ]
   ],
   2567 => 
   [
@@ -1642,11 +1651,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 197,
-      'mAtk' => 86,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 197,
+      'mAtk' => 86,
+    ]
   ],
   2568 => 
   [
@@ -1671,7 +1680,7 @@ return [
       'mAtk' => 86,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2569 => 
   [
@@ -1696,7 +1705,7 @@ return [
       'mAtk' => 86,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2570 => 
   [
@@ -1721,7 +1730,7 @@ return [
       'mAtk' => 86,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2571 => 
   [
@@ -1746,7 +1755,7 @@ return [
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2572 => 
   [
@@ -1771,7 +1780,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2573 => 
   [
@@ -1796,7 +1805,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2574 => 
   [
@@ -1821,7 +1830,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2575 => 
   [
@@ -1846,7 +1855,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2576 => 
   [
@@ -1867,11 +1876,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 204,
-      'mAtk' => 89,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 204,
+      'mAtk' => 89,
+    ]
   ],
   2577 => 
   [
@@ -1896,7 +1905,7 @@ return [
       'mAtk' => 89,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2578 => 
   [
@@ -1917,11 +1926,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 204,
       'mAtk' => 89,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 204,
+    ]
   ],
   2579 => 
   [
@@ -1946,7 +1955,7 @@ return [
       'mAtk' => 89,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2580 => 
   [
@@ -1967,11 +1976,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
       'pAtk' => 204,
       'mAtk' => 89,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2581 => 
   [
@@ -1996,7 +2005,7 @@ return [
       'mAtk' => 94,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2582 => 
   [
@@ -2021,7 +2030,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2583 => 
   [
@@ -2046,7 +2055,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2584 => 
   [
@@ -2067,11 +2076,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 190,
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 190,
+    ]
   ],
   2585 => 
   [
@@ -2096,7 +2105,7 @@ return [
       'mAtk' => 89,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2586 => 
   [
@@ -2117,11 +2126,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
       'pAtk' => 204,
       'mAtk' => 89,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2587 => 
   [
@@ -2146,7 +2155,7 @@ return [
       'mAtk' => 89,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2588 => 
   [
@@ -2167,11 +2176,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
       'pAtk' => 204,
       'mAtk' => 89,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2589 => 
   [
@@ -2192,11 +2201,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
       'pAtk' => 204,
       'mAtk' => 89,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2590 => 
   [
@@ -2217,11 +2226,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 220,
-      'mAtk' => 94,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 220,
+      'mAtk' => 94,
+    ]
   ],
   2591 => 
   [
@@ -2242,11 +2251,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 190,
-      'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 190,
+      'mAtk' => 83,
+    ]
   ],
   2592 => 
   [
@@ -2271,7 +2280,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2593 => 
   [
@@ -2296,7 +2305,7 @@ return [
       'mAtk' => 89,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2594 => 
   [
@@ -2321,7 +2330,7 @@ return [
       'mAtk' => 89,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2595 => 
   [
@@ -2342,11 +2351,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 204,
-      'mAtk' => 89,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 204,
+      'mAtk' => 89,
+    ]
   ],
   2596 => 
   [
@@ -2371,7 +2380,7 @@ return [
       'mAtk' => 89,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2597 => 
   [
@@ -2392,11 +2401,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 204,
       'mAtk' => 89,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 204,
+    ]
   ],
   2598 => 
   [
@@ -2421,7 +2430,7 @@ return [
       'mAtk' => 94,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   2599 => 
   [
@@ -2442,10 +2451,10 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 190,
-      'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 190,
+      'mAtk' => 83,
+    ]
   ],
 ];

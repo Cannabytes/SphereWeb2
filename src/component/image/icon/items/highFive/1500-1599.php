@@ -85,7 +85,8 @@ return [
     'price' => 51,
     'stats' => 
     [
-    ],
+      'mDef' => 15,
+    ]
   ],
   1507 => 
   [
@@ -100,7 +101,8 @@ return [
     'price' => 3600,
     'stats' => 
     [
-    ],
+      'mDef' => 21,
+    ]
   ],
   1508 => 
   [
@@ -115,7 +117,8 @@ return [
     'price' => 1800,
     'stats' => 
     [
-    ],
+      'mDef' => 11,
+    ]
   ],
   1509 => 
   [
@@ -130,7 +133,8 @@ return [
     'price' => 1800,
     'stats' => 
     [
-    ],
+      'mDef' => 11,
+    ]
   ],
   1510 => 
   [
@@ -152,7 +156,7 @@ return [
       'mAtk' => 10,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   1511 => 
   [
@@ -170,11 +174,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'pAtkSpd' => 379,
+      'accCombat' => 4,
       'pAtk' => 13,
       'mAtk' => 10,
       'critRate' => 4,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   1512 => 
   [

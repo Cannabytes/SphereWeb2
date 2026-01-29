@@ -18,11 +18,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 156,
-      'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 156,
+      'mAtk' => 83,
+    ]
   ],
   5801 => 
   [
@@ -46,7 +46,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   5802 => 
   [
@@ -70,7 +70,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   5803 => 
   [
@@ -316,11 +316,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 1,
       'mAtk' => 1,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   5818 => 
   [

@@ -429,11 +429,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 24,
       'mAtk' => 17,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   3027 => 
   [
@@ -458,7 +459,7 @@ return [
       'mAtk' => 17,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   3028 => 
   [
@@ -480,11 +481,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 34,
       'mAtk' => 12,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+    ]
   ],
   3029 => 
   [
@@ -505,11 +507,11 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 17,
       'mAtk' => 12,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 17,
+    ]
   ],
   3030 => 
   [

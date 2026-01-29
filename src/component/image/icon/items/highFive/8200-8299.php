@@ -75,7 +75,7 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8204 => 
   [
@@ -94,7 +94,7 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8205 => 
   [
@@ -113,7 +113,8 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   8206 => 
   [
@@ -132,7 +133,7 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8207 => 
   [
@@ -151,7 +152,7 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8208 => 
   [
@@ -168,9 +169,10 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
-      'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+      'critRate' => 8,
+    ]
   ],
   8209 => 
   [
@@ -189,7 +191,7 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8210 => 
   [
@@ -205,7 +207,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 230,
-    ],
+    ]
   ],
   8211 => 
   [
@@ -224,7 +226,7 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8212 => 
   [
@@ -241,9 +243,10 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => 4,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8213 => 
   [
@@ -260,9 +263,10 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => 4,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8214 => 
   [
@@ -279,9 +283,10 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
-      'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+      'critRate' => 8,
+    ]
   ],
   8215 => 
   [
@@ -300,7 +305,7 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8216 => 
   [
@@ -317,9 +322,10 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => 4,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8217 => 
   [
@@ -338,7 +344,7 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8218 => 
   [
@@ -355,9 +361,10 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => 4,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8219 => 
   [
@@ -376,7 +383,7 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8220 => 
   [
@@ -394,9 +401,10 @@ return [
     'mp_consume' => 1,
     'stats' => 
     [
+      'accCombat' => -3,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+    ]
   ],
   8221 => 
   [
@@ -413,9 +421,10 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => -3,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8222 => 
   [
@@ -434,7 +443,7 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8223 => 
   [

@@ -721,7 +721,7 @@ return [
     'name' => 'Necklace of Black Ore Beads',
     'add_name' => '',
     'description' => 'Main ingredient definitely required for a Dwarf to make black ore necklace. Can also be sold at ordinary shops.',
-    'icon' => 'BranchSys2.etc_blackorenecklace_beads_i00',
+    'icon' => 'branchsys2.etc_blackorenecklace_beads_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 10154,

@@ -123,7 +123,7 @@ return [
       'mAtk' => 76,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   6308 => 
   [
@@ -158,7 +158,7 @@ return [
       'mAtk' => 76,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   6309 => 
   [
@@ -192,7 +192,7 @@ return [
       'mAtk' => 76,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   6310 => 
   [
@@ -226,7 +226,7 @@ return [
       'mAtk' => 101,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   6311 => 
   [
@@ -256,11 +256,11 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 111,
       'mAtk' => 101,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 111,
+    ]
   ],
   6312 => 
   [
@@ -295,7 +295,7 @@ return [
       'mAtk' => 101,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   6313 => 
   [
@@ -329,7 +329,7 @@ return [
       'mAtk' => 101,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   6314 => 
   [
@@ -359,11 +359,11 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 111,
       'mAtk' => 101,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   6315 => 
   [
@@ -394,11 +394,11 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 111,
       'mAtk' => 101,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   6316 => 
   [
@@ -521,7 +521,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 76,
+    ]
   ],
   6324 => 
   [
@@ -539,7 +540,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 57,
+    ]
   ],
   6325 => 
   [
@@ -557,7 +559,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 38,
+    ]
   ],
   6326 => 
   [
@@ -575,7 +578,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 80,
+    ]
   ],
   6327 => 
   [
@@ -593,7 +597,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 60,
+    ]
   ],
   6328 => 
   [
@@ -611,7 +616,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 40,
+    ]
   ],
   6329 => 
   [
@@ -826,7 +832,7 @@ return [
     'name' => 'Sealed Phoenix Necklace Beads',
     'add_name' => '',
     'description' => 'An essential ingredient needed by a Dwarf to make a Sealed Phoenix Necklace. It can be sold at any store.',
-    'icon' => 'BranchSys2.etc_sealed_phoenixbeads_i00',
+    'icon' => 'branchsys2.etc_sealed_phoenixbeads_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 9354,
@@ -839,7 +845,7 @@ return [
     'name' => 'Sealed Majestic Necklace Beads',
     'add_name' => '',
     'description' => 'An essential ingredient needed by a Dwarf to make a Sealed Majestic Necklace. It can be sold at any store.',
-    'icon' => 'BranchSys2.etc_sealed_majesticbeads_i00',
+    'icon' => 'branchsys2.etc_sealed_majesticbeads_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 13643,
@@ -899,11 +905,11 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 190,
-      'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 190,
+      'mAtk' => 83,
+    ]
   ],
   6348 => 
   [
@@ -933,11 +939,11 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 190,
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 190,
+    ]
   ],
   6349 => 
   [
@@ -971,7 +977,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   6350 => 
   [
@@ -1042,7 +1048,7 @@ return [
       'mAtk' => 21,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   6355 => 
   [
@@ -1064,11 +1070,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'accCombat' => 4,
       'pAtk' => 30,
       'mAtk' => 31,
       'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   6356 => 
   [
@@ -1097,11 +1104,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 433,
+      'accCombat' => -3,
       'pAtk' => 94,
       'mAtk' => 61,
       'critRate' => 12,
-      'pAtkSpd' => 433,
-    ],
+    ]
   ],
   6357 => 
   [
@@ -1130,11 +1138,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 107,
       'mAtk' => 68,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   6358 => 
   [
@@ -1163,11 +1172,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 433,
+      'accCombat' => -3,
       'pAtk' => 136,
       'mAtk' => 83,
       'critRate' => 12,
-      'pAtkSpd' => 433,
-    ],
+    ]
   ],
   6359 => 
   [
@@ -1196,11 +1206,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 170,
       'mAtk' => 99,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   6360 => 
   [
@@ -1271,7 +1282,7 @@ return [
       'mAtk' => 132,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   6365 => 
   [
@@ -1293,11 +1304,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 379,
+      'accCombat' => 4,
       'pAtk' => 281,
       'mAtk' => 132,
       'critRate' => 4,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   6366 => 
   [
@@ -1320,11 +1332,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
-      'pAtk' => 274,
-      'mAtk' => 193,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 274,
+      'mAtk' => 193,
+    ]
   ],
   6367 => 
   [
@@ -1346,11 +1359,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 246,
       'mAtk' => 132,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   6368 => 
   [
@@ -1373,11 +1387,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 293,
+      'accCombat' => -3,
       'pAtk' => 581,
       'mAtk' => 132,
       'critRate' => 12,
-      'pAtkSpd' => 293,
-    ],
+    ]
   ],
   6369 => 
   [
@@ -1399,11 +1414,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 342,
       'mAtk' => 132,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   6370 => 
   [
@@ -1433,11 +1449,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 281,
-      'mAtk' => 132,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 281,
+      'mAtk' => 132,
+    ]
   ],
   6371 => 
   [
@@ -1459,11 +1476,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 342,
       'mAtk' => 132,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 342,
+    ]
   ],
   6372 => 
   [
@@ -1486,11 +1504,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
       'pAtk' => 342,
       'mAtk' => 132,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   6373 => 
   [
@@ -1510,7 +1528,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 205,
+    ]
   ],
   6374 => 
   [
@@ -1530,7 +1549,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 128,
+    ]
   ],
   6375 => 
   [
@@ -1549,7 +1569,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   6376 => 
   [
@@ -1568,7 +1589,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   6377 => 
   [
@@ -1588,7 +1610,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 290,
-    ],
+    ]
   ],
   6378 => 
   [
@@ -1607,7 +1629,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 83,
+    ]
   ],
   6379 => 
   [
@@ -1627,7 +1650,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 249,
+    ]
   ],
   6380 => 
   [
@@ -1646,7 +1670,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   6381 => 
   [
@@ -1665,7 +1690,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   6382 => 
   [
@@ -1684,7 +1710,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 83,
+    ]
   ],
   6383 => 
   [
@@ -1704,7 +1731,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 166,
+      'maxMp' => 866,
+    ]
   ],
   6384 => 
   [
@@ -1723,7 +1752,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   6385 => 
   [
@@ -1742,7 +1772,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   6386 => 
   [
@@ -1761,7 +1792,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 83,
+    ]
   ],
   6387 => 
   [

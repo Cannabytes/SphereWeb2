@@ -843,7 +843,7 @@ return [
     'stats' => 
     [
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8764 => 
   [
@@ -1219,7 +1219,7 @@ return [
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8789 => 
   [
@@ -1253,7 +1253,7 @@ return [
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8790 => 
   [
@@ -1292,11 +1292,11 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 251,
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 251,
+    ]
   ],
   8791 => 
   [
@@ -1330,7 +1330,7 @@ return [
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8792 => 
   [
@@ -1364,7 +1364,7 @@ return [
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8793 => 
   [
@@ -1398,7 +1398,7 @@ return [
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8794 => 
   [
@@ -1427,11 +1427,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 251,
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 251,
+    ]
   ],
   8795 => 
   [
@@ -1460,11 +1461,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 251,
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8796 => 
   [
@@ -1493,11 +1495,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 379,
+      'accCombat' => 4,
       'pAtk' => 251,
       'mAtk' => 121,
       'critRate' => 4,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8797 => 
   [
@@ -1526,11 +1529,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 305,
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8798 => 
   [
@@ -1559,11 +1563,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 305,
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8799 => 
   [
@@ -1592,10 +1597,11 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 305,
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
 ];

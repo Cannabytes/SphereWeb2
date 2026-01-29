@@ -15,7 +15,8 @@ return [
     'price' => 259800,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   12301 => 
   [
@@ -32,7 +33,8 @@ return [
     'price' => 259800,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   12302 => 
   [
@@ -50,7 +52,7 @@ return [
     'stats' => 
     [
       'rShld' => 20,
-    ],
+    ]
   ],
   12303 => 
   [
@@ -67,7 +69,8 @@ return [
     'price' => 389700,
     'stats' => 
     [
-    ],
+      'pDef' => 83,
+    ]
   ],
   12304 => 
   [
@@ -85,7 +88,8 @@ return [
     'price' => 1039000,
     'stats' => 
     [
-    ],
+      'pDef' => 193,
+    ]
   ],
   12305 => 
   [
@@ -103,7 +107,8 @@ return [
     'price' => 650000,
     'stats' => 
     [
-    ],
+      'pDef' => 128,
+    ]
   ],
   12306 => 
   [
@@ -120,7 +125,8 @@ return [
     'price' => 259800,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   12307 => 
   [
@@ -137,7 +143,8 @@ return [
     'price' => 259800,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   12308 => 
   [
@@ -156,7 +163,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 290,
-    ],
+    ]
   ],
   12309 => 
   [
@@ -173,7 +180,8 @@ return [
     'price' => 389700,
     'stats' => 
     [
-    ],
+      'pDef' => 83,
+    ]
   ],
   12310 => 
   [
@@ -191,7 +199,8 @@ return [
     'price' => 1039000,
     'stats' => 
     [
-    ],
+      'pDef' => 205,
+    ]
   ],
   12311 => 
   [
@@ -208,7 +217,8 @@ return [
     'price' => 1150,
     'stats' => 
     [
-    ],
+      'mDef' => 24,
+    ]
   ],
   12312 => 
   [
@@ -225,7 +235,8 @@ return [
     'price' => 1530,
     'stats' => 
     [
-    ],
+      'mDef' => 32,
+    ]
   ],
   12313 => 
   [
@@ -242,7 +253,8 @@ return [
     'price' => 766,
     'stats' => 
     [
-    ],
+      'mDef' => 16,
+    ]
   ],
   12314 => 
   [
@@ -259,7 +271,8 @@ return [
     'price' => 1720,
     'stats' => 
     [
-    ],
+      'mDef' => 27,
+    ]
   ],
   12315 => 
   [
@@ -276,7 +289,8 @@ return [
     'price' => 2290,
     'stats' => 
     [
-    ],
+      'mDef' => 36,
+    ]
   ],
   12316 => 
   [
@@ -293,7 +307,8 @@ return [
     'price' => 1150,
     'stats' => 
     [
-    ],
+      'mDef' => 18,
+    ]
   ],
   12317 => 
   [
@@ -310,7 +325,8 @@ return [
     'price' => 3320,
     'stats' => 
     [
-    ],
+      'mDef' => 40,
+    ]
   ],
   12318 => 
   [
@@ -327,7 +343,8 @@ return [
     'price' => 2490,
     'stats' => 
     [
-    ],
+      'mDef' => 30,
+    ]
   ],
   12319 => 
   [
@@ -344,7 +361,8 @@ return [
     'price' => 1660,
     'stats' => 
     [
-    ],
+      'mDef' => 20,
+    ]
   ],
   12320 => 
   [
@@ -361,7 +379,8 @@ return [
     'price' => 4640,
     'stats' => 
     [
-    ],
+      'mDef' => 45,
+    ]
   ],
   12321 => 
   [
@@ -378,7 +397,8 @@ return [
     'price' => 2320,
     'stats' => 
     [
-    ],
+      'mDef' => 22,
+    ]
   ],
   12322 => 
   [
@@ -395,7 +415,8 @@ return [
     'price' => 3480,
     'stats' => 
     [
-    ],
+      'mDef' => 34,
+    ]
   ],
   12323 => 
   [
@@ -412,7 +433,8 @@ return [
     'price' => 2940,
     'stats' => 
     [
-    ],
+      'mDef' => 24,
+    ]
   ],
   12324 => 
   [
@@ -429,7 +451,8 @@ return [
     'price' => 5880,
     'stats' => 
     [
-    ],
+      'mDef' => 48,
+    ]
   ],
   12325 => 
   [
@@ -446,7 +469,8 @@ return [
     'price' => 4410,
     'stats' => 
     [
-    ],
+      'mDef' => 36,
+    ]
   ],
   12326 => 
   [
@@ -463,7 +487,8 @@ return [
     'price' => 5520,
     'stats' => 
     [
-    ],
+      'mDef' => 39,
+    ]
   ],
   12327 => 
   [
@@ -480,7 +505,8 @@ return [
     'price' => 7360,
     'stats' => 
     [
-    ],
+      'mDef' => 52,
+    ]
   ],
   12328 => 
   [
@@ -497,7 +523,8 @@ return [
     'price' => 3680,
     'stats' => 
     [
-    ],
+      'mDef' => 26,
+    ]
   ],
   12329 => 
   [
@@ -514,7 +541,8 @@ return [
     'price' => 6820,
     'stats' => 
     [
-    ],
+      'mDef' => 42,
+    ]
   ],
   12330 => 
   [
@@ -531,7 +559,8 @@ return [
     'price' => 9090,
     'stats' => 
     [
-    ],
+      'mDef' => 56,
+    ]
   ],
   12331 => 
   [
@@ -548,7 +577,8 @@ return [
     'price' => 4550,
     'stats' => 
     [
-    ],
+      'mDef' => 28,
+    ]
   ],
   12332 => 
   [
@@ -565,7 +595,8 @@ return [
     'price' => 12500,
     'stats' => 
     [
-    ],
+      'mDef' => 45,
+    ]
   ],
   12333 => 
   [
@@ -582,7 +613,8 @@ return [
     'price' => 8330,
     'stats' => 
     [
-    ],
+      'mDef' => 30,
+    ]
   ],
   12334 => 
   [
@@ -599,7 +631,8 @@ return [
     'price' => 16700,
     'stats' => 
     [
-    ],
+      'mDef' => 60,
+    ]
   ],
   12335 => 
   [
@@ -616,7 +649,8 @@ return [
     'price' => 19300,
     'stats' => 
     [
-    ],
+      'mDef' => 48,
+    ]
   ],
   12336 => 
   [
@@ -633,7 +667,8 @@ return [
     'price' => 25700,
     'stats' => 
     [
-    ],
+      'mDef' => 64,
+    ]
   ],
   12337 => 
   [
@@ -650,7 +685,8 @@ return [
     'price' => 12900,
     'stats' => 
     [
-    ],
+      'mDef' => 32,
+    ]
   ],
   12338 => 
   [
@@ -667,7 +703,8 @@ return [
     'price' => 24400,
     'stats' => 
     [
-    ],
+      'mDef' => 51,
+    ]
   ],
   12339 => 
   [
@@ -684,7 +721,8 @@ return [
     'price' => 32500,
     'stats' => 
     [
-    ],
+      'mDef' => 68,
+    ]
   ],
   12340 => 
   [
@@ -701,7 +739,8 @@ return [
     'price' => 16200,
     'stats' => 
     [
-    ],
+      'mDef' => 34,
+    ]
   ],
   12341 => 
   [
@@ -718,7 +757,8 @@ return [
     'price' => 43100,
     'stats' => 
     [
-    ],
+      'mDef' => 54,
+    ]
   ],
   12342 => 
   [
@@ -735,7 +775,8 @@ return [
     'price' => 57500,
     'stats' => 
     [
-    ],
+      'mDef' => 72,
+    ]
   ],
   12343 => 
   [
@@ -752,7 +793,8 @@ return [
     'price' => 28800,
     'stats' => 
     [
-    ],
+      'mDef' => 36,
+    ]
   ],
   12344 => 
   [
@@ -769,7 +811,8 @@ return [
     'price' => 69000,
     'stats' => 
     [
-    ],
+      'mDef' => 76,
+    ]
   ],
   12345 => 
   [
@@ -786,7 +829,8 @@ return [
     'price' => 51800,
     'stats' => 
     [
-    ],
+      'mDef' => 57,
+    ]
   ],
   12346 => 
   [
@@ -803,7 +847,8 @@ return [
     'price' => 34500,
     'stats' => 
     [
-    ],
+      'mDef' => 38,
+    ]
   ],
   12347 => 
   [
@@ -820,7 +865,9 @@ return [
     'price' => 69000,
     'stats' => 
     [
-    ],
+      'mDef' => 80,
+      'maxMp' => 26,
+    ]
   ],
   12348 => 
   [
@@ -837,7 +884,9 @@ return [
     'price' => 34500,
     'stats' => 
     [
-    ],
+      'mDef' => 40,
+      'maxMp' => 13,
+    ]
   ],
   12349 => 
   [
@@ -854,7 +903,9 @@ return [
     'price' => 51800,
     'stats' => 
     [
-    ],
+      'mDef' => 60,
+      'maxMp' => 20,
+    ]
   ],
   12350 => 
   [
@@ -871,7 +922,8 @@ return [
     'price' => 108300,
     'stats' => 
     [
-    ],
+      'mDef' => 80,
+    ]
   ],
   12351 => 
   [
@@ -888,7 +940,8 @@ return [
     'price' => 54200,
     'stats' => 
     [
-    ],
+      'mDef' => 40,
+    ]
   ],
   12352 => 
   [
@@ -905,7 +958,8 @@ return [
     'price' => 81300,
     'stats' => 
     [
-    ],
+      'mDef' => 60,
+    ]
   ],
   12353 => 
   [
@@ -922,7 +976,9 @@ return [
     'price' => 108300,
     'stats' => 
     [
-    ],
+      'maxMp' => 33,
+      'mDef' => 85,
+    ]
   ],
   12354 => 
   [
@@ -939,7 +995,9 @@ return [
     'price' => 54200,
     'stats' => 
     [
-    ],
+      'mDef' => 42,
+      'maxMp' => 17,
+    ]
   ],
   12355 => 
   [
@@ -956,7 +1014,9 @@ return [
     'price' => 81300,
     'stats' => 
     [
-    ],
+      'mDef' => 63,
+      'maxMp' => 25,
+    ]
   ],
   12356 => 
   [
@@ -973,7 +1033,8 @@ return [
     'price' => 354600,
     'stats' => 
     [
-    ],
+      'mDef' => 91,
+    ]
   ],
   12357 => 
   [
@@ -990,7 +1051,8 @@ return [
     'price' => 177300,
     'stats' => 
     [
-    ],
+      'mDef' => 46,
+    ]
   ],
   12358 => 
   [
@@ -1007,7 +1069,8 @@ return [
     'price' => 265900,
     'stats' => 
     [
-    ],
+      'mDef' => 68,
+    ]
   ],
   12359 => 
   [
@@ -1024,7 +1087,9 @@ return [
     'price' => 354600,
     'stats' => 
     [
-    ],
+      'mDef' => 95,
+      'maxMp' => 42,
+    ]
   ],
   12360 => 
   [
@@ -1041,7 +1106,9 @@ return [
     'price' => 177300,
     'stats' => 
     [
-    ],
+      'mDef' => 48,
+      'maxMp' => 21,
+    ]
   ],
   12361 => 
   [
@@ -1058,7 +1125,9 @@ return [
     'price' => 265900,
     'stats' => 
     [
-    ],
+      'mDef' => 71,
+      'maxMp' => 31,
+    ]
   ],
   12362 => 
   [
@@ -1363,11 +1432,11 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 175,
       'mAtk' => 91,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   12376 => 
   [
@@ -1385,11 +1454,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
-      'pAtk' => 175,
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 175,
+    ]
   ],
   12377 => 
   [
@@ -1407,11 +1477,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
-      'pAtk' => 190,
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+      'pAtk' => 190,
+    ]
   ],
   12378 => 
   [
@@ -1430,11 +1501,12 @@ return [
     'mp_consume' => 3,
     'stats' => 
     [
-      'pAtk' => 397,
-      'mAtk' => 100,
       'critRate' => 12,
       'pAtkSpd' => 227,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 397,
+      'mAtk' => 100,
+    ]
   ],
   12379 => 
   [
@@ -1456,7 +1528,7 @@ return [
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   12380 => 
   [
@@ -1474,11 +1546,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 175,
       'mAtk' => 91,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   12381 => 
   [
@@ -1496,11 +1569,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 175,
       'mAtk' => 91,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   12382 => 
   [
@@ -1518,11 +1592,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'pAtkSpd' => 379,
+      'accCombat' => 4,
       'pAtk' => 175,
       'mAtk' => 91,
       'critRate' => 4,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   12383 => 
   [
@@ -1540,11 +1615,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 159,
       'mAtk' => 91,
       'critRate' => 10,
       'pAtkSpd' => 406,
-    ],
+    ]
   ],
   12384 => 
   [
@@ -1562,11 +1638,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 175,
       'mAtk' => 91,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   12385 => 
   [
@@ -1584,11 +1661,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 153,
       'mAtk' => 91,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   12386 => 
   [
@@ -1606,11 +1684,11 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
-      'pAtk' => 175,
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 175,
+    ]
   ],
   12387 => 
   [
@@ -1628,11 +1706,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 221,
       'mAtk' => 91,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   12388 => 
   [
@@ -1654,7 +1733,8 @@ return [
       'mAtk' => 91,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   12389 => 
   [
@@ -1672,11 +1752,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 153,
       'mAtk' => 91,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   12390 => 
   [
@@ -1698,7 +1779,7 @@ return [
       'mAtk' => 99,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   12391 => 
   [
@@ -1720,7 +1801,7 @@ return [
       'mAtk' => 99,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   12392 => 
   [
@@ -1738,11 +1819,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => 2,
       'pAtk' => 210,
       'mAtk' => 99,
       'critRate' => 8,
       'pAtkSpd' => 350,
-    ],
+    ]
   ],
   12393 => 
   [
@@ -1760,11 +1842,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 194,
       'mAtk' => 99,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   12394 => 
   [
@@ -1782,11 +1865,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
-      'pAtk' => 194,
       'mAtk' => 99,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 194,
+    ]
   ],
   12395 => 
   [
@@ -1804,11 +1888,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
-      'pAtk' => 194,
       'mAtk' => 99,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 194,
+    ]
   ],
   12396 => 
   [
@@ -1826,11 +1911,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 194,
       'mAtk' => 99,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   12397 => 
   [
@@ -1852,7 +1938,8 @@ return [
       'mAtk' => 99,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   12398 => 
   [
@@ -1870,11 +1957,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 194,
       'mAtk' => 99,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   12399 => 
   [
@@ -1892,10 +1980,11 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
-      'pAtk' => 170,
       'mAtk' => 99,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 170,
+    ]
   ],
 ];

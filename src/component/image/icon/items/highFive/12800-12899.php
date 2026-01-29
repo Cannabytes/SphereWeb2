@@ -369,7 +369,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 13,
+    ]
   ],
   12812 => 
   [
@@ -388,7 +389,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 15,
+    ]
   ],
   12813 => 
   [
@@ -407,7 +409,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 17,
+    ]
   ],
   12814 => 
   [

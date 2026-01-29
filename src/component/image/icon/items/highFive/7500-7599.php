@@ -959,10 +959,11 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 1,
       'mAtk' => 1,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   7561 => 
   [
@@ -1190,11 +1191,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 581,
       'mAtk' => 132,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+    ]
   ],
   7576 => 
   [
@@ -1230,7 +1232,8 @@ return [
       'mAtk' => 132,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   7577 => 
   [
@@ -1262,11 +1265,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 581,
       'mAtk' => 132,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+    ]
   ],
   7578 => 
   [
@@ -1307,11 +1311,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 581,
       'mAtk' => 132,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 581,
+    ]
   ],
   7579 => 
   [

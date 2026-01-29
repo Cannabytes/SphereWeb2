@@ -214,7 +214,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 214,
+    ]
   ],
   9515 => 
   [
@@ -234,7 +235,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 134,
+    ]
   ],
   9516 => 
   [
@@ -253,7 +255,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 92,
+    ]
   ],
   9517 => 
   [
@@ -272,7 +275,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   9518 => 
   [
@@ -291,7 +295,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   9519 => 
   [
@@ -311,7 +316,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 161,
+    ]
   ],
   9520 => 
   [
@@ -331,7 +337,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 100,
+    ]
   ],
   9521 => 
   [
@@ -350,7 +357,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 92,
+    ]
   ],
   9522 => 
   [
@@ -369,7 +377,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   9523 => 
   [
@@ -388,7 +397,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   9524 => 
   [
@@ -408,7 +418,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 107,
+      'maxMp' => 592,
+    ]
   ],
   9525 => 
   [
@@ -428,7 +440,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 67,
+      'maxMp' => 370,
+    ]
   ],
   9526 => 
   [
@@ -447,7 +461,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 92,
+    ]
   ],
   9527 => 
   [
@@ -466,7 +481,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   9528 => 
   [
@@ -485,7 +501,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   9529 => 
   [
@@ -503,9 +520,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'rShld' => 20,
       'sDef' => 305,
-    ],
+      'rShld' => 20,
+    ]
   ],
   9530 => 
   [
@@ -1356,7 +1373,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 6,
+    ]
   ],
   9578 => 
   [
@@ -1374,7 +1392,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 12,
+    ]
   ],
   9579 => 
   [
@@ -1392,7 +1411,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 17,
+    ]
   ],
   9580 => 
   [
@@ -1410,7 +1430,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 21,
+    ]
   ],
   9581 => 
   [
@@ -1428,7 +1449,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 23,
+    ]
   ],
   9582 => 
   [
@@ -1446,7 +1468,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 28,
+    ]
   ],
   9583 => 
   [
@@ -1462,7 +1485,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 8,
+    ]
   ],
   9584 => 
   [
@@ -1480,7 +1504,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 14,
+    ]
   ],
   9585 => 
   [
@@ -1498,7 +1523,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 19,
+    ]
   ],
   9586 => 
   [
@@ -1516,7 +1542,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 22,
+    ]
   ],
   9587 => 
   [
@@ -1534,7 +1561,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 26,
+    ]
   ],
   9588 => 
   [
@@ -1552,7 +1580,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 30,
+    ]
   ],
   9589 => 
   [

@@ -58,7 +58,7 @@ return [
     'name' => 'Christmas Kit',
     'add_name' => '',
     'description' => '',
-    'icon' => 'Icon.Br_santa_gift_click_i00',
+    'icon' => 'icon.br_santa_gift_click_i00',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_sellable' => false,

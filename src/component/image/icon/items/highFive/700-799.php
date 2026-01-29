@@ -150,7 +150,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 50,
+      'pDef' => 75,
+    ]
   ],
   710 => 
   [
@@ -167,7 +169,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 52,
+      'pDef' => 77,
+    ]
   ],
   711 => 
   [
@@ -184,7 +188,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 54,
+      'pDef' => 79,
+    ]
   ],
   712 => 
   [
@@ -201,7 +207,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 81,
+      'mDef' => 56,
+    ]
   ],
   713 => 
   [
@@ -218,7 +226,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 45,
+      'mDef' => 30,
+    ]
   ],
   714 => 
   [
@@ -235,7 +245,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 32,
+      'pDef' => 47,
+    ]
   ],
   715 => 
   [
@@ -252,7 +264,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 34,
+      'pDef' => 49,
+    ]
   ],
   716 => 
   [
@@ -269,7 +283,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 36,
+      'pDef' => 51,
+    ]
   ],
   717 => 
   [
@@ -286,7 +302,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 20,
+      'pDef' => 30,
+    ]
   ],
   718 => 
   [
@@ -303,7 +321,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 22,
+      'pDef' => 32,
+    ]
   ],
   719 => 
   [
@@ -320,7 +340,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 24,
+      'pDef' => 34,
+    ]
   ],
   720 => 
   [
@@ -337,7 +359,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 26,
+      'pDef' => 36,
+    ]
   ],
   721 => 
   [
@@ -354,7 +378,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 20,
+      'pDef' => 30,
+    ]
   ],
   722 => 
   [
@@ -371,7 +397,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 22,
+      'pDef' => 32,
+    ]
   ],
   723 => 
   [
@@ -388,7 +416,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 24,
+      'pDef' => 34,
+    ]
   ],
   724 => 
   [
@@ -405,7 +435,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 26,
+      'pDef' => 36,
+    ]
   ],
   725 => 
   [
@@ -679,7 +711,7 @@ return [
       'mAtk' => 9,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   739 => 
   [
@@ -761,7 +793,7 @@ return [
       'mAtk' => 11,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   744 => 
   [
@@ -780,11 +812,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'accCombat' => 4,
       'pAtk' => 13,
       'mAtk' => 15,
       'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   745 => 
   [
@@ -833,11 +866,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
-      'pAtk' => 11,
       'mAtk' => 13,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 11,
+    ]
   ],
   748 => 
   [
@@ -859,11 +893,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
-      'pAtk' => 10,
       'mAtk' => 11,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 10,
+    ]
   ],
   749 => 
   [
@@ -883,11 +918,12 @@ return [
     'is_dropable' => false,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 21,
       'mAtk' => 32,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   750 => 
   [
@@ -966,11 +1002,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 13,
       'mAtk' => 14,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   755 => 
   [

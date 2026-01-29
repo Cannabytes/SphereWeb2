@@ -18,7 +18,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 141,
+    ]
   ],
   15701 => 
   [
@@ -38,7 +39,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 105,
+    ]
   ],
   15702 => 
   [
@@ -58,7 +60,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 70,
+      'maxMp' => 392,
+    ]
   ],
   15703 => 
   [
@@ -77,7 +81,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 64,
+    ]
   ],
   15704 => 
   [
@@ -96,7 +101,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 64,
+    ]
   ],
   15705 => 
   [
@@ -115,7 +121,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 64,
+    ]
   ],
   15706 => 
   [
@@ -134,7 +141,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 64,
+    ]
   ],
   15707 => 
   [
@@ -153,7 +161,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 64,
+    ]
   ],
   15708 => 
   [
@@ -172,7 +181,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 64,
+    ]
   ],
   15709 => 
   [
@@ -191,7 +201,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 16,
+    ]
   ],
   15710 => 
   [
@@ -330,7 +341,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 69,
+      'maxMp' => 27,
+    ]
   ],
   15718 => 
   [
@@ -348,7 +361,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'maxMp' => 39,
+      'mDef' => 104,
+    ]
   ],
   15719 => 
   [
@@ -366,7 +381,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 138,
+      'maxMp' => 52,
+    ]
   ],
   15720 => 
   [
@@ -384,7 +401,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 65,
+      'maxMp' => 26,
+    ]
   ],
   15721 => 
   [
@@ -402,7 +421,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'maxMp' => 38,
+      'mDef' => 98,
+    ]
   ],
   15722 => 
   [
@@ -420,7 +441,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'maxMp' => 51,
+      'mDef' => 131,
+    ]
   ],
   15723 => 
   [
@@ -438,7 +461,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 61,
+      'maxMp' => 24,
+    ]
   ],
   15724 => 
   [
@@ -456,7 +481,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 86,
+      'maxMp' => 36,
+    ]
   ],
   15725 => 
   [
@@ -474,7 +501,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 115,
+      'maxMp' => 48,
+    ]
   ],
   15726 => 
   [
@@ -493,7 +522,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 110,
+    ]
   ],
   15727 => 
   [
@@ -512,7 +542,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 110,
+    ]
   ],
   15728 => 
   [
@@ -531,7 +562,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 110,
+    ]
   ],
   15729 => 
   [
@@ -551,7 +583,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 257,
+    ]
   ],
   15730 => 
   [
@@ -571,7 +604,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 193,
+    ]
   ],
   15731 => 
   [
@@ -591,7 +625,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 129,
+      'maxMp' => 661,
+    ]
   ],
   15732 => 
   [
@@ -611,7 +647,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 161,
+    ]
   ],
   15733 => 
   [
@@ -631,7 +668,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 121,
+    ]
   ],
   15734 => 
   [
@@ -651,7 +689,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 80,
+      'maxMp' => 439,
+    ]
   ],
   15735 => 
   [
@@ -670,7 +710,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 74,
+    ]
   ],
   15736 => 
   [
@@ -689,7 +730,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 74,
+    ]
   ],
   15737 => 
   [
@@ -708,7 +750,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 74,
+    ]
   ],
   15738 => 
   [
@@ -727,7 +770,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 74,
+    ]
   ],
   15739 => 
   [
@@ -746,7 +790,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 74,
+    ]
   ],
   15740 => 
   [
@@ -765,7 +810,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 74,
+    ]
   ],
   15741 => 
   [
@@ -804,7 +850,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 21,
+    ]
   ],
   15743 => 
   [
@@ -823,7 +870,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 107,
+    ]
   ],
   15744 => 
   [
@@ -842,7 +890,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 107,
+    ]
   ],
   15745 => 
   [
@@ -861,7 +910,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 107,
+    ]
   ],
   15746 => 
   [
@@ -881,7 +931,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 249,
+    ]
   ],
   15747 => 
   [
@@ -901,7 +952,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 187,
+    ]
   ],
   15748 => 
   [
@@ -921,7 +973,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 124,
+      'maxMp' => 649,
+    ]
   ],
   15749 => 
   [
@@ -941,7 +995,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 156,
+    ]
   ],
   15750 => 
   [
@@ -961,7 +1016,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 117,
+    ]
   ],
   15751 => 
   [
@@ -981,7 +1037,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 78,
+      'maxMp' => 427,
+    ]
   ],
   15752 => 
   [
@@ -1000,7 +1058,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 71,
+    ]
   ],
   15753 => 
   [
@@ -1019,7 +1078,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 71,
+    ]
   ],
   15754 => 
   [
@@ -1038,7 +1098,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 71,
+    ]
   ],
   15755 => 
   [
@@ -1057,7 +1118,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 71,
+    ]
   ],
   15756 => 
   [
@@ -1076,7 +1138,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 71,
+    ]
   ],
   15757 => 
   [
@@ -1095,7 +1158,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 71,
+    ]
   ],
   15758 => 
   [
@@ -1104,7 +1168,7 @@ return [
     'name' => 'Sealed Vorpal Shield',
     'add_name' => '',
     'description' => 'Sealed Vorpal Shield. Seal can be removed by the Blacksmith of Mammon or Maestro Ishuma.',
-    'icon' => 'Evilgate_Shield_i00',
+    'icon' => 'evilgate_shield_i00',
     'bodypart' => 'lhand',
     'crystal_count' => 704,
     'crystal_type' => 's84',
@@ -1134,7 +1198,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 19,
+    ]
   ],
   15760 => 
   [
@@ -1152,7 +1217,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 61,
+    ]
   ],
   15761 => 
   [
@@ -1170,7 +1236,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 92,
+    ]
   ],
   15762 => 
   [
@@ -1188,7 +1255,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 121,
+    ]
   ],
   15763 => 
   [
@@ -1206,7 +1274,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 57,
+    ]
   ],
   15764 => 
   [
@@ -1224,7 +1293,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 86,
+    ]
   ],
   15765 => 
   [
@@ -1242,7 +1312,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 115,
+    ]
   ],
   15766 => 
   [
@@ -1260,7 +1331,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 53,
+    ]
   ],
   15767 => 
   [
@@ -1278,7 +1350,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 76,
+    ]
   ],
   15768 => 
   [
@@ -1296,7 +1369,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 101,
+    ]
   ],
   15769 => 
   [

@@ -44,7 +44,7 @@ return [
       'mAtk' => 21,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9902 => 
   [
@@ -70,11 +70,12 @@ return [
     'enchanted' => 15,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 31,
       'mAtk' => 21,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9903 => 
   [
@@ -92,11 +93,12 @@ return [
     'enchanted' => 15,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 31,
       'mAtk' => 21,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9904 => 
   [
@@ -114,11 +116,12 @@ return [
     'enchanted' => 15,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 27,
       'mAtk' => 21,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   9905 => 
   [
@@ -136,11 +139,12 @@ return [
     'enchanted' => 15,
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'accCombat' => 4,
       'pAtk' => 38,
       'mAtk' => 21,
       'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9906 => 
   [
@@ -159,11 +163,12 @@ return [
     'enchanted' => 15,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 64,
       'mAtk' => 21,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+    ]
   ],
   9907 => 
   [
@@ -181,11 +186,12 @@ return [
     'enchanted' => 15,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 31,
       'mAtk' => 21,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9908 => 
   [
@@ -204,11 +210,12 @@ return [
     'enchanted' => 15,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 30,
       'mAtk' => 31,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9909 => 
   [
@@ -1915,11 +1922,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -1,
       'pAtk' => 64,
       'mAtk' => 32,
       'critRate' => 10,
       'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9996 => 
   [
@@ -1941,11 +1949,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 303,
+      'accCombat' => -1,
       'pAtk' => 64,
       'mAtk' => 32,
       'critRate' => 10,
-      'pAtkSpd' => 303,
-    ],
+    ]
   ],
   9997 => 
   [

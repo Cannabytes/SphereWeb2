@@ -920,11 +920,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 433,
+      'accCombat' => -3,
       'pAtk' => 62,
       'mAtk' => 42,
       'critRate' => 12,
-      'pAtkSpd' => 433,
-    ],
+    ]
   ],
   1661 => 
   [

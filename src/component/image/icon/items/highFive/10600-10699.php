@@ -128,7 +128,7 @@ return [
     'name' => 'Forgotten Scroll - Chant of Combat',
     'add_name' => '',
     'description' => 'Scroll to learn Chant of Combat. Warcryer uses it. Can be acquired by level 70.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 9300,
     'is_stackable' => true,
@@ -149,7 +149,7 @@ return [
     'name' => 'Forgotten Scroll - Chant of Critical',
     'add_name' => '',
     'description' => 'Scroll to learn Chant of Critical Attack. Warcryer uses it. Can be acquired by level 72.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 9650,
     'is_stackable' => true,
@@ -170,7 +170,7 @@ return [
     'name' => 'Forgotten Scroll - Chant of Blood Awakening',
     'add_name' => '',
     'description' => 'Scroll to learn Chant of Blood Awakening. Warcryer uses it. Can be acquired by level 74.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 10000,
     'is_stackable' => true,
@@ -606,7 +606,7 @@ return [
     'name' => 'Wondrous Cubic',
     'add_name' => '',
     'description' => 'Double-click to create a cube fragment that can be exchanged for a weapon/armor enchant scroll. Cannot be exchanged or dropped. (Can only be used once per day.]',
-    'icon' => 'Branchsys2.cube_event_i01',
+    'icon' => 'branchsys2.cube_event_i01',
     'etcitem_type' => 'elixir',
     'is_tradable' => false,
     'is_dropable' => false,
@@ -630,7 +630,7 @@ return [
     'name' => 'Cube Fragment Armor - D',
     'add_name' => '',
     'description' => 'Speak with a warehouse keeper to exchange this for a D-Grade Armor Enchant Scroll.',
-    'icon' => 'Branchsys2.event_cubic_a_piece_i00',
+    'icon' => 'branchsys2.event_cubic_a_piece_i00',
     'is_stackable' => true,
   ],
   10634 => 
@@ -640,7 +640,7 @@ return [
     'name' => 'Cube Fragment Armor - C',
     'add_name' => '',
     'description' => 'Speak with a warehouse keeper to exchange this for a C-Grade Armor Enchant Scroll.',
-    'icon' => 'Branchsys2.event_cubic_a_piece_i01',
+    'icon' => 'branchsys2.event_cubic_a_piece_i01',
     'is_stackable' => true,
   ],
   10635 => 
@@ -650,7 +650,7 @@ return [
     'name' => 'Cube Fragment Armor - B',
     'add_name' => '',
     'description' => 'Speak with a warehouse keeper to exchange this for a B-Grade Armor Enchant Scroll.',
-    'icon' => 'Branchsys2.event_cubic_a_piece_i02',
+    'icon' => 'branchsys2.event_cubic_a_piece_i02',
     'is_stackable' => true,
   ],
   10636 => 
@@ -660,7 +660,7 @@ return [
     'name' => 'Cube Fragment Armor - A',
     'add_name' => '',
     'description' => 'Speak with a warehouse keeper to exchange this for a A-Grade Armor Enchant Scroll.',
-    'icon' => 'Branchsys2.event_cubic_a_piece_i03',
+    'icon' => 'branchsys2.event_cubic_a_piece_i03',
     'is_stackable' => true,
   ],
   10637 => 
@@ -670,7 +670,7 @@ return [
     'name' => 'Cube Fragment Armor - S',
     'add_name' => '',
     'description' => 'Speak with a warehouse keeper to exchange this for a S-Grade Armor Enchant Scroll.',
-    'icon' => 'Branchsys2.event_cubic_a_piece_i04',
+    'icon' => 'branchsys2.event_cubic_a_piece_i04',
     'is_stackable' => true,
   ],
   10638 => 
@@ -748,7 +748,7 @@ return [
     'name' => 'Cube Fragment Weapon - D',
     'add_name' => '',
     'description' => 'Speak with a warehouse keeper to exchange this for a D-Grade Weapon Enchant Scroll.',
-    'icon' => 'Branchsys2.event_cubic_w_piece_i00',
+    'icon' => 'branchsys2.event_cubic_w_piece_i00',
     'is_stackable' => true,
   ],
   10643 => 
@@ -758,7 +758,7 @@ return [
     'name' => 'Cube Fragment Weapon - C',
     'add_name' => '',
     'description' => 'Speak with a warehouse keeper to exchange this for a C-Grade Weapon Enchant Scroll.',
-    'icon' => 'Branchsys2.event_cubic_w_piece_i01',
+    'icon' => 'branchsys2.event_cubic_w_piece_i01',
     'is_stackable' => true,
   ],
   10644 => 
@@ -768,7 +768,7 @@ return [
     'name' => 'Cube Fragment Weapon - B',
     'add_name' => '',
     'description' => 'Speak with a warehouse keeper to exchange this for a B-Grade Weapon Enchant Scroll.',
-    'icon' => 'Branchsys2.event_cubic_w_piece_i02',
+    'icon' => 'branchsys2.event_cubic_w_piece_i02',
     'is_stackable' => true,
   ],
   10645 => 
@@ -778,7 +778,7 @@ return [
     'name' => 'Cube Fragment Weapon - A',
     'add_name' => '',
     'description' => 'Speak with a warehouse keeper to exchange this for a A-Grade Weapon Enchant Scroll.',
-    'icon' => 'Branchsys2.event_cubic_w_piece_i03',
+    'icon' => 'branchsys2.event_cubic_w_piece_i03',
     'is_stackable' => true,
   ],
   10646 => 
@@ -788,7 +788,7 @@ return [
     'name' => 'Cube Fragment Weapon - S',
     'add_name' => '',
     'description' => 'Speak with a warehouse keeper to exchange this for a S-Grade Weapon Enchant Scroll.',
-    'icon' => 'Branchsys2.event_cubic_w_piece_i04',
+    'icon' => 'branchsys2.event_cubic_w_piece_i04',
     'is_stackable' => true,
   ],
   10647 => 
@@ -910,7 +910,7 @@ return [
     'name' => 'Herb of Vampiric Rage',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchSys2.etc_vampiric_rage_herb_i01',
+    'icon' => 'branchsys2.etc_vampiric_rage_herb_i01',
     'ex_immediate_effect' => 'true',
     'is_depositable' => false,
     'handler' => 'itemskills',
@@ -930,7 +930,7 @@ return [
     'name' => 'Herb of Critical Attack - Power',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchSys2.etc_crt_force_herb_i01',
+    'icon' => 'branchsys2.etc_crt_force_herb_i01',
     'ex_immediate_effect' => 'true',
     'is_depositable' => false,
     'handler' => 'itemskills',
@@ -975,7 +975,8 @@ return [
     'price' => 33,
     'stats' => 
     [
-    ],
+      'mDef' => 7,
+    ]
   ],
   10659 => 
   [
@@ -1221,7 +1222,7 @@ return [
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10668 => 
   [
@@ -1270,7 +1271,7 @@ return [
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10669 => 
   [
@@ -1322,7 +1323,7 @@ return [
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10670 => 
   [
@@ -1367,11 +1368,11 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 305,
-      'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 305,
+      'mAtk' => 121,
+    ]
   ],
   10671 => 
   [
@@ -1416,11 +1417,11 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 305,
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 305,
+    ]
   ],
   10672 => 
   [
@@ -1465,11 +1466,11 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 325,
       'pAtk' => 305,
       'mAtk' => 121,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   10673 => 
   [
@@ -1514,11 +1515,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 251,
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10674 => 
   [
@@ -1563,11 +1565,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 379,
+      'accCombat' => 4,
       'pAtk' => 251,
       'mAtk' => 121,
       'critRate' => 4,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10675 => 
   [
@@ -1612,11 +1615,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 251,
-      'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 251,
+      'mAtk' => 121,
+    ]
   ],
   10676 => 
   [
@@ -1661,11 +1665,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 305,
-      'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 305,
+      'mAtk' => 121,
+    ]
   ],
   10677 => 
   [
@@ -1710,11 +1715,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 305,
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   10678 => 
   [
@@ -1759,11 +1765,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 305,
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   10679 => 
   [
@@ -1813,11 +1820,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 220,
       'mAtk' => 121,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 220,
+    ]
   ],
   10680 => 
   [
@@ -1867,11 +1875,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 220,
       'mAtk' => 121,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 220,
+    ]
   ],
   10681 => 
   [
@@ -1921,11 +1930,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 220,
       'mAtk' => 121,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   10682 => 
   [
@@ -1973,11 +1983,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 251,
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   10683 => 
   [
@@ -2017,12 +2028,13 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 251,
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 325,
       'pAtkRange' => 80,
-    ],
+    ]
   ],
   10684 => 
   [
@@ -2062,11 +2074,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 251,
-      'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 251,
+      'mAtk' => 121,
+    ]
   ],
   10685 => 
   [
@@ -2107,11 +2120,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 571,
       'mAtk' => 133,
       'critRate' => 12,
       'pAtkSpd' => 227,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 571,
+    ]
   ],
   10686 => 
   [
@@ -2157,11 +2171,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 571,
       'mAtk' => 133,
       'critRate' => 12,
       'pAtkSpd' => 227,
-    ],
+    ]
   ],
   10687 => 
   [
@@ -2202,11 +2217,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 571,
       'mAtk' => 133,
       'critRate' => 12,
       'pAtkSpd' => 227,
-    ],
+    ]
   ],
   10688 => 
   [
@@ -2256,11 +2272,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 305,
-      'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 305,
+      'mAtk' => 121,
+    ]
   ],
   10689 => 
   [
@@ -2310,11 +2327,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 305,
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 305,
+    ]
   ],
   10690 => 
   [
@@ -2367,11 +2385,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 305,
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   10691 => 
   [
@@ -2421,7 +2440,7 @@ return [
       'mAtk' => 162,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10692 => 
   [
@@ -2471,11 +2490,11 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 201,
       'mAtk' => 162,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10693 => 
   [
@@ -2529,7 +2548,7 @@ return [
       'mAtk' => 162,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10694 => 
   [
@@ -2575,11 +2594,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 201,
       'mAtk' => 162,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10695 => 
   [
@@ -2625,11 +2645,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 201,
       'mAtk' => 162,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 201,
+    ]
   ],
   10696 => 
   [
@@ -2679,11 +2700,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 201,
       'mAtk' => 162,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10697 => 
   [
@@ -2729,11 +2751,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 245,
-      'mAtk' => 177,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 245,
+      'mAtk' => 177,
+    ]
   ],
   10698 => 
   [
@@ -2779,11 +2802,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 245,
       'mAtk' => 177,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   10699 => 
   [
@@ -2833,10 +2857,11 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'accCombat' => 4,
       'pAtk' => 245,
       'mAtk' => 177,
       'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
 ];

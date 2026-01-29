@@ -17,7 +17,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 71,
+    ]
   ],
   15601 => 
   [
@@ -36,7 +37,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 71,
+    ]
   ],
   15602 => 
   [
@@ -55,7 +57,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 71,
+    ]
   ],
   15603 => 
   [
@@ -74,7 +77,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 71,
+    ]
   ],
   15604 => 
   [
@@ -83,7 +87,7 @@ return [
     'name' => 'Vorpal Shield',
     'add_name' => '',
     'description' => '',
-    'icon' => 'Evilgate_Shield_i01',
+    'icon' => 'evilgate_shield_i01',
     'bodypart' => 'lhand',
     'crystal_count' => 704,
     'crystal_type' => 's84',
@@ -113,7 +117,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 19,
+    ]
   ],
   15606 => 
   [
@@ -132,7 +137,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 96,
+    ]
   ],
   15607 => 
   [
@@ -151,7 +157,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 96,
+    ]
   ],
   15608 => 
   [
@@ -170,7 +177,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 96,
+    ]
   ],
   15609 => 
   [
@@ -190,7 +198,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 238,
+    ]
   ],
   15610 => 
   [
@@ -210,7 +219,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 178,
+    ]
   ],
   15611 => 
   [
@@ -230,7 +240,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 119,
+      'maxMp' => 614,
+    ]
   ],
   15612 => 
   [
@@ -250,7 +262,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 149,
+    ]
   ],
   15613 => 
   [
@@ -270,7 +283,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 111,
+    ]
   ],
   15614 => 
   [
@@ -290,7 +304,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 74,
+      'maxMp' => 392,
+    ]
   ],
   15615 => 
   [
@@ -309,7 +325,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 64,
+    ]
   ],
   15616 => 
   [
@@ -328,7 +345,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 64,
+    ]
   ],
   15617 => 
   [
@@ -347,7 +365,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 64,
+    ]
   ],
   15618 => 
   [
@@ -366,7 +385,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 64,
+    ]
   ],
   15619 => 
   [
@@ -385,7 +405,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 64,
+    ]
   ],
   15620 => 
   [
@@ -404,7 +425,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 64,
+    ]
   ],
   15621 => 
   [
@@ -443,7 +465,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 16,
+    ]
   ],
   15623 => 
   [
@@ -760,7 +783,7 @@ return [
     'name' => 'Sealed Moirai Helmet Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Helmet. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_blluelycan_helmet_piece_I00',
+    'icon' => 'etc_sealed_blluelycan_helmet_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 33700,
@@ -773,7 +796,7 @@ return [
     'name' => 'Sealed Moirai Leather Helmet Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Leather Helmet. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_blluelycan_leather_helmet_piece_I00',
+    'icon' => 'etc_sealed_blluelycan_leather_helmet_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 33700,
@@ -786,7 +809,7 @@ return [
     'name' => 'Sealed Moirai Circlet Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Circlet. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_blluelycan_circlet_piece_I00',
+    'icon' => 'etc_sealed_blluelycan_circlet_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 33700,
@@ -799,7 +822,7 @@ return [
     'name' => 'Sealed Moirai Breastplate Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Breastplate. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_bluelycan_cuirass_piece_I00',
+    'icon' => 'etc_sealed_bluelycan_cuirass_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 84300,
@@ -812,7 +835,7 @@ return [
     'name' => 'Sealed Moirai Leather Breastplate Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Leather Breastplate. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_bluelycan_houberk_piece_I00',
+    'icon' => 'etc_sealed_bluelycan_houberk_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 62300,
@@ -825,7 +848,7 @@ return [
     'name' => 'Sealed Moirai Tunic Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Tunic. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_bluelycan_jaket_piece_I00',
+    'icon' => 'etc_sealed_bluelycan_jaket_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 62300,
@@ -838,7 +861,7 @@ return [
     'name' => 'Sealed Moirai Gaiter Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Gaiters. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_bluelycan_gaiter_piece_I00',
+    'icon' => 'etc_sealed_bluelycan_gaiter_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 50300,
@@ -851,7 +874,7 @@ return [
     'name' => 'Sealed Moirai Leather Legging Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Leather Leggings. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_bluelycan_leather_legging_piece_I00',
+    'icon' => 'etc_sealed_bluelycan_leather_legging_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 38400,
@@ -864,7 +887,7 @@ return [
     'name' => 'Sealed Moirai Stockings Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Stockings. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_bluelycan_hose_piece_I00',
+    'icon' => 'etc_sealed_bluelycan_hose_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 38400,
@@ -877,7 +900,7 @@ return [
     'name' => 'Sealed Moirai Gauntlet Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Gauntlet. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_bluelycan_gauntlet_piece_I00',
+    'icon' => 'etc_sealed_bluelycan_gauntlet_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 22400,
@@ -890,7 +913,7 @@ return [
     'name' => 'Sealed Moirai Leather Gloves Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Leather Gloves. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_bluelycan_leather_gloves_piece_I00',
+    'icon' => 'etc_sealed_bluelycan_leather_gloves_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 22400,
@@ -903,7 +926,7 @@ return [
     'name' => 'Sealed Moirai Gloves Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Gloves. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_bluelycan_gloves_piece_I00',
+    'icon' => 'etc_sealed_bluelycan_gloves_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 22400,
@@ -916,7 +939,7 @@ return [
     'name' => 'Sealed Moirai Boots Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Boots. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_bluelycan_boots_piece_I00',
+    'icon' => 'etc_sealed_bluelycan_boots_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 22400,
@@ -929,7 +952,7 @@ return [
     'name' => 'Sealed Moirai Leather Boots Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Leather Boots. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_bluelycan_leather_boots_piece_I00',
+    'icon' => 'etc_sealed_bluelycan_leather_boots_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 22400,
@@ -942,7 +965,7 @@ return [
     'name' => 'Sealed Moirai Shoes Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Shoes. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_bluelycan_shoes_piece_I00',
+    'icon' => 'etc_sealed_bluelycan_shoes_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 22400,
@@ -955,7 +978,7 @@ return [
     'name' => 'Sealed Vesper Helmet Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Helmet. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_helmet_piece_I00',
+    'icon' => 'etc_sealed_vesper_helmet_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 43600,
@@ -968,7 +991,7 @@ return [
     'name' => 'Sealed Vesper Leather Helmet Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Leather Helmet. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_leather_helmet_piece_I00',
+    'icon' => 'etc_sealed_vesper_leather_helmet_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 43600,
@@ -981,7 +1004,7 @@ return [
     'name' => 'Sealed Vesper Circlet Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Circlet. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_circlet_piece_I00',
+    'icon' => 'etc_sealed_vesper_circlet_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 43600,
@@ -994,7 +1017,7 @@ return [
     'name' => 'Sealed Vesper Breastplate Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Breastplate. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_cuirass_piece_I00',
+    'icon' => 'etc_sealed_vesper_cuirass_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 110500,
@@ -1007,7 +1030,7 @@ return [
     'name' => 'Sealed Vesper Leather Breastplate Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Breastplate. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_houberk_piece_I00',
+    'icon' => 'etc_sealed_vesper_houberk_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 84300,
@@ -1020,7 +1043,7 @@ return [
     'name' => 'Sealed Vesper Tunic Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Tunic. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_jaket_piece_I00',
+    'icon' => 'etc_sealed_vesper_jaket_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 84300,
@@ -1033,7 +1056,7 @@ return [
     'name' => 'Sealed Vesper Gaiter Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Gaiters. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_gaiter_piece_I00',
+    'icon' => 'etc_sealed_vesper_gaiter_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 68600,
@@ -1046,7 +1069,7 @@ return [
     'name' => 'Sealed Vesper Gauntlet Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Gauntlet. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_gauntlet_piece_I00',
+    'icon' => 'etc_sealed_vesper_gauntlet_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 26100,
@@ -1059,7 +1082,7 @@ return [
     'name' => 'Sealed Vesper Boots Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Boots. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_boots_piece_I00',
+    'icon' => 'etc_sealed_vesper_boots_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 26100,
@@ -1072,7 +1095,7 @@ return [
     'name' => 'Sealed Vesper Verteidiger Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Shield. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_verteidiger_piece_I00',
+    'icon' => 'etc_sealed_vesper_verteidiger_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 29500,
@@ -1085,7 +1108,7 @@ return [
     'name' => 'Sealed Vesper Leather Legging Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Leather Leggings. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_leather_legging_piece_I00',
+    'icon' => 'etc_sealed_vesper_leather_legging_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 54700,
@@ -1098,7 +1121,7 @@ return [
     'name' => 'Sealed Vesper Leather Gloves Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Leather Gloves. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_leather_gloves_piece_I00',
+    'icon' => 'etc_sealed_vesper_leather_gloves_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 26100,
@@ -1111,7 +1134,7 @@ return [
     'name' => 'Sealed Vesper Leather Boots Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Leather Boots. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_leather_boots_piece_I00',
+    'icon' => 'etc_sealed_vesper_leather_boots_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 26100,
@@ -1124,7 +1147,7 @@ return [
     'name' => 'Sealed Vesper Stockings Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Stockings. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_hose_piece_I00',
+    'icon' => 'etc_sealed_vesper_hose_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 54700,
@@ -1137,7 +1160,7 @@ return [
     'name' => 'Sealed Vesper Gloves Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Gloves. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_gloves_piece_I00',
+    'icon' => 'etc_sealed_vesper_gloves_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 26100,
@@ -1150,7 +1173,7 @@ return [
     'name' => 'Sealed Vesper Shoes Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Shoes. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_shoes_piece_I00',
+    'icon' => 'etc_sealed_vesper_shoes_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 26100,
@@ -1493,11 +1516,8 @@ return [
     'is_oly_restricted' => true,
     'stats' => 
     [
-      'pAtk' => 429,
-      'mAtk' => 183,
-      'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+    ]
   ],
   15689 => 
   [
@@ -1551,7 +1571,7 @@ return [
     'name' => 'Sealed Vesper Sigil Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Vesper Sigil. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_vesper_sigil_piece_I00',
+    'icon' => 'etc_sealed_vesper_sigil_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 29500,
@@ -1564,7 +1584,7 @@ return [
     'name' => 'Sealed Moirai Sigil Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Sigil. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_bluelycan_sigil_piece_I00',
+    'icon' => 'etc_sealed_bluelycan_sigil_piece_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 18800,
@@ -1577,7 +1597,7 @@ return [
     'name' => 'Sealed Moirai Shield Piece',
     'add_name' => '',
     'description' => 'An essential ingredient that a Dwarf needs to make a Sealed Moirai Shield. It can be sold at ordinary stores.',
-    'icon' => 'etc_sealed_bluelycan_shield_piece_I01',
+    'icon' => 'etc_sealed_bluelycan_shield_piece_i01',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 18800,
@@ -1600,7 +1620,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 96,
+    ]
   ],
   15695 => 
   [
@@ -1619,7 +1640,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 96,
+    ]
   ],
   15696 => 
   [
@@ -1638,7 +1660,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 96,
+    ]
   ],
   15697 => 
   [
@@ -1658,7 +1681,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 225,
+    ]
   ],
   15698 => 
   [
@@ -1678,7 +1702,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 169,
+    ]
   ],
   15699 => 
   [
@@ -1698,6 +1723,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 112,
+      'maxMp' => 614,
+    ]
   ],
 ];

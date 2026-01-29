@@ -225,7 +225,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 230,
-    ],
+    ]
   ],
   7015 => 
   [
@@ -242,7 +242,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 90,
-    ],
+    ]
   ],
   7016 => 
   [
@@ -1181,11 +1181,12 @@ return [
     'is_dropable' => false,
     'stats' => 
     [
-      'pAtk' => 1,
       'mAtk' => 1,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 1,
+    ]
   ],
   7059 => 
   [

@@ -212,7 +212,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 236,
+    ]
   ],
   17007 => 
   [
@@ -233,7 +234,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 177,
+    ]
   ],
   17008 => 
   [
@@ -254,7 +256,9 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'maxMp' => 637,
+      'pDef' => 118,
+    ]
   ],
   17009 => 
   [
@@ -275,7 +279,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 148,
+    ]
   ],
   17010 => 
   [
@@ -295,7 +300,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   17011 => 
   [
@@ -315,7 +321,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   17012 => 
   [
@@ -336,7 +343,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 111,
+    ]
   ],
   17013 => 
   [
@@ -356,7 +364,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   17014 => 
   [
@@ -376,7 +385,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   17015 => 
   [
@@ -397,7 +407,9 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'maxMp' => 415,
+      'pDef' => 74,
+    ]
   ],
   17016 => 
   [
@@ -417,7 +429,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   17017 => 
   [
@@ -437,7 +450,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   17018 => 
   [
@@ -806,7 +820,7 @@ return [
     'name' => 'Forgotten Scroll - Create Item Lv 10',
     'add_name' => '',
     'description' => 'Forgotten Scroll for learning Create Item Lv 10. Only Maestro can use it. Can be acquired by level 82.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -960,7 +974,7 @@ return [
     'name' => 'Forgotten Scroll - Fighter\'s Will - For Events',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn the Fighter\'s Will. Fighters use it. Can be acquired at level 81. Cannot be exchanged or dropped. Event ',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i00',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i00',
     'weight' => 120,
     'is_tradable' => false,
     'is_dropable' => false,
@@ -986,7 +1000,7 @@ return [
     'name' => 'Forgotten Scroll - Archer\'s Will - For Events',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn the Archer\'s Will. Fighters use it. Can be acquired at level 81. Cannot be exchanged or dropped. Event ',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i00',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i00',
     'weight' => 120,
     'is_tradable' => false,
     'is_dropable' => false,
@@ -1012,7 +1026,7 @@ return [
     'name' => 'Forgotten Scroll - Magician\'s Will - For Events',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Magician\'s Will. Used by the Mage types. Can be acquired at level 81. Cannot be exchanged or dropped. Event ',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i00',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i00',
     'weight' => 120,
     'is_tradable' => false,
     'is_dropable' => false,

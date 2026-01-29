@@ -1006,7 +1006,7 @@ return [
     'name' => 'Miraculous Rudolph Potion',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchSys2.event_lbracelet_rudolph',
+    'icon' => 'branchsys2.event_lbracelet_rudolph',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_sellable' => false,

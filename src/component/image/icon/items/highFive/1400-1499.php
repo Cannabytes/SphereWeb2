@@ -1033,11 +1033,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 5,
       'mAtk' => 5,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   1472 => 
   [
@@ -1066,11 +1067,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'accCombat' => -3,
       'pAtk' => 50,
       'mAtk' => 26,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   1473 => 
   [

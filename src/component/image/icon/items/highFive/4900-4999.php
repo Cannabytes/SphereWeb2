@@ -29,11 +29,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 189,
       'mAtk' => 145,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   4901 => 
   [
@@ -64,11 +65,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 189,
       'mAtk' => 145,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   4902 => 
   [
@@ -99,11 +101,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'accCombat' => 4,
       'pAtk' => 189,
       'mAtk' => 145,
       'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   4903 => 
   [
@@ -125,11 +128,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 207,
       'mAtk' => 143,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   4904 => 
   [
@@ -164,7 +168,8 @@ return [
       'mAtk' => 143,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   4905 => 
   [
@@ -195,11 +200,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'accCombat' => 4,
       'pAtk' => 207,
       'mAtk' => 143,
       'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   4906 => 
   [

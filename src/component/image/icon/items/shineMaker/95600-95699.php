@@ -1408,7 +1408,7 @@ return [
     'name' => 'Antharas\' Lair\'s Time Stone (Time-limited]',
     'add_name' => '',
     'description' => '',
-    'icon' => 'Icon.etc_i.timezone_refill_2',
+    'icon' => 'icon.etc_i.timezone_refill_2',
     'weight' => 5,
     'is_tradable' => false,
     'is_dropable' => false,

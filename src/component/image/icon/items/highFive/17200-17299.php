@@ -14,7 +14,9 @@ return [
     'is_dropable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 71,
+      'maxMp' => 31,
+    ]
   ],
   17201 => 
   [
@@ -23,7 +25,7 @@ return [
     'name' => 'Proof of Cheers',
     'add_name' => '',
     'description' => 'National Representative Warrior\'s tenacity. Mark needed to use the Spell of Blessing and Energy of Victory skill. Cannot be exchanged or dropped.',
-    'icon' => 'BranchSys2.br_cheer_symbol_i00',
+    'icon' => 'branchsys2.br_cheer_symbol_i00',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_stackable' => true,
@@ -47,7 +49,7 @@ return [
     'name' => 'Agathion Seal Bracelet - Ball Trapping Gnosian',
     'add_name' => '',
     'description' => 'Bracelet that summons a ball trapping Gnosian. It wears a red uniform. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_aga_kball_male_i00',
+    'icon' => 'branchsys2.br_aga_kball_male_i00',
     'bodypart' => 'lbracelet',
     'weight' => 150,
     'is_tradable' => false,
@@ -88,7 +90,7 @@ return [
     'name' => 'Agathion Seal Bracelet - Ball Trapping Orodriel',
     'add_name' => '',
     'description' => 'Bracelet that summons a ball trapping Orodriel. It wears a red uniform. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_aga_kball_female_i00',
+    'icon' => 'branchsys2.br_aga_kball_female_i00',
     'bodypart' => 'lbracelet',
     'weight' => 150,
     'is_tradable' => false,
@@ -129,7 +131,7 @@ return [
     'name' => 'Agathion Seal Bracelet - Penalty Kick',
     'add_name' => '',
     'description' => 'Bracelet that summons a Gnosian and Orodriel who are practicing penalty kicks. All are wearing red uniforms. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse. ',
-    'icon' => 'BranchSys2.br_aga_kball_kick_i00',
+    'icon' => 'branchsys2.br_aga_kball_kick_i00',
     'bodypart' => 'lbracelet',
     'weight' => 150,
     'is_tradable' => false,

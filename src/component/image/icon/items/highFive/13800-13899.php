@@ -1466,7 +1466,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 13,
+    ]
   ],
   13886 => 
   [
@@ -1485,7 +1486,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 15,
+    ]
   ],
   13887 => 
   [
@@ -1504,7 +1506,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 17,
+    ]
   ],
   13888 => 
   [
@@ -1520,7 +1523,8 @@ return [
     'price' => 28671000,
     'stats' => 
     [
-    ],
+      'pDef' => 2,
+    ]
   ],
   13889 => 
   [
@@ -1536,7 +1540,9 @@ return [
     'price' => 28671000,
     'stats' => 
     [
-    ],
+      'pDef' => 20,
+      'darkRes' => 30,
+    ]
   ],
   13890 => 
   [
@@ -1552,7 +1558,9 @@ return [
     'price' => 28671000,
     'stats' => 
     [
-    ],
+      'darkRes' => 30,
+      'pDef' => 20,
+    ]
   ],
   13891 => 
   [
@@ -1568,7 +1576,9 @@ return [
     'price' => 28671000,
     'stats' => 
     [
-    ],
+      'darkRes' => 30,
+      'pDef' => 20,
+    ]
   ],
   13892 => 
   [
@@ -1584,7 +1594,9 @@ return [
     'price' => 28671000,
     'stats' => 
     [
-    ],
+      'pDef' => 20,
+      'darkRes' => 30,
+    ]
   ],
   13893 => 
   [
@@ -1599,7 +1611,8 @@ return [
     'price' => 28671000,
     'stats' => 
     [
-    ],
+      'pDef' => 20,
+    ]
   ],
   13894 => 
   [
@@ -1618,7 +1631,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 10,
+    ]
   ],
   13895 => 
   [
@@ -1637,7 +1651,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 11,
+    ]
   ],
   13896 => 
   [
@@ -1656,7 +1671,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 12,
+    ]
   ],
   13897 => 
   [
@@ -1675,7 +1691,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 14,
+    ]
   ],
   13898 => 
   [

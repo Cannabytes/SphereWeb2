@@ -2439,7 +2439,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 43,
+      'maxMp' => 20,
+    ]
   ],
   13294 => 
   [
@@ -2457,7 +2459,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 29,
+      'maxMp' => 15,
+    ]
   ],
   13295 => 
   [
@@ -2501,7 +2505,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 28,
+      'maxMp' => 40,
+    ]
   ],
   13297 => 
   [

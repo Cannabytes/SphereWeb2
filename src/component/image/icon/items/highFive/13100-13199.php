@@ -918,7 +918,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 101,
+    ]
   ],
   13138 => 
   [
@@ -937,7 +938,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 101,
+    ]
   ],
   13139 => 
   [
@@ -956,7 +958,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 101,
+    ]
   ],
   13140 => 
   [
@@ -975,7 +978,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 101,
+    ]
   ],
   13141 => 
   [
@@ -994,7 +998,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 101,
+    ]
   ],
   13142 => 
   [
@@ -1013,7 +1018,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 101,
+    ]
   ],
   13143 => 
   [
@@ -1032,7 +1038,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 101,
+    ]
   ],
   13144 => 
   [
@@ -1051,7 +1058,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 101,
+    ]
   ],
   13145 => 
   [
@@ -1070,7 +1078,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 101,
+    ]
   ],
   13146 => 
   [
@@ -1089,7 +1098,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 101,
+    ]
   ],
   13147 => 
   [
@@ -1108,7 +1118,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 101,
+    ]
   ],
   13148 => 
   [
@@ -1127,7 +1138,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 101,
+    ]
   ],
   13149 => 
   [
@@ -1863,11 +1875,8 @@ return [
     'time' => 21600,
     'stats' => 
     [
-      'pAtk' => 100,
-      'mAtk' => 54,
-      'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+    ]
   ],
   13177 => 
   [

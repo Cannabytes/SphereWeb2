@@ -1071,11 +1071,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 473,
-      'mAtk' => 192,
-      'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+    ]
   ],
   15557 => 
   [
@@ -1453,11 +1450,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 449,
-      'mAtk' => 183,
-      'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+    ]
   ],
   15571 => 
   [
@@ -1503,7 +1497,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 110,
+    ]
   ],
   15573 => 
   [
@@ -1522,7 +1517,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 110,
+    ]
   ],
   15574 => 
   [
@@ -1541,7 +1537,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 110,
+    ]
   ],
   15575 => 
   [
@@ -1561,7 +1558,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 272,
+    ]
   ],
   15576 => 
   [
@@ -1581,7 +1579,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 204,
+    ]
   ],
   15577 => 
   [
@@ -1601,7 +1600,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 136,
+      'maxMp' => 661,
+    ]
   ],
   15578 => 
   [
@@ -1621,7 +1622,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 170,
+    ]
   ],
   15579 => 
   [
@@ -1641,7 +1643,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 128,
+    ]
   ],
   15580 => 
   [
@@ -1661,7 +1664,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 85,
+      'maxMp' => 439,
+    ]
   ],
   15581 => 
   [
@@ -1680,7 +1685,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 74,
+    ]
   ],
   15582 => 
   [
@@ -1699,7 +1705,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 74,
+    ]
   ],
   15583 => 
   [
@@ -1718,7 +1725,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 74,
+    ]
   ],
   15584 => 
   [
@@ -1737,7 +1745,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 74,
+    ]
   ],
   15585 => 
   [
@@ -1756,7 +1765,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 74,
+    ]
   ],
   15586 => 
   [
@@ -1775,7 +1785,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 74,
+    ]
   ],
   15587 => 
   [
@@ -1814,7 +1825,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 21,
+    ]
   ],
   15589 => 
   [
@@ -1833,7 +1845,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 107,
+    ]
   ],
   15590 => 
   [
@@ -1852,7 +1865,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 107,
+    ]
   ],
   15591 => 
   [
@@ -1871,7 +1885,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 107,
+    ]
   ],
   15592 => 
   [
@@ -1891,7 +1906,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 263,
+    ]
   ],
   15593 => 
   [
@@ -1911,7 +1927,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 197,
+    ]
   ],
   15594 => 
   [
@@ -1931,7 +1948,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 132,
+      'maxMp' => 649,
+    ]
   ],
   15595 => 
   [
@@ -1951,7 +1970,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 164,
+    ]
   ],
   15596 => 
   [
@@ -1971,7 +1991,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 123,
+    ]
   ],
   15597 => 
   [
@@ -1991,7 +2012,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'maxMp' => 427,
+      'pDef' => 82,
+    ]
   ],
   15598 => 
   [
@@ -2010,7 +2033,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 71,
+    ]
   ],
   15599 => 
   [
@@ -2029,6 +2053,7 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 71,
+    ]
   ],
 ];

@@ -136,7 +136,7 @@ return [
     'name' => 'Olf\'s T-shirt - Event',
     'add_name' => 'Event',
     'description' => 'Dimensional  Olf\'s T-shirt Enchant Scroll. Can enhance up to +10 using a Blessed Olf\'s T-shirt Enchant Scroll. Cannot be exchanged, dropped, or destroyed. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.7anni_shirt_i00',
+    'icon' => 'branchsys2.7anni_shirt_i00',
     'bodypart' => 'underwear',
     'weight' => 130,
     'enchant_enabled' => true,
@@ -145,7 +145,8 @@ return [
     'is_destroyable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 28,
+    ]
   ],
   21707 => 
   [
@@ -154,7 +155,7 @@ return [
     'name' => 'Blessed Olf\'s T-shirt Enchant Scroll - Event',
     'add_name' => 'Event',
     'description' => 'Dimensional  Enchant scroll exclusive to Olf\'s T-shirt.. Increases the T-shirt\'s P. Def. and M. Def. by 1. Starting from +4, increases P. Def. by 3. Can safely enchant to +3 and up to a max +10. From +4, "basic abilities (CON, MEN, STR, INT, DEX, WIT]" are raised in stages. Special skills are added at +5, +7, +8 and +9. If the enchant fails, the existing enchant value becomes 0. Cannot be dropped. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.etc_scroll_of_enchant_shirt_i00',
+    'icon' => 'branchsys2.etc_scroll_of_enchant_shirt_i00',
     'etcitem_type' => 'scrl_enchant_am',
     'weight' => 120,
     'is_dropable' => false,
@@ -190,7 +191,7 @@ return [
     'name' => 'Agathion Seal Bracelet - Rudolph - Event',
     'add_name' => 'Event',
     'description' => 'Bracelet that can summon a cute Rudolph Agathion. Cannot be exchanged or dropped. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.event_lbracelet_rudolph',
+    'icon' => 'branchsys2.event_lbracelet_rudolph',
     'bodypart' => 'lbracelet',
     'weight' => 150,
     'is_tradable' => false,
@@ -303,7 +304,7 @@ return [
     'name' => 'Cloak of Zaken',
     'add_name' => '',
     'description' => 'Cloak that makes you feel Zaken\'s sorrow. Increases P. Def. and attribute resistance. Unlocks a skill to move to the boss area. Can only be equipped when the cloak slot is open. Enchantment, attribute, and refining are impossible. Can be exchanged or dropped.',
-    'icon' => 'BranchSys2.Icon.br_zaken_cloak_i00',
+    'icon' => 'branchsys2.icon.br_zaken_cloak_i00',
     'bodypart' => 'back',
     'crystal_type' => 's80',
     'price' => 29674485,
@@ -327,7 +328,7 @@ return [
     'name' => 'Cloak of Freya',
     'add_name' => '',
     'description' => 'Cloak that makes you feel Freya\'s chill. Increases P. Def. and attribute resistance. Unlocks a skill to move to the boss area. Can only be equipped when the cloak slot is open. Enchantment, attribute, and refining are impossible. Can be exchanged or dropped.',
-    'icon' => 'BranchSys2.Icon.br_freya_cloak_i00',
+    'icon' => 'branchsys2.icon.br_freya_cloak_i00',
     'bodypart' => 'back',
     'crystal_type' => 's84',
     'price' => 32971650,
@@ -351,7 +352,7 @@ return [
     'name' => 'Cloak of Frintezza',
     'add_name' => '',
     'description' => 'Cloak that plays Frintezza\'s melody over and over in your head. Increases P. Def. and attribute resistance. Unlocks a skill to move to the boss area. Can only be equipped when the cloak slot is open. Enchantment, attribute, and refining are impossible. Can be exchanged or dropped.',
-    'icon' => 'BranchSys2.Icon.br_frintessa_cloak_i00',
+    'icon' => 'branchsys2.icon.br_frintessa_cloak_i00',
     'bodypart' => 'back',
     'crystal_type' => 's80',
     'price' => 29674485,
@@ -375,7 +376,7 @@ return [
     'name' => 'Soul Cloak of Zaken',
     'add_name' => '',
     'description' => 'Cloak embroidered with Zaken\'s soul. Increases P. Def. and attribute resistance. Unlocks a skill to move to the boss area. Can only be equipped when the cloak slot is open. Enchantment, attribute, refining, exchange, and drop are impossible.',
-    'icon' => 'BranchSys2.Icon.br_zaken_cloak_i00',
+    'icon' => 'branchsys2.icon.br_zaken_cloak_i00',
     'bodypart' => 'back',
     'crystal_type' => 's80',
     'weight' => 110,
@@ -400,7 +401,7 @@ return [
     'name' => 'Soul Cloak of Freya',
     'add_name' => '',
     'description' => 'Cloak embroidered with Freya\'s soul. Increases P. Def. and attribute resistance. Unlocks a skill to move to the boss area. Can only be equipped when the cloak slot is open. Enchantment, attribute, refining, exchange, and drop are impossible.',
-    'icon' => 'BranchSys2.Icon.br_freya_cloak_i00',
+    'icon' => 'branchsys2.icon.br_freya_cloak_i00',
     'bodypart' => 'back',
     'crystal_type' => 's84',
     'weight' => 110,
@@ -425,7 +426,7 @@ return [
     'name' => 'Soul Cloak of Frintezza',
     'add_name' => '',
     'description' => 'Cloak embroidered with Frintezza\'s soul. Increases P. Def. and attribute resistance. Unlocks a skill to move to the boss area. Can only be equipped when the cloak slot is open. Enchantment, attribute, refining, exchange, and drop are impossible.',
-    'icon' => 'BranchSys2.Icon.br_frintessa_cloak_i00',
+    'icon' => 'branchsys2.icon.br_frintessa_cloak_i00',
     'bodypart' => 'back',
     'crystal_type' => 's80',
     'weight' => 110,
@@ -524,7 +525,7 @@ return [
     'name' => 'Zinenze Agathion Bracelet (3 day] - 3-day limited period',
     'add_name' => '3-day limited period',
     'description' => 'Bracelet skill that let\'s you summon Zinenze for 3 days.. Upon using the skill name, instantly recovers Exp, HP, MP, and CP, and makes you invincible for 5 seconds. (But can only be used when HP is below 30%.]. Cool time is 12 hour(s].. Can be stored in a private warehouse. But cannot be exchange, dropped, or sold in shops.',
-    'icon' => 'BranchSys2.Icon.br_aga_jinjiayan_i00',
+    'icon' => 'branchsys2.icon.br_aga_jinjiayan_i00',
     'bodypart' => 'lbracelet',
     'weight' => 120,
     'is_tradable' => false,
@@ -566,7 +567,7 @@ return [
     'name' => 'Zinenze Agathion Bracelet (7 day] - 7-day limited period',
     'add_name' => '7-day limited period',
     'description' => 'Bracelet skill that let\'s you summon Zinenze for 3 days.. Upon using the skill name, instantly recovers Exp, HP, MP, and CP, and makes you invincible for 5 seconds. (But can only be used when HP is below 31%.]. Cool time is 12 hour(s].. Can be stored in a private warehouse. But cannot be exchange, dropped, or sold in shops.',
-    'icon' => 'BranchSys2.Icon.br_aga_jinjiayan_i00',
+    'icon' => 'branchsys2.icon.br_aga_jinjiayan_i00',
     'bodypart' => 'lbracelet',
     'weight' => 120,
     'is_tradable' => false,
@@ -608,7 +609,7 @@ return [
     'name' => 'Enze Agathion Bracelet',
     'add_name' => 'Permanent',
     'description' => 'Enze Agathion. Upon skill use, transforms into an Enze fairy. Can stay as an Enze fairy for 10 minutes. Cool time is 5 hours.. Can be traded, sold at a private store, and stored in a private warehouse. But cannot be dropped or sold at a shop.',
-    'icon' => 'BranchSys2.Icon.br_aga_jiayan_i00',
+    'icon' => 'branchsys2.icon.br_aga_jiayan_i00',
     'bodypart' => 'lbracelet',
     'weight' => 120,
     'is_dropable' => false,
@@ -664,11 +665,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 69,
-      'mAtk' => 47,
-      'critRate' => 12,
-      'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   21732 => 
   [
@@ -733,11 +731,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 63,
-      'mAtk' => 63,
-      'critRate' => 4,
-      'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   21735 => 
   [
@@ -756,11 +751,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 79,
-      'mAtk' => 47,
-      'critRate' => 4,
-      'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   21736 => 
   [
@@ -779,11 +771,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 77,
-      'mAtk' => 69,
-      'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   21737 => 
   [
@@ -802,11 +791,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 96,
-      'mAtk' => 47,
-      'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   21738 => 
   [
@@ -825,11 +811,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 79,
-      'mAtk' => 47,
-      'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   21739 => 
   [
@@ -848,11 +831,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 179,
-      'mAtk' => 51,
-      'critRate' => 12,
-      'pAtkSpd' => 227,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   21740 => 
   [
@@ -871,11 +851,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 72,
-      'mAtk' => 47,
-      'critRate' => 10,
-      'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   21741 => 
   [
@@ -940,11 +917,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 96,
-      'mAtk' => 47,
-      'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   21744 => 
   [
@@ -963,11 +937,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 86,
-      'mAtk' => 47,
-      'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+    ]
   ],
   21745 => 
   [
@@ -986,11 +957,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 100,
-      'mAtk' => 47,
-      'critRate' => 10,
-      'pAtkSpd' => 303,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   21746 => 
   [
@@ -1020,7 +988,7 @@ return [
     'name' => 'Beginner Adventurer\'s Treasure Sack',
     'add_name' => '',
     'description' => 'Treasure sack containing the treasure of beginner adventurers. Open it to obtain one random C or D-Grade Weapon.',
-    'icon' => 'BranchSys2.etc_ancient_treasure_sack_i00',
+    'icon' => 'branchsys2.etc_ancient_treasure_sack_i00',
     'is_stackable' => true,
     'handler' => 'itemskills',
     'item_skill' => 
@@ -1039,7 +1007,7 @@ return [
     'name' => 'Experienced Adventurer\'s Treasure Sack',
     'add_name' => '',
     'description' => 'Treasure sack containing the treasure of experienced adventurers. Open it to obtain one random B, A or S-Grade Weapon (Dynasty excluded].',
-    'icon' => 'BranchSys2.etc_ancient_treasure_sack_i00',
+    'icon' => 'branchsys2.etc_ancient_treasure_sack_i00',
     'is_stackable' => true,
     'handler' => 'itemskills',
     'item_skill' => 
@@ -1058,7 +1026,7 @@ return [
     'name' => 'Great Adventurer\'s Treasure Sack',
     'add_name' => '',
     'description' => 'Treasure sack containing the treasure of great adventurers. Open it to obtain one random Dynasty, Icarus or Vesper Weapon.',
-    'icon' => 'BranchSys2.etc_ancient_treasure_sack_i00',
+    'icon' => 'branchsys2.etc_ancient_treasure_sack_i00',
     'is_stackable' => true,
     'handler' => 'itemskills',
     'item_skill' => 
@@ -1145,7 +1113,7 @@ return [
     'name' => 'Server Ziggi\'s Magic Pencil',
     'add_name' => '',
     'description' => 'Magic pencil with a sharp tip. Item that can be used only on the server Ziggi. Cannot be exchanged or dropped. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.g_pencil_of_servermaster',
+    'icon' => 'branchsys2.g_pencil_of_servermaster',
     'weapon_type' => 'pole',
     'bodypart' => 'lrhand',
     'weight' => 100,
@@ -1155,11 +1123,8 @@ return [
     'is_dropable' => false,
     'stats' => 
     [
-      'pAtk' => 1,
-      'mAtk' => 1,
-      'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   21755 => 
   [
@@ -1168,7 +1133,7 @@ return [
     'name' => 'Manor Scholar\'s Hat',
     'add_name' => '',
     'description' => 'Scholar\'s hat showing knowledge. A gold tassle is attached. Cannot be exchanged or dropped. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.g_graduation_cap_gold',
+    'icon' => 'branchsys2.g_graduation_cap_gold',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1181,7 +1146,7 @@ return [
     'name' => 'Rank 1 Scholar\'s Hat',
     'add_name' => '',
     'description' => 'Scholar\'s hat showing knowledge. A silver tassle is attached. Cannot be exchanged or dropped. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.g_graduation_cap_white',
+    'icon' => 'branchsys2.g_graduation_cap_white',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1194,7 +1159,7 @@ return [
     'name' => 'Rank 2 Scholar\'s Hat',
     'add_name' => '',
     'description' => 'Scholar\'s hat showing knowledge. A red tassle is attached. Cannot be exchanged or dropped. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.g_graduation_cap_red',
+    'icon' => 'branchsys2.g_graduation_cap_red',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1207,7 +1172,7 @@ return [
     'name' => 'Rank 3 Scholar\'s Hat',
     'add_name' => '',
     'description' => 'Scholar\'s hat showing knowledge. A blue tassle is attached. Cannot be exchanged or dropped. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.g_graduation_cap_blue',
+    'icon' => 'branchsys2.g_graduation_cap_blue',
     'bodypart' => 'hairall',
     'weight' => 10,
     'is_tradable' => false,
@@ -1220,7 +1185,7 @@ return [
     'name' => 'Illumination - Red',
     'add_name' => '',
     'description' => 'Brightly burning illumination. ',
-    'icon' => 'BranchSys2.g_illumination_red',
+    'icon' => 'branchsys2.g_illumination_red',
     'weight' => 2,
     'is_stackable' => true,
   ],
@@ -1231,7 +1196,7 @@ return [
     'name' => 'Illumination - Pink',
     'add_name' => '',
     'description' => 'Brightly burning illumination. ',
-    'icon' => 'BranchSys2.g_illumination_pink',
+    'icon' => 'branchsys2.g_illumination_pink',
     'weight' => 2,
     'is_stackable' => true,
   ],
@@ -1242,7 +1207,7 @@ return [
     'name' => 'Illumination - Rose Pink',
     'add_name' => '',
     'description' => 'Brightly burning illumination. ',
-    'icon' => 'BranchSys2.g_illumination_rosepink',
+    'icon' => 'branchsys2.g_illumination_rosepink',
     'weight' => 2,
     'is_stackable' => true,
   ],
@@ -1253,7 +1218,7 @@ return [
     'name' => 'Illumination - Orange',
     'add_name' => '',
     'description' => 'Brightly burning illumination. ',
-    'icon' => 'BranchSys2.g_illumination_orange',
+    'icon' => 'branchsys2.g_illumination_orange',
     'weight' => 2,
     'is_stackable' => true,
   ],
@@ -1264,7 +1229,7 @@ return [
     'name' => 'Illumination - Mint Green',
     'add_name' => '',
     'description' => 'Brightly burning illumination. ',
-    'icon' => 'BranchSys2.g_illumination_mintgreen',
+    'icon' => 'branchsys2.g_illumination_mintgreen',
     'weight' => 2,
     'is_stackable' => true,
   ],
@@ -1275,7 +1240,7 @@ return [
     'name' => 'Illumination - Green',
     'add_name' => '',
     'description' => 'Brightly burning illumination. ',
-    'icon' => 'BranchSys2.g_illumination_green',
+    'icon' => 'branchsys2.g_illumination_green',
     'weight' => 2,
     'is_stackable' => true,
   ],
@@ -1286,7 +1251,7 @@ return [
     'name' => 'Illumination - Sky Blue',
     'add_name' => '',
     'description' => 'Brightly burning illumination. ',
-    'icon' => 'BranchSys2.g_illumination_skyblue',
+    'icon' => 'branchsys2.g_illumination_skyblue',
     'weight' => 2,
     'is_stackable' => true,
   ],
@@ -1297,7 +1262,7 @@ return [
     'name' => 'Illumination - Blue',
     'add_name' => '',
     'description' => 'Brightly burning illumination. ',
-    'icon' => 'BranchSys2.g_illumination_blue',
+    'icon' => 'branchsys2.g_illumination_blue',
     'weight' => 2,
     'is_stackable' => true,
   ],
@@ -1308,7 +1273,7 @@ return [
     'name' => 'Illumination - Purple',
     'add_name' => '',
     'description' => 'Brightly burning illumination. ',
-    'icon' => 'BranchSys2.g_illumination_purple',
+    'icon' => 'branchsys2.g_illumination_purple',
     'weight' => 2,
     'is_stackable' => true,
   ],
@@ -1319,7 +1284,7 @@ return [
     'name' => 'Illumination - White',
     'add_name' => '',
     'description' => 'Brightly burning illumination. ',
-    'icon' => 'BranchSys2.g_illumination_white',
+    'icon' => 'branchsys2.g_illumination_white',
     'weight' => 2,
     'is_stackable' => true,
   ],
@@ -1350,7 +1315,7 @@ return [
     'name' => 'Jewel of Dusk',
     'add_name' => '',
     'description' => 'Jewel carged with ancient skills. It shines brightly. It should still fetch a certain price at the shop.',
-    'icon' => 'BranchSys2.g_twilight_gem',
+    'icon' => 'branchsys2.g_twilight_gem',
     'is_stackable' => true,
   ],
   21772 => 
@@ -1360,7 +1325,7 @@ return [
     'name' => 'Jewel of Dawn',
     'add_name' => '',
     'description' => 'The jewel of dawn that was created by the craftsman using ancient skills. It shines brightly. It should still fetch a considerable price at the shop.',
-    'icon' => 'BranchSys2.g_dawn_gem',
+    'icon' => 'branchsys2.g_dawn_gem',
     'is_stackable' => true,
   ],
   21773 => 
@@ -1370,7 +1335,7 @@ return [
     'name' => 'Jewel of Splendor',
     'add_name' => '',
     'description' => 'The jewel of dawn that was created by the craftsman using ancient skills. It shines brightly. It should still fetch a considerable price at the shop.',
-    'icon' => 'BranchSys2.g_brilliance_gem',
+    'icon' => 'branchsys2.g_brilliance_gem',
     'is_stackable' => true,
   ],
   21774 => 
@@ -1380,7 +1345,7 @@ return [
     'name' => 'Giant\'s Jewel',
     'add_name' => '',
     'description' => 'The giant\'s jewel that was created by the craftsman using ancient skills. It shines brightly. It should still fetch a considerable price at the shop.',
-    'icon' => 'BranchSys2.g_giant_gem',
+    'icon' => 'branchsys2.g_giant_gem',
     'is_stackable' => true,
   ],
   21775 => 
@@ -1401,7 +1366,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 205,
+    ]
   ],
   21776 => 
   [
@@ -1421,7 +1387,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 128,
+    ]
   ],
   21777 => 
   [
@@ -1440,7 +1407,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   21778 => 
   [
@@ -1459,7 +1427,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   21779 => 
   [
@@ -1478,7 +1447,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 83,
+    ]
   ],
   21780 => 
   [
@@ -1530,7 +1500,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 249,
+    ]
   ],
   21783 => 
   [
@@ -1549,7 +1520,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   21784 => 
   [
@@ -1568,7 +1540,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   21785 => 
   [
@@ -1587,7 +1560,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 83,
+    ]
   ],
   21786 => 
   [
@@ -1619,7 +1593,9 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'maxMp' => 866,
+      'pDef' => 166,
+    ]
   ],
   21788 => 
   [
@@ -1638,7 +1614,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   21789 => 
   [
@@ -1657,7 +1634,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 55,
+    ]
   ],
   21790 => 
   [
@@ -1676,7 +1654,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 83,
+    ]
   ],
   21791 => 
   [
@@ -1694,7 +1673,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 13,
+    ]
   ],
   21792 => 
   [
@@ -1726,7 +1706,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 226,
+    ]
   ],
   21794 => 
   [
@@ -1746,7 +1727,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 141,
+    ]
   ],
   21795 => 
   [
@@ -1765,7 +1747,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   21796 => 
   [
@@ -1784,7 +1767,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   21797 => 
   [
@@ -1803,7 +1787,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 92,
+    ]
   ],
   21798 => 
   [

@@ -875,7 +875,7 @@ return [
     'name' => 'Bunch of Bananas',
     'add_name' => '',
     'description' => '',
-    'icon' => 'Icon.ev_monkey_banana',
+    'icon' => 'icon.ev_monkey_banana',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_sellable' => false,

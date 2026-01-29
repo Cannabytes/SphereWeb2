@@ -4716,7 +4716,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 69,
+    ]
   ],
   12995 => 
   [
@@ -4734,7 +4735,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 69,
+    ]
   ],
   12996 => 
   [
@@ -4752,7 +4754,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 69,
+    ]
   ],
   12997 => 
   [
@@ -4770,7 +4773,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 69,
+    ]
   ],
   12998 => 
   [
@@ -4788,7 +4792,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 73,
+    ]
   ],
   12999 => 
   [
@@ -4806,6 +4811,7 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 73,
+    ]
   ],
 ];

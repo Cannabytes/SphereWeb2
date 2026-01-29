@@ -13,7 +13,8 @@ return [
     'price' => 6099000,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   12701 => 
   [
@@ -28,7 +29,8 @@ return [
     'price' => 9149000,
     'stats' => 
     [
-    ],
+      'pDef' => 92,
+    ]
   ],
   12702 => 
   [
@@ -43,7 +45,8 @@ return [
     'price' => 6099000,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   12703 => 
   [
@@ -59,7 +62,8 @@ return [
     'price' => 24398000,
     'stats' => 
     [
-    ],
+      'pDef' => 214,
+    ]
   ],
   12704 => 
   [
@@ -91,7 +95,8 @@ return [
     'price' => 6099000,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   12706 => 
   [
@@ -106,7 +111,8 @@ return [
     'price' => 9149000,
     'stats' => 
     [
-    ],
+      'pDef' => 92,
+    ]
   ],
   12707 => 
   [
@@ -122,7 +128,9 @@ return [
     'price' => 18298000,
     'stats' => 
     [
-    ],
+      'pDef' => 107,
+      'maxMp' => 592,
+    ]
   ],
   12708 => 
   [
@@ -137,7 +145,8 @@ return [
     'price' => 9149000,
     'stats' => 
     [
-    ],
+      'pDef' => 92,
+    ]
   ],
   12709 => 
   [
@@ -153,7 +162,9 @@ return [
     'price' => 11436000,
     'stats' => 
     [
-    ],
+      'maxMp' => 370,
+      'pDef' => 67,
+    ]
   ],
   12710 => 
   [
@@ -168,7 +179,8 @@ return [
     'price' => 465900,
     'stats' => 
     [
-    ],
+      'mDef' => 51,
+    ]
   ],
   12711 => 
   [
@@ -183,7 +195,8 @@ return [
     'price' => 621200,
     'stats' => 
     [
-    ],
+      'mDef' => 68,
+    ]
   ],
   12712 => 
   [
@@ -198,7 +211,8 @@ return [
     'price' => 310600,
     'stats' => 
     [
-    ],
+      'mDef' => 34,
+    ]
   ],
   12713 => 
   [
@@ -213,7 +227,8 @@ return [
     'price' => 711000,
     'stats' => 
     [
-    ],
+      'mDef' => 54,
+    ]
   ],
   12714 => 
   [
@@ -228,7 +243,8 @@ return [
     'price' => 948000,
     'stats' => 
     [
-    ],
+      'mDef' => 72,
+    ]
   ],
   12715 => 
   [
@@ -243,7 +259,8 @@ return [
     'price' => 474000,
     'stats' => 
     [
-    ],
+      'mDef' => 36,
+    ]
   ],
   12716 => 
   [
@@ -258,7 +275,8 @@ return [
     'price' => 1340000,
     'stats' => 
     [
-    ],
+      'mDef' => 76,
+    ]
   ],
   12717 => 
   [
@@ -273,7 +291,8 @@ return [
     'price' => 670000,
     'stats' => 
     [
-    ],
+      'mDef' => 38,
+    ]
   ],
   12718 => 
   [
@@ -288,7 +307,8 @@ return [
     'price' => 1005000,
     'stats' => 
     [
-    ],
+      'mDef' => 57,
+    ]
   ],
   12719 => 
   [
@@ -303,7 +323,8 @@ return [
     'price' => 1340000,
     'stats' => 
     [
-    ],
+      'mDef' => 76,
+    ]
   ],
   12720 => 
   [
@@ -318,7 +339,8 @@ return [
     'price' => 670000,
     'stats' => 
     [
-    ],
+      'mDef' => 38,
+    ]
   ],
   12721 => 
   [
@@ -333,7 +355,8 @@ return [
     'price' => 1005000,
     'stats' => 
     [
-    ],
+      'mDef' => 57,
+    ]
   ],
   12722 => 
   [
@@ -348,7 +371,8 @@ return [
     'price' => 1998000,
     'stats' => 
     [
-    ],
+      'mDef' => 80,
+    ]
   ],
   12723 => 
   [
@@ -363,7 +387,8 @@ return [
     'price' => 999000,
     'stats' => 
     [
-    ],
+      'mDef' => 40,
+    ]
   ],
   12724 => 
   [
@@ -378,7 +403,8 @@ return [
     'price' => 1498000,
     'stats' => 
     [
-    ],
+      'mDef' => 60,
+    ]
   ],
   12725 => 
   [
@@ -393,7 +419,8 @@ return [
     'price' => 1998000,
     'stats' => 
     [
-    ],
+      'mDef' => 80,
+    ]
   ],
   12726 => 
   [
@@ -408,7 +435,8 @@ return [
     'price' => 999000,
     'stats' => 
     [
-    ],
+      'mDef' => 40,
+    ]
   ],
   12727 => 
   [
@@ -423,7 +451,8 @@ return [
     'price' => 1498000,
     'stats' => 
     [
-    ],
+      'mDef' => 60,
+    ]
   ],
   12728 => 
   [
@@ -438,7 +467,8 @@ return [
     'price' => 4361000,
     'stats' => 
     [
-    ],
+      'mDef' => 91,
+    ]
   ],
   12729 => 
   [
@@ -453,7 +483,8 @@ return [
     'price' => 2180000,
     'stats' => 
     [
-    ],
+      'mDef' => 46,
+    ]
   ],
   12730 => 
   [
@@ -468,7 +499,8 @@ return [
     'price' => 3270000,
     'stats' => 
     [
-    ],
+      'mDef' => 68,
+    ]
   ],
   12731 => 
   [
@@ -483,7 +515,8 @@ return [
     'price' => 4361000,
     'stats' => 
     [
-    ],
+      'mDef' => 91,
+    ]
   ],
   12732 => 
   [
@@ -498,7 +531,8 @@ return [
     'price' => 2180000,
     'stats' => 
     [
-    ],
+      'mDef' => 46,
+    ]
   ],
   12733 => 
   [
@@ -513,7 +547,8 @@ return [
     'price' => 3270000,
     'stats' => 
     [
-    ],
+      'mDef' => 68,
+    ]
   ],
   12734 => 
   [
@@ -528,7 +563,8 @@ return [
     'price' => 7942000,
     'stats' => 
     [
-    ],
+      'mDef' => 106,
+    ]
   ],
   12735 => 
   [
@@ -543,7 +579,8 @@ return [
     'price' => 3971000,
     'stats' => 
     [
-    ],
+      'mDef' => 53,
+    ]
   ],
   12736 => 
   [
@@ -558,7 +595,8 @@ return [
     'price' => 5956000,
     'stats' => 
     [
-    ],
+      'mDef' => 79,
+    ]
   ],
   12737 => 
   [
@@ -573,7 +611,8 @@ return [
     'price' => 7942000,
     'stats' => 
     [
-    ],
+      'mDef' => 106,
+    ]
   ],
   12738 => 
   [
@@ -588,7 +627,8 @@ return [
     'price' => 3971000,
     'stats' => 
     [
-    ],
+      'mDef' => 53,
+    ]
   ],
   12739 => 
   [
@@ -603,7 +643,8 @@ return [
     'price' => 5956000,
     'stats' => 
     [
-    ],
+      'mDef' => 79,
+    ]
   ],
   12740 => 
   [
@@ -619,7 +660,8 @@ return [
     'price' => 938500,
     'stats' => 
     [
-    ],
+      'pDef' => 112,
+    ]
   ],
   12741 => 
   [
@@ -635,7 +677,8 @@ return [
     'price' => 1810000,
     'stats' => 
     [
-    ],
+      'pDef' => 124,
+    ]
   ],
   12742 => 
   [
@@ -651,7 +694,8 @@ return [
     'price' => 3563000,
     'stats' => 
     [
-    ],
+      'pDef' => 136,
+    ]
   ],
   12743 => 
   [
@@ -667,7 +711,8 @@ return [
     'price' => 6281500,
     'stats' => 
     [
-    ],
+      'pDef' => 148,
+    ]
   ],
   12744 => 
   [
@@ -683,7 +728,8 @@ return [
     'price' => 12118000,
     'stats' => 
     [
-    ],
+      'pDef' => 160,
+    ]
   ],
   12745 => 
   [
@@ -699,7 +745,8 @@ return [
     'price' => 24439500,
     'stats' => 
     [
-    ],
+      'pDef' => 171,
+    ]
   ],
   12746 => 
   [
@@ -714,7 +761,8 @@ return [
     'price' => 1932,
     'stats' => 
     [
-    ],
+      'mDef' => 22,
+    ]
   ],
   12747 => 
   [
@@ -729,7 +777,8 @@ return [
     'price' => 10091,
     'stats' => 
     [
-    ],
+      'mDef' => 30,
+    ]
   ],
   12748 => 
   [
@@ -744,7 +793,8 @@ return [
     'price' => 31949,
     'stats' => 
     [
-    ],
+      'mDef' => 40,
+    ]
   ],
   12749 => 
   [
@@ -759,7 +809,8 @@ return [
     'price' => 78374,
     'stats' => 
     [
-    ],
+      'mDef' => 52,
+    ]
   ],
   12750 => 
   [
@@ -774,7 +825,8 @@ return [
     'price' => 231417,
     'stats' => 
     [
-    ],
+      'mDef' => 66,
+    ]
   ],
   12751 => 
   [
@@ -789,7 +841,8 @@ return [
     'price' => 828490,
     'stats' => 
     [
-    ],
+      'mDef' => 80,
+    ]
   ],
   12752 => 
   [
@@ -804,7 +857,8 @@ return [
     'price' => 2582800,
     'stats' => 
     [
-    ],
+      'mDef' => 94,
+    ]
   ],
   12753 => 
   [
@@ -983,7 +1037,7 @@ return [
     'name' => 'Gold Circlet',
     'add_name' => '',
     'description' => 'Luxury gold circlet. Uses 2 hair accessory slots.',
-    'icon' => 'Accessary_gold_circlet_i00',
+    'icon' => 'accessary_gold_circlet_i00',
     'bodypart' => 'hairall',
     'weight' => 10,
     'price' => 500000,
@@ -995,7 +1049,7 @@ return [
     'name' => 'Silver Circlet',
     'add_name' => '',
     'description' => 'Luxury silver circlet. Uses 2 hair accessory slots.',
-    'icon' => 'Accessary_gold_circlet_i01',
+    'icon' => 'accessary_gold_circlet_i01',
     'bodypart' => 'hairall',
     'weight' => 10,
     'price' => 500000,
@@ -1007,7 +1061,7 @@ return [
     'name' => 'Forgotten Scroll - Evasion Counter',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Evasion Counter. Used by Abyss Walkers. Can be acquired by level 74.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 12500,
     'is_stackable' => true,
@@ -1028,7 +1082,7 @@ return [
     'name' => 'Forgotten Scroll - Evasion Chance',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Evasion Chance. Used by Plain Walkers. Can be acquired by level 74.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 12500,
     'is_stackable' => true,
@@ -1049,7 +1103,7 @@ return [
     'name' => 'Forgotten Scroll - Evasion Haste',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Evasion Haste. Treasure Hunter uses it. Can be acquired by level 74.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 12500,
     'is_stackable' => true,
@@ -1070,7 +1124,7 @@ return [
     'name' => 'Forgotten Scroll - Shadow Step',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn the Shadow Step. Treasure Hunter, Plain Walker and Abyss Walker use it. Can be acquired by level 72.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i00',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i00',
     'weight' => 120,
     'price' => 12500,
     'is_stackable' => true,

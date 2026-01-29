@@ -7,7 +7,7 @@ return [
     'name' => 'Dandy\'s Home Run Ball',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchIcon.g_ev_homerunball',
+    'icon' => 'branchicon.g_ev_homerunball',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_destroyable' => false,

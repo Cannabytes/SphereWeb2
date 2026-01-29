@@ -1312,7 +1312,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 29,
+    ]
   ],
   20643 => 
   [
@@ -1331,7 +1332,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 29,
+    ]
   ],
   20644 => 
   [
@@ -1371,7 +1373,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   20646 => 
   [
@@ -1391,7 +1394,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 70,
+    ]
   ],
   20647 => 
   [
@@ -1411,7 +1415,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 111,
+    ]
   ],
   20648 => 
   [
@@ -1431,7 +1436,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 136,
+    ]
   ],
   20649 => 
   [
@@ -1478,7 +1484,9 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 52,
+      'maxMp' => 169,
+    ]
   ],
   20651 => 
   [
@@ -1498,7 +1506,9 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 32,
+      'maxMp' => 105,
+    ]
   ],
   20652 => 
   [
@@ -1517,7 +1527,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 29,
+    ]
   ],
   20653 => 
   [
@@ -1536,7 +1547,8 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 29,
+    ]
   ],
   20654 => 
   [

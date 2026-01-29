@@ -43,11 +43,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 85,
       'mAtk' => 81,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   7702 => 
   [
@@ -78,11 +79,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 85,
-      'mAtk' => 81,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 85,
+      'mAtk' => 81,
+    ]
   ],
   7703 => 
   [
@@ -113,11 +115,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 85,
-      'mAtk' => 81,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 85,
+      'mAtk' => 81,
+    ]
   ],
   7704 => 
   [
@@ -151,7 +154,8 @@ return [
       'mAtk' => 101,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   7705 => 
   [
@@ -181,11 +185,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 111,
       'mAtk' => 101,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   7706 => 
   [
@@ -216,11 +221,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 111,
       'mAtk' => 101,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 111,
+    ]
   ],
   7707 => 
   [
@@ -250,11 +256,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 111,
       'mAtk' => 101,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   7708 => 
   [
@@ -285,11 +292,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 111,
       'mAtk' => 101,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   7709 => 
   [
@@ -320,11 +328,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 111,
       'mAtk' => 101,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 111,
+    ]
   ],
   7710 => 
   [
@@ -354,11 +363,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 111,
       'mAtk' => 101,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   7711 => 
   [
@@ -389,11 +399,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 111,
       'mAtk' => 101,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   7712 => 
   [
@@ -428,7 +439,8 @@ return [
       'mAtk' => 101,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   7713 => 
   [
@@ -458,11 +470,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 111,
       'mAtk' => 101,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   7714 => 
   [
@@ -493,11 +506,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 111,
       'mAtk' => 101,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 111,
+    ]
   ],
   7715 => 
   [
@@ -527,11 +541,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 111,
       'mAtk' => 101,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   7716 => 
   [
@@ -561,11 +576,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 135,
       'mAtk' => 111,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   7717 => 
   [
@@ -596,11 +612,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'accCombat' => 4,
       'pAtk' => 135,
       'mAtk' => 111,
       'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   7718 => 
   [
@@ -631,11 +648,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 135,
-      'mAtk' => 111,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 135,
+      'mAtk' => 111,
+    ]
   ],
   7719 => 
   [
@@ -673,11 +691,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 139,
       'mAtk' => 76,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   7720 => 
   [
@@ -706,12 +725,13 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 139,
       'mAtk' => 76,
       'critRate' => 8,
       'pAtkSpd' => 325,
       'pAtkRange' => 80,
-    ],
+    ]
   ],
   7721 => 
   [
@@ -740,11 +760,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 139,
       'mAtk' => 76,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   7722 => 
   [
@@ -778,7 +799,7 @@ return [
       'mAtk' => 122,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   7723 => 
   [
@@ -813,7 +834,7 @@ return [
       'mAtk' => 122,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   7724 => 
   [
@@ -844,11 +865,11 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 140,
-      'mAtk' => 122,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 140,
+      'mAtk' => 122,
+    ]
   ],
   7725 => 
   [

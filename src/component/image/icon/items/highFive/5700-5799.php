@@ -108,11 +108,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 259,
       'mAtk' => 107,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 259,
+    ]
   ],
   5705 => 
   [
@@ -133,11 +133,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 275,
       'mAtk' => 112,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 275,
+    ]
   ],
   5706 => 
   [
@@ -158,11 +158,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
       'pAtk' => 282,
       'mAtk' => 114,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   5707 => 
   [
@@ -201,7 +201,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5710 => 
   [
@@ -219,7 +220,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5711 => 
   [
@@ -237,7 +239,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5712 => 
   [
@@ -255,7 +258,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5713 => 
   [
@@ -273,7 +277,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5714 => 
   [
@@ -291,7 +296,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5715 => 
   [
@@ -309,7 +315,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5716 => 
   [
@@ -327,7 +334,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5717 => 
   [
@@ -345,7 +353,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5718 => 
   [
@@ -363,7 +372,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5719 => 
   [
@@ -381,7 +391,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5720 => 
   [
@@ -399,7 +410,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5721 => 
   [
@@ -417,7 +429,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5722 => 
   [
@@ -435,7 +448,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5723 => 
   [
@@ -453,7 +467,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5724 => 
   [
@@ -471,7 +486,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5725 => 
   [
@@ -489,7 +505,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5726 => 
   [
@@ -507,7 +524,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5727 => 
   [
@@ -525,7 +543,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5728 => 
   [
@@ -543,7 +562,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5729 => 
   [
@@ -561,7 +581,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5730 => 
   [
@@ -579,7 +600,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5731 => 
   [
@@ -597,7 +619,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5732 => 
   [
@@ -615,7 +638,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   5733 => 
   [
@@ -633,7 +657,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5734 => 
   [
@@ -651,7 +676,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5735 => 
   [
@@ -669,7 +695,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5736 => 
   [
@@ -687,7 +714,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5737 => 
   [
@@ -705,7 +733,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5738 => 
   [
@@ -723,7 +752,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5739 => 
   [
@@ -741,7 +771,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5740 => 
   [
@@ -759,7 +790,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+    ]
   ],
   5741 => 
   [
@@ -1089,7 +1121,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   5766 => 
   [
@@ -1107,7 +1140,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   5767 => 
   [
@@ -1125,7 +1159,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   5768 => 
   [
@@ -1143,7 +1178,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   5769 => 
   [
@@ -1161,7 +1197,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   5770 => 
   [
@@ -1179,7 +1216,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   5771 => 
   [
@@ -1197,7 +1235,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5772 => 
   [
@@ -1215,7 +1254,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5773 => 
   [
@@ -1233,7 +1273,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5774 => 
   [
@@ -1251,7 +1292,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5775 => 
   [
@@ -1269,7 +1311,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5776 => 
   [
@@ -1287,7 +1330,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5777 => 
   [
@@ -1305,7 +1349,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   5778 => 
   [
@@ -1323,7 +1368,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   5779 => 
   [
@@ -1341,7 +1387,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   5780 => 
   [
@@ -1359,7 +1406,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   5781 => 
   [
@@ -1377,7 +1425,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   5782 => 
   [
@@ -1395,7 +1444,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   5783 => 
   [
@@ -1413,7 +1463,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5784 => 
   [
@@ -1431,7 +1482,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5785 => 
   [
@@ -1449,7 +1501,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5786 => 
   [
@@ -1467,7 +1520,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5787 => 
   [
@@ -1485,7 +1539,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5788 => 
   [
@@ -1503,7 +1558,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5789 => 
   [
@@ -1573,7 +1629,7 @@ return [
       'mAtk' => 39,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   5792 => 
   [
@@ -1593,11 +1649,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 78,
-      'mAtk' => 39,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 78,
+      'mAtk' => 39,
+    ]
   ],
   5793 => 
   [
@@ -1621,7 +1677,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   5794 => 
   [
@@ -1645,7 +1701,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   5795 => 
   [
@@ -1669,7 +1725,7 @@ return [
       'mAtk' => 39,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   5796 => 
   [
@@ -1693,7 +1749,7 @@ return [
       'mAtk' => 39,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   5797 => 
   [
@@ -1717,7 +1773,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   5798 => 
   [
@@ -1741,7 +1797,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   5799 => 
   [
@@ -1760,6 +1816,6 @@ return [
     [
       'rShld' => 20,
       'sDef' => 142,
-    ],
+    ]
   ],
 ];

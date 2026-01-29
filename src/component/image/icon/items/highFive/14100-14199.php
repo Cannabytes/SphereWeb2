@@ -207,7 +207,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 236,
+    ]
   ],
   14106 => 
   [
@@ -227,7 +228,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 177,
+    ]
   ],
   14107 => 
   [
@@ -247,7 +249,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'maxMp' => 637,
+      'pDef' => 118,
+    ]
   ],
   14108 => 
   [
@@ -267,7 +271,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 148,
+    ]
   ],
   14109 => 
   [
@@ -286,7 +291,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   14110 => 
   [
@@ -305,7 +311,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   14111 => 
   [
@@ -345,7 +352,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 111,
+    ]
   ],
   14113 => 
   [
@@ -364,7 +372,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   14114 => 
   [
@@ -383,7 +392,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   14115 => 
   [
@@ -403,7 +413,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 74,
+      'maxMp' => 415,
+    ]
   ],
   14116 => 
   [
@@ -422,7 +434,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   14117 => 
   [
@@ -441,7 +454,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   14118 => 
   [
@@ -1978,7 +1992,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 83,
+    ]
   ],
   14161 => 
   [
@@ -1996,7 +2011,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 110,
+    ]
   ],
   14162 => 
   [
@@ -2014,7 +2030,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 55,
+    ]
   ],
   14163 => 
   [
@@ -2032,7 +2049,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'maxMp' => 37,
+      'mDef' => 94,
+    ]
   ],
   14164 => 
   [
@@ -2050,7 +2069,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'mDef' => 125,
+      'maxMp' => 50,
+    ]
   ],
   14165 => 
   [
@@ -2068,7 +2089,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'maxMp' => 25,
+      'mDef' => 62,
+    ]
   ],
   14166 => 
   [
@@ -2125,7 +2148,7 @@ return [
     'name' => 'Forgotten Scroll - Seed of Revenge',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Hell Knights level 83 and above to learn the Seed of Revenge.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_shield_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_shield_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2146,7 +2169,7 @@ return [
     'name' => 'Forgotten Scroll - Hell Scream',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Hell Knights level 83 and above to learn Hell Scream.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_shield_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_shield_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2167,7 +2190,7 @@ return [
     'name' => 'Forgotten Scroll - Spirit of Phoenix',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Phoenix Knights level 83 and above to learn Spirit of Phoenix.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_shield_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_shield_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2188,7 +2211,7 @@ return [
     'name' => 'Forgotten Scroll - Eva\'s Will / Touch of Eva',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Eva\'s Templars level 83 and above to learn Eva\'s Will.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_shield_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_shield_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2209,7 +2232,7 @@ return [
     'name' => 'Forgotten Scroll - Pain of Shillien',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Shillien Templars level 83 and above to learn Pain of Shillien.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_shield_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_shield_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2230,7 +2253,7 @@ return [
     'name' => 'Forgotten Scroll - Exciting Adventure',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Adventurers level 83 and above to learn Exciting Adventure.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2251,7 +2274,7 @@ return [
     'name' => 'Forgotten Scroll - Wind Riding',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Wind Riders level 83 and above to learn Wind Riding.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2272,7 +2295,7 @@ return [
     'name' => 'Forgotten Scroll - Ghost Walking',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Ghost Hunters level 83 and above to learn Ghost Walking.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2293,7 +2316,7 @@ return [
     'name' => 'Forgotten Scroll - Flame Hawk',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Sagittarius level 83 and above to learn Flame Hawk.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2314,7 +2337,7 @@ return [
     'name' => 'Forgotten Scroll - Arrow Rain',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Moonlight Sentinels level 83 and above to learn Arrow Rain.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2335,7 +2358,7 @@ return [
     'name' => 'Forgotten Scroll - Ghost Piercing',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Ghost Sentinels level 83 and above to learn Ghost Piercing.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2356,7 +2379,7 @@ return [
     'name' => 'Forgotten Scroll - Dread Pool',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Dreadnoughts level 83 and above to learn Dread Pool.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2377,7 +2400,7 @@ return [
     'name' => 'Forgotten Scroll - Force of Destruction',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Grand Khavataris level 83 and above to learn Force of Destruction.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2398,7 +2421,7 @@ return [
     'name' => 'Forgotten Scroll - Demolition Impact',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Titans level 83 and above to learn Demolition Impact.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2419,7 +2442,7 @@ return [
     'name' => 'Forgotten Scroll - Golem Armor',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Maestros level 83 and above to learn Golem Armor.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2440,7 +2463,7 @@ return [
     'name' => 'Forgotten Scroll - Wild Shot',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Tricksters level 83 and above to learn Wild Shot.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2461,7 +2484,7 @@ return [
     'name' => 'Forgotten Scroll - Lightning Shock',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Soul Hounds level 83 and above to learn Lightning Shock.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2482,7 +2505,7 @@ return [
     'name' => 'Forgotten Scroll - Flame Armor',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Arch Mages level 83 and above to learn Flame Armor.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2503,7 +2526,7 @@ return [
     'name' => 'Forgotten Scroll - Frost Armor',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Mystic Muse level 83 and above to learn Frost Armor.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2524,7 +2547,7 @@ return [
     'name' => 'Forgotten Scroll - Hurricane Armor',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Storm Screamers level 83 and above to learn Hurricane Armor.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2545,7 +2568,7 @@ return [
     'name' => 'Forgotten Scroll - Vampiric Mist',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Soul Takers level 83 and above to learn Vampiric Mist.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2566,7 +2589,7 @@ return [
     'name' => 'Forgotten Scroll - Meteor',
     'add_name' => '',
     'description' => 'Arch Mages and Soul Takers level 81 and above will need a Spellbook in order to learn Meteor from this Forgotten Scroll.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2587,7 +2610,7 @@ return [
     'name' => 'Forgotten Scroll - Star Fall',
     'add_name' => '',
     'description' => 'Mystic Muses and Storm Screamers level 81 and above will need a Spellbook in order to learn Star Fall from this Forgotten Scroll.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2608,7 +2631,7 @@ return [
     'name' => 'Forgotten Scroll - Sublime Self Sacrifice',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Cardinals level 83 and above to learn Sublime Self Sacrifice.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2629,7 +2652,7 @@ return [
     'name' => 'Forgotten Scroll - Blessing of Eva',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Eva\'s Saints level 83 and above to learn Blessing of Eva.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2650,7 +2673,7 @@ return [
     'name' => 'Forgotten Scroll - Lord of Vampire',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Shillien Saints level 83 and above to learn Lord of Vampire.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2671,7 +2694,7 @@ return [
     'name' => 'Forgotten Scroll - Thorn Root',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Shillien Saints to learn Thorn Root. This item cannot be exchanged or dropped.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_tradable' => false,
@@ -2695,7 +2718,7 @@ return [
     'name' => 'Forgotten Scroll - Seal of Limit',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Dominators level 83 and above to learn Seal of Limit.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2716,7 +2739,7 @@ return [
     'name' => 'Forgotten Scroll - Song of Purification',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Sword Muses level 83 and above to learn Song of Purification.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2737,7 +2760,7 @@ return [
     'name' => 'Forgotten Scroll - Dance of Berserker',
     'add_name' => '',
     'description' => 'This Forgotten Scroll can be used by Spectral Dancers level 83 and above to learn Dance of Berserker.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,

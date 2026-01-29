@@ -16,7 +16,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 28,
+    ]
   ],
   10501 => 
   [
@@ -34,7 +35,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 28,
+    ]
   ],
   10502 => 
   [
@@ -52,7 +54,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 28,
+    ]
   ],
   10503 => 
   [
@@ -70,7 +73,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 19,
+    ]
   ],
   10504 => 
   [
@@ -88,7 +92,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 19,
+    ]
   ],
   10505 => 
   [
@@ -106,7 +111,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 19,
+    ]
   ],
   10506 => 
   [
@@ -124,7 +130,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 22,
+    ]
   ],
   10507 => 
   [
@@ -142,7 +149,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 22,
+    ]
   ],
   10508 => 
   [
@@ -160,7 +168,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 22,
+    ]
   ],
   10509 => 
   [
@@ -178,7 +187,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 26,
+    ]
   ],
   10510 => 
   [
@@ -196,7 +206,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 26,
+    ]
   ],
   10511 => 
   [
@@ -214,7 +225,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 26,
+    ]
   ],
   10512 => 
   [
@@ -232,7 +244,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 30,
+    ]
   ],
   10513 => 
   [
@@ -250,7 +263,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 30,
+    ]
   ],
   10514 => 
   [
@@ -268,7 +282,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 30,
+    ]
   ],
   10515 => 
   [
@@ -582,7 +597,8 @@ return [
       'mAtk' => 222,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   10528 => 
   [
@@ -617,7 +633,8 @@ return [
       'mAtk' => 222,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   10529 => 
   [
@@ -648,11 +665,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 325,
       'mAtk' => 222,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   10530 => 
   [
@@ -686,7 +704,8 @@ return [
       'mAtk' => 151,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   10531 => 
   [
@@ -716,11 +735,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 405,
       'mAtk' => 151,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   10532 => 
   [
@@ -750,11 +770,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 405,
-      'mAtk' => 151,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 405,
+      'mAtk' => 151,
+    ]
   ],
   10533 => 
   [
@@ -1071,7 +1092,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 47,
-    ],
+    ]
   ],
   10549 => 
   [
@@ -1143,7 +1164,7 @@ return [
     'name' => 'Forgotten Scroll - Fighter\'s Will',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn the Fighter\'s Will. Fighters use it. Can be acquired by level 81.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i00',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i00',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1164,7 +1185,7 @@ return [
     'name' => 'Forgotten Scroll - Archer\'s Will',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn the Archer\'s Will. Fighters use it. Can be acquired by level 81.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i00',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i00',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1185,7 +1206,7 @@ return [
     'name' => 'Forgotten Scroll - Anti-Magic Armor',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Anti-magic Armor. Phoenix Knight, Hell Knight, Eva\'s Templar, and Shillien Templar use it. Can be acquired by level 81.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_shield_i00',
+    'icon' => 'branchsys2.icon.br_spell_books_shield_i00',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1206,7 +1227,7 @@ return [
     'name' => 'Forgotten Scroll - Seed of Revenge',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn the Seed of Revenge. Hell Knight uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_shield_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_shield_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1227,7 +1248,7 @@ return [
     'name' => 'Forgotten Scroll - Hell Scream',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn the Hell Scream. Hell Knight uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_shield_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_shield_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1248,7 +1269,7 @@ return [
     'name' => 'Forgotten Scroll - Song of Windstorm',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn the Song of Windstorm. Sword Muse uses it. Can be acquired by level 76.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 11600,
     'is_stackable' => true,
@@ -1269,7 +1290,7 @@ return [
     'name' => 'Forgotten Scroll - Dance of Blade Storm',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn the Dance of Blade Storm. Spectral Dancer uses it. Can be acquired by level 76.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 11600,
     'is_stackable' => true,
@@ -1290,7 +1311,7 @@ return [
     'name' => 'Forgotten Scroll - Sixth Sense',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Sixth Sense. Phoenix Knight, Hell Knight, Eva\'s Templar, Shillien Templar, Sword Muse, Spectral Dancer, Adventurer, Wind Rider, Ghost Hunter, Trickster and Soul Hound use it. Can be acquired by level 81.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i02',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i02',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1311,7 +1332,7 @@ return [
     'name' => 'Forgotten Scroll - Expose Weak Point',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Expose Weak Point. Duelist, Grand Khavatari, Dreadnought, Titan, Fortune Seeker, Maestro, Doombringer, Adventurer, Wind Rider, Ghost Hunter and Soul Hound use it. Can be acquired by level 81.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i02',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i02',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1332,7 +1353,7 @@ return [
     'name' => 'Forgotten Scroll - Exciting Adventure',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Exciting Adventure. Adventurer uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1353,7 +1374,7 @@ return [
     'name' => 'Forgotten Scroll - Wind Riding',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Wind Riding. Wind Rider uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1374,7 +1395,7 @@ return [
     'name' => 'Forgotten Scroll - Ghost Walking',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Ghost Walking. Ghost Hunter uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1395,7 +1416,7 @@ return [
     'name' => 'Forgotten Scroll - Flame Hawk',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Flame Hawk. Sagittarius uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1416,7 +1437,7 @@ return [
     'name' => 'Forgotten Scroll - Arrow Rain',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Arrow Rain. Moonlight Sentinel uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1437,7 +1458,7 @@ return [
     'name' => 'Forgotten Scroll - Ghost Piercing',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Ghost Piercing. Ghost Sentinel uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1458,7 +1479,7 @@ return [
     'name' => 'Forgotten Scroll - Dread Pool',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Dread Pool. Dreadnought uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1479,7 +1500,7 @@ return [
     'name' => 'Forgotten Scroll - Weapon Blockade',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Weapon Blockade. Dualist uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1500,7 +1521,7 @@ return [
     'name' => 'Forgotten Scroll - Force of Destruction',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Force of Destruction. Grand Khavatari uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1521,7 +1542,7 @@ return [
     'name' => 'Forgotten Scroll - Demolition Impact',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Demolition Impact. Titan uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1542,7 +1563,7 @@ return [
     'name' => 'Forgotten Scroll - Golem Armor',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Golem Armor. Maestro uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1563,7 +1584,7 @@ return [
     'name' => 'Forgotten Scroll - Flame Armor',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Flame Armor. Arch Mage uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1584,7 +1605,7 @@ return [
     'name' => 'Forgotten Scroll - Frost Armor',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Frost Armor. Mystic Muse uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1605,7 +1626,7 @@ return [
     'name' => 'Forgotten Scroll - Hurricane Armor',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Hurricane Armor. Storm Screamer uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1626,7 +1647,7 @@ return [
     'name' => 'Forgotten Scroll - Vampiric Mist',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Vampiric Mist. Soul Taker uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1647,7 +1668,7 @@ return [
     'name' => 'Forgotten Scroll - Servitor Barrier',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Servitor Barrier. Arcana Lord, Elemental Master and Spectral Master use it. Can be acquired by level 81.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i00',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i00',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1668,7 +1689,7 @@ return [
     'name' => 'Forgotten Scroll - Excessive Loyalty',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Excessive Loyalty. Arcana Lord, Elemental Master and Spectral Master use it. Can be acquired by level 81.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i00',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i00',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1689,7 +1710,7 @@ return [
     'name' => 'Forgotten Scroll - Mutual Response',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Mutual Response. Arcana Lord, Elemental Master and Spectral Master use it. Can be acquired by level 81.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i00',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i00',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1710,7 +1731,7 @@ return [
     'name' => 'Forgotten Scroll - Improve Combat',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Improve Combat. Prophet uses it. Can be acquired by level 70.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 9300,
     'is_stackable' => true,
@@ -1731,7 +1752,7 @@ return [
     'name' => 'Forgotten Scroll - Improve Magic',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Improve Magic. Shillien Elder uses it. Can be acquired by level 70.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 10000,
     'is_stackable' => true,
@@ -1752,7 +1773,7 @@ return [
     'name' => 'Forgotten Scroll - Improve Condition',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Improve Condition. Prophet uses it. Can be acquired by level 70.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 9650,
     'is_stackable' => true,
@@ -1773,7 +1794,7 @@ return [
     'name' => 'Forgotten Scroll - Improve Critical Attack',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Improve Critical Attack. Shillien Elder uses it. Can be acquired by level 70.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 10000,
     'is_stackable' => true,
@@ -1794,7 +1815,7 @@ return [
     'name' => 'Forgotten Scroll - Improve Shield Defense',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Shield Defense. Elder uses it. Can be acquired by level 70.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 9300,
     'is_stackable' => true,
@@ -1815,7 +1836,7 @@ return [
     'name' => 'Forgotten Scroll - Improve Movement',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Improve Movement. Elder uses it. Can be acquired by level 70.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 9650,
     'is_stackable' => true,
@@ -1836,7 +1857,7 @@ return [
     'name' => 'Forgotten Scroll - Sublime Self Sacrifice',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Sublime Self Sacrifice. Cardinal uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1857,7 +1878,7 @@ return [
     'name' => 'Forgotten Scroll - Blessing of Eva',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Blessing of Eva. Eva\'s Saint uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1878,7 +1899,7 @@ return [
     'name' => 'Forgotten Scroll - Lord of Vampire',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Lord of Vampire. Shillien Saint uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1899,7 +1920,7 @@ return [
     'name' => 'Forgotten Scroll - Thorn Root',
     'add_name' => '',
     'description' => 'Forgotten Scroll needed to learn Thorn Root. Used by Shillien Saint.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1920,7 +1941,7 @@ return [
     'name' => 'Forgotten Scroll - Seal of Limit',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Seal of Limit. Dominator uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1953,7 +1974,7 @@ return [
     'name' => 'Forgotten Scroll - Spirit of Phoenix/Flame Icon',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Spirit of Phoenix and Flame Icon. Phoenix Knight uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_shield_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_shield_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1974,7 +1995,7 @@ return [
     'name' => 'Forgotten Scroll - Eva\'s Will',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Eva\'s Will. Eva\'s Templar uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_shield_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_shield_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -1995,7 +2016,7 @@ return [
     'name' => 'Forgotten Scroll - Pain of Shilen / Spirit of Shilen',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Pain of Shillien. Shillien Templar uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_shield_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_shield_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2016,7 +2037,7 @@ return [
     'name' => 'Forgotten Scroll - Wild Shot',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Wild Shot. Trickster uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_sword_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_sword_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,
@@ -2037,7 +2058,7 @@ return [
     'name' => 'Forgotten Scroll - Lightning Shock',
     'add_name' => '',
     'description' => 'Forgotten Scroll to learn Lightning Shock. Soul Hound uses it. Can be acquired by level 83.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 120000,
     'is_stackable' => true,

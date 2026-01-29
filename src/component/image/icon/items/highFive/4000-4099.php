@@ -367,7 +367,7 @@ return [
       'mAtk' => 6,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   4028 => 
   [
@@ -388,11 +388,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 5,
       'mAtk' => 5,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 5,
+    ]
   ],
   4029 => 
   [
@@ -721,7 +722,7 @@ return [
     'name' => 'Necklace of Black Ore Beads',
     'add_name' => '',
     'description' => 'Main ingredient definitely required for a Dwarf to make Necklace of Black Ore. Can also be sold at ordinary shops.',
-    'icon' => 'BranchSys2.etc_blackorenecklace_beads_i00',
+    'icon' => 'branchsys2.etc_blackorenecklace_beads_i00',
     'etcitem_type' => 'material',
     'weight' => 60,
     'price' => 10154,

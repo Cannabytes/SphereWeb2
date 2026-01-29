@@ -27,11 +27,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 220,
       'mAtk' => 121,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   8801 => 
   [
@@ -60,11 +61,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 220,
       'mAtk' => 121,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   8802 => 
   [
@@ -97,7 +99,8 @@ return [
       'mAtk' => 121,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   8803 => 
   [
@@ -139,7 +142,8 @@ return [
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   8804 => 
   [
@@ -168,12 +172,13 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'pAtkRange' => 80,
+      'accCombat' => -3,
       'pAtk' => 251,
       'mAtk' => 121,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-      'pAtkRange' => 80,
-    ],
+    ]
   ],
   8805 => 
   [
@@ -202,11 +207,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 251,
       'mAtk' => 121,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8806 => 
   [
@@ -237,11 +243,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 570,
       'mAtk' => 133,
       'critRate' => 12,
       'pAtkSpd' => 227,
-    ],
+    ]
   ],
   8807 => 
   [
@@ -272,11 +279,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 570,
       'mAtk' => 133,
       'critRate' => 12,
       'pAtkSpd' => 227,
-    ],
+    ]
   ],
   8808 => 
   [
@@ -307,11 +315,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 227,
+      'accCombat' => -3,
       'pAtk' => 570,
       'mAtk' => 133,
       'critRate' => 12,
-      'pAtkSpd' => 227,
-    ],
+    ]
   ],
   8809 => 
   [
@@ -344,7 +353,8 @@ return [
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   8810 => 
   [
@@ -373,11 +383,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 305,
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8811 => 
   [
@@ -419,7 +430,8 @@ return [
       'mAtk' => 121,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   8812 => 
   [
@@ -453,7 +465,7 @@ return [
       'mAtk' => 161,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8813 => 
   [
@@ -496,7 +508,7 @@ return [
       'mAtk' => 161,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8814 => 
   [
@@ -535,11 +547,11 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 202,
-      'mAtk' => 161,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 202,
+      'mAtk' => 161,
+    ]
   ],
   8815 => 
   [
@@ -569,11 +581,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 202,
-      'mAtk' => 161,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 202,
+      'mAtk' => 161,
+    ]
   ],
   8816 => 
   [
@@ -603,11 +616,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 202,
       'mAtk' => 161,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8817 => 
   [
@@ -646,11 +660,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 202,
       'mAtk' => 161,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8818 => 
   [
@@ -680,11 +695,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'accCombat' => 4,
       'pAtk' => 245,
       'mAtk' => 177,
       'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8819 => 
   [
@@ -714,11 +730,12 @@ return [
     ],
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'accCombat' => 4,
       'pAtk' => 245,
       'mAtk' => 177,
       'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8820 => 
   [
@@ -757,11 +774,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 245,
       'mAtk' => 177,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8821 => 
   [
@@ -786,7 +804,7 @@ return [
       'mAtk' => 39,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8822 => 
   [
@@ -811,7 +829,7 @@ return [
       'mAtk' => 39,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8823 => 
   [
@@ -832,11 +850,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 64,
       'mAtk' => 39,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8824 => 
   [
@@ -858,11 +877,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 62,
       'mAtk' => 57,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8825 => 
   [
@@ -883,11 +903,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 56,
       'mAtk' => 39,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 56,
+    ]
   ],
   8826 => 
   [
@@ -909,11 +930,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 45,
       'mAtk' => 52,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   8827 => 
   [
@@ -934,11 +956,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 78,
       'mAtk' => 39,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8828 => 
   [
@@ -960,11 +983,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 132,
-      'mAtk' => 39,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 132,
+      'mAtk' => 39,
+    ]
   ],
   8829 => 
   [
@@ -993,11 +1017,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 64,
-      'mAtk' => 39,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 64,
+      'mAtk' => 39,
+    ]
   ],
   8830 => 
   [
@@ -1018,11 +1043,11 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 122,
       'mAtk' => 68,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8831 => 
   [
@@ -1051,11 +1076,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 122,
       'mAtk' => 68,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8832 => 
   [
@@ -1077,11 +1103,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 119,
       'mAtk' => 100,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8833 => 
   [
@@ -1102,11 +1129,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 107,
       'mAtk' => 68,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   8834 => 
   [
@@ -1128,11 +1156,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 86,
       'mAtk' => 91,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   8835 => 
   [
@@ -1154,11 +1183,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 277,
       'mAtk' => 75,
       'critRate' => 12,
       'pAtkSpd' => 227,
-    ],
+    ]
   ],
   8836 => 
   [
@@ -1179,11 +1209,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 122,
       'mAtk' => 68,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8837 => 
   [
@@ -1204,11 +1235,11 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 148,
-      'mAtk' => 68,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 148,
+      'mAtk' => 68,
+    ]
   ],
   8838 => 
   [
@@ -1229,11 +1260,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 148,
-      'mAtk' => 68,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 148,
+      'mAtk' => 68,
+    ]
   ],
   8839 => 
   [
@@ -1258,7 +1290,7 @@ return [
       'mAtk' => 76,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8840 => 
   [
@@ -1287,11 +1319,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 139,
       'mAtk' => 76,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8841 => 
   [
@@ -1313,11 +1346,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
-      'pAtk' => 111,
-      'mAtk' => 101,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 111,
+      'mAtk' => 101,
+    ]
   ],
   8842 => 
   [
@@ -1339,11 +1373,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 135,
       'mAtk' => 111,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8843 => 
   [
@@ -1365,11 +1400,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 135,
       'mAtk' => 111,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8844 => 
   [
@@ -1390,11 +1426,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 122,
       'mAtk' => 76,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 122,
+    ]
   ],
   8845 => 
   [
@@ -1416,11 +1453,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 316,
       'mAtk' => 84,
       'critRate' => 12,
       'pAtkSpd' => 227,
-    ],
+    ]
   ],
   8846 => 
   [
@@ -1445,7 +1483,7 @@ return [
       'mAtk' => 76,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8847 => 
   [
@@ -1466,11 +1504,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 169,
       'mAtk' => 76,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 169,
+    ]
   ],
   8848 => 
   [
@@ -1495,7 +1534,7 @@ return [
       'mAtk' => 78,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8849 => 
   [
@@ -1520,7 +1559,7 @@ return [
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8850 => 
   [
@@ -1541,11 +1580,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 175,
-      'mAtk' => 91,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 175,
+      'mAtk' => 91,
+    ]
   ],
   8851 => 
   [
@@ -1567,11 +1607,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 170,
       'mAtk' => 134,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8852 => 
   [
@@ -1596,7 +1637,7 @@ return [
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8853 => 
   [
@@ -1618,11 +1659,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 140,
       'mAtk' => 122,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8854 => 
   [
@@ -1643,11 +1684,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 153,
       'mAtk' => 91,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   8855 => 
   [
@@ -1668,11 +1710,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 213,
       'mAtk' => 91,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8856 => 
   [
@@ -1694,11 +1737,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 397,
       'mAtk' => 100,
       'critRate' => 12,
       'pAtkSpd' => 227,
-    ],
+    ]
   ],
   8857 => 
   [
@@ -1719,11 +1763,11 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 213,
-      'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'pAtk' => 213,
+      'mAtk' => 91,
+    ]
   ],
   8858 => 
   [
@@ -1756,7 +1800,8 @@ return [
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   8859 => 
   [
@@ -1781,7 +1826,7 @@ return [
       'mAtk' => 107,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8860 => 
   [
@@ -1810,11 +1855,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 213,
       'mAtk' => 107,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8861 => 
   [
@@ -1836,11 +1882,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 207,
       'mAtk' => 157,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8862 => 
   [
@@ -1861,11 +1908,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 186,
       'mAtk' => 107,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   8863 => 
   [
@@ -1886,11 +1934,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 259,
       'mAtk' => 107,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 259,
+    ]
   ],
   8864 => 
   [
@@ -1912,11 +1961,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 440,
-      'mAtk' => 107,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 440,
+      'mAtk' => 107,
+    ]
   ],
   8865 => 
   [
@@ -1941,7 +1991,7 @@ return [
       'mAtk' => 107,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8866 => 
   [
@@ -1962,11 +2012,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'pAtkSpd' => 379,
+      'accCombat' => 4,
       'pAtk' => 213,
       'mAtk' => 107,
       'critRate' => 4,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8867 => 
   [
@@ -1991,7 +2042,7 @@ return [
       'mAtk' => 107,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8868 => 
   [

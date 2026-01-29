@@ -127,7 +127,7 @@ return [
     'name' => 'Forgotten Scroll - Meteor',
     'add_name' => '',
     'description' => 'Spellbook needed to learn Meteor. Can be used by an Arch Mage and a Soul Taker. Can be acquired at level 81.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 30000,
     'is_stackable' => true,
@@ -139,7 +139,7 @@ return [
     'name' => 'Forgotten Scroll - Star Fall',
     'add_name' => '',
     'description' => 'Spellbook needed to learn Star Fall. Can be used by a Mystic Muse and a Storm Screamer. Can be acquired at level 81.',
-    'icon' => 'BranchSys2.Icon.br_spell_books_magic_i01',
+    'icon' => 'branchsys2.icon.br_spell_books_magic_i01',
     'weight' => 120,
     'price' => 30000,
     'is_stackable' => true,
@@ -227,9 +227,9 @@ return [
     'price' => 6404000,
     'stats' => 
     [
-      'rShld' => 20,
       'sDef' => 305,
-    ],
+      'rShld' => 20,
+    ]
   ],
   10118 => 
   [
@@ -244,9 +244,9 @@ return [
     'price' => 6404000,
     'stats' => 
     [
-      'rShld' => 20,
       'sDef' => 321,
-    ],
+      'rShld' => 20,
+    ]
   ],
   10119 => 
   [
@@ -273,7 +273,8 @@ return [
     ],
     'stats' => 
     [
-    ],
+      'pDef' => 15,
+    ]
   ],
   10120 => 
   [
@@ -292,7 +293,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 15,
+    ]
   ],
   10121 => 
   [
@@ -311,7 +313,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 13,
+    ]
   ],
   10122 => 
   [
@@ -331,7 +334,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 24,
+    ]
   ],
   10123 => 
   [
@@ -351,7 +355,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 32,
+    ]
   ],
   10124 => 
   [
@@ -371,7 +376,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'mDef' => 16,
+    ]
   ],
   10125 => 
   [
@@ -392,11 +398,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 139,
       'mAtk' => 76,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 139,
+    ]
   ],
   10126 => 
   [
@@ -416,7 +423,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 170,
+    ]
   ],
   10127 => 
   [
@@ -436,7 +444,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 170,
+    ]
   ],
   10128 => 
   [
@@ -457,7 +466,7 @@ return [
       'mAtk' => 21,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10129 => 
   [
@@ -743,7 +752,8 @@ return [
     ],
     'stats' => 
     [
-    ],
+      'mDef' => 24,
+    ]
   ],
   10141 => 
   [
@@ -1455,7 +1465,7 @@ return [
       'mAtk' => 1,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   10168 => 
   [
@@ -1475,7 +1485,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 170,
+    ]
   ],
   10169 => 
   [
@@ -1504,7 +1515,10 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'darkRes' => 30,
+      'mDef' => 71,
+      'maxMp' => 31,
+    ]
   ],
   10171 => 
   [
@@ -1629,7 +1643,7 @@ return [
     'name' => 'Black Half Mask',
     'add_name' => '',
     'description' => 'u,A mysterious black mask. Don’t you wish you knew where you could find the other half? This item cannot be traded or dropped. 4th Anniversary commemorative ',
-    'icon' => 'Accessary_black_half_mask_i00',
+    'icon' => 'accessary_black_half_mask_i00',
     'bodypart' => 'hair',
     'weight' => 10,
     'is_tradable' => false,

@@ -18,7 +18,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 170,
+    ]
   ],
   21801 => 
   [
@@ -38,7 +39,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 106,
+    ]
   ],
   21802 => 
   [
@@ -57,7 +59,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 92,
+    ]
   ],
   21803 => 
   [
@@ -76,7 +79,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   21804 => 
   [
@@ -95,7 +99,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   21805 => 
   [
@@ -127,7 +132,9 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 113,
+      'maxMp' => 592,
+    ]
   ],
   21807 => 
   [
@@ -147,7 +154,9 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 71,
+      'maxMp' => 370,
+    ]
   ],
   21808 => 
   [
@@ -166,7 +175,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 92,
+    ]
   ],
   21809 => 
   [
@@ -185,7 +195,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   21810 => 
   [
@@ -204,7 +215,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   21811 => 
   [
@@ -222,7 +234,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'pDef' => 15,
+    ]
   ],
   21812 => 
   [
@@ -252,7 +265,9 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'mDef' => 71,
+      'maxMp' => 31,
+    ]
   ],
   21814 => 
   [
@@ -270,7 +285,9 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'mDef' => 48,
+      'maxMp' => 21,
+    ]
   ],
   21815 => 
   [
@@ -288,7 +305,9 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'mDef' => 95,
+      'maxMp' => 42,
+    ]
   ],
   21816 => 
   [
@@ -318,7 +337,9 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'mDef' => 79,
+      'maxMp' => 35,
+    ]
   ],
   21818 => 
   [
@@ -336,7 +357,9 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'mDef' => 106,
+      'maxMp' => 46,
+    ]
   ],
   21819 => 
   [
@@ -354,7 +377,9 @@ return [
     'time' => 129600,
     'stats' => 
     [
-    ],
+      'mDef' => 60,
+      'maxMp' => 23,
+    ]
   ],
   21820 => 
   [
@@ -388,11 +413,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 225,
-      'mAtk' => 175,
-      'critRate' => 4,
-      'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   21822 => 
   [
@@ -414,11 +436,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 246,
-      'mAtk' => 132,
-      'critRate' => 12,
-      'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   21823 => 
   [
@@ -440,11 +459,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 581,
-      'mAtk' => 132,
-      'critRate' => 12,
-      'pAtkSpd' => 293,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   21824 => 
   [
@@ -466,11 +482,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 281,
-      'mAtk' => 132,
-      'critRate' => 4,
-      'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   21825 => 
   [
@@ -544,11 +557,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 342,
-      'mAtk' => 132,
-      'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   21828 => 
   [
@@ -596,11 +606,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 281,
-      'mAtk' => 132,
-      'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   21830 => 
   [
@@ -622,11 +629,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 304,
-      'mAtk' => 132,
-      'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+    ]
   ],
   21831 => 
   [
@@ -648,11 +652,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 255,
-      'mAtk' => 132,
-      'critRate' => 10,
-      'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   21832 => 
   [
@@ -674,11 +675,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 356,
-      'mAtk' => 132,
-      'critRate' => 10,
-      'pAtkSpd' => 303,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   21833 => 
   [
@@ -726,11 +724,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 291,
-      'mAtk' => 151,
-      'critRate' => 12,
-      'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   21835 => 
   [
@@ -752,11 +747,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 654,
-      'mAtk' => 151,
-      'critRate' => 12,
-      'pAtkSpd' => 293,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   21836 => 
   [
@@ -778,11 +770,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 333,
-      'mAtk' => 151,
-      'critRate' => 4,
-      'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   21837 => 
   [
@@ -856,11 +845,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 405,
-      'mAtk' => 151,
-      'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   21840 => 
   [
@@ -908,11 +894,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 333,
-      'mAtk' => 151,
-      'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   21842 => 
   [
@@ -934,11 +917,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 361,
-      'mAtk' => 151,
-      'critRate' => 8,
-      'pAtkSpd' => 350,
-    ],
+      'accCombat' => 2,
+    ]
   ],
   21843 => 
   [
@@ -960,11 +940,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 302,
-      'mAtk' => 151,
-      'critRate' => 10,
-      'pAtkSpd' => 406,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   21844 => 
   [
@@ -986,11 +963,8 @@ return [
     'time' => 129600,
     'stats' => 
     [
-      'pAtk' => 401,
-      'mAtk' => 151,
-      'critRate' => 10,
-      'pAtkSpd' => 303,
-    ],
+      'accCombat' => -1,
+    ]
   ],
   21845 => 
   [
@@ -1544,7 +1518,7 @@ return [
     'name' => 'Campfire Flint',
     'add_name' => '',
     'description' => 'You can use this item if you have gathered 30 tree branches to start a campfire. A campfire near a battlefield can help to raise HP, MP, and CP recovery rate. You can only make campfires when you are away from towns. You can only receive the recovery bonus while near the campfire. . Cannot be exchanged, dropped, or destroyed. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.g_campfire_flint',
+    'icon' => 'branchsys2.g_campfire_flint',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_destroyable' => false,
@@ -1632,7 +1606,7 @@ return [
     'name' => 'Pa\'agrio\'s Warm Breeze - 4 hour',
     'add_name' => '',
     'description' => 'Dimensional  When used, you can feel the vitality recovery herb\'s effect for 4 hour(s]. But there will be no effect when the "Birthday Joy" effect is applied. Re-use time is 60 minutes. Cannot be exchanged or dropped. Can be shared between characters within an account through the Dimensional Merchant. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.Icon.pi_wind_of_paagrio',
+    'icon' => 'branchsys2.icon.pi_wind_of_paagrio',
     'etcitem_type' => 'potion',
     'weight' => 1,
     'is_tradable' => false,
@@ -1850,7 +1824,7 @@ return [
     'name' => 'Scroll: Valakas Call',
     'add_name' => '',
     'description' => 'One-time use scroll that teleports you to Watcher of Valakas Klein in the Hall of Flames.',
-    'icon' => 'BranchSys2.call_of_fire_dragon',
+    'icon' => 'branchsys2.call_of_fire_dragon',
     'weight' => 10,
     'is_stackable' => true,
     'is_oly_restricted' => true,
@@ -1871,7 +1845,7 @@ return [
     'name' => 'Jewel of Valakas',
     'add_name' => '',
     'description' => 'Mysterious jewel that teleports you to Watcher of Valakas Klein in the Hall of Flames. Re-use time is 60 minutes.',
-    'icon' => 'BranchSys2.orb_of_fire_dragon',
+    'icon' => 'branchsys2.orb_of_fire_dragon',
     'weight' => 10,
     'is_stackable' => true,
     'is_oly_restricted' => true,
@@ -1892,7 +1866,7 @@ return [
     'name' => 'Scroll: Antharas Call',
     'add_name' => '',
     'description' => 'One-time use scroll that teleports you to the entrance to Antharas\'s Lair.',
-    'icon' => 'BranchSys2.call_of_earth_dragon',
+    'icon' => 'branchsys2.call_of_earth_dragon',
     'weight' => 10,
     'is_stackable' => true,
     'is_oly_restricted' => true,
@@ -1913,7 +1887,7 @@ return [
     'name' => 'Jewel of Antharas',
     'add_name' => '',
     'description' => 'Mysterious jewel that teleports you to the entrance to Antharas\'s Lair. Re-use time is 60 minutes.',
-    'icon' => 'BranchSys2.orb_of_earth_dragon',
+    'icon' => 'branchsys2.orb_of_earth_dragon',
     'weight' => 10,
     'is_stackable' => true,
     'is_oly_restricted' => true,
@@ -1934,7 +1908,7 @@ return [
     'name' => 'Totem of Body',
     'add_name' => '',
     'description' => 'Summons a totem that increases HP recovery speed by 30% and decreases damage from the topography by 80%. Totem duration is 30 minutes. Can only be used inside the lairs of Valakas and Antharas. Re-use time is 10 minutes.',
-    'icon' => 'BranchSys2.totem_of_body',
+    'icon' => 'branchsys2.totem_of_body',
     'etcitem_type' => 'potion',
     'weight' => 10,
     'price' => 1,

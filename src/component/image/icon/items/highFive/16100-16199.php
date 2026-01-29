@@ -1806,7 +1806,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 272,
+    ]
   ],
   16169 => 
   [
@@ -1828,7 +1829,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 204,
+    ]
   ],
   16170 => 
   [
@@ -1850,7 +1852,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 136,
+      'maxMp' => 661,
+    ]
   ],
   16171 => 
   [
@@ -1872,7 +1876,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 263,
+    ]
   ],
   16172 => 
   [
@@ -1894,7 +1899,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 197,
+    ]
   ],
   16173 => 
   [
@@ -1916,7 +1922,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 132,
+      'maxMp' => 649,
+    ]
   ],
   16174 => 
   [
@@ -1938,7 +1946,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 238,
+    ]
   ],
   16175 => 
   [
@@ -1960,7 +1969,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 178,
+    ]
   ],
   16176 => 
   [
@@ -1982,7 +1992,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 119,
+      'maxMp' => 614,
+    ]
   ],
   16177 => 
   [

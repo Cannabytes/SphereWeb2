@@ -450,11 +450,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 293,
+      'accCombat' => -3,
       'pAtk' => 82,
       'mAtk' => 26,
       'critRate' => 12,
-      'pAtkSpd' => 293,
-    ],
+    ]
   ],
   8528 => 
   [
@@ -475,11 +476,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 41,
       'mAtk' => 43,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8529 => 
   [
@@ -496,11 +498,12 @@ return [
     'spiritshots' => 1,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 10,
       'mAtk' => 9,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   8530 => 
   [
@@ -524,7 +527,7 @@ return [
       'mAtk' => 5,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8531 => 
   [
@@ -545,11 +548,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'accCombat' => 4,
       'pAtk' => 39,
       'mAtk' => 35,
       'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8532 => 
   [
@@ -573,7 +577,7 @@ return [
       'mAtk' => 32,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8533 => 
   [
@@ -593,11 +597,11 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 64,
       'mAtk' => 39,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8534 => 
   [
@@ -753,7 +757,9 @@ return [
     'price' => 100000,
     'stats' => 
     [
-    ],
+      'mDef' => 25,
+      'pDef' => 10,
+    ]
   ],
   8542 => 
   [
@@ -1303,11 +1309,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
-      'pAtk' => 23,
       'mAtk' => 24,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 23,
+    ]
   ],
   8577 => 
   [
@@ -1327,11 +1334,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 24,
-      'mAtk' => 17,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 24,
+      'mAtk' => 17,
+    ]
   ],
   8578 => 
   [
@@ -1351,11 +1359,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 21,
       'mAtk' => 17,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   8579 => 
   [
@@ -1375,11 +1384,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 29,
-      'mAtk' => 17,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 29,
+      'mAtk' => 17,
+    ]
   ],
   8580 => 
   [
@@ -1404,7 +1414,8 @@ return [
       'mAtk' => 17,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   8581 => 
   [
@@ -1424,11 +1435,11 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 24,
-      'mAtk' => 17,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 24,
+      'mAtk' => 17,
+    ]
   ],
   8582 => 
   [
@@ -1450,11 +1461,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 41,
       'mAtk' => 43,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8583 => 
   [
@@ -1476,11 +1488,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 105,
-      'mAtk' => 32,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 105,
+      'mAtk' => 32,
+    ]
   ],
   8584 => 
   [
@@ -1502,11 +1515,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 114,
       'mAtk' => 35,
       'critRate' => 12,
       'pAtkSpd' => 227,
-    ],
+    ]
   ],
   8585 => 
   [
@@ -1528,11 +1542,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 50,
       'mAtk' => 47,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8586 => 
   [
@@ -1553,11 +1568,11 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 51,
-      'mAtk' => 32,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 51,
+      'mAtk' => 32,
+    ]
   ],
   8587 => 
   [
@@ -1579,11 +1594,11 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
-      'pAtk' => 41,
-      'mAtk' => 43,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 41,
+      'mAtk' => 43,
+    ]
   ],
   8588 => 
   [
@@ -1604,11 +1619,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 62,
       'mAtk' => 32,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8589 => 
   [
@@ -1629,11 +1645,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 51,
       'mAtk' => 32,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   8590 => 
   [
@@ -1654,11 +1671,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 45,
       'mAtk' => 32,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   8591 => 
   [
@@ -1687,11 +1705,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 51,
       'mAtk' => 32,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   8592 => 
   [

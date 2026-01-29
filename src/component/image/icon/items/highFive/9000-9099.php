@@ -23,7 +23,7 @@ return [
       'mAtk' => 78,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9001 => 
   [
@@ -48,7 +48,7 @@ return [
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9002 => 
   [
@@ -69,11 +69,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 175,
       'mAtk' => 91,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9003 => 
   [
@@ -95,11 +96,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 170,
       'mAtk' => 134,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9004 => 
   [
@@ -124,7 +126,7 @@ return [
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9005 => 
   [
@@ -150,7 +152,7 @@ return [
       'mAtk' => 122,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9006 => 
   [
@@ -171,11 +173,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 153,
       'mAtk' => 91,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   9007 => 
   [
@@ -196,11 +199,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 213,
       'mAtk' => 91,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9008 => 
   [
@@ -222,11 +226,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 397,
-      'mAtk' => 100,
       'critRate' => 12,
       'pAtkSpd' => 227,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 397,
+      'mAtk' => 100,
+    ]
   ],
   9009 => 
   [
@@ -251,7 +256,7 @@ return [
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9010 => 
   [
@@ -284,7 +289,8 @@ return [
       'mAtk' => 91,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   9011 => 
   [
@@ -309,7 +315,7 @@ return [
       'mAtk' => 107,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9012 => 
   [
@@ -338,11 +344,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 213,
       'mAtk' => 107,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9013 => 
   [
@@ -368,7 +375,8 @@ return [
       'mAtk' => 157,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+    ]
   ],
   9014 => 
   [
@@ -389,11 +397,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 186,
       'mAtk' => 107,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   9015 => 
   [
@@ -414,11 +423,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 259,
       'mAtk' => 107,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9016 => 
   [
@@ -440,11 +450,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 440,
-      'mAtk' => 107,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 440,
+      'mAtk' => 107,
+    ]
   ],
   9017 => 
   [
@@ -465,11 +476,11 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'pAtkSpd' => 325,
       'pAtk' => 259,
       'mAtk' => 107,
       'critRate' => 8,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9018 => 
   [
@@ -490,11 +501,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 213,
       'mAtk' => 107,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9019 => 
   [
@@ -519,7 +531,7 @@ return [
       'mAtk' => 107,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9020 => 
   [
@@ -544,7 +556,7 @@ return [
       'mAtk' => 112,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9021 => 
   [
@@ -569,7 +581,7 @@ return [
       'mAtk' => 114,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9022 => 
   [
@@ -595,7 +607,7 @@ return [
       'mAtk' => 152,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9023 => 
   [
@@ -616,11 +628,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 232,
       'mAtk' => 114,
       'critRate' => 4,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9024 => 
   [
@@ -642,11 +655,12 @@ return [
     'is_magic_weapon' => true,
     'stats' => 
     [
+      'accCombat' => 4,
       'pAtk' => 226,
       'mAtk' => 167,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9025 => 
   [
@@ -667,11 +681,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 203,
       'mAtk' => 114,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   9026 => 
   [
@@ -692,11 +707,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
+      'pAtkSpd' => 325,
+      'accCombat' => 4,
       'pAtk' => 282,
       'mAtk' => 114,
       'critRate' => 4,
-      'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9027 => 
   [
@@ -718,11 +734,12 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-      'pAtk' => 528,
       'mAtk' => 125,
       'critRate' => 12,
       'pAtkSpd' => 227,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 528,
+    ]
   ],
   9028 => 
   [
@@ -751,11 +768,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 232,
       'mAtk' => 114,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9029 => 
   [
@@ -780,7 +798,7 @@ return [
       'mAtk' => 114,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9030 => 
   [
@@ -798,7 +816,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 68,
+    ]
   ],
   9031 => 
   [
@@ -816,7 +835,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 43,
+    ]
   ],
   9032 => 
   [
@@ -834,7 +854,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 53,
+    ]
   ],
   9033 => 
   [
@@ -852,7 +873,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 33,
+    ]
   ],
   9034 => 
   [
@@ -870,7 +892,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 34,
+      'maxMp' => 86,
+    ]
   ],
   9035 => 
   [
@@ -888,7 +912,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 21,
+      'maxMp' => 54,
+    ]
   ],
   9036 => 
   [
@@ -907,7 +933,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 90,
-    ],
+    ]
   ],
   9037 => 
   [
@@ -924,7 +950,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 26,
+    ]
   ],
   9038 => 
   [
@@ -941,7 +968,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 17,
+    ]
   ],
   9039 => 
   [
@@ -958,7 +986,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 17,
+    ]
   ],
   9040 => 
   [
@@ -977,7 +1006,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 95,
+    ]
   ],
   9041 => 
   [
@@ -996,7 +1026,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 61,
+    ]
   ],
   9042 => 
   [
@@ -1014,7 +1045,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 24,
+    ]
   ],
   9043 => 
   [
@@ -1032,7 +1064,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 24,
+    ]
   ],
   9044 => 
   [
@@ -1052,7 +1085,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 128,
-    ],
+    ]
   ],
   9045 => 
   [
@@ -1071,7 +1104,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 73,
+    ]
   ],
   9046 => 
   [
@@ -1090,7 +1124,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   9047 => 
   [
@@ -1108,7 +1143,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 24,
+    ]
   ],
   9048 => 
   [
@@ -1126,7 +1162,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 24,
+    ]
   ],
   9049 => 
   [
@@ -1145,7 +1182,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+      'maxMp' => 147,
+    ]
   ],
   9050 => 
   [
@@ -1164,7 +1203,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 30,
+      'maxMp' => 92,
+    ]
   ],
   9051 => 
   [
@@ -1182,7 +1223,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 24,
+    ]
   ],
   9052 => 
   [
@@ -1200,7 +1242,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 24,
+    ]
   ],
   9053 => 
   [
@@ -1218,7 +1261,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 37,
+    ]
   ],
   9054 => 
   [
@@ -1237,7 +1281,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 224,
+    ]
   ],
   9055 => 
   [
@@ -1255,7 +1300,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 36,
+    ]
   ],
   9056 => 
   [
@@ -1275,7 +1321,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 190,
-    ],
+    ]
   ],
   9057 => 
   [
@@ -1293,7 +1339,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 54,
+    ]
   ],
   9058 => 
   [
@@ -1312,7 +1359,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 106,
+    ]
   ],
   9059 => 
   [
@@ -1331,7 +1379,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 66,
+    ]
   ],
   9060 => 
   [
@@ -1349,7 +1398,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 37,
+    ]
   ],
   9061 => 
   [
@@ -1367,7 +1417,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 37,
+    ]
   ],
   9062 => 
   [
@@ -1386,7 +1437,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 69,
+      'maxMp' => 284,
+    ]
   ],
   9063 => 
   [
@@ -1405,7 +1458,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 43,
+      'maxMp' => 177,
+    ]
   ],
   9064 => 
   [
@@ -1423,7 +1478,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 36,
+    ]
   ],
   9065 => 
   [
@@ -1441,7 +1497,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 36,
+    ]
   ],
   9066 => 
   [
@@ -1459,7 +1516,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 54,
+    ]
   ],
   9067 => 
   [
@@ -1478,7 +1536,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 157,
+    ]
   ],
   9068 => 
   [
@@ -1497,7 +1556,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 98,
+    ]
   ],
   9069 => 
   [
@@ -1515,7 +1575,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 62,
+    ]
   ],
   9070 => 
   [
@@ -1535,7 +1596,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 216,
-    ],
+    ]
   ],
   9071 => 
   [
@@ -1553,7 +1614,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   9072 => 
   [
@@ -1571,7 +1633,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   9073 => 
   [
@@ -1590,7 +1653,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 117,
+    ]
   ],
   9074 => 
   [
@@ -1609,7 +1673,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 73,
+    ]
   ],
   9075 => 
   [
@@ -1627,7 +1692,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   9076 => 
   [
@@ -1645,7 +1711,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   9077 => 
   [
@@ -1664,7 +1731,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 78,
+      'maxMp' => 345,
+    ]
   ],
   9078 => 
   [
@@ -1683,7 +1752,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+      'maxMp' => 216,
+    ]
   ],
   9079 => 
   [
@@ -1701,7 +1772,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   9080 => 
   [
@@ -1719,7 +1791,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 41,
+    ]
   ],
   9081 => 
   [
@@ -1738,7 +1811,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 171,
+    ]
   ],
   9082 => 
   [
@@ -1757,7 +1831,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 107,
+    ]
   ],
   9083 => 
   [
@@ -1775,7 +1850,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 69,
+    ]
   ],
   9084 => 
   [
@@ -1795,7 +1871,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 243,
-    ],
+    ]
   ],
   9085 => 
   [
@@ -1813,7 +1889,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   9086 => 
   [
@@ -1831,7 +1908,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   9087 => 
   [
@@ -1850,7 +1928,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 128,
+    ]
   ],
   9088 => 
   [
@@ -1869,7 +1948,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 80,
+    ]
   ],
   9089 => 
   [
@@ -1887,7 +1967,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   9090 => 
   [
@@ -1905,7 +1986,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   9091 => 
   [
@@ -1924,7 +2006,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 139,
+      'maxMp' => 665,
+    ]
   ],
   9092 => 
   [
@@ -1942,7 +2026,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   9093 => 
   [
@@ -1960,7 +2045,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 46,
+    ]
   ],
   9094 => 
   [
@@ -1979,7 +2065,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 293,
+    ]
   ],
   9095 => 
   [
@@ -1997,7 +2084,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 73,
+    ]
   ],
   9096 => 
   [
@@ -2015,7 +2103,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   9097 => 
   [
@@ -2033,7 +2122,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   9098 => 
   [
@@ -2052,7 +2142,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 220,
+    ]
   ],
   9099 => 
   [
@@ -2070,6 +2161,7 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
 ];

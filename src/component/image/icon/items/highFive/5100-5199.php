@@ -372,7 +372,8 @@ return [
       'mAtk' => 5,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+    ]
   ],
   5128 => 
   [
@@ -393,11 +394,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 5,
-      'mAtk' => 5,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 5,
+      'mAtk' => 5,
+    ]
   ],
   5129 => 
   [
@@ -422,7 +424,7 @@ return [
       'mAtk' => 6,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   5130 => 
   [
@@ -443,11 +445,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 5,
       'mAtk' => 5,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   5131 => 
   [
@@ -468,11 +471,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 5,
       'mAtk' => 5,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 5,
+    ]
   ],
   5132 => 
   [
@@ -493,11 +497,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 5,
       'mAtk' => 5,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   5133 => 
   [
@@ -512,11 +517,12 @@ return [
     'is_dropable' => false,
     'stats' => 
     [
-      'pAtk' => 1,
       'mAtk' => 1,
       'critRate' => 4,
       'pAtkSpd' => 325,
-    ],
+      'accCombat' => 4,
+      'pAtk' => 1,
+    ]
   ],
   5134 => 
   [
@@ -1172,7 +1178,9 @@ return [
     'price' => 412500,
     'stats' => 
     [
-    ],
+      'mDef' => 41,
+      'pDef' => 41,
+    ]
   ],
   5171 => 
   [
@@ -1188,7 +1196,9 @@ return [
     'price' => 598500,
     'stats' => 
     [
-    ],
+      'mDef' => 44,
+      'pDef' => 44,
+    ]
   ],
   5172 => 
   [
@@ -1204,7 +1214,9 @@ return [
     'price' => 928500,
     'stats' => 
     [
-    ],
+      'mDef' => 46,
+      'pDef' => 46,
+    ]
   ],
   5173 => 
   [
@@ -1220,7 +1232,9 @@ return [
     'price' => 1335500,
     'stats' => 
     [
-    ],
+      'mDef' => 49,
+      'pDef' => 49,
+    ]
   ],
   5174 => 
   [
@@ -1236,7 +1250,9 @@ return [
     'price' => 2032000,
     'stats' => 
     [
-    ],
+      'mDef' => 52,
+      'pDef' => 52,
+    ]
   ],
   5175 => 
   [
@@ -1252,7 +1268,9 @@ return [
     'price' => 2032000,
     'stats' => 
     [
-    ],
+      'mDef' => 54,
+      'pDef' => 54,
+    ]
   ],
   5176 => 
   [
@@ -1268,9 +1286,11 @@ return [
     'price' => 800000,
     'stats' => 
     [
+      'pAtk' => 17,
+      'mAtk' => 21,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   5177 => 
   [
@@ -1286,9 +1306,11 @@ return [
     'price' => 1150000,
     'stats' => 
     [
+      'pAtk' => 19,
+      'mAtk' => 24,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   5178 => 
   [
@@ -1306,7 +1328,9 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 21,
+      'mAtk' => 27,
+    ]
   ],
   5179 => 
   [
@@ -1322,9 +1346,11 @@ return [
     'price' => 2450000,
     'stats' => 
     [
+      'pAtk' => 23,
+      'mAtk' => 30,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   5180 => 
   [
@@ -1340,9 +1366,11 @@ return [
     'price' => 3650000,
     'stats' => 
     [
+      'pAtk' => 25,
+      'mAtk' => 34,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   5181 => 
   [
@@ -1358,9 +1386,11 @@ return [
     'price' => 5000000,
     'stats' => 
     [
+      'pAtk' => 27,
+      'mAtk' => 37,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   5182 => 
   [
@@ -1376,7 +1406,9 @@ return [
     'price' => 598500,
     'stats' => 
     [
-    ],
+      'pDef' => 44,
+      'mDef' => 44,
+    ]
   ],
   5183 => 
   [
@@ -1392,7 +1424,9 @@ return [
     'price' => 928500,
     'stats' => 
     [
-    ],
+      'mDef' => 46,
+      'pDef' => 46,
+    ]
   ],
   5184 => 
   [
@@ -1408,7 +1442,9 @@ return [
     'price' => 1335500,
     'stats' => 
     [
-    ],
+      'mDef' => 49,
+      'pDef' => 49,
+    ]
   ],
   5185 => 
   [
@@ -1424,7 +1460,9 @@ return [
     'price' => 2032000,
     'stats' => 
     [
-    ],
+      'mDef' => 52,
+      'pDef' => 52,
+    ]
   ],
   5186 => 
   [
@@ -1440,7 +1478,9 @@ return [
     'price' => 2784000,
     'stats' => 
     [
-    ],
+      'mDef' => 54,
+      'pDef' => 54,
+    ]
   ],
   5187 => 
   [
@@ -1458,7 +1498,9 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 19,
+      'mAtk' => 24,
+    ]
   ],
   5188 => 
   [
@@ -1474,9 +1516,11 @@ return [
     'price' => 1700000,
     'stats' => 
     [
-      'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 21,
+      'mAtk' => 27,
+      'critRate' => 8,
+    ]
   ],
   5189 => 
   [
@@ -1494,7 +1538,9 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 23,
+      'mAtk' => 30,
+    ]
   ],
   5190 => 
   [
@@ -1510,9 +1556,11 @@ return [
     'price' => 3650000,
     'stats' => 
     [
+      'pAtk' => 25,
+      'mAtk' => 34,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   5191 => 
   [
@@ -1528,9 +1576,11 @@ return [
     'price' => 5000000,
     'stats' => 
     [
+      'pAtk' => 27,
+      'mAtk' => 37,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   5192 => 
   [

@@ -1170,7 +1170,7 @@ return [
     'name' => 'Einhasad\'s Pendant Lv. 2 (Time-limited]',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchIcon.Icon.bm_pendant_pve_white',
+    'icon' => 'branchicon.icon.bm_pendant_pve_white',
     'bodypart' => 'underwear',
     'is_tradable' => false,
     'is_dropable' => false,

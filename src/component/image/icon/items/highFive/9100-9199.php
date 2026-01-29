@@ -16,7 +16,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   9101 => 
   [
@@ -35,7 +36,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 147,
+      'maxMp' => 718,
+    ]
   ],
   9102 => 
   [
@@ -53,7 +56,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   9103 => 
   [
@@ -71,7 +75,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   9104 => 
   [
@@ -641,7 +646,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 36,
+    ]
   ],
   9129 => 
   [
@@ -661,7 +667,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 256,
-    ],
+    ]
   ],
   9130 => 
   [
@@ -822,7 +828,7 @@ return [
       'mAtk' => 83,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9137 => 
   [
@@ -845,7 +851,7 @@ return [
       'mAtk' => 39,
       'critRate' => 8,
       'pAtkSpd' => 325,
-    ],
+    ]
   ],
   9138 => 
   [
@@ -894,11 +900,12 @@ return [
     ],
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 1,
       'mAtk' => 1,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+    ]
   ],
   9141 => 
   [
@@ -936,11 +943,12 @@ return [
     ],
     'stats' => 
     [
-      'pAtk' => 1,
-      'mAtk' => 1,
       'critRate' => 12,
       'pAtkSpd' => 293,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 1,
+      'mAtk' => 1,
+    ]
   ],
   9142 => 
   [
@@ -1270,7 +1278,7 @@ return [
     'name' => 'Gold Circlet of Redemption',
     'add_name' => '',
     'description' => 'Golden Circlet. Uses 2 hair accessory slots. Event ',
-    'icon' => 'Accessary_gold_circlet_i00',
+    'icon' => 'accessary_gold_circlet_i00',
     'bodypart' => 'hairall',
     'weight' => 10,
   ],
@@ -1281,7 +1289,7 @@ return [
     'name' => 'Silver Circlet of Salvation',
     'add_name' => '',
     'description' => 'Silver Circlet. Uses 2 hair accessory slots. Event ',
-    'icon' => 'Accessary_gold_circlet_i01',
+    'icon' => 'accessary_gold_circlet_i01',
     'bodypart' => 'hairall',
     'weight' => 10,
   ],
@@ -1292,7 +1300,7 @@ return [
     'name' => 'Pig Wrangler\'s Cap',
     'add_name' => '',
     'description' => 'Top hat made of leather. Uses 2 hair accessory slots. Event ',
-    'icon' => 'Accessary_middle_ages_i00',
+    'icon' => 'accessary_middle_ages_i00',
     'bodypart' => 'hairall',
     'weight' => 10,
   ],

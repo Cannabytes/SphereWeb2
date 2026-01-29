@@ -16,7 +16,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 45,
+    ]
   ],
   5301 => 
   [
@@ -35,7 +36,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 209,
+    ]
   ],
   5302 => 
   [
@@ -53,7 +55,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 45,
+    ]
   ],
   5303 => 
   [
@@ -71,7 +74,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 45,
+    ]
   ],
   5304 => 
   [
@@ -90,7 +94,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 86,
+      'maxMp' => 409,
+    ]
   ],
   5305 => 
   [
@@ -109,7 +115,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 53,
+      'maxMp' => 256,
+    ]
   ],
   5306 => 
   [
@@ -127,7 +135,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 45,
+    ]
   ],
   5307 => 
   [
@@ -145,7 +154,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 45,
+    ]
   ],
   5308 => 
   [
@@ -164,7 +174,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 139,
+      'maxMp' => 665,
+    ]
   ],
   5309 => 
   [
@@ -182,7 +194,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 45,
+    ]
   ],
   5310 => 
   [
@@ -200,7 +213,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 45,
+    ]
   ],
   5311 => 
   [
@@ -219,7 +233,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 293,
+    ]
   ],
   5312 => 
   [
@@ -237,7 +252,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 73,
+    ]
   ],
   5313 => 
   [
@@ -255,7 +271,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5314 => 
   [
@@ -273,7 +290,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5315 => 
   [
@@ -293,7 +311,7 @@ return [
     [
       'rShld' => 20,
       'sDef' => 256,
-    ],
+    ]
   ],
   5316 => 
   [
@@ -312,7 +330,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 293,
+    ]
   ],
   5317 => 
   [
@@ -330,7 +349,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 73,
+    ]
   ],
   5318 => 
   [
@@ -348,7 +368,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5319 => 
   [
@@ -366,7 +387,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5320 => 
   [
@@ -385,7 +407,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 220,
+    ]
   ],
   5321 => 
   [
@@ -403,7 +426,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 48,
+    ]
   ],
   5322 => 
   [
@@ -421,7 +445,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 48,
+    ]
   ],
   5323 => 
   [
@@ -440,7 +465,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 220,
+    ]
   ],
   5324 => 
   [
@@ -458,7 +484,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 48,
+    ]
   ],
   5325 => 
   [
@@ -476,7 +503,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 48,
+    ]
   ],
   5326 => 
   [
@@ -495,7 +523,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 147,
+      'maxMp' => 718,
+    ]
   ],
   5327 => 
   [
@@ -513,7 +543,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 48,
+    ]
   ],
   5328 => 
   [
@@ -531,7 +562,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 48,
+    ]
   ],
   5329 => 
   [
@@ -550,7 +582,9 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 147,
+      'maxMp' => 718,
+    ]
   ],
   5330 => 
   [
@@ -568,7 +602,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 48,
+    ]
   ],
   5331 => 
   [
@@ -586,7 +621,8 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 48,
+    ]
   ],
   5332 => 
   [
@@ -604,7 +640,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5333 => 
   [
@@ -622,7 +659,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5334 => 
   [
@@ -640,7 +678,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5335 => 
   [
@@ -658,7 +697,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5336 => 
   [
@@ -676,7 +716,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5337 => 
   [
@@ -694,7 +735,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5338 => 
   [
@@ -712,7 +754,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5339 => 
   [
@@ -730,7 +773,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5340 => 
   [
@@ -748,7 +792,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5341 => 
   [
@@ -766,7 +811,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5342 => 
   [
@@ -866,7 +912,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5347 => 
   [
@@ -884,7 +931,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5348 => 
   [
@@ -902,7 +950,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5349 => 
   [
@@ -920,7 +969,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5350 => 
   [
@@ -938,7 +988,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5351 => 
   [
@@ -956,7 +1007,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5352 => 
   [
@@ -974,7 +1026,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5353 => 
   [
@@ -992,7 +1045,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5354 => 
   [
@@ -1010,7 +1064,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5355 => 
   [
@@ -1028,7 +1083,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5356 => 
   [
@@ -1214,7 +1270,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5365 => 
   [
@@ -1232,7 +1289,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5366 => 
   [
@@ -1250,7 +1308,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5367 => 
   [
@@ -1268,7 +1327,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5368 => 
   [
@@ -1286,7 +1346,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5369 => 
   [
@@ -1304,7 +1365,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5370 => 
   [
@@ -1322,7 +1384,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5371 => 
   [
@@ -1340,7 +1403,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5372 => 
   [
@@ -1356,7 +1420,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5373 => 
   [
@@ -1372,7 +1437,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5374 => 
   [
@@ -1388,7 +1454,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5375 => 
   [
@@ -1404,7 +1471,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5376 => 
   [
@@ -1420,7 +1488,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5377 => 
   [
@@ -1436,7 +1505,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5378 => 
   [
@@ -1452,7 +1522,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5379 => 
   [
@@ -1468,7 +1539,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5380 => 
   [
@@ -1486,7 +1558,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5381 => 
   [
@@ -1504,7 +1577,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5382 => 
   [
@@ -1522,7 +1596,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5383 => 
   [
@@ -1540,7 +1615,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5384 => 
   [
@@ -1556,7 +1632,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5385 => 
   [
@@ -1572,7 +1649,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5386 => 
   [
@@ -1588,7 +1666,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5387 => 
   [
@@ -1604,7 +1683,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5388 => 
   [
@@ -1620,7 +1700,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5389 => 
   [
@@ -1636,7 +1717,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5390 => 
   [
@@ -1652,7 +1734,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5391 => 
   [
@@ -1668,7 +1751,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5392 => 
   [
@@ -1686,7 +1770,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5393 => 
   [
@@ -1704,7 +1789,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5394 => 
   [
@@ -1722,7 +1808,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5395 => 
   [
@@ -1740,7 +1827,8 @@ return [
     'handler' => 'recipes',
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5396 => 
   [
@@ -1756,7 +1844,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5397 => 
   [
@@ -1772,7 +1861,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5398 => 
   [
@@ -1788,7 +1878,8 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
   5399 => 
   [
@@ -1804,6 +1895,7 @@ return [
     'is_stackable' => true,
     'stats' => 
     [
-    ],
+      'pDef' => 49,
+    ]
   ],
 ];

@@ -490,7 +490,7 @@ return [
     'name' => 'Elf Figure',
     'add_name' => '',
     'description' => '',
-    'icon' => 'etc_figure_FElf_i00',
+    'icon' => 'etc_figure_felf_i00',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_destroyable' => false,

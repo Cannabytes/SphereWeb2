@@ -790,11 +790,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'pAtkSpd' => 433,
+      'accCombat' => -3,
       'pAtk' => 5,
       'mAtk' => 5,
       'critRate' => 12,
-      'pAtkSpd' => 433,
-    ],
+    ]
   ],
   9639 => 
   [
@@ -814,11 +815,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 5,
       'mAtk' => 5,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   9640 => 
   [
@@ -838,11 +840,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 5,
       'mAtk' => 5,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   9641 => 
   [
@@ -862,11 +865,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 5,
       'mAtk' => 5,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   9642 => 
   [
@@ -886,11 +890,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
-      'pAtk' => 5,
       'mAtk' => 5,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+      'accCombat' => -3,
+      'pAtk' => 5,
+    ]
   ],
   9643 => 
   [
@@ -910,11 +915,12 @@ return [
     'enchant_enabled' => true,
     'stats' => 
     [
+      'accCombat' => -3,
       'pAtk' => 5,
       'mAtk' => 5,
       'critRate' => 12,
       'pAtkSpd' => 433,
-    ],
+    ]
   ],
   9644 => 
   [
@@ -935,7 +941,7 @@ return [
       'mAtk' => 21,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9645 => 
   [
@@ -952,11 +958,11 @@ return [
     'spiritshots' => 2,
     'stats' => 
     [
+      'pAtkSpd' => 379,
       'pAtk' => 31,
       'mAtk' => 21,
       'critRate' => 8,
-      'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9646 => 
   [
@@ -977,7 +983,7 @@ return [
       'mAtk' => 21,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+    ]
   ],
   9647 => 
   [
@@ -1008,7 +1014,7 @@ return [
     'name' => 'Transformation Sealbook: Onyx Beast',
     'add_name' => '',
     'description' => 'This book contains a spell to magically transform yourself into an Onyx Beast.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'price' => 21600,
     'is_stackable' => true,
@@ -1020,7 +1026,7 @@ return [
     'name' => 'Transformation Sealbook: Death Blader',
     'add_name' => '',
     'description' => 'This book contains a spell to magically transform yourself into a Death Blader.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'price' => 18000,
     'is_stackable' => true,
@@ -1032,7 +1038,7 @@ return [
     'name' => 'Transformation Sealbook: Grail Apostle',
     'add_name' => '',
     'description' => 'This book contains a spell to magically transform a hidden race ability into a form that can be used.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'price' => 21600,
     'is_stackable' => true,
@@ -1044,7 +1050,7 @@ return [
     'name' => 'Transformation Sealbook: Unicorn',
     'add_name' => '',
     'description' => 'This book contains a spell to magically transform a hidden race ability into a form that can be used.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'price' => 21600,
     'is_stackable' => true,
@@ -1056,7 +1062,7 @@ return [
     'name' => 'Transformation Sealbook: Lilim Knight',
     'add_name' => '',
     'description' => 'This book contains a spell to magically transform a hidden race ability into a form that can be used.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'price' => 21600,
     'is_stackable' => true,
@@ -1068,7 +1074,7 @@ return [
     'name' => 'Transformation Sealbook: Golem Guardian',
     'add_name' => '',
     'description' => 'This book contains a spell to magically transform a hidden race ability into a form that can be used.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'price' => 21600,
     'is_stackable' => true,
@@ -1080,7 +1086,7 @@ return [
     'name' => 'Transformation Sealbook: Inferno Drake',
     'add_name' => '',
     'description' => 'This book contains a spell to magically transform a hidden race ability into a form that can be used.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'price' => 21600,
     'is_stackable' => true,
@@ -1092,7 +1098,7 @@ return [
     'name' => 'Transformation Sealbook: Dragon Bomber',
     'add_name' => '',
     'description' => 'This book contains a spell to magically transform a hidden race ability into a form that can be used.',
-    'icon' => 'BranchSys2.etc_sb_transform_i00',
+    'icon' => 'branchsys2.etc_sb_transform_i00',
     'weight' => 120,
     'price' => 21600,
     'is_stackable' => true,
@@ -1111,9 +1117,11 @@ return [
     'price' => 1838000,
     'stats' => 
     [
+      'pAtk' => 233,
+      'mAtk' => 5,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   9657 => 
   [
@@ -1131,7 +1139,9 @@ return [
     [
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 289,
+      'mAtk' => 5,
+    ]
   ],
   9658 => 
   [
@@ -1147,9 +1157,11 @@ return [
     'price' => 6379000,
     'stats' => 
     [
+      'pAtk' => 350,
+      'mAtk' => 5,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   9659 => 
   [
@@ -1165,9 +1177,11 @@ return [
     'price' => 10579500,
     'stats' => 
     [
+      'pAtk' => 413,
+      'mAtk' => 5,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+    ]
   ],
   9660 => 
   [
@@ -1183,9 +1197,11 @@ return [
     'price' => 18876000,
     'stats' => 
     [
+      'mAtk' => 5,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 477,
+    ]
   ],
   9661 => 
   [
@@ -1201,9 +1217,11 @@ return [
     'price' => 34319000,
     'stats' => 
     [
+      'mAtk' => 5,
       'critRate' => 8,
       'pAtkSpd' => 277,
-    ],
+      'pAtk' => 537,
+    ]
   ],
   9662 => 
   [
@@ -1219,7 +1237,9 @@ return [
     'price' => 938500,
     'stats' => 
     [
-    ],
+      'pDef' => 112,
+      'mDef' => 14,
+    ]
   ],
   9663 => 
   [
@@ -1235,7 +1255,9 @@ return [
     'price' => 1810000,
     'stats' => 
     [
-    ],
+      'mDef' => 14,
+      'pDef' => 124,
+    ]
   ],
   9664 => 
   [
@@ -1251,7 +1273,9 @@ return [
     'price' => 3563000,
     'stats' => 
     [
-    ],
+      'mDef' => 14,
+      'pDef' => 136,
+    ]
   ],
   9665 => 
   [
@@ -1267,7 +1291,9 @@ return [
     'price' => 6281500,
     'stats' => 
     [
-    ],
+      'mDef' => 14,
+      'pDef' => 148,
+    ]
   ],
   9666 => 
   [
@@ -1283,7 +1309,9 @@ return [
     'price' => 12118000,
     'stats' => 
     [
-    ],
+      'mDef' => 14,
+      'pDef' => 160,
+    ]
   ],
   9667 => 
   [
@@ -1299,7 +1327,9 @@ return [
     'price' => 24439500,
     'stats' => 
     [
-    ],
+      'mDef' => 14,
+      'pDef' => 171,
+    ]
   ],
   9668 => 
   [
@@ -1338,7 +1368,8 @@ return [
     'unequip_skill' => '619-1',
     'stats' => 
     [
-    ],
+      'pDef' => 33,
+    ]
   ],
   9670 => 
   [
@@ -1357,7 +1388,8 @@ return [
     'unequip_skill' => '619-1',
     'stats' => 
     [
-    ],
+      'pDef' => 53,
+    ]
   ],
   9671 => 
   [
@@ -1376,7 +1408,8 @@ return [
     'unequip_skill' => '619-1',
     'stats' => 
     [
-    ],
+      'pDef' => 29,
+    ]
   ],
   9672 => 
   [
@@ -1488,7 +1521,8 @@ return [
     ],
     'stats' => 
     [
-    ],
+      'mDef' => 36,
+    ]
   ],
   9678 => 
   [

@@ -246,11 +246,11 @@ return [
     'is_depositable' => false,
     'stats' => 
     [
-      'pAtk' => 24,
       'mAtk' => 17,
       'critRate' => 8,
       'pAtkSpd' => 379,
-    ],
+      'pAtk' => 24,
+    ]
   ],
   2916 => 
   [

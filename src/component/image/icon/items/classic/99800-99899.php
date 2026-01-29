@@ -1163,7 +1163,7 @@ return [
     'name' => 'Red\'s Scroll of Blessing (Time-limited]',
     'add_name' => '',
     'description' => '',
-    'icon' => 'BranchSys3.icon1.g_ev_invite_attendance',
+    'icon' => 'branchsys3.icon1.g_ev_invite_attendance',
     'is_tradable' => false,
     'is_dropable' => false,
     'is_sellable' => false,

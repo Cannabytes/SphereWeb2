@@ -2094,7 +2094,8 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 20,
+    ]
   ],
   13687 => 
   [
@@ -2113,7 +2114,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'darkRes' => 30,
+      'pDef' => 20,
+    ]
   ],
   13688 => 
   [
@@ -2132,7 +2135,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 20,
+      'darkRes' => 30,
+    ]
   ],
   13689 => 
   [
@@ -2151,7 +2156,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 20,
+      'darkRes' => 30,
+    ]
   ],
   13690 => 
   [
@@ -2170,7 +2177,9 @@ return [
     'is_sellable' => false,
     'stats' => 
     [
-    ],
+      'pDef' => 20,
+      'darkRes' => 30,
+    ]
   ],
   13691 => 
   [

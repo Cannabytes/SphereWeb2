@@ -1484,7 +1484,7 @@ return [
     'name' => 'Soccer Ball Afro Hair - White',
     'add_name' => '',
     'description' => 'Afro hair that has been dyed like a white soccer ball. Uses 2 hair accessory slots. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_worldcup_hair_i00',
+    'icon' => 'branchsys2.br_worldcup_hair_i00',
     'bodypart' => 'hairall',
     'is_tradable' => false,
     'is_dropable' => false,
@@ -1497,7 +1497,7 @@ return [
     'name' => 'Soccer Ball Afro Hair - Blue',
     'add_name' => '',
     'description' => 'Afro hair that has been dyed like a blue soccer ball. Uses 2 hair accessory slots. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_worldcup_hair_i01',
+    'icon' => 'branchsys2.br_worldcup_hair_i01',
     'bodypart' => 'hairall',
     'is_tradable' => false,
     'is_dropable' => false,
@@ -1510,7 +1510,7 @@ return [
     'name' => 'Soccer Ball Afro Hair - Red',
     'add_name' => '',
     'description' => 'Afro hair that has been dyed like a red soccer ball. When equipped, you can receive the blessing of victory effect that raises Speed by 2%. Uses 2 hair accessory slots. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_worldcup_hair_i02',
+    'icon' => 'branchsys2.br_worldcup_hair_i02',
     'bodypart' => 'hairall',
     'is_tradable' => false,
     'is_dropable' => false,
@@ -1523,7 +1523,7 @@ return [
     'name' => 'Mark of Victory - Korea',
     'add_name' => '',
     'description' => 'Mark that wishes for victory by the Korean team. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_worldcup_face_deco_i00',
+    'icon' => 'branchsys2.br_worldcup_face_deco_i00',
     'bodypart' => 'hair',
     'is_tradable' => false,
     'is_dropable' => false,
@@ -1536,7 +1536,7 @@ return [
     'name' => 'Mark of Cheers',
     'add_name' => '',
     'description' => 'Mark containing a cheering heart. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_worldcup_face_deco_i00',
+    'icon' => 'branchsys2.br_worldcup_face_deco_i00',
     'bodypart' => 'hair',
     'is_tradable' => false,
     'is_dropable' => false,
@@ -1549,7 +1549,7 @@ return [
     'name' => 'Balloon Stick of Cheers - Red',
     'add_name' => '',
     'description' => 'Balloon stick containing a cheering heart. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_worldcup_stick_i00',
+    'icon' => 'branchsys2.br_worldcup_stick_i00',
     'weapon_type' => 'sword',
     'bodypart' => 'rhand',
     'is_tradable' => false,
@@ -1570,7 +1570,7 @@ return [
     'name' => 'Balloon Stick of Cheers - Orange',
     'add_name' => '',
     'description' => 'Balloon stick containing a cheering heart. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_worldcup_stick_i01',
+    'icon' => 'branchsys2.br_worldcup_stick_i01',
     'weapon_type' => 'sword',
     'bodypart' => 'rhand',
     'is_tradable' => false,
@@ -1591,7 +1591,7 @@ return [
     'name' => 'Balloon Stick of Cheers - Yellow',
     'add_name' => '',
     'description' => 'Balloon stick containing a cheering heart. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_worldcup_stick_i02',
+    'icon' => 'branchsys2.br_worldcup_stick_i02',
     'weapon_type' => 'sword',
     'bodypart' => 'rhand',
     'is_tradable' => false,
@@ -1612,7 +1612,7 @@ return [
     'name' => 'Balloon Stick of Cheers - Green',
     'add_name' => '',
     'description' => 'Balloon stick containing a cheering heart. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_worldcup_stick_i03',
+    'icon' => 'branchsys2.br_worldcup_stick_i03',
     'weapon_type' => 'sword',
     'bodypart' => 'rhand',
     'is_tradable' => false,
@@ -1633,7 +1633,7 @@ return [
     'name' => 'Balloon Stick of Cheers - Blue',
     'add_name' => '',
     'description' => 'Balloon stick containing a cheering heart. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_worldcup_stick_i04',
+    'icon' => 'branchsys2.br_worldcup_stick_i04',
     'weapon_type' => 'sword',
     'bodypart' => 'rhand',
     'is_tradable' => false,
@@ -1654,7 +1654,7 @@ return [
     'name' => 'Balloon Stick of Cheers - Indigo Blue',
     'add_name' => '',
     'description' => 'Balloon stick containing a cheering heart. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_worldcup_stick_i05',
+    'icon' => 'branchsys2.br_worldcup_stick_i05',
     'weapon_type' => 'sword',
     'bodypart' => 'rhand',
     'is_tradable' => false,
@@ -1675,7 +1675,7 @@ return [
     'name' => 'Balloon Stick of Cheers - Purple',
     'add_name' => '',
     'description' => 'Balloon stick containing a cheering heart. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_worldcup_stick_i06',
+    'icon' => 'branchsys2.br_worldcup_stick_i06',
     'weapon_type' => 'sword',
     'bodypart' => 'rhand',
     'is_tradable' => false,
@@ -1696,7 +1696,7 @@ return [
     'name' => 'Balloon Stick of Cheers - Black',
     'add_name' => '',
     'description' => 'Balloon stick containing a cheering heart. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_worldcup_stick_i07',
+    'icon' => 'branchsys2.br_worldcup_stick_i07',
     'weapon_type' => 'sword',
     'bodypart' => 'rhand',
     'is_tradable' => false,
@@ -1717,7 +1717,7 @@ return [
     'name' => 'Balloon Stick of Cheers - White',
     'add_name' => '',
     'description' => 'Balloon stick containing a cheering heart. Cannot be exchanged or dropped. Cannot use a private store. Can be stored in a private warehouse.',
-    'icon' => 'BranchSys2.br_worldcup_stick_i08',
+    'icon' => 'branchsys2.br_worldcup_stick_i08',
     'weapon_type' => 'sword',
     'bodypart' => 'rhand',
     'is_tradable' => false,
@@ -1790,7 +1790,9 @@ return [
     'time' => 4320,
     'stats' => 
     [
-    ],
+      'mDef' => 48,
+      'maxMp' => 21,
+    ]
   ],
   17187 => 
   [
@@ -1807,7 +1809,9 @@ return [
     'time' => 4320,
     'stats' => 
     [
-    ],
+      'mDef' => 95,
+      'maxMp' => 42,
+    ]
   ],
   17188 => 
   [
@@ -1824,7 +1828,9 @@ return [
     'time' => 4320,
     'stats' => 
     [
-    ],
+      'maxMp' => 31,
+      'mDef' => 71,
+    ]
   ],
   17189 => 
   [
@@ -1841,7 +1847,9 @@ return [
     'time' => 10080,
     'stats' => 
     [
-    ],
+      'mDef' => 48,
+      'maxMp' => 21,
+    ]
   ],
   17190 => 
   [
@@ -1858,7 +1866,9 @@ return [
     'time' => 10080,
     'stats' => 
     [
-    ],
+      'mDef' => 95,
+      'maxMp' => 42,
+    ]
   ],
   17191 => 
   [
@@ -1875,7 +1885,9 @@ return [
     'time' => 10080,
     'stats' => 
     [
-    ],
+      'mDef' => 71,
+      'maxMp' => 31,
+    ]
   ],
   17192 => 
   [
@@ -1892,7 +1904,9 @@ return [
     'time' => 14400,
     'stats' => 
     [
-    ],
+      'maxMp' => 21,
+      'mDef' => 48,
+    ]
   ],
   17193 => 
   [
@@ -1909,7 +1923,9 @@ return [
     'time' => 14400,
     'stats' => 
     [
-    ],
+      'mDef' => 95,
+      'maxMp' => 42,
+    ]
   ],
   17194 => 
   [
@@ -1926,7 +1942,9 @@ return [
     'time' => 14400,
     'stats' => 
     [
-    ],
+      'mDef' => 71,
+      'maxMp' => 31,
+    ]
   ],
   17195 => 
   [
@@ -1943,7 +1961,9 @@ return [
     'time' => 43200,
     'stats' => 
     [
-    ],
+      'mDef' => 48,
+      'maxMp' => 21,
+    ]
   ],
   17196 => 
   [
@@ -1960,7 +1980,9 @@ return [
     'time' => 43200,
     'stats' => 
     [
-    ],
+      'mDef' => 95,
+      'maxMp' => 42,
+    ]
   ],
   17197 => 
   [
@@ -1977,7 +1999,9 @@ return [
     'time' => 43200,
     'stats' => 
     [
-    ],
+      'mDef' => 71,
+      'maxMp' => 31,
+    ]
   ],
   17198 => 
   [
@@ -1993,7 +2017,9 @@ return [
     'is_dropable' => false,
     'stats' => 
     [
-    ],
+      'maxMp' => 21,
+      'mDef' => 48,
+    ]
   ],
   17199 => 
   [
@@ -2009,6 +2035,8 @@ return [
     'is_dropable' => false,
     'stats' => 
     [
-    ],
+      'maxMp' => 42,
+      'mDef' => 95,
+    ]
   ],
 ];
