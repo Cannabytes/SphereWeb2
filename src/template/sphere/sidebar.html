@@ -152,7 +152,7 @@
         <li class="slide glow-element {{classColorMenu()}}">
           <a href="{{plugin.PLUGIN_LINK}}" class="side-menu__item">
             <i class="{{plugin.PLUGIN_ICON}} side-menu__icon"></i>
-            <span class="side-menu__label">{{phrase(plugin.PLUGIN_PHRASE_ID)}}</span>
+            <span class="side-menu__label">{{phrase(plugin.PLUGIN_PHRASE_ID)|raw}}</span>
           </a>
         </li>
         {% endif %}

@@ -407,7 +407,7 @@ class options
         $timezone = $_POST['timezone_server'] ?? "Europe/Kyiv";
         $resetHWID = (bool)filter_var($_POST['resetHWID'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $showOnlineInStatusServer = (bool)filter_var($_POST['showOnlineInStatusServer'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $resetItemsToWarehouse = (bool)filter_var($_POST['resetItemsToWarehouse'], FILTER_VALIDATE_BOOLEAN);
+        $resetItemsToWarehouse = (bool)filter_var($_POST['resetItemsToWarehouse'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
         if (!\Ofey\Logan22\model\server\server::getServer($serverId)) {
             board::error("Server not find");
