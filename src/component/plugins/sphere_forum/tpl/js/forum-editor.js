@@ -135,10 +135,15 @@ window.ForumEditor = (function() {
     }
 
     function preparePostGalleries(root = document) {
-        const posts = root.querySelectorAll('.post');
+        let posts;
+        if (root instanceof HTMLElement && root.classList.contains('post')) {
+            posts = [root];
+        } else {
+            posts = root.querySelectorAll('.post');
+        }
 
         posts.forEach(post => {
-            if (!post || post.dataset.galleryPrepared === 'true') {
+            if (!post) {
                 return;
             }
 
@@ -185,8 +190,6 @@ window.ForumEditor = (function() {
 
                 anchor.setAttribute('data-image-type', preferredImageType);
             });
-
-            post.dataset.galleryPrepared = 'true';
         });
     }
 
@@ -453,7 +456,10 @@ window.ForumEditor = (function() {
             return;
         }
         lightbox = GLightbox({
-            selector: '.glightbox'
+            selector: '.glightbox',
+            touchNavigation: true,
+            loop: true,
+            autoplayVideos: true
         });
     }
 
@@ -860,16 +866,11 @@ document.head.appendChild(Object.assign(document.createElement('style'), {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    const posts = document.querySelectorAll('.post');
-    posts.forEach(post => {
-        let htmlContent = post.innerHTML;
-        const youtubeLinkPattern = /https:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)[^\s<]*/g;
-        htmlContent = htmlContent.replace(youtubeLinkPattern, function (match, videoId) {
-            return `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-        });
-        post.innerHTML = htmlContent;
-    });
-
-    preparePostGalleries(document);
-    refreshLightbox();
+    // В страницах где не инициализируется ForumPosts (который сам вызывает prepareGalleries)
+    // вызываем его принудительно здесь.
+    if (!window.ForumPosts) {
+        if (window.ForumEditor && typeof window.ForumEditor.prepareGalleries === 'function') {
+            window.ForumEditor.prepareGalleries(document);
+        }
+    }
 });

@@ -106,7 +106,7 @@
                         {% if getUser().isAuth() %}
                         <button type="button" class="btn btn-sm" id="toggleSubscription">
                             <i class="ri-notification-line"></i>
-                            <span class="subscription-text">
+                            <span class="text-muted">
                             {% if isSubscribed %}{{phrase('unsubscribe_notifications')}}{% else %}{{phrase('subscribe_notifications')}}{% endif %}
                         </span>
                         </button>
@@ -114,7 +114,7 @@
                             $(document).ready(function() {
                                 $('#toggleSubscription').on('click', function() {
                                     const $btn = $(this);
-                                    const isCurrentlySubscribed = $btn.find('.subscription-text')
+                                    const isCurrentlySubscribed = $btn.find('.text-muted')
                                         .text().includes('Отписаться');
 
                                     AjaxSend('/forum/thread/toggle-subscription', 'POST', {
@@ -126,7 +126,7 @@
                                             const newText = isCurrentlySubscribed ?
                                                 '{{phrase("subscribe_notifications")}}' :
                                                 '{{phrase("unsubscribe_notifications")}}';
-                                            $btn.find('.subscription-text').text(newText);
+                                            $btn.find('.text-muted').text(newText);
                                         }
                                     });
                                 });
@@ -524,11 +524,13 @@
                                                 class="ri-time-fill"></i> {{post.getCreatedAt()|date("F d, Y H:i:s")}}
                                         </button>
 
+                                        {% if canReply and (thread.isClosed() == false or getUser().isAdmin() or isModerator(getUser().getId(), category.getId())) %}
                                         <button type="button" class="btn  btn-sm text-muted reply-button"
                                                 data-post-id="{{post.getId()}}"
                                                 data-author-name="{{getUser(post.getUserId()).getName()}}">
                                             <i class="ri-reply-line"></i> {{phrase('reply')}}
                                         </button>
+                                        {% endif %}
 
                                         {% set canEditPost = (getUser().isAdmin() or hasModeratorPermission(getUser().getId(), category.getId(), 'can_edit_posts') or (post.getUserId() == getUser().getId() and post.isEditableByTime(60))) %}
 
@@ -596,6 +598,12 @@
                     </div>
                     {% endfor %}
 
+                    {% if thread.isClosed() %}
+                    <div class="alert alert-warning text-center">
+                        <h6 class="mb-0">{{phrase('topic_closed')}}</h6>
+                    </div>
+                    {% endif %}
+
                     {% if getUser().isAuth() %}
                     
                     {# Проверка на бан пользователя #}
@@ -621,16 +629,10 @@
                     </div>
                     {% else %}
                     
-                    {% if thread.isClosed() %}
-                    <div class="alert alert-warning text-center">
-                        <h6 class="mb-0">{{phrase('topic_closed')}}</h6>
-                    </div>
-                    {% endif %}
-
                     <div class="d-flex mt-3 answer-panel">
 
                         {% if canReply %}
-                        {% if thread.isClosed() == false or getUser().isAdmin() %}
+                        {% if thread.isClosed() == false or getUser().isAdmin() or isModerator(getUser().getId(), category.getId()) %}
 
 
                         <div class="col-2 me-3 ">
@@ -790,7 +792,7 @@
                 {% endif %}
 
 
-                {% if getUser().isAuth() == false %}
+                {% if getUser().isAuth() == false and thread.isClosed() == false %}
                 <div class="col-12">
                     <blockquote class="blockquote custom-blockquote secondary mb-0 text-center">
                         <h6>{{phrase('login_to_reply')}}</h6>
@@ -1141,9 +1143,9 @@
 <!-- Модули форума -->
 <script src="{{template_plugin}}/tpl/js/forum-utils.js?v=0.0.1.0"></script>
 <script src="{{template_plugin}}/tpl/js/forum-ui.js?v=0.0.0.1"></script>
-<script src="{{template_plugin}}/tpl/js/forum-editor.js?v=0.0.0.13"></script>
+<script src="{{template_plugin}}/tpl/js/forum-editor.js?v=0.0.0.15"></script>
 <script src="{{template_plugin}}/tpl/js/forum-polls.js?v=0.0.0.1"></script>
-<script src="{{template_plugin}}/tpl/js/forum-posts.js?v=0.0.0.4"></script>
+<script src="{{template_plugin}}/tpl/js/forum-posts.js?v=0.0.0.5"></script>
 <script src="{{template_plugin}}/tpl/js/forum-moderation.js?v=0.0.0.5"></script>
 <script src="{{template_plugin}}/tpl/js/forum-main.js?v=0.0.0.5"></script>
 

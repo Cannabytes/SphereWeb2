@@ -10,8 +10,13 @@ const ForumPosts = (function () {
     // Инициализация
     function initialize() {
         initializeEventListeners();
-        initializeLightbox();
         processPostContent();
+        
+        if (window.ForumEditor && typeof window.ForumEditor.prepareGalleries === 'function') {
+            window.ForumEditor.prepareGalleries(document);
+        } else {
+            initializeLightbox();
+        }
     }
 
     // Обработчик добавления сообщения
