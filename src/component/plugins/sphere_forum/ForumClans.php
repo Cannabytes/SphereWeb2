@@ -256,13 +256,17 @@ class ForumClans
             redirect::location("/forum");
         }
         $isMember = false;
+        $hasPendingRequest = false;
+        
         if ($clan) {
             $isMember = $this->isMember($clan->getId());
+            $hasPendingRequest = $clan->hasPendingRequest(user::self()->getId());
         }
 
         // Получаем сообщения клана
         $clanPosts = $clan->getClanPosts();
         tpl::addVar('isMember', $isMember);
+        tpl::addVar('hasPendingRequest', $hasPendingRequest);
         tpl::addVar('clan', $clan);
         tpl::addVar('clanPosts', $clanPosts);
         tpl::displayPlugin("/sphere_forum/tpl/clan/view.html");
@@ -407,15 +411,16 @@ class ForumClans
                     // Добавляем переменную пользователю
                     $user = user::getUserId($request['user_id']);
                     $user->addVar('clanId', $request['clan_id']);
-                });
+                    });
+                    board::alert(["success" => true, "message" => "Заявка успешно принята"]);
 
-                board::success("Заявка успешно принята");
             } else {
                 sql::run(
                     "UPDATE forum_clan_requests SET status = 'rejected' WHERE id = ?",
                     [$request['id']]
                 );
-                board::success("Заявка отклонена");
+                board::alert(["success" => false, "message" => "Заявка отклонена"]);
+
             }
 
             return true;
@@ -437,6 +442,27 @@ class ForumClans
             "SELECT 1 FROM forum_clan_members WHERE clan_id = ? AND user_id = ?",
             [$clanId, user::self()->getId()]
         );
+    }
+
+    public function cancelJoinRequest($clanId): bool
+    {
+        $this->checkClansEnabled();
+        try {
+            $stmt = sql::run(
+                "DELETE FROM forum_clan_requests WHERE clan_id = ? AND user_id = ? AND status = 'pending'",
+                [$clanId, user::self()->getId()]
+            );
+            
+            if ($stmt && $stmt->rowCount() > 0) {
+                return true;
+            }
+            
+            board::error("Заявка не найдена или уже обработана");
+            return false;
+        } catch (Exception $e) {
+            board::error("Ошибка при отмене заявки: " . $e->getMessage());
+            return false;
+        }
     }
 
     public function leaveClan($clanId) {
@@ -722,6 +748,48 @@ class ForumClans
 
         tpl::addVar('clan', $clan);
         tpl::displayPlugin("/sphere_forum/tpl/admin/edit_clan.html");
+    }
+
+    public function kickMember($clanId, $memberId): bool
+    {
+        $this->checkClansEnabled();
+        
+        try {
+            $clan = $this->getClanInfoById($clanId);
+            if (!$clan) {
+                throw new Exception("Клан не найден");
+            }
+
+            // Проверяем, является ли текущий пользователь владельцем клана
+            if ($clan->getOwnerId() !== user::self()->getId()) {
+                throw new Exception("У вас нет прав для удаления членов клана");
+            }
+
+            // Проверяем, что не пытаемся удалить владельца
+            if ((int)$memberId === $clan->getOwnerId()) {
+                throw new Exception("Вы не можете удалить владельца клана");
+            }
+
+            // Проверяем, что пользователь действительно состоит в клане
+            $member = sql::getRow(
+                "SELECT * FROM forum_clan_members WHERE clan_id = ? AND user_id = ? LIMIT 1",
+                [$clanId, $memberId]
+            );
+
+            if (!$member) {
+                throw new Exception("Пользователь не состоит в клане");
+            }
+
+            // Удаляем пользователя из клана
+            sql::run(
+                "DELETE FROM forum_clan_members WHERE clan_id = ? AND user_id = ?",
+                [$clanId, $memberId]
+            );
+
+            return true;
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
 }

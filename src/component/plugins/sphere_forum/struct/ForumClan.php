@@ -496,4 +496,22 @@ class ForumClan {
         return $stmt && $stmt->rowCount() > 0;
     }
 
+    public function getUserPendingRequest(int $userId) {
+        return sql::getRow(
+            "SELECT * FROM forum_clan_requests 
+             WHERE clan_id = ? AND user_id = ? AND status = 'pending'
+             LIMIT 1",
+            [$this->getId(), $userId]
+        );
+    }
+
+    public function hasPendingRequest(int $userId): bool {
+        return (bool)sql::getValue(
+            "SELECT 1 FROM forum_clan_requests 
+             WHERE clan_id = ? AND user_id = ? AND status = 'pending'
+             LIMIT 1",
+            [$this->getId(), $userId]
+        );
+    }
+
 }

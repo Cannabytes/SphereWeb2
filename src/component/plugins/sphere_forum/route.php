@@ -387,6 +387,29 @@ $routes = [
 
     [
         "method" => "POST",
+        "pattern" => "/forum/clan/request/cancel",
+        "file" => "forum.php",
+        "call" => function () {
+            if (!user::self()->isAuth()) {
+                http_response_code(401);
+                echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+                return;
+            }
+
+            $clanId = $_POST['clan_id'] ?? null;
+            if (!$clanId) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'Missing clan_id']);
+                return;
+            }
+
+            $result = (new sphere_forum\ForumClans())->cancelJoinRequest($clanId);
+            echo json_encode(['success' => $result]);
+        },
+    ],
+
+    [
+        "method" => "POST",
         "pattern" => "/forum/clan/chat/send",
         "file" => "forum.php",
         "call" => function () {
@@ -428,10 +451,28 @@ $routes = [
         "pattern" => "/forum/clan/request/handle",
         "file" => "forum.php",
         "call" => function () {
-            (new sphere_forum\ForumClans())->handleRequest(
-                $_POST['request_id'],
-                filter_var($_POST['accept'], FILTER_VALIDATE_BOOLEAN)
-            );
+            if (!user::self()->isAuth()) {
+                http_response_code(401);
+                echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+                return;
+            }
+
+            $requestId = $_POST['request_id'] ?? null;
+            $accept = isset($_POST['accept']) ? filter_var($_POST['accept'], FILTER_VALIDATE_BOOLEAN) : null;
+
+            if (!$requestId || $accept === null) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+                return;
+            }
+
+            try {
+                $result = (new sphere_forum\ForumClans())->handleRequest($requestId, $accept);
+                echo json_encode(['success' => $result]);
+            } catch (\Exception $e) {
+                http_response_code(500);
+                echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            }
         },
     ],
 
@@ -473,6 +514,37 @@ $routes = [
             ((new sphere_forum\ForumClans())->leaveClan($clanId));
         },
     ],
+
+    [
+        "method" => "POST",
+        "pattern" => "/forum/clan/kick-member",
+        "file" => "forum.php",
+        "call" => function () {
+            if (!user::self()->isAuth()) {
+                http_response_code(401);
+                echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+                return;
+            }
+
+            $clanId = $_POST['clan_id'] ?? null;
+            $memberId = $_POST['member_id'] ?? null;
+
+            if (!$clanId || !$memberId) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+                return;
+            }
+
+            try {
+                $result = (new sphere_forum\ForumClans())->kickMember($clanId, $memberId);
+                echo json_encode(['success' => $result]);
+            } catch (\Exception $e) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            }
+        },
+    ],
+
     [
         "method" => "POST",
         "pattern" => "/forum/clan/posts",

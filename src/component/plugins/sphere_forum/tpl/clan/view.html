@@ -116,19 +116,21 @@
                                 <a href="/forum/clan/edit/{{ clan.getName() }}" class="btn btn-primary w-100 mt-3">
                                     <i class="ri-edit-2-line me-1"></i>{{phrase('edit_clan')}}
                                 </a>
-                                {% elseif not isMember %}
-                                {% if clan.getAcceptance() == 1 %}
+                                {% elseif isMember %}
+                                <button class="btn btn-danger w-100 mt-3" id="leaveClanBtn">
+                                    <i class="ri-door-open-line me-1"></i>{{phrase('leave_clan')}}
+                                </button>
+                                {% elseif hasPendingRequest %}
+                                <button class="btn btn-warning w-100 mt-3" id="cancelRequestBtn">
+                                    <i class="ri-close-line me-1"></i>{{phrase('cancel_application')}}
+                                </button>
+                                {% elseif clan.getAcceptance() == 1 %}
                                 <button class="btn btn-success w-100 mt-3" id="joinClanBtn">
                                     <i class="ri-user-add-line me-1"></i>{{phrase('join_clan')}}
                                 </button>
                                 {% else %}
                                 <button class="btn btn-warning w-100 mt-3" id="requestJoinBtn">
                                     <i class="ri-user-follow-line me-1"></i>{{phrase('submit_application')}}
-                                </button>
-                                {% endif %}
-                                {% else %}
-                                <button class="btn btn-danger w-100 mt-3" id="leaveClanBtn">
-                                    <i class="ri-door-open-line me-1"></i>{{phrase('leave_clan')}}
                                 </button>
                                 {% endif %}
                                 {% endif %}
@@ -934,6 +936,155 @@
                     },
                     error: function (xhr) {
                         noticeError('Ошибка при выходе из клана: ' + xhr.responseJSON?.message);
+                    }
+                });
+            }
+        });
+
+        $('#cancelRequestBtn').on('click', function () {
+            if (confirm("{{phrase('confirm_cancel_application')}}")) {
+                $.ajax({
+                    url: '/forum/clan/request/cancel',
+                    type: 'POST',
+                    data: {clan_id: clanId},
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            noticeSuccess("{{phrase('application_cancelled')}}");
+                            setTimeout(() => window.location.reload(), 1500);
+                        } else {
+                            noticeError(response.message || 'Ошибка при отмене заявки');
+                        }
+                    },
+                    error: function (xhr) {
+                        noticeError(xhr.responseJSON?.message || 'Ошибка при отмене заявки');
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '.accept-request', function() {
+            const requestId = $(this).data('request-id');
+            const btn = $(this);
+            const row = btn.closest('tr');
+            
+            btn.prop('disabled', true);
+            $.ajax({
+                url: '/forum/clan/request/handle',
+                type: 'POST',
+                data: {
+                    request_id: requestId,
+                    accept: true
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        noticeSuccess("{{phrase('application_accepted')}}");
+                        // Плавное удаление строки
+                        row.fadeOut(300, function() {
+                            $(this).remove();
+                            updateRequestCount();
+                        });
+                    } else {
+                        noticeError(response.message || 'Ошибка при принятии заявки');
+                        btn.prop('disabled', false);
+                    }
+                },
+                error: function (xhr) {
+                    noticeError(xhr.responseJSON?.message || 'Ошибка при принятии заявки');
+                    btn.prop('disabled', false);
+                }
+            });
+        });
+
+        $(document).on('click', '.reject-request', function() {
+            const requestId = $(this).data('request-id');
+            const btn = $(this);
+            const row = btn.closest('tr');
+            
+            if (confirm("{{phrase('confirm_reject_application')}}")) {
+                btn.prop('disabled', true);
+                $.ajax({
+                    url: '/forum/clan/request/handle',
+                    type: 'POST',
+                    data: {
+                        request_id: requestId,
+                        accept: false
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            noticeSuccess("{{phrase('application_rejected')}}");
+                            // Плавное удаление строки
+                            row.fadeOut(300, function() {
+                                $(this).remove();
+                                updateRequestCount();
+                            });
+                        } else {
+                            noticeError(response.message || 'Ошибка при отклонении заявки');
+                            btn.prop('disabled', false);
+                        }
+                    },
+                    error: function (xhr) {
+                        noticeError(xhr.responseJSON?.message || 'Ошибка при отклонении заявки');
+                        btn.prop('disabled', false);
+                    }
+                });
+            }
+        });
+
+        function updateRequestCount() {
+            // Подсчитываем оставшиеся строки в таблице заявок
+            const requestRows = $('#requests tbody tr').length;
+            const requestBadge = $('a[href="#requests"] .badge');
+            
+            if (requestRows === 0) {
+                // Если заявок нет, скрываем или удаляем значок
+                requestBadge.remove();
+                // Можно также отобразить сообщение "Нет заявок"
+                const tbody = $('#requests tbody');
+                if (tbody.find('tr').length === 0) {
+                    tbody.html('<tr><td colspan="3" class="text-center text-muted py-4">{{phrase("no_applications")}}</td></tr>');
+                }
+            } else {
+                // Обновляем счетчик
+                if (requestBadge.length) {
+                    requestBadge.text(requestRows);
+                }
+            }
+        }
+
+        $(document).on('click', '.kick-member', function() {
+            const btn = $(this);
+            const memberId = btn.data('member-id');
+            const row = btn.closest('tr');
+            const memberName = row.find('span').first().text();
+
+            if (confirm("{{phrase('confirm_kick_member')}}".replace('{member}', memberName))) {
+                btn.prop('disabled', true);
+                $.ajax({
+                    url: '/forum/clan/kick-member',
+                    type: 'POST',
+                    data: {
+                        clan_id: clanId,
+                        member_id: memberId
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            noticeSuccess("{{phrase('member_kicked')}}");
+                            // Плавное удаление строки
+                            row.fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        } else {
+                            noticeError(response.message || 'Ошибка при удалении члена клана');
+                            btn.prop('disabled', false);
+                        }
+                    },
+                    error: function (xhr) {
+                        noticeError(xhr.responseJSON?.message || 'Ошибка при удалении члена клана');
+                        btn.prop('disabled', false);
                     }
                 });
             }
