@@ -479,7 +479,7 @@ class ForumClans
                 "DELETE FROM forum_clan_requests WHERE clan_id = ? AND user_id = ?",
                 [$clanId, user::self()->getId()]
             );
-            user::self()->addVar('clanId', null);
+            user::self()->deleteVar('clanId');
         });
 
         return true;
@@ -785,6 +785,8 @@ class ForumClans
                 "DELETE FROM forum_clan_members WHERE clan_id = ? AND user_id = ?",
                 [$clanId, $memberId]
             );
+
+            user::getUserId((int)$memberId)->deleteVar('clanId');
 
             return true;
         } catch (Exception $e) {

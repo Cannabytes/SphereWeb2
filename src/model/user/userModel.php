@@ -1631,6 +1631,22 @@ class userModel
         return $result;
     }
 
+    public function deleteVar(string $name, $serverId = null)
+    {
+        if ($serverId !== null) {
+            $result = sql::run(
+                'DELETE FROM `user_variables` WHERE `server_id` = ? AND `user_id` = ? AND `var` = ?',
+                [$serverId, $this->getId(), $name]
+            );
+        } else {
+            $result = sql::run(
+                'DELETE FROM `user_variables` WHERE `user_id` = ? AND `var` = ?',
+                [$this->getId(), $name]
+            );
+        }
+        return $result;
+    }
+
     // Добавляем метод для очистки кэша
     public function clearVarCache(): void
     {
