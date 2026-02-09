@@ -9,7 +9,6 @@ class country {
         'ua' => 'Ukraine',
         'world' => 'World',
         'crypto' => 'Crypto',
-
         'au' => 'Australia',
         'at' => 'Austria',
         'az' => 'Azerbaijan',
