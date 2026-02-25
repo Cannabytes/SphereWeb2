@@ -1,7 +1,7 @@
 <?php
 return [
     'betatransfer_donate' => 'Donación BetaTransfer',
-    'betatransfer_donate_description' => 'Plugin de pago mediante BetaTransfer con múltiples métodos de pago',
+    'betatransfer_donate_description' => 'Plugin de pago mediante BetaTransfer',
     'betatransfer_select_method' => 'Seleccione un método de pago',
     'betatransfer_enter_amount' => 'Ingrese el monto',
     'betatransfer_min_amount' => 'Monto mínimo',

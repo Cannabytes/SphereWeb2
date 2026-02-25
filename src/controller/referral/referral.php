@@ -13,6 +13,7 @@ use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\controller\page\error;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\lang\lang;
+use Ofey\Logan22\model\referral\referral as ReferralModel;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
@@ -37,25 +38,56 @@ class referral
         }
         $_SESSION['cooldown_referral_bonus'] = time();
 
-        $playersList = \Ofey\Logan22\model\referral\referral::player_list();
+        $playersList = ReferralModel::player_list();
         $hasRequirements = array_filter($playersList, function ($entry) {
             return isset($entry['is_requirements']) && $entry['is_requirements'] === true;
         });
         $countBonus = 0;
         $playerNames = [];
         $items = []; // Массив для хранения информации о предметах
+        $rejectedCharacters = []; // Track rejected characters
 
         if (!empty($hasRequirements)) {
             $bonusDonateCoin = config::load()->referral()->getBonusAmount();
 
             foreach ($hasRequirements as $referral) {
                 $slaveUser = user::getUserId($referral['id']);
+                $leaderUser = user::self();
+                
+                // Get character info for duplicate checking
+                $characterName = $referral['qualifying_character']->getName();
+                $serverId = $referral['qualifying_account']->getServerId();
+
+                // Check if this character has already earned a bonus
+                if (ReferralModel::hasCharacterEarnedBonus($characterName, $serverId)) {
+                    // Log rejection for audit trail
+                    ReferralModel::logCharacterBonusRejected(
+                        $leaderUser,
+                        $slaveUser,
+                        $characterName,
+                        $serverId,
+                        $referral['referral_id']
+                    );
+                    $rejectedCharacters[] = $characterName;
+                    continue; // Skip this character, don't award bonus
+                }
 
                 //Отметим что данный реферальный квест был выполнен
-                \Ofey\Logan22\model\referral\referral::done($slaveUser->getId(), user::self()->getId());
+                ReferralModel::done($slaveUser->getId(), $leaderUser->getId());
+                
+                // Log successful bonus award for character
+                ReferralModel::logCharacterBonusAwarded(
+                    $leaderUser,
+                    $slaveUser,
+                    $characterName,
+                    $serverId,
+                    $bonusDonateCoin,
+                    $referral['referral_id']
+                );
+                
                 $countBonus += $bonusDonateCoin;
                 $playerNames[] = $referral['name'];
-                user::self()->donateAdd($bonusDonateCoin);
+                $leaderUser->donateAdd($bonusDonateCoin);
 
                 $leaderDonateItems = config::load()->referral()->getLeaderBonusItems();
                 if (!empty($leaderDonateItems)) {
@@ -63,7 +95,7 @@ class referral
                         $item_id = $item->getItemId();
                         $count = $item->getCount() ?? 1;
                         $enchant = $item->getEnchant() ?? 0;
-                        user::self()->addToWarehouse(user::self()->getServerId(), $item_id, $count, $enchant, "add_item_donate_bonus_referral_master");
+                        $leaderUser->addToWarehouse($leaderUser->getServerId(), $item_id, $count, $enchant, "add_item_donate_bonus_referral_master");
 
                         // Добавляем информацию о предмете в массив для передачи во фронтенд
                         $itemInfo = [
@@ -88,8 +120,24 @@ class referral
                         $item_id = (int)$item->getItemId();
                         $count = (int)$item->getCount() ?? 1;
                         $enchant = (int)$item->getEnchant() ?? 0;
-                        $slaveUser->addToWarehouse(user::self()->getServerId(), $item_id, $count, $enchant, "add_item_donate_bonus_referral_slave");
+                        $slaveUser->addToWarehouse($leaderUser->getServerId(), $item_id, $count, $enchant, "add_item_donate_bonus_referral_slave");
                     }
+                }
+            }
+
+            // Check if we rejected any characters
+            if (!empty($rejectedCharacters)) {
+                if (empty($playerNames)) {
+                    // All characters were rejected
+                    board::error("Ошибка: персонажи уже получали бонус за реферальную систему (" . implode(', ', $rejectedCharacters) . ")");
+                } else {
+                    // Some were successful, some were rejected
+                    board::alert([
+                        "warning" => true,
+                        "message" => "Бонус выдан для: " . implode(', ', $playerNames) . ". 
+                        Отклонено персонажей (уже получали бонус): " . implode(', ', $rejectedCharacters),
+                    ]);
+                    return;
                 }
             }
 

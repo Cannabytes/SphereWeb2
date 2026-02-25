@@ -64,6 +64,7 @@ return [
 	'61' => 'Gallery',
 	'62' => 'Forum',
 	'63' => 'Donat',
+	'Payment Systems' => 'Payment Systems',
 	'64' => 'Handbook',
 	'65' => 'Select Avatar',
 	'66' => 'Select avatar background',

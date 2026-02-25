@@ -403,7 +403,7 @@
 
                 {% for payment in sortedSystems %}
                     <li class="shadow">
-                        <div class="payment-system-item" data-name="{{payment.name}}">
+                        <div class="payment-system-item" data-name="{{payment.name}}" data-plugin-link="{{paymentSystemsLinks[payment.name] ?? ''}}">
                             <div class="payment-system-content">
                                 <div class="payment-system-header">
                                     <h4 class="payment-system-name">{{ payment.dsCustomName }}</h4>
@@ -1331,9 +1331,18 @@
                        return;
                    }
 
+                   // Получаем PLUGIN_LINK, если он есть
+                   const pluginLink = $(this).data('plugin-link');
+                   const itemName = $(this).data('name');
+                   
+                   // Если есть PLUGIN_LINK, перенаправляем по ссылке
+                   if (pluginLink && pluginLink.trim() !== '') {
+                       window.location.href = pluginLink;
+                       return false;
+                   }
+
                    // Проверяем, является ли это плагином betaTransfer
                    const isPlugin = $(this).data('is-plugin') === true || $(this).attr('data-is-plugin') === 'true';
-                   const itemName = $(this).data('name');
                    
                    if (isPlugin && itemName === 'betatransfer') {
                        window.location.href = '/donate/betatransfer';
@@ -1368,6 +1377,16 @@
                    const selectedPaySystem = getSelectedPaySystemValue();
 
                    if (!selectedPaySystem) {
+                       return false;
+                   }
+
+                   // Получаем выбранный элемент платежной системы
+                   const selectedPaySystemItem = $(`.payment-system-item[data-name="${selectedPaySystem}"]`);
+                   const pluginLink = selectedPaySystemItem.data('plugin-link');
+
+                   // Если есть PLUGIN_LINK, перенаправляем по ссылке
+                   if (pluginLink && pluginLink.trim() !== '') {
+                       window.location.href = pluginLink;
                        return false;
                    }
 

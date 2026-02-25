@@ -84,6 +84,12 @@ class Route extends Router {
 
     public function __construct() {
         $this->__addingPlugin(); 
+
+        parent::get('/admin/donate', 'Ofey\\Logan22\\controller\\admin\\donateGlobal::showPlugins');
+        parent::get('/admin/donate/bonus', 'Ofey\\Logan22\\controller\\admin\\donateGlobal::show');
+        parent::post('/admin/donate/bonus/save', 'Ofey\\Logan22\\controller\\admin\\donateGlobal::save');
+        parent::post('/admin/donate/bonus/get', 'Ofey\\Logan22\\controller\\admin\\donateGlobal::getDonateSetting');
+
         //Загрузка из шаблона указанных файлов
         if ($pages = tpl::template_design_route()) {
             foreach ($pages as $page => $template) {

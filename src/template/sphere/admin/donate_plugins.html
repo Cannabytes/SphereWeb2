@@ -1,0 +1,108 @@
+{% extends 'struct.html' %}
+
+{% block title %}Payment Systems{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="card-title">
+                        <a href="/admin" class="avatar border text-muted">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path></svg>
+                        </a>
+                        {{ phrase('Payment Systems') }}
+                    </div>
+                    <div class="d-flex">
+                        <a href="/admin/donate/bonus" class="btn btn-sm btn-primary btn-wave waves-light">
+                            <i class="ri-gift-line fw-semibold align-middle me-1"></i> Вознаграждения
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info alert-dismissible fade show custom-alert-icon shadow-sm" role="alert">
+                        <svg class="svg-info" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" width="1.5rem" fill="#000000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"></path></svg>
+                        Настройте платежные системы для приема пожертвований. Каждая система имеет свои параметры и ключи API.
+                    </div>
+
+                    {% if paymentPlugins|length > 0 %}
+                    <div class="row">
+                        {% for plugin in paymentPlugins %}
+                        {% set isPluginEnabled = getPluginActive(plugin.PLUGIN_DIR_NAME) %}
+                        <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                            <div class="card custom-card shadow-none border {% if isPluginEnabled %}border-success{% endif %}">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <span class="avatar avatar-lg {% if isPluginEnabled %}bg-success-transparent{% else %}bg-primary-transparent{% endif %}">
+                                                <i class="{{ plugin.PLUGIN_ICON ?? 'bi bi-credit-card' }} fs-2"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-fill">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <h6 class="fw-semibold mb-0">{{ plugin.PLUGIN_NAME }}</h6>
+                                                {% if isPluginEnabled %}
+                                                <span class="text-success">{{ phrase('enabled') }}</span>
+                                                {% else %}
+                                                <span class="text-secondary">{{ phrase('disabled') }}</span>
+                                                {% endif %}
+                                            </div>
+                                            <p class="text-muted fs-12 mb-0 mt-2">
+                                                {% if plugin.PLUGIN_DESCRIPTION %}
+                                                    {{ phrase(plugin.PLUGIN_DESCRIPTION)|raw }}
+                                                {% else %}
+                                                    {{ plugin.PLUGIN_NAME }}
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <a href="{{ plugin.PLUGIN_ADMIN_PAGE }}" class="btn btn-sm {% if isPluginEnabled %}btn-success{% else %}btn-primary{% endif %} btn-wave">
+                                        <i class="ri-settings-3-line me-1"></i> Настройки
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning text-center" role="alert">
+                        <i class="ri-information-line fs-4 me-2"></i>
+                        <strong>Платежные системы не найдены</strong>
+                        <p class="mb-0 mt-2">Установите плагины платежных систем категории "paysystem" для приема пожертвований.</p>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block css %}
+<style>
+    .card {
+        transition: all .3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+    }
+
+    .card.border-success {
+        border-color: #198754 !important;
+    }
+
+    .card.bg-success-subtle {
+        background-color: #f0f9f6 !important;
+    }
+</style>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

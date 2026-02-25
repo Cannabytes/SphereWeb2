@@ -469,10 +469,12 @@
                                 </div>
 
                                 <div class="btn-group btn-group-sm my-1 d-flex" role="group"
-                                     aria-label="Small button group">
+                                     aria-label="Small button group"> 
+                                  {% if not config().hasGlobalDonateConfig() %}
                                     <a href="/admin/server/set/donate/{{serverInfo.getId()}}"
                                        class="btn btn-outline-success w-100">{{ phrase('Donation settings') }}</a>
-                                    <a href="/admin/server/set/referral/{{serverInfo.getId()}}"
+                                  {% endif %}  
+                                       <a href="/admin/server/set/referral/{{serverInfo.getId()}}"
                                        class="btn btn-outline-success w-100">{{ phrase('Referral settings') }}</a>
                                 </div>
 
@@ -685,6 +687,35 @@
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            
+                                            <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                                <div class="card custom-card shadow-none border">
+                                                    <div class="card-body p-4">
+                                                        <div class="text-center">
+                                                                            <span
+                                                                                  class="avatar avatar-xl avatar-rounded">
+                                                                                <img
+                                                                                      src="{{template}}/assets/images/admenu/donatepay.png"
+                                                                                      alt="">
+                                                                            </span>
+                                                            <div class="mt-2">
+                                                                <p class="mb-0 fw-semibold">{{
+                                                                    phrase('Donation settings') }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer text-center">
+                                                        <div class="btn-list">
+                                                            <a href="/admin/donate"
+                                                               class="btn btn-sm btn-light btn-wave">Настройки</a>
+                                                            <a href="/admin/donate/bonus"
+                                                               class="btn btn-sm btn-light btn-wave">Вознаграждения</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
 
                                             <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
                                                 <div class="card custom-card shadow-none border">
@@ -1213,6 +1244,7 @@
                                         <div class="row">
 
                                             {% for plugin in show_plugins() %}
+                                            {% if plugin.PLUGIN_CATEGORY != 'paysystem' %}
                                             <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
                                                 <div class="card custom-card shadow-none border">
                                                     <div class="card-body p-4">
@@ -1233,6 +1265,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            {% endif %}
                                             {% endfor %}
 
                                         </div>

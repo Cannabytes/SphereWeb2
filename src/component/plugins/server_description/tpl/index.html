@@ -1,0 +1,770 @@
+﻿{% extends 'struct.html' %}
+
+{% block title %}{{ phrase('server_description') }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+<style>
+    /* Item & Skill Reference Styles */
+    .item-reference, .skill-reference {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 8px;
+        border-radius: 5px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        vertical-align: middle;
+    }
+
+    .item-reference {
+        border: 1px solid rgba(100, 150, 255, 0.2);
+        background-color: rgba(100, 150, 255, 0.05);
+    }
+
+    .item-reference:hover {
+        background-color: rgba(100, 150, 255, 0.12);
+        border-color: rgba(100, 150, 255, 0.4);
+    }
+
+    .skill-reference {
+        border: 1px solid rgba(100, 200, 100, 0.2);
+        background-color: rgba(100, 200, 100, 0.05);
+    }
+
+    .skill-reference:hover {
+        background-color: rgba(100, 200, 100, 0.12);
+        border-color: rgba(100, 200, 100, 0.4);
+    }
+
+    .item-reference img, .skill-reference img {
+        border-radius: 4px;
+        transition: filter 0.2s ease;
+    }
+
+    .item-reference:hover img, .skill-reference:hover img {
+        filter: brightness(1.1);
+    }
+
+    .section-featured-image {
+        max-width: 100%;
+        max-height: 400px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .section-featured-image:hover {
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
+    .wiki-content img {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .wiki-content img:hover {
+        filter: brightness(0.95);
+    }
+    
+    /* Quill Editor Content Styles */
+    .wiki-content .ql-align-center {
+        text-align: center;
+    }
+    .wiki-content .ql-align-right {
+        text-align: right;
+    }
+    .wiki-content .ql-align-justify {
+        text-align: justify;
+    }
+    
+    /* Reduce margins between paragraphs in wiki content */
+    .wiki-content p {
+        margin: 0.25rem 0;
+        line-height: 1.5;
+    }
+    
+    .wiki-content p:first-child {
+        margin-top: 0;
+    }
+    
+    .wiki-content p:last-child {
+        margin-bottom: 0;
+    }
+    
+    /* Indentation support (1-9) */
+    .wiki-content .ql-indent-1:not(.ql-direction-rtl) { padding-left: 3em; }
+    .wiki-content li.ql-indent-1:not(.ql-direction-rtl) { padding-left: 4.5em; }
+    .wiki-content .ql-indent-2:not(.ql-direction-rtl) { padding-left: 6em; }
+    .wiki-content li.ql-indent-2:not(.ql-direction-rtl) { padding-left: 7.5em; }
+    .wiki-content .ql-indent-3:not(.ql-direction-rtl) { padding-left: 9em; }
+    .wiki-content li.ql-indent-3:not(.ql-direction-rtl) { padding-left: 10.5em; }
+    .wiki-content .ql-indent-4:not(.ql-direction-rtl) { padding-left: 12em; }
+    .wiki-content li.ql-indent-4:not(.ql-direction-rtl) { padding-left: 13.5em; }
+    .wiki-content .ql-indent-5:not(.ql-direction-rtl) { padding-left: 15em; }
+    .wiki-content li.ql-indent-5:not(.ql-direction-rtl) { padding-left: 16.5em; }
+    .wiki-content .ql-indent-6:not(.ql-direction-rtl) { padding-left: 18em; }
+    .wiki-content li.ql-indent-6:not(.ql-direction-rtl) { padding-left: 19.5em; }
+    .wiki-content .ql-indent-7:not(.ql-direction-rtl) { padding-left: 21em; }
+    .wiki-content li.ql-indent-7:not(.ql-direction-rtl) { padding-left: 22.5em; }
+    .wiki-content .ql-indent-8:not(.ql-direction-rtl) { padding-left: 24em; }
+    .wiki-content li.ql-indent-8:not(.ql-direction-rtl) { padding-left: 25.5em; }
+    .wiki-content .ql-indent-9:not(.ql-direction-rtl) { padding-left: 27em; }
+    .wiki-content li.ql-indent-9:not(.ql-direction-rtl) { padding-left: 28.5em; }
+
+    /* Font Sizes */
+    .wiki-content .ql-size-small { font-size: 0.75em; }
+    .wiki-content .ql-size-large { font-size: 1.5em; }
+    .wiki-content .ql-size-huge { font-size: 2.5em; }
+
+    /* Colors and Backgrounds */
+    .wiki-content .ql-color-white { color: #fff; }
+    .wiki-content .ql-color-red { color: #e60000; }
+    .wiki-content .ql-color-orange { color: #f90; }
+    .wiki-content .ql-color-yellow { color: #ff0; }
+    .wiki-content .ql-color-green { color: #008a00; }
+    .wiki-content .ql-color-blue { color: #06c; }
+    .wiki-content .ql-color-purple { color: #93f; }
+    
+    .wiki-content .ql-bg-black { background-color: #000; }
+    .wiki-content .ql-bg-red { background-color: #e60000; }
+    .wiki-content .ql-bg-orange { background-color: #f90; }
+    .wiki-content .ql-bg-yellow { background-color: #ff0; }
+    .wiki-content .ql-bg-green { background-color: #008a00; }
+    .wiki-content .ql-bg-blue { background-color: #06c; }
+    .wiki-content .ql-bg-purple { background-color: #93f; }
+
+    .wiki-content .ql-font-serif { font-family: Georgia, Times New Roman, serif; }
+    .wiki-content .ql-font-monospace { font-family: Monaco, Courier New, monospace; }
+    
+    .wiki-content .ql-video {
+        display: block;
+        max-width: 100%;
+        margin: 1rem 0;
+    }
+    .wiki-content .ql-video.ql-align-center { margin: 1rem auto; }
+
+    /* Card Blocks Styles */
+    .wiki-content .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -0.75rem;
+        margin-left: -0.75rem;
+    }
+
+    .wiki-content .row > [class*='col-'] {
+        padding-right: 0.75rem;
+        padding-left: 0.75rem;
+    }
+
+    .wiki-content .col-xl-3 {
+        flex: 0 0 calc(25% - 1.5rem);
+        width: calc(25% - 1.5rem);
+    }
+
+    .wiki-content .col-xl-4 {
+        flex: 0 0 calc(33.333333% - 1.5rem);
+        width: calc(33.333333% - 1.5rem);
+    }
+
+    .wiki-content .col-xl-6 {
+        flex: 0 0 calc(50% - 1.5rem);
+        width: calc(50% - 1.5rem);
+    }
+
+    .wiki-content .col-xl-12 {
+        flex: 0 0 calc(100% - 1.5rem);
+        width: calc(100% - 1.5rem);
+    }
+
+    .wiki-content .card {
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        height: 100%;
+    }
+
+    .wiki-content .card:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+    }
+
+    .wiki-content .card-header {
+        background-color: rgba(0, 0, 0, 0.02);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        padding: 1rem;
+    }
+
+    .wiki-content .card-header .card-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--primary-color, #007bff);
+    }
+
+    .wiki-content .card-body {
+        padding: 1.25rem;
+    }
+
+    .wiki-content .card.bg-light {
+        background-color: #f8f9fa !important;
+    }
+
+    /* Background color utilities for cards */
+    .bg-primary-light {
+        background-color: rgba(0, 123, 255, 0.1) !important;
+    }
+
+    .bg-success-light {
+        background-color: rgba(40, 167, 69, 0.1) !important;
+    }
+
+    .bg-warning-light {
+        background-color: rgba(255, 193, 7, 0.1) !important;
+    }
+
+    .bg-danger-light {
+        background-color: rgba(220, 53, 69, 0.1) !important;
+    }
+
+    .bg-info-light {
+        background-color: rgba(23, 162, 184, 0.1) !important;
+    }
+
+    /* Responsive card grid */
+    @media (max-width: 1199.98px) {
+        .wiki-content .col-xl-3 {
+            flex: 0 0 calc(50% - 1.5rem);
+            width: calc(50% - 1.5rem);
+        }
+
+        .wiki-content .col-xl-4 {
+            flex: 0 0 calc(50% - 1.5rem);
+            width: calc(50% - 1.5rem);
+        }
+
+        .wiki-content .col-xl-6 {
+            flex: 0 0 calc(100% - 1.5rem);
+            width: calc(100% - 1.5rem);
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .wiki-content .col-xl-3,
+        .wiki-content .col-xl-4,
+        .wiki-content .col-xl-6 {
+            flex: 0 0 calc(100% - 1.5rem);
+            width: calc(100% - 1.5rem);
+        }
+
+        .wiki-content .row {
+            margin-right: -0.5rem;
+            margin-left: -0.5rem;
+        }
+
+        .wiki-content .row > [class*='col-'] {
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .wiki-content .col-xl-3,
+        .wiki-content .col-xl-4,
+        .wiki-content .col-xl-6 {
+            flex: 0 0 calc(100% - 1rem);
+            width: calc(100% - 1rem);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Левая часть: Основной контент -->
+        <div class="col-12 col-lg-9 col-xl-9 order-2 order-lg-1">
+            
+            {% if categories is empty %}
+            <div class="card custom-card">
+                <div class="card-body text-center py-5">
+                    <div class="avatar avatar-xxl bg-primary-transparent mb-3">
+                        <i class="bi bi-info-circle text-primary fs-2"></i>
+                    </div>
+                    <h4>{{ phrase('server_description_no_data_title') }}</h4>
+                    <p class="text-muted">{{ phrase('server_description_no_data_desc') }}</p>
+                </div>
+            </div>
+            {% else %}
+                {% for category in categories %}
+                    {% for section in category.sections %}
+                    <div class="card custom-card overflow-hidden mb-4" id="section-{{ section.id }}">
+                        <div class="card-header border-bottom-0 bg-light">
+                            <div class="card-title">
+                                <div class="text-muted small mb-1">
+                                    <i class="bi bi-folder text-muted fs-18 me-1"></i>
+                                    {{ section.name }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body pt-3">
+                            <div class="section-item" id="section-content-{{ section.id }}">
+                                {% if section.featured_image %}
+                                <a href="{{ section.featured_image }}" data-lightbox="section-{{ section.id }}" data-title="{{ section.name }}">
+                                    <img src="{{ section.featured_image }}" alt="{{ section.name }}" class="section-featured-image">
+                                </a>
+                                {% endif %}
+                                <div class="wiki-content">
+                                    {{ section.description|raw }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+            
+        </div>
+
+        <!-- Правая часть: Навигация (Sticky Sidebar) -->
+        <div class="col-12 col-lg-3 col-xl-3 order-1 order-lg-2 mobile-offset">
+            <div class="card custom-card mb-lg-0">
+                <div class="card-header border-bottom">
+                    <div class="card-title">
+                        <i class="bi bi-list-ul me-2 text-primary"></i> {{ phrase('Navigation') }}
+                    </div>
+                </div>
+                <div class="card-body p-3">
+                    <div id="wiki-navigation">
+                        {% if categories is not empty %}
+                            {% for category in categories %}
+                            <div class="nav-category">
+                                <h6 class="fw-bold">
+                                    <span>{{ category.name }}</span>
+                                </h6>
+                                <div class="list-group list-group-flush">
+                                    {% for section in category.sections %}
+                                    <a href="#section-{{ section.id }}" class="list-group-item list-group-item-action section-nav-link py-2 px-3 d-flex align-items-center">
+                                        <i class="bi bi-dot me-2 text-muted fs-5"></i>
+                                        <span class="fw-normal text-truncate">{{ section.name }}</span>
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="p-4 text-center text-muted small">
+                                {{ phrase('No sections available') }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer bg-light border-top-0">
+                    <p class="small text-muted mb-0">
+                        <i class="bi bi-info-circle me-1"></i> {{ phrase('use_navigation_to_scroll') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Плавный скролл к якорям */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Смещение для фиксированной шапки, если она есть */
+:target::before {
+    content: "";
+    display: block;
+    height: 90px;
+    margin: -90px 0 0;
+}
+
+/* Responsive anchor offset: smaller header height on narrow screens */
+@media (max-width: 575.98px) {
+    :target::before {
+        height: 60px;
+        margin: -60px 0 0;
+    }
+}
+@media (min-width: 576px) and (max-width: 991.98px) {
+    :target::before {
+        height: 75px;
+        margin: -75px 0 0;
+    }
+}
+
+/* Navigation improvements */
+/* All category sections are visible by default */
+
+.mobile-offset {
+    position: sticky;
+    top: 80px;
+    align-self: start;
+    z-index: 1020;
+}
+
+@media (max-width: 575.98px) {
+    .mobile-offset {
+        position: static;
+        margin-top: 20px;
+    }
+    .mobile-offset .card {
+        position: static;
+        max-height: none;
+    }
+    .mobile-offset .card-body .list-group {
+        max-height: none;
+        overflow: visible;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+    .mobile-offset {
+        position: sticky;
+        top: 15px;
+        align-self: start;
+    }
+    .mobile-offset .card {
+        max-height: calc(100vh - 120px);
+    }
+    .mobile-offset .card-body .list-group {
+        max-height: calc(100vh - 200px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (min-width: 992px) {
+    .mobile-offset {
+        position: sticky;
+        top: 80px;
+        align-self: start;
+    }
+    .mobile-offset .card {
+        max-height: calc(100vh - 100px);
+    }
+    .mobile-offset .card-body .list-group {
+        max-height: calc(100vh - 160px);
+        overflow-y: auto;
+        padding-right: 8px;
+        -webkit-overflow-scrolling: touch;
+    }
+    .mobile-offset .card-body .list-group::-webkit-scrollbar {
+        width: 8px;
+    }
+    .mobile-offset .card-body .list-group::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.08);
+        border-radius: 6px;
+    }
+}
+
+/* Navigation improvements */
+/* All category sections are visible by default */
+#wiki-navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+#wiki-navigation .nav-category {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+#wiki-navigation .nav-category h6 {
+    border-left: 3px solid transparent;
+    padding-left: 12px !important;
+}
+
+#wiki-navigation .list-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+#wiki-navigation .section-nav-link {
+    border-left: 3px solid transparent;
+    padding-left: 12px !important;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+#wiki-navigation .section-nav-link:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+#wiki-navigation .section-nav-link.active {
+    border-left-color: currentColor;
+    font-weight: 600;
+}
+</style>
+
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+<script>
+window.addEventListener('load', function() {
+    // Очистка пустых <p> и <p><br></p> тегов из содержимого wiki
+    document.querySelectorAll('.wiki-content').forEach(content => {
+        let html = content.innerHTML;
+        
+        // Удаляем пустые <p></p> теги
+        html = html.replace(/<p>\s*<\/p>/gi, '');
+        // Удаляем <p><br></p> и похожие конструкции
+        html = html.replace(/<p>\s*<br\s*\/?>\s*<\/p>/gi, '');
+        // Удаляем множественные пустые теги подряд
+        while (html.match(/<p>\s*<\/p>/gi)) {
+            html = html.replace(/<p>\s*<\/p>/gi, '');
+        }
+        
+        content.innerHTML = html;
+    });
+
+    // Применение сохранённых размеров изображений и обёртывание их в лайтбокс
+    document.querySelectorAll('.wiki-content img').forEach(img => {
+        // Применить сохранённые размеры если они есть
+        if (img.dataset.width) {
+            img.style.width = img.dataset.width + 'px';
+        }
+        if (img.dataset.height) {
+            img.style.height = img.dataset.height + 'px';
+        }
+
+        // Если изображение не обёрнуто в ссылку, обернуть его для лайтбокса
+        if (img.parentElement.tagName !== 'A') {
+            const link = document.createElement('a');
+            link.href = img.src;
+            link.setAttribute('data-lightbox', 'content-images');
+            link.setAttribute('data-title', img.alt || img.title || '');
+            
+            // Поменять местами img и ссылку в DOM
+            img.parentElement.insertBefore(link, img);
+            link.appendChild(img);
+        }
+    });
+
+    // Инициализация тултипов для Wiki
+    if (typeof tippy !== 'undefined') {
+        tippy('.wiki-tooltip', {
+            content(reference) {
+                return reference.getAttribute('data-tippy-content');
+            },
+            arrow: true,
+            interactive: true,
+        });
+    }
+
+    // Инициализация спойлеров и табов
+    document.querySelectorAll('.wiki-content').forEach(content => {
+        content.addEventListener('click', function(e) {
+            const title = e.target.closest('.spoiler-title');
+            if (title) {
+                title.classList.toggle('active');
+                const body = title.nextElementSibling;
+                if (body && body.classList.contains('spoiler-content')) {
+                    body.style.display = body.style.display === 'block' ? 'none' : 'block';
+                }
+            }
+
+            const tabLink = e.target.closest('.wiki-tab-link');
+            if (tabLink) {
+                e.preventDefault();
+                const container = tabLink.closest('.wiki-tabs-container');
+                const targetId = tabLink.getAttribute('data-target');
+                
+                container.querySelectorAll('.wiki-tab-link').forEach(l => l.classList.remove('active'));
+                tabLink.classList.add('active');
+                
+                container.querySelectorAll('.wiki-tab-pane').forEach(p => p.style.display = 'none');
+                const targetPane = container.querySelector('#' + targetId);
+                if (targetPane) targetPane.style.display = 'block';
+            }
+
+            // Обработка клика на изображения в контенте для открытия лайтбокса
+            const img = e.target.closest('img');
+            if (img && img.parentElement.tagName !== 'A') {
+                // Если изображение не обёрнуто в ссылку, открываем лайтбокс программно
+                const src = img.src;
+                const title = img.alt || img.title || '';
+                const sectionId = content.closest('.section-item').id;
+                
+                // Создаём временную ссылку и открываем лайтбокс
+                const link = document.createElement('a');
+                link.href = src;
+                link.setAttribute('data-lightbox', sectionId);
+                link.setAttribute('data-title', title);
+                document.body.appendChild(link);
+                
+                // Имитируем клик на ссылку для открытия лайтбокса
+                setTimeout(() => {
+                    link.click();
+                    document.body.removeChild(link);
+                }, 0);
+            }
+        });
+    });
+
+    // Переинициализируем lightbox после загрузки контента
+    if (typeof lightbox !== 'undefined') {
+        lightbox.option({
+            'resizeDuration': 200,
+            'wrapAround': true,
+            'alwaysShowNavOnTouchDevices': true,
+            'showImageNumberLabel': false,
+            'disableScrolling': false,
+        });
+    }
+
+    // --- Navigation: smooth scroll and active link highlighting ---
+    const sections = document.querySelectorAll('[id^="section-"]:not([id*="content"])');
+    const navLinks = document.querySelectorAll('.section-nav-link');
+
+    // Update active navigation link when scrolling
+    function updateActiveNav() {
+        let current = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            
+            if (window.pageYOffset >= (sectionTop - 100)) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            const href = link.getAttribute('href');
+            if (href === '#' + current) {
+                link.classList.add('active');
+                
+                // Scroll navigation into view if needed
+                const nav = document.getElementById('wiki-navigation');
+                if (nav && window.innerWidth >= 992) {
+                    link.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        });
+    }
+
+    // Update on scroll
+    window.addEventListener('scroll', updateActiveNav, { passive: true });
+    
+    // Initial update
+    updateActiveNav();
+
+    // Update on clicks to section links
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            setTimeout(updateActiveNav, 100);
+        });
+    });
+
+    // Initialize Tippy for item and skill references
+    if (typeof tippy !== 'undefined') {
+        tippy('[data-tippy-content]', {
+            content(reference) {
+                return reference.getAttribute('data-tippy-content');
+            },
+            allowHTML: true,
+            theme: 'light',
+            duration: [200, 150],
+            onCreate: (instance) => {
+                instance.popper.style.maxWidth = '350px';
+            }
+        });
+    }
+    });
+</script>
+
+<style>
+/* Стили для item и skill references */
+.item-reference, .skill-reference {
+    vertical-align: middle;
+}
+
+/* Tooltip стили */
+.tippy-box[data-theme~='light'] {
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 13px;
+}
+ 
+/* Item tooltip content */
+.item-tooltip {
+    padding: 0;
+}
+
+.item-tooltip > div,
+.skill-tooltip > div {
+    line-height: 1.4;
+}
+
+/* Стили для кастомных компонентов Wiki */
+.wiki-content .spoiler-container {
+    border: 1px solid rgba(var(--primary-rgb), 0.1);
+    border-radius: 6px;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+.wiki-content .spoiler-title {
+    background: rgba(var(--primary-rgb), 0.03);
+    padding: 12px 16px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+.wiki-content .spoiler-title:hover {
+    background: rgba(var(--primary-rgb), 0.06);
+}
+.wiki-content .spoiler-title::after {
+    content: '\F282';
+    font-family: 'bootstrap-icons';
+    font-size: 12px;
+    transition: transform 0.2s;
+}
+.wiki-content .spoiler-title.active::after {
+    transform: rotate(180deg);
+}
+.wiki-content .spoiler-content {
+    display: none;
+    padding: 16px;
+    border-top: 1px solid rgba(var(--primary-rgb), 0.05);
+}
+
+.wiki-content .wiki-tabs-container {
+    margin-bottom: 20px;
+    border: 1px solid #eeeeee17;
+    border-radius: 8px;
+    padding: 15px;
+}
+.wiki-content .wiki-tabs-nav {
+    display: flex;
+    border-bottom: 2px solid #eeeeee17;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+.wiki-content .wiki-tab-link {
+    padding: 8px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    color: #666;
+    transition: all 0.2s;
+}
+.wiki-content .wiki-tab-link.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    font-weight: 600;
+}
+.wiki-content .wiki-tab-pane {
+    display: none;
+}
+.wiki-content .wiki-tab-pane.active {
+    display: block;
+}
+</style>
+{% endblock %}

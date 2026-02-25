@@ -271,6 +271,16 @@ class other
             'reuseCodeAfterSeconds' => $this->reuseCodeAfterSeconds,
             'contactAdmin' => trim($this->contactAdmin),
             'balanceNotice' => trim($this->balanceNotice),
+            'autoUpdate' => $this->autoUpdate,
+            'oauth' => $this->oauth,
+            'isShow404error' => $this->isShow404error,
+            'isAllowDeleteAccount' => $this->isAllowDeleteAccount,
+            'analyticsHead' => $this->analyticsHead,
+            'analyticsBody' => $this->analyticsBody,
+            'linkPrivacyPolicy' => $this->linkPrivacyPolicy,
+            'linkUserAgreement' => $this->linkUserAgreement,
+            'linkServerRules' => $this->linkServerRules,
+            'linkLogo' => $this->linkLogo,
         ]);
 
         sql::sql("DELETE FROM `settings` WHERE `key` = ? AND serverId = ? ", [

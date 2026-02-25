@@ -12,4 +12,6 @@ return [
     "PLUGIN_ICON" => "bi bi-credit-card",
     "PLUGIN_LINK" => "/donate/betatransfer",
     "PLUGIN_COST" => 0,
+    "PLUGIN_CATEGORY" => "paysystem",
+    "PLUGIN_USER_PANEL_SHOW" => ["DONATE_MENU"],
 ];

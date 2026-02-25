@@ -116,6 +116,16 @@ class config
         return null;
     }
 
+    public function hasGlobalDonateConfig(): bool
+    {
+        foreach (self::$settings ?? [] as $config) {
+            if (($config['key'] ?? '') === '__config_donate__' && isset($config['serverId']) && (int)$config['serverId'] === 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Загрузка конфигов
      */

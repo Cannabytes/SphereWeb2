@@ -43,12 +43,13 @@ class AntiFlood {
         );
 
         if (!$activity) {
-            // Если записи нет - создаем новую
+            // Если записи нет - создаем новую с текущим Unix timestamp
+            $currentTime = time();
             sql::run(
                 "INSERT INTO forum_user_activity 
              (user_id, activity_type, last_action_time, actions_count, cooldown_until) 
-             VALUES (?, ?, NOW(), 0, NULL)",
-                [$this->userId, $this->activityType]
+             VALUES (?, ?, ?, 0, NULL)",
+                [$this->userId, $this->activityType, $currentTime]
             );
 
             // Загружаем только что созданную запись
@@ -141,9 +142,10 @@ class AntiFlood {
 
         // Проверяем блокировку
         if (!empty($this->activity['cooldown_until'])) {
-            $cooldownTime = strtotime($this->activity['cooldown_until']);
-            if ($cooldownTime > time()) {
-                $remainingTime = ceil(($cooldownTime - time()) / 60);
+            $cooldownTime = (int)$this->activity['cooldown_until'];
+            $currentTime = time();
+            if ($cooldownTime > $currentTime) {
+                $remainingTime = ceil(($cooldownTime - $currentTime) / 60);
                 throw new Exception("Вы временно не можете создавать {$settings['name']}. Осталось {$remainingTime} минут.");
             }
         }
@@ -165,13 +167,9 @@ class AntiFlood {
                 return;
             }
 
-            $lastActionTime = strtotime($this->activity['last_action_time']);
+            $lastActionTime = (int)$this->activity['last_action_time'];
             $timePassed = time() - $lastActionTime;
-            // На некоторых серверах время БД/PHP может отличаться — не допускаем отрицательного
-            // значения elapsed, иначе блокировка срабатывает некорректно.
-            if ($timePassed < 0) {
-                $timePassed = 0;
-            }
+            
             if ($timePassed < $settings['min_interval']) {
                 $timeToWait = $settings['min_interval'] - $timePassed;
                 throw new Exception("Пожалуйста, подождите {$timeToWait} секунд перед созданием новой темы.");
@@ -204,13 +202,15 @@ class AntiFlood {
     }
 
     private function clearExpiredCooldowns(): void {
-        // Очищаем все устаревшие блокировки
+        // Очищаем все устаревшие блокировки (сравниваем Unix timestamp)
+        $currentTime = time();
         sql::run(
             "UPDATE forum_user_activity 
          SET cooldown_until = NULL,
              actions_count = 0
          WHERE cooldown_until IS NOT NULL 
-         AND cooldown_until < NOW()"
+         AND cooldown_until < ?",
+            [$currentTime]
         );
     }
 
@@ -222,8 +222,8 @@ class AntiFlood {
         // Прогрессивное увеличение времени блокировки
         $cooldownTime = $settings['cooldown'] * pow(2, $violations);
 
-        // Явно указываем время блокировки
-        $cooldownUntil = date('Y-m-d H:i:s', time() + $cooldownTime);
+        // Сохраняем Unix timestamp (время сервера)
+        $cooldownUntil = time() + $cooldownTime;
 
         sql::run(
             "UPDATE forum_user_activity 
@@ -251,12 +251,13 @@ class AntiFlood {
     }
 
     public function updateActivity(): void {
+        $currentTime = time();
         sql::run(
             "UPDATE forum_user_activity 
-            SET last_action_time = NOW(), 
+            SET last_action_time = ?, 
                 actions_count = actions_count + 1 
             WHERE user_id = ? AND activity_type = ?",
-            [$this->userId, $this->activityType]
+            [$currentTime, $this->userId, $this->activityType]
         );
     }
 

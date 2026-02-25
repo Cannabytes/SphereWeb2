@@ -1,0 +1,31 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-xl-7 col-lg-8">
+      <div class="card custom-card">
+        <div class="card-body text-center p-5">
+          <div class="avatar avatar-xl avatar-rounded bg-{{ statusType }}-transparent mb-3">
+            {% if statusType == 'success' %}
+            <i class="bi bi-check-circle fs-30 text-success"></i>
+            {% elseif statusType == 'danger' %}
+            <i class="bi bi-x-circle fs-30 text-danger"></i>
+            {% else %}
+            <i class="bi bi-clock-history fs-30 text-info"></i>
+            {% endif %}
+          </div>
+
+          <h4 class="fw-semibold mb-2">{{ statusTitle }}</h4>
+          <p class="text-muted mb-4">{{ statusText }}</p>
+
+          <div class="d-flex justify-content-center gap-2">
+            <a href="/donate" class="btn btn-primary">К донату</a>
+            <a href="/main" class="btn btn-outline-secondary">На главную</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

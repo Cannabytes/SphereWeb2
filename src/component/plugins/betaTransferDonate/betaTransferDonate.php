@@ -4,6 +4,7 @@ namespace betaTransferDonate;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\controller\admin\telegram;
@@ -38,6 +39,28 @@ class betaTransferDonate
         return $this->nameClass;
     }
 
+    private function sanitizeSupportedCountries(mixed $countries): array
+    {
+        if (!is_array($countries)) {
+            return ['world'];
+        }
+
+        $normalized = [];
+        foreach ($countries as $country) {
+            if (!is_string($country)) {
+                continue;
+            }
+            $code = strtolower(trim($country));
+            if ($code === '' || !preg_match('/^[a-z0-9-]+$/', $code)) {
+                continue;
+            }
+            $normalized[] = $code;
+        }
+
+        $normalized = array_values(array_unique($normalized));
+        return empty($normalized) ? ['world'] : $normalized;
+    }
+
     /**
      * Админ панель настроек
      */
@@ -46,6 +69,7 @@ class betaTransferDonate
         validation::user_protection("admin");
         
         $settings = plugin::getSetting($this->getNameClass());
+        $settings['supported_countries'] = $this->sanitizeSupportedCountries($settings['supported_countries'] ?? ['world']);
         
         tpl::addVar([
             'settings' => $settings,
@@ -65,6 +89,7 @@ class betaTransferDonate
         $publicKey = $_POST['public_api_key'] ?? '';
         $secretKey = $_POST['secret_api_key'] ?? '';
         $description = $_POST['description'] ?? '';
+        $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? []);
         
         // Payment methods configuration — accept dynamic payment[] from admin UI
         $paymentMethods = [];
@@ -103,11 +128,12 @@ class betaTransferDonate
             'public_api_key' => $publicKey,
             'secret_api_key' => $secretKey,
             'description' => $description,
+            'supported_countries' => $supportedCountries,
             'payment_methods' => $paymentMethods,
         ];
 
         // Сохраняем настройки через стандартную систему плагинов
-        $serverId = user::self()->getServerId() ?? 0;
+        $serverId = 0;
         
         \Ofey\Logan22\model\db\sql::run(
             "DELETE FROM `settings` WHERE `key` = ? AND `serverId` = ?",
@@ -130,10 +156,10 @@ class betaTransferDonate
     /**
      * Пользовательская страница выбора способа оплаты
      */
-    public function show(): void
+    public function show($count = null): void
     {
         if (!user::self()->isAuth()) {
-            board::notice(false, lang::get_phrase(234));
+           redirect::location("/login");
         }
 
         $settings = plugin::getSetting($this->getNameClass());
@@ -175,6 +201,7 @@ class betaTransferDonate
         tpl::addVar([
             'paymentMethods' => $paymentMethods,
             'settings' => $settings,
+            'count' => $count,
         ]);
 
         tpl::addVar([
@@ -362,7 +389,7 @@ class betaTransferDonate
             );
 
             donate::addUserBonus($userId, $sphereCoins);
-            self::telegramNotice(user::getUserId($userId), (float)($_POST['amount'] ?? 0), $currency, $amount, get_called_class());
+            self::telegramNotice(user::getUserId($userId), (float)($amount ?? 0), $currency, $sphereCoins, get_called_class());
 
             die('OK');
         }

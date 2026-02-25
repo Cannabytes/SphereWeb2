@@ -10,6 +10,7 @@ namespace Ofey\Logan22\model\referral;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\db\sql;
+use Ofey\Logan22\model\log\logTypes;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\model\user\userModel;
 
@@ -42,6 +43,8 @@ class referral
         foreach ($ref_users as $ref) {
             $user    = user::getUserId($ref['user_id']);
             $is_requirements = false;
+            $qualifying_character = null;
+            $qualifying_account = null;
             $accountCharacters = $user->getAccounts();
             foreach ($accountCharacters as $characters) {
                  foreach ($characters->getCharacters() as $character) {
@@ -65,6 +68,8 @@ class referral
 
                     if($is_requirements_level && $is_requirements_pvp && $is_requirements_pk && $is_requirements_time) {
                         $is_requirements = true;
+                        $qualifying_character = $character;
+                        $qualifying_account = $characters;
                         break;
                     }
                 }
@@ -82,6 +87,9 @@ class referral
                 'accounts' => $user->getAccounts(),
                 'done' => $ref['done'],
                 'join_date' => $ref['join_date'],
+                'referral_id' => $ref['id'],
+                'qualifying_character' => $qualifying_character,
+                'qualifying_account' => $qualifying_account,
             ];
             $users[] = $data;
         }
@@ -104,6 +112,77 @@ class referral
     public static function done($user_id, $leader_id): \PDOException|false|\Exception|\PDOStatement|null
     {
        return sql::run("UPDATE `referrals` SET `done` = 1, `done_date` = ? WHERE `user_id` = ? AND `leader_id` = ?", [time::mysql(), $user_id, $leader_id]);
+    }
+
+    /**
+     * Check if a character has already earned a referral bonus
+     * Identifies character by name and server_id combination
+     * 
+     * @param string $characterName - Name of the character
+     * @param int $serverId - Server ID where character exists
+     * @return bool - True if character has already earned bonus, false otherwise
+     */
+    public static function hasCharacterEarnedBonus(string $characterName, int $serverId): bool
+    {
+        $query = "SELECT `id` FROM `logs_all` 
+                  WHERE `type` = ? AND `variables` LIKE ?
+                  LIMIT 1";
+        
+        $searchPattern = '%"character_name":"' . $characterName . '"%"server_id":' . $serverId . '%';
+        $result = sql::getRow($query, [logTypes::LOG_REFERRAL_CHARACTER_BONUS_AWARDED->value, $searchPattern]);
+        
+        return !empty($result);
+    }
+
+    /**
+     * Log a successful character bonus award
+     * 
+     * @param userModel $leader - The referrer (leader) user object
+     * @param userModel $slave - The referred (slave) user object  
+     * @param string $characterName - Name of the character that earned the bonus
+     * @param int $serverId - Server ID where character exists
+     * @param float $bonusAmount - Amount of donate coins awarded
+     * @param int $referralId - ID of the referral record
+     */
+    public static function logCharacterBonusAwarded(userModel $leader, userModel $slave, string $characterName, int $serverId, float $bonusAmount, int $referralId): void
+    {
+        $variables = [
+            'character_name' => $characterName,
+            'server_id' => $serverId,
+            'account_name' => $slave->getName(),
+            'slave_user_id' => $slave->getId(),
+            'leader_user_id' => $leader->getId(),
+            'leader_name' => $leader->getName(),
+            'bonus_amount' => $bonusAmount,
+            'referral_id' => $referralId
+        ];
+        
+        $leader->addLog(logTypes::LOG_REFERRAL_CHARACTER_BONUS_AWARDED, 'referral_character_bonus_awarded', $variables);
+    }
+
+    /**
+     * Log a rejected character bonus (already earned)
+     * 
+     * @param userModel $leader - The referrer (leader) user object
+     * @param userModel $slave - The referred (slave) user object
+     * @param string $characterName - Name of the character attempting bonus
+     * @param int $serverId - Server ID where character exists
+     * @param int $referralId - ID of the referral record
+     */
+    public static function logCharacterBonusRejected(userModel $leader, userModel $slave, string $characterName, int $serverId, int $referralId): void
+    {
+        $variables = [
+            'character_name' => $characterName,
+            'server_id' => $serverId,
+            'account_name' => $slave->getName(),
+            'slave_user_id' => $slave->getId(),
+            'leader_user_id' => $leader->getId(),
+            'leader_name' => $leader->getName(),
+            'reason' => 'character_already_earned_bonus',
+            'referral_id' => $referralId
+        ];
+        
+        $leader->addLog(logTypes::LOG_REFERRAL_CHARACTER_BONUS_REJECTED, 'referral_character_bonus_rejected', $variables);
     }
 
 }

@@ -1,0 +1,286 @@
+﻿{% extends 'struct.html' %}
+
+{% block title %}{{ phrase('Server Description Wiki') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mt-3">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="card-title">
+                        {{ phrase('Server Description Wiki') }}
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-success" id="add-category-btn">
+                            <i class="fe fe-plus"></i> {{ phrase('Add Category') }}
+                        </button>
+                        <a href="/admin/plugin/server_description/add" class="btn btn-primary" id="add-section-btn">
+                            <i class="fe fe-plus"></i> {{ phrase('Add Section') }}
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if categories is empty %}
+                    <div class="alert alert-warning m-3">
+                        <i class="fe fe-alert-triangle me-2"></i>
+                        {{ phrase('No categories available. Create your first one!') }}
+                    </div>
+                    {% else %}
+                    <div id="categories-container">
+                        {% for category in categories %}
+                        <div class="category-item border-bottom" data-category-id="{{ category.id }}">
+                            <div class="p-3 bg-light d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center flex-grow-1">
+                                    <div class="me-3">
+                                        <i class="fe fe-folder text-primary fs-20"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-semibold">{{ category.name }}</h6>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-light move-category-btn" data-dir="up" title="{{ phrase('Move up') }}">
+                                        <i class="fe fe-arrow-up"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-light move-category-btn" data-dir="down" title="{{ phrase('Move down') }}">
+                                        <i class="fe fe-arrow-down"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary edit-category-btn" title="{{ phrase('Edit Category') }}">
+                                        <i class="fe fe-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger delete-category-btn" title="{{ phrase('Delete Category') }}">
+                                        <i class="fe fe-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr class="bg-light">
+                                            <th style="width: 50px;">#</th>
+                                            <th>{{ phrase('Section Name') }}</th>
+                                            <th class="text-center">{{ phrase('Actions') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="sections-list" data-category-id="{{ category.id }}">
+                                        {% set categoryId = category.id %}
+                                        {% set categorySections = sections|filter(s => (s.category_id ?? 0) == categoryId) %}
+                                        {% if categorySections is empty %}
+                                        <tr>
+                                            <td colspan="3" class="text-center p-3 text-muted">
+                                                {{ phrase('No sections in this category') }}
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                            {% for section in categorySections %}
+                                            <tr data-section-id="{{ section.id }}">
+                                                <td>{{ loop.index }}</td>
+                                                <td>
+                                                    <h6 class="mb-0 fw-semibold">{{ section.name }}</h6>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex justify-content-center gap-2">
+                                                        <a href="/admin/plugin/server_description/edit/{{ section.id }}" class="btn btn-sm btn-primary">
+                                                            <i class="fe fe-edit"></i> {{ phrase('Edit') }}
+                                                        </a>
+                                                        <button class="btn btn-sm btn-danger-light delete-section-btn" data-id="{{ section.id }}" data-category-id="{{ category.id }}">
+                                                            <i class="fe fe-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal для добавления категории -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ phrase('Add Category') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ phrase('Close') }}"></button>
+            </div>
+            <div class="modal-body">
+                <div id="category-names-container">
+                    <!-- Загружается через JS -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase('Close') }}</button>
+                <button type="button" class="btn btn-primary" id="save-category-btn">{{ phrase('Add Category') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal для редактирования категории -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ phrase('Edit Category') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ phrase('Close') }}"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-category-id">
+                <div id="edit-category-names-container">
+                    <!-- Загружается через JS -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase('Close') }}</button>
+                <button type="button" class="btn btn-primary" id="update-category-btn">{{ phrase('Save Changes') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function() {
+    const categories = JSON.parse('{{ categories|json_encode(JSON_UNESCAPED_SLASHES)|e("js") }}');
+    const languages = {{ languages|json_encode|raw }};
+    
+    // Функция для отображения форм добавления категории
+    function showAddCategoryForm() {
+        $('#category-names-container').empty();
+        languages.forEach(lang => {
+            const html = `
+                <div class="mb-3">
+                    <label class="form-label">{{ phrase('Category Name') }} (${lang.toUpperCase()})</label>
+                    <input type="text" class="form-control category-name-input" data-lang="${lang}" placeholder="Enter name...">
+                </div>
+            `;
+            $('#category-names-container').append(html);
+        });
+    }
+
+    // Обработчик добавления категории
+    $('#add-category-btn').on('click', function() {
+        showAddCategoryForm();
+        const modal = new bootstrap.Modal(document.getElementById('addCategoryModal'));
+        modal.show();
+    });
+
+    // Обработчик добавления раздела
+    $('#add-section-btn').on('click', function(e) {
+        if (categories.length === 0) {
+            e.preventDefault();
+            toastr.error('{{ phrase("Add Category first") }}');
+            return;
+        }
+    });
+
+    // Удаление раздела
+    $(document).on('click', '.delete-section-btn', function() {
+        if (!confirm('{{ phrase("Are you sure?") }}')) return;
+        const sectionId = $(this).data('id');
+        AjaxSend('/admin/plugin/server_description/delete', 'POST', { sectionId: sectionId }, true).then(res => {
+            location.reload();
+        });
+    });
+
+    // Удаление категории
+    $(document).on('click', '.delete-category-btn', function() {
+        if (!confirm('{{ phrase("Are you sure? All sections in this category will be deleted!") }}')) return;
+        const categoryId = $(this).closest('.category-item').data('category-id');
+        AjaxSend('/admin/plugin/server_description/category/delete', 'POST', { categoryId: categoryId }, true).then(res => {
+            location.reload();
+        });
+    });
+
+    // Редактирование категории
+    $(document).on('click', '.edit-category-btn', function() {
+        const categoryId = $(this).closest('.category-item').data('category-id');
+        const category = categories.find(c => c.id == categoryId);
+        
+        $('#edit-category-id').val(categoryId);
+        $('#edit-category-names-container').empty();
+        
+        if (category && category.lang_name) {
+            languages.forEach(lang => {
+                const html = `
+                    <div class="mb-3">
+                        <label class="form-label">{{ phrase('Category Name') }} (${lang.toUpperCase()})</label>
+                        <input type="text" class="form-control category-name-input" data-lang="${lang}" value="${category.lang_name[lang] || ''}">
+                    </div>
+                `;
+                $('#edit-category-names-container').append(html);
+            });
+        }
+        
+        const modal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
+        modal.show();
+    });
+
+    // Сохранение изменений категории
+    $('#update-category-btn').on('click', function() {
+        const categoryId = $('#edit-category-id').val();
+        const names = {};
+        
+        $('#edit-category-names-container .category-name-input').each(function() {
+            const lang = $(this).data('lang');
+            const val = $(this).val().trim();
+            if (val) {
+                names[lang] = val;
+            }
+        });
+
+        if (Object.keys(names).length === 0) {
+            toastr.error('{{ phrase("Please enter at least one category name") }}');
+            return;
+        }
+
+        AjaxSend('/admin/plugin/server_description/category/edit', 'POST', { categoryId: categoryId, names: names }, true).then(res => {
+            location.reload();
+        });
+    });
+
+    // Сохранение новой категории
+    $('#save-category-btn').on('click', function() {
+        const names = {};
+        
+        $('#category-names-container .category-name-input').each(function() {
+            const lang = $(this).data('lang');
+            const val = $(this).val().trim();
+            if (val) {
+                names[lang] = val;
+            }
+        });
+
+        if (Object.keys(names).length === 0) {
+            toastr.error('{{ phrase("Please enter at least one category name") }}');
+            return;
+        }
+
+        AjaxSend('/admin/plugin/server_description/category/add', 'POST', { names: names }, true).then(res => {
+            location.reload();
+        });
+    });
+
+    // Перемещение категории
+    $(document).on('click', '.move-category-btn', function() {
+        const categoryId = $(this).closest('.category-item').data('category-id');
+        const direction = $(this).data('dir');
+        AjaxSend('/admin/plugin/server_description/category/move', 'POST', { id: categoryId, direction: direction }, true).then(res => {
+            location.reload();
+        });
+    });
+});
+</script>
+{% endblock %}

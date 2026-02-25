@@ -13,6 +13,14 @@ $routes = [
     ],
     [
         "method"  => "GET",
+        "pattern" => "/donate/betatransfer/(\d+)",
+        "file"    => "betaTransferDonate.php",
+        "call"    => function($count = null) {
+            (new betaTransferDonate())->show($count);
+        },
+    ],
+    [
+        "method"  => "GET",
         "pattern" => "/admin/plugin/betatransfer/donate",
         "file"    => "betaTransferDonate.php",
         "call"    => function() {

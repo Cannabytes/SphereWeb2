@@ -194,6 +194,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 <style>
 .letter-spacing-3 {
@@ -205,6 +206,329 @@
   padding: 10px;
   background: #fff;
 }
+
+/* ========== Галерея персонажей для модального окна sendToPlayer ========== */
+.characters-gallery {
+  display: flex;
+  flex-direction: row;
+  gap: 0.65rem;
+}
+
+.account-section {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.account-section:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+.account-title {
+  margin-bottom: 0.45rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.account-title strong {
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.characters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-start;
+}
+
+.character-card {
+  position: relative;
+  cursor: pointer;
+  width: 70px;
+  text-align: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.character-card:hover {
+  transform: translateY(-2px);
+}
+
+.character-avatar-wrapper {
+  position: relative;
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+  border: 1.5px solid rgba(255, 215, 0, 0.2);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  margin-bottom: 0.35rem;
+  outline: 2px solid transparent;
+  outline-offset: 0;
+}
+
+.character-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: all 0.3s ease;
+}
+
+.character-card:hover .character-avatar {
+  transform: scale(1.05);
+  filter: brightness(1.15);
+}
+
+.character-card.selected:hover .character-avatar {
+  transform: scale(1.08);
+  filter: brightness(1.35);
+}
+
+/* Индикатор выбора - галочка */
+.character-selection-indicator {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 26px;
+  height: 26px;
+  background: rgba(255, 215, 0, 0);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 215, 0, 0);
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.character-selection-indicator i {
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+  filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.8));
+}
+
+/* Состояние SELECTED */
+.character-card.selected .character-avatar-wrapper {
+  border-color: rgba(255, 215, 0, 0.95);
+  box-shadow: 
+    0 0 35px rgba(255, 215, 0, 0.9),
+    0 0 60px rgba(255, 215, 0, 0.5),
+    inset 0 0 25px rgba(255, 215, 0, 0.2);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.4) 0%, rgba(255, 215, 0, 0.2) 100%);
+  animation: characterPulse 0.5s ease-out, glowPulse 2s ease-in-out infinite 0.5s;
+  outline: 2px solid rgba(255, 215, 0, 0.6);
+  outline-offset: 3px;
+}
+
+.character-card.selected .character-avatar {
+  filter: brightness(1.3) drop-shadow(0 0 12px rgba(255, 215, 0, 0.6));
+  animation: characterAvatarPulse 0.4s ease-out;
+}
+
+.character-card.selected .character-selection-indicator {
+  background: rgba(255, 215, 0, 0.95);
+  color: rgba(0, 0, 0, 0.98);
+  box-shadow: 0 0 25px rgba(255, 215, 0, 1);
+  animation: indicatorPulse 0.5s ease-out, indicatorGlow 2s ease-in-out infinite 0.5s;
+}
+
+.character-info {
+  padding: 0.15rem 0.3rem;
+}
+
+.character-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.15rem;
+  line-height: 1;
+}
+
+.character-level {
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* Анимация пульса при выборе персонажа */
+@keyframes characterPulse {
+  from {
+    transform: scale(0.95);
+    box-shadow: 
+      0 0 15px rgba(255, 215, 0, 0.4),
+      0 0 30px rgba(255, 215, 0, 0.2),
+      inset 0 0 15px rgba(255, 215, 0, 0.05);
+  }
+  to {
+    transform: scale(1);
+    box-shadow: 
+      0 0 35px rgba(255, 215, 0, 0.9),
+      0 0 60px rgba(255, 215, 0, 0.5),
+      inset 0 0 25px rgba(255, 215, 0, 0.2);
+  }
+}
+
+/* Постоянное мерцающее свечение после выбора */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 35px rgba(255, 215, 0, 0.9),
+      0 0 60px rgba(255, 215, 0, 0.5),
+      inset 0 0 25px rgba(255, 215, 0, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 0 45px rgba(255, 215, 0, 1),
+      0 0 75px rgba(255, 215, 0, 0.7),
+      inset 0 0 30px rgba(255, 215, 0, 0.3);
+  }
+}
+
+@keyframes characterAvatarPulse {
+  from {
+    filter: brightness(1.1) drop-shadow(0 0 6px rgba(255, 215, 0, 0.3));
+  }
+  to {
+    filter: brightness(1.3) drop-shadow(0 0 12px rgba(255, 215, 0, 0.6));
+  }
+}
+
+@keyframes indicatorPulse {
+  from {
+    transform: scale(0.7) rotate(-15deg);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+  }
+  to {
+    transform: scale(1) rotate(0);
+    box-shadow: 0 0 25px rgba(255, 215, 0, 1);
+  }
+}
+
+/* Постоянное мерцание галочки */
+@keyframes indicatorGlow {
+  0%, 100% {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255, 215, 0, 1.3), inset 0 0 8px rgba(255, 215, 0, 0.5);
+  }
+}
+
+/* Анимация появления */
+@keyframes charCardAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.character-card {
+  animation: charCardAppear 0.4s ease-out forwards;
+}
+
+.character-card:nth-child(1) { animation-delay: 0.05s; }
+.character-card:nth-child(2) { animation-delay: 0.1s; }
+.character-card:nth-child(3) { animation-delay: 0.15s; }
+.character-card:nth-child(4) { animation-delay: 0.2s; }
+.character-card:nth-child(5) { animation-delay: 0.25s; }
+.character-card:nth-child(n+6) { animation-delay: 0.3s; }
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .account-section {
+    padding: 1rem;
+  }
+
+  .character-card {
+    width: 68px;
+  }
+
+  .character-selection-indicator {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+
+  .character-name {
+    font-size: 0.8rem;
+  }
+
+  .character-level {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .characters-row {
+    gap: 0.75rem;
+    justify-content: space-around;
+  }
+
+  .character-card {
+    width: 62px;
+  }
+}
+/* ========== Конец стилей для галереи персонажей ========== */
+
+/* ========== Стили для модального окна sendToPlayer ========== */
+#sendToPlayer .modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+#sendToPlayer .modal-body .row {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#sendToPlayer .col-12 {
+  width: 100%;
+}
+
+#sendToPlayer .form-label {
+  display: inline-block;
+}
+
+/* Убедимся что галерея видна при одном персонаже */
+#sendToPlayer .characters-gallery {
+  display: flex;
+  flex-direction: row;
+  gap: 0.65rem;
+  width: 100%;
+  min-height: auto;
+}
+
+#sendToPlayer .account-section {
+  display: block;
+}
+
+#sendToPlayer .characters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+#sendToPlayer .character-card {
+  flex: 0 0 auto;
+}
+/* ========== Конец стилей для модального окна ========== */
+
 </style>
 
 <script>
@@ -393,7 +717,6 @@ function showToast(type, message) {
   }
 }
 </script>
-{% endif %}
 
 {# Отправка коинов в игру, на персонажа #}
 {% if config().enabled().isEnableSendBalanceGame() %}
@@ -441,42 +764,71 @@ function showToast(type, message) {
           {{ phrase('no_item_to_send') }}
           {% else %}
 
-          <div class="col-xl-6 mb-2">
-            <label for="send_player_name" class="form-label">{{ phrase('player') }}</label>
-            <select {% if getUser().getCountPlayers()== 0 %}disabled{% endif %} class="form-control" data-trigger
-                    name="player" id="send_player_name">
-              {% if getUser().getCountPlayers() == 0 %}
-              <option>{{phrase('no_chars')}}</option>
-              {% else %}
-              {% for i, account in getUser().getAccounts() %}
-              <optgroup label="{{phrase('account')}}: {{account.getAccount()}}">
-                {% if account.getCharactersCount() == 0 %}
-                <option disabled> &nbsp;&nbsp;&nbsp;&nbsp; {{phrase('no_chars')}}</option>
-                {% else %}
-                {% for i, character in account.getCharacters() %}
-                <option data-account="{{account.getAccount()}}" data-character="{{character.getPlayerName()}}">
-                  {{character.getPlayerName()}}
-                </option>
+          {# Скрытое поле для хранения выбранного персонажа #}
+          <input type="hidden" id="selected_character_data" name="player" value="">
+          <input type="hidden" id="selected_account_data" name="account" value="">
+
+          {# Галерея персонажей, разделённая по аккаунтам #}
+          <div class="col-12">
+            <label class="form-label">{{ phrase('player') }}</label>
+            {% if getUser().getCountPlayers() == 0 %}
+              <div class="alert alert-info">{{ phrase('no_chars') }}</div>
+            {% else %}
+              <div class="characters-gallery" style="min-height: 140px;">
+                {% for i, account in getUser().getAccounts() %}
+                  {% if account.getCharactersCount() > 0 %}
+                  <div class="card shadow-sm bg-dark-transparent border-0 mb-3">
+                    <div class="account-section">
+                      <div class="account-title">
+                        <small class="text-muted">{{ phrase('account') }}:</small>
+                        <strong>{{ account.getAccount() }}</strong>
+                      </div>
+                      <div class="characters-row">
+                        {% for i, character in account.getCharacters() %}
+                          <div class="character-card js-character-selector" 
+                               data-account="{{ account.getAccount() }}" 
+                               data-player="{{ character.getPlayerName() }}"
+                               data-level="{{ character.getLevel() }}"
+                               data-class="{{ character.getClassId() }}"
+                               data-sex="{{ character.getSex() }}">
+                            <div class="character-avatar-wrapper">
+                              <img src="/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg" 
+                                   alt="{{ character.getPlayerName() }}"
+                                   class="character-avatar">
+                              <div class="character-selection-indicator">
+                                <i class="ri-check-fill"></i>
+                              </div>
+                            </div>
+                            <div class="character-info">
+                              <div class="character-name">{{ character.getPlayerName() }}</div>
+                              <div class="character-level">[{{ character.getLevel() }}]</div>
+                            </div>
+                          </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                    </div>
+                  {% endif %}
                 {% endfor %}
-                {% endif %}
-              </optgroup>
-              {% endfor %}
-              {% endif %}
-            </select>
+              </div>
+            {% endif %}
           </div>
-          <div class="col-xl-6 mb-2">
+          <div class="col-12 mb-2">
             <label for="muchSphereCoin" class="form-label text-dark fw-semibold">{{phrase(71)}}</label>
             <input min="1" max="{{getUser().getDonate()|round(0, 'floor')}}"
                    data-max-value="{{getUser().getDonate()|round(0, 'floor')}}"
-                   value="{{getUser().getDonate()|round(0, 'floor')}} " name="coin"
+                   value="{{getUser().getDonate()|round(0, 'floor')}}" name="coin"
                    type="number" class="form-control" id="muchSphereCoin">
           </div>
-          <label class="mb-0 fs-12 text-muted text-truncate max-w-150 mx-auto ">{{phrase('char_will_be_sent')}}
-            <img class="avatar avatar-sm rounded" src="{{item.getIcon()}}"> <span class="text-success">{{ item.itemName }}</span>
-            x<span class="text-success" id="itemCountGameTransfer"
-                   data-count-donate-item="{{ getServer().donate().getDonateItemToGameTransfer() }}"
-                   data-count-items="{{ getServer().donate().getCountItemsToGameTransfer() }}"
-                   data-donate-rate="{{ getServer().donate().getDonateItemToGameTransfer() ?? 1 }}">{{ getServer().donate().getCountItemsToGameTransfer() }}</span></label>
+          <div class="col-12 mb-2">
+            <label class="mb-0 fs-12 text-muted" id="charWillBeSentLabel" data-original-text="{{phrase('char_will_be_sent')}}">{{phrase('char_will_be_sent')}}
+              <img class="avatar avatar-sm rounded" src="{{item.getIcon()}}"> <span class="text-success">{{ item.itemName }}</span>
+              x<span class="text-success" id="itemCountGameTransfer"
+                     data-count-donate-item="{{ getServer().donate().getDonateItemToGameTransfer() }}"
+                     data-count-items="{{ getServer().donate().getCountItemsToGameTransfer() }}"
+                     data-donate-rate="{{ getServer().donate().getDonateItemToGameTransfer() ?? 1 }}">{{ getServer().donate().getCountItemsToGameTransfer() }}</span>
+            </label>
+          </div>
           {% endif %}
 
           {% endif %}
@@ -593,6 +945,47 @@ function showToast(type, message) {
 
   $('#muchSphereCoin').on('input', recalculateSphereCoinValue);
   $(document).ready(recalculateSphereCoinValue);
+
+  // ========== Инициализация галереи персонажей ==========
+  $(document).ready(function() {
+    // Выбираем первого персонажа по умолчанию при загрузке страницы
+    const initCharacterGallery = function() {
+      const $galleryContainer = $('.characters-gallery');
+      if ($galleryContainer.length === 0) return;
+      
+      const $firstCharacter = $('.js-character-selector').first();
+      if ($firstCharacter.length > 0 && !$('.js-character-selector.selected').length) {
+        $firstCharacter.click();
+        console.log('✓ Character gallery initialized, first character selected');
+      }
+    };
+    
+    // Инициализируем при загрузке страницы
+    initCharacterGallery();
+
+    // При открытии модального окна sendToPlayer убеждаемся что персонаж выбран
+    $('#sendToPlayer').on('show.bs.modal', function() {
+      setTimeout(function() {
+        const $selectedCharacter = $('.js-character-selector.selected');
+        if ($selectedCharacter.length === 0) {
+          const $firstChar = $('.js-character-selector').first();
+          if ($firstChar.length > 0) {
+            $firstChar.click();
+            console.log('✓ Modal opened, first character auto-selected');
+          }
+        } else {
+          console.log('✓ Modal opened, character already selected: ' + $selectedCharacter.data('player'));
+        }
+      }, 100);
+    });
+
+    // При закрытии модального окна очищаем выбор для следующего раза
+    $('#sendToPlayer').on('hide.bs.modal', function() {
+      // Опционально: можно оставить выбор или очистить
+      // По текущей логике в general.js выбор очищается после отправки
+    });
+  });
+
 </script>
 
 

@@ -1,0 +1,1039 @@
+﻿{% extends 'struct.html' %}
+
+{% block title %}Global Bonus Settings{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="card-title">
+                        <a href="/admin/donate" class="avatar border text-muted">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                                fill="currentColor">
+                                <path
+                                    d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z">
+                                </path>
+                            </svg>
+                        </a>
+                        {{ phrase('Donation and Reward Settings') }} • Bonus
+                    </div>
+                    <div class="d-flex">
+                        <button
+                            class="btn btn-sm btn-success btn-wave waves-light waves-effect waves-light saveDonateConfig"><i
+                                class="ri-add-line fw-semibold align-middle me-1"></i> {{ phrase(271) }}</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-primary alert-dismissible fade show custom-alert-icon shadow-sm"
+                        role="alert">
+                        <svg class="svg-primary" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24"
+                            width="1.5rem" fill="#000000">
+                            <path d="M0 0h24v24H0z" fill="none"></path>
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z">
+                            </path>
+                        </svg>
+                        {{ phrase('donate_setting_title') }}
+                        <br>
+                        Глобальная страница управляет вознаграждениями и бонусами за донат. Изменения сохраняются в
+                        единую конфигурацию.
+                    </div>
+                    <ul class="nav nav-tabs tab-style-6 mb-4" id="donateGlobalMainTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="tab-basic" data-bs-toggle="tab"
+                                data-bs-target="#tab-basic-pane" type="button" role="tab"
+                                aria-controls="tab-basic-pane" aria-selected="true">
+                                {{ phrase('donation_range') }}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-discounts" data-bs-toggle="tab"
+                                data-bs-target="#tab-discounts-pane" type="button" role="tab"
+                                aria-controls="tab-discounts-pane" aria-selected="false">
+                                Скидки и бонусы
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-items-bonus" data-bs-toggle="tab"
+                                data-bs-target="#tab-items-bonus-pane" type="button" role="tab"
+                                aria-controls="tab-items-bonus-pane" aria-selected="false">
+                                {{ phrase('item_donation_reward') }}
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="donateGlobalMainTabContent">
+                        <div class="tab-pane fade show active" id="tab-basic-pane" role="tabpanel"
+                            aria-labelledby="tab-basic" tabindex="0">
+                            <div class="row g-4">
+                                <div class="col-xl-8">
+                                    <div class="card custom-card shadow-none mb-0 border">
+                                        <div class="card-header">
+                                            <div class="card-title">{{ phrase('donate_setting_title') }}</div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                                                <div>
+                                                    <p class="fs-14 mb-1 fw-semibold">{{ phrase('donation_range') }}</p>
+                                                    <p class="fs-12 text-muted mb-0">{{ phrase('donation_min_max') }}</p>
+                                                </div>
+
+                                                <div class="col-xl-3">
+                                                    <label for="minSummaPaySphereCoin" class="form-label">{{ phrase('min_amount') }}</label>
+                                                    <input value="{{globalDonate.getMinSummaPaySphereCoin()}}" type="number"
+                                                        class="form-control" id="minSummaPaySphereCoin" placeholder="1">
+                                                </div>
+                                                <div class="col-xl-3">
+                                                    <label for="maxSummaPaySphereCoin" class="form-label">{{ phrase('max_amount') }}</label>
+                                                    <input value="{{globalDonate.getMaxSummaPaySphereCoin()}}" type="number"
+                                                        class="form-control" id="maxSummaPaySphereCoin" placeholder="999999">
+                                                </div>
+                                            </div>
+
+                                            <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                                                <div>
+                                                    <p class="fs-14 mb-1 fw-semibold">{{ phrase('default') }}</p>
+                                                </div>
+
+                                                <div class="col-xl-3">
+                                                    <input value="{{globalDonate.getDefaultSummaPaySphereCoin()}}" type="number"
+                                                        class="form-control" id="defaultSummaPaySphereCoin" placeholder="1">
+                                                </div>
+                                            </div>
+
+                                            <hr>
+
+                                            <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                                                <div>
+                                                    <p class="fs-14 mb-1 fw-semibold">{{ phrase('donate_coin_to_dollar') }}</p>
+                                                    <p class="fs-12 text-muted mb-0">{{ phrase('donate_coin_per_dollar') }}</p>
+                                                </div>
+
+                                                <div class="col-xl-3">
+                                                    <input min="0.01" step="0.01" type="number"
+                                                        value="{{globalDonate.getSphereCoinCost()}}" class="form-control"
+                                                        id="sphereCoinCost" placeholder="1">
+                                                </div>
+                                            </div>
+
+                                            <hr>
+
+                                            {% if config().other().IsExchangeRates() %}
+                                            <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between text-success">
+                                                Включено автоматическое получение курса валют.
+                                                <br>
+                                                Блок "соотношение валют" не будет применен.
+                                            </div>
+                                            {% endif %}
+
+                                            <div class="d-sm-flex d-block align-items-top mb-0 justify-content-between ">
+
+                                                <div class="col-xl-2">
+                                                    <p class="fs-14 mb-1 fw-semibold">{{ phrase('currency_ratio') }}</p>
+                                                </div>
+
+                                                <div class="col-xl-2">
+                                                    <label for="ratioUSD" class="form-label">USD</label>
+                                                    <input min="0.01" step="0.01" type="number" class="form-control" disabled
+                                                        id="ratioUSD" value="{{globalDonate.getRatioUSD()}}" placeholder="1">
+                                                </div>
+                                                <div class="col-xl-2">
+                                                    <label for="ratioEUR" class="form-label">EUR</label>
+                                                    <input min="0.01" step="0.01" type="number" class="form-control"
+                                                        id="ratioEUR" value="{{globalDonate.getRatioEUR()}}" placeholder="1.05">
+                                                </div>
+                                                <div class="col-xl-2">
+                                                    <label for="ratioUAH" class="form-label">UAH</label>
+                                                    <input min="0.01" step="0.01" type="number" class="form-control"
+                                                        id="ratioUAH" value="{{globalDonate.getRatioUAH()}}" placeholder="38.5">
+                                                </div>
+                                                <div class="col-xl-2">
+                                                    <label for="ratioRUB" class="form-label">RUB</label>
+                                                    <input min="0.01" step="0.01" type="number" class="form-control"
+                                                        id="ratioRUB" value="{{globalDonate.getRatioRUB()}}" placeholder="100">
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-4">
+                                    <div class="card custom-card shadow-none mb-0 border">
+                                        <div class="card-header">
+                                            <div class="card-title">{{ phrase('transfer_to_game') }}</div>
+                                        </div>
+                                        <div class="card-body row">
+                                            <label class="form-label op-5 ">{{ phrase('direct_transfer_items') }}</label>
+                                            <label class="form-label op-5 ">{{ phrase('items_per_donate_coin') }}</label>
+
+                                            <div class="col-12 mb-2">
+                                                <div class="input-group">
+                                                    <div class="input-group-text">ID</div>
+                                                    <input name="item_id_to_game_transfer" min="1" type="number"
+                                                        class="form-control form-control-sm" id="item_id_to_game_transfer"
+                                                        placeholder="4037" value="{{globalDonate.getItemIdToGameTransfer()}}">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 mb-2">
+                                                <div class="input-group">
+                                                    <div class="input-group-text">Donate Item</div>
+                                                    <input name="donate_item_to_game_transfer" min="1" type="number"
+                                                        class="form-control form-control-sm" id="donate_item_to_game_transfer"
+                                                        placeholder="1" value="{{globalDonate.getDonateItemToGameTransfer()}}">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <div class="input-group">
+                                                    <div class="input-group-text">Count</div>
+                                                    <input name="count_items_to_game_transfer" min="1" type="number"
+                                                        class="form-control form-control-sm" id="count_items_to_game_transfer"
+                                                        placeholder="1000" value="{{globalDonate.getCountItemsToGameTransfer()}}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="tab-discounts-pane" role="tabpanel"
+                            aria-labelledby="tab-discounts" tabindex="0">
+                            <div class="card custom-card shadow-none mb-0 border">
+                                <div class="card-header">
+                                    <div class="card-title">Скидки и бонусы</div>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="nav nav-tabs tab-style-6 mb-3" id="discountSettingsTab" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active" id="discount-cumulative-tab" data-bs-toggle="tab"
+                                                data-bs-target="#discount-cumulative-pane" type="button" role="tab"
+                                                aria-controls="discount-cumulative-pane" aria-selected="true">
+                                                {{ phrase('enable_cumulative_discount_system') }}
+                                            </button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="discount-onetime-tab" data-bs-toggle="tab"
+                                                data-bs-target="#discount-onetime-pane" type="button" role="tab"
+                                                aria-controls="discount-onetime-pane" aria-selected="false">
+                                                {{ phrase('enable_one_time_bonus') }}
+                                            </button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="discount-items-tab" data-bs-toggle="tab"
+                                                data-bs-target="#discount-items-pane" type="button" role="tab"
+                                                aria-controls="discount-items-pane" aria-selected="false">
+                                                {{ phrase('enable_item_purchase_discounts') }}
+                                            </button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="discount-qty-tab" data-bs-toggle="tab"
+                                                data-bs-target="#discount-qty-pane" type="button" role="tab"
+                                                aria-controls="discount-qty-pane" aria-selected="false">
+                                                {{ phrase('enable_quantity_discounts') }}
+                                            </button>
+                                        </li>
+                                    </ul>
+
+                                    <div class="tab-content" id="discountSettingsTabContent">
+                                        <div class="tab-pane fade show active" id="discount-cumulative-pane" role="tabpanel" aria-labelledby="discount-cumulative-tab" tabindex="0">
+                                            <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                                                <div>
+                                                    <p class="fs-14 mb-1 fw-semibold">{{ phrase('enable_cumulative_discount_system') }}</p>
+                                                    <p class="fs-12 text-muted mb-0">{{ phrase('cumulative_discount_description') }}</p>
+                                                </div>
+                                                <div class="custom-toggle-switch ms-sm-2 ms-0">
+                                                    <input {% if globalDonate.isEnableCumulativeDiscountSystem() %}checked{% endif %}
+                                                        id="enableCumulativeDiscountSystem" name="enableCumulativeDiscountSystem" type="checkbox">
+                                                    <label for="enableCumulativeDiscountSystem" class="label-primary mb-1"></label>
+                                                </div>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table text-nowrap table-bordered" id="table_CumulativeDiscountSystem">
+                                                    <thead>
+                                                        <tr>
+                                                            <th data-name="coin" scope="col">{{ phrase('amount_of_donate_coin') }}</th>
+                                                            <th data-name="percent" scope="col">{{ phrase('bonus_percentage') }}</th>
+                                                            <th scope="col"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for table in globalDonate.getTableCumulativeDiscountSystem() %}
+                                                        <tr>
+                                                            <th scope="row">{{table.coin}}</th>
+                                                            <td>{{table.percent}}</td>
+                                                            <td>
+                                                                <div class="hstack gap-2 flex-wrap">
+                                                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i class="ri-edit-line"></i></a>
+                                                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                <button id="AddNewCumulativeDiscountSystem" type="button"
+                                                    class="btn btn-sm btn-success btn-wave waves-effect waves-light">
+                                                    {{ phrase(438) }}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-pane fade" id="discount-onetime-pane" role="tabpanel" aria-labelledby="discount-onetime-tab" tabindex="0">
+                                            <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                                                <div>
+                                                    <p class="fs-14 mb-1 fw-semibold">{{ phrase('enable_one_time_bonus') }}</p>
+                                                    <p class="fs-12 text-muted mb-0">{{ phrase('one_time_bonus_description') }}</p>
+                                                </div>
+                                                <div class="custom-toggle-switch ms-sm-2 ms-0">
+                                                    <input {% if globalDonate.isEnableOneTimeBonus() %}checked{% endif %}
+                                                        id="enableOneTimeBonus" name="enableOneTimeBonus" type="checkbox">
+                                                    <label for="enableOneTimeBonus" class="label-primary mb-1"></label>
+                                                </div>
+                                            </div>
+                                            <div class="table-responsive" id="table_EnableOneTimeBonus">
+                                                <table class="table text-nowrap table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th data-name="coin" scope="col">{{ phrase('amount_of_donate_coin') }}</th>
+                                                            <th data-name="percent" scope="col">{{ phrase('bonus_percentage') }}</th>
+                                                            <th scope="col"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for table in globalDonate.getTableEnableOneTimeBonus() %}
+                                                        <tr>
+                                                            <th data-name="coin" scope="row">{{table.coin}}</th>
+                                                            <td data-name="percent">{{table.percent}}</td>
+                                                            <td>
+                                                                <div class="hstack gap-2 flex-wrap">
+                                                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i class="ri-edit-line"></i></a>
+                                                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                <button id="AddNewEnableOneTimeBonus" type="button"
+                                                    class="btn btn-sm btn-success btn-wave waves-effect waves-light">
+                                                    {{ phrase(438) }}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-pane fade" id="discount-items-pane" role="tabpanel" aria-labelledby="discount-items-tab" tabindex="0">
+                                            <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                                                <div>
+                                                    <p class="fs-14 mb-1 fw-semibold">{{ phrase('enable_item_purchase_discounts') }}</p>
+                                                    <p class="fs-12 text-muted mb-0">{{ phrase('item_purchase_discount_description') }}</p>
+                                                </div>
+                                                <div class="custom-toggle-switch ms-sm-2 ms-0">
+                                                    <input {% if globalDonate.isEnableSystemDiscountsOnItemPurchases() %}checked{% endif %}
+                                                        id="enableSystemDiscountsOnItemPurchases" name="enableSystemDiscountsOnItemPurchases" type="checkbox">
+                                                    <label for="enableSystemDiscountsOnItemPurchases" class="label-primary mb-1"></label>
+                                                </div>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table text-nowrap table-bordered" id="table_SystemDiscountsOnItemPurchases">
+                                                    <thead>
+                                                        <tr>
+                                                            <th data-name="coin" scope="col">{{ phrase('amount_of_donate_coin') }}</th>
+                                                            <th data-name="percent" scope="col">{{ phrase('bonus_percentage') }}</th>
+                                                            <th scope="col"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for table in globalDonate.getTableSystemDiscountsOnItemPurchases() %}
+                                                        <tr>
+                                                            <th scope="row">{{table.coin}}</th>
+                                                            <td>{{table.percent}}</td>
+                                                            <td>
+                                                                <div class="hstack gap-2 flex-wrap">
+                                                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i class="ri-edit-line"></i></a>
+                                                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                <button id="AddNewSystemDiscountsOnItemPurchases" type="button"
+                                                    class="btn btn-sm btn-success btn-wave waves-effect waves-light">
+                                                    {{ phrase(438) }}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-pane fade" id="discount-qty-pane" role="tabpanel" aria-labelledby="discount-qty-tab" tabindex="0">
+                                            <div class="d-sm-flex d-block align-items-top mb-4 justify-content-between">
+                                                <div>
+                                                    <p class="fs-14 mb-1 fw-semibold">{{ phrase('enable_quantity_discounts') }}</p>
+                                                    <p class="fs-12 text-muted mb-0">{{ phrase('donation_based_discount') }}</p>
+                                                </div>
+                                                <div class="custom-toggle-switch ms-sm-2 ms-0">
+                                                    <input {% if globalDonate.isEnableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity() %}checked{% endif %}
+                                                        id="enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity"
+                                                        name="enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity" type="checkbox">
+                                                    <label for="enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity" class="label-primary mb-1"></label>
+                                                </div>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table text-nowrap table-bordered" id="table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity">
+                                                    <thead>
+                                                        <tr>
+                                                            <th data-name="count" scope="col">{{ phrase('amount_of_donate_coin') }}</th>
+                                                            <th data-name="percent" scope="col">{{ phrase('bonus_percentage') }}</th>
+                                                            <th scope="col"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for table in globalDonate.getTableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity() %}
+                                                        <tr>
+                                                            <th scope="row">{{table.count}}</th>
+                                                            <td>{{table.percent}}</td>
+                                                            <td>
+                                                                <div class="hstack gap-2 flex-wrap">
+                                                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i class="ri-edit-line"></i></a>
+                                                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                <button id="AddNewIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity" type="button"
+                                                    class="btn btn-sm btn-success btn-wave waves-effect waves-light">
+                                                    {{ phrase(438) }}
+                                                </button>
+                                            </div>
+
+                                            <hr>
+
+                                            <p class="fs-14 mb-2 fw-semibold">{{ phrase('discount_item_ids') }}</p>
+                                            <div class="table-responsive">
+                                                <table class="table text-nowrap table-bordered" id="table_ListOfItemsForDiscount">
+                                                    <thead>
+                                                        <tr>
+                                                            <th data-name="count" scope="col">{{ phrase('quantity_of_items_purchased') }}</th>
+                                                            <th data-name="percent" scope="col">{{ phrase('discount_percentage') }}</th>
+                                                            <th scope="col"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for table in globalDonate.getTableListOfItemsForDiscount() %}
+                                                        <tr>
+                                                            <th scope="row">{{table.count}}</th>
+                                                            <td>{{table.percent}}</td>
+                                                            <td>
+                                                                <div class="hstack gap-2 flex-wrap">
+                                                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i class="ri-edit-line"></i></a>
+                                                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                <button id="AddNewListOfItemsForDiscount" type="button"
+                                                    class="btn btn-sm btn-success btn-wave waves-effect waves-light">
+                                                    {{ phrase(438) }}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="tab-items-bonus-pane" role="tabpanel"
+                            aria-labelledby="tab-items-bonus" tabindex="0">
+                            <div id="bonus_Item_donation" class="card custom-card shadow-none mb-0 border">
+                                <div class="card-header justify-content-between d-sm-flex d-block">
+                                    <div class="card-title">{{ phrase('item_donation_reward') }}</div>
+                                    <div class="mt-sm-0 mt-2">
+                                        <div class="custom-toggle-switch ms-sm-2 ms-0">
+                                            <input {% if globalDonate.isRewardForDonatingItems() %}checked{% endif %}
+                                                id="rewardForDonatingItems" name="rewardForDonatingItems" type="checkbox">
+                                            <label for="rewardForDonatingItems" class="label-primary mb-1"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+
+                                    <div class="row">
+                                        <label class="form-label op-5 ">{{ phrase('donation_bonus_items') }}</label>
+
+                                        <div class="px-4 py-3 border-top border-block-start-dashed d-sm-flex justify-content-end">
+                                            <div class="col-xl-4">
+                                                <input id="costItem" type="text" class="form-control" placeholder="{{ phrase(72) }}">
+                                            </div>
+                                            <button id="addCostItem" class="btn btn-primary-light m-1">{{ phrase(438) }} {{ phrase('tab') }}<i class="bi bi-plus-lg ms-2"></i></button>
+                                        </div>
+                                    </div>
+
+                                    <ul class="nav nav-tabs mb-3 tab-style-6" id="myTab" role="tablist">
+                                        {% set i = 1 %}
+                                        {% for key, table in globalDonate.getTableItemsBonus() %}
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link {% if i==1 %} active{% endif %}" id="list_{{i}}"
+                                                data-bs-toggle="tab" data-bs-target="#list_{{i}}-pane" type="button"
+                                                role="tab" aria-controls="list_{{i}}-pane" aria-selected="true">{{key}}
+                                            </button>
+                                        </li>
+                                        {% set i = i+1 %}
+                                        {% endfor %}
+
+                                    </ul>
+
+                                    <div class="tab-content" id="allItemsBonusData">
+                                        {% set i = 1 %}
+                                        {% for key, table in globalDonate.getTableItemsBonus() %}
+                                        <div class="tab-pane fade p-0 border-bottom-0 {% if i==1 %}show active{% endif %} "
+                                            id="list_{{i}}-pane" role="tabpanel" aria-labelledby="list_{{i}}" tabindex="0">
+                                            <div class="table-responsive">
+                                                <table class="table mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col"></th>
+                                                            <th scope="col">{{ phrase(301) }}</th>
+                                                            <th scope="col">{{ phrase(71) }}</th>
+                                                            <th scope="col">{{ phrase('enchant') }}</th>
+                                                            <th scope="col"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for data in table %}
+                                                        <tr>
+                                                            <th scope="row">
+                                                                <span class="avatar avatar-sm">
+                                                                    <img src="{{data.item.getIcon()}}" alt="img">
+                                                                </span>
+                                                            </th>
+                                                            <td>{{data.id}}</td>
+                                                            <td>{{data.count}}</td>
+                                                            <td>{{data.enchant}}</td>
+                                                            <td><a href="javascript:void(0);" class="text-danger fs-14 lh-1 removeTableItemsBonus"><i class="ri-delete-bin-5-line"></i></a></td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        {% set i = i+1 %}
+                                        {% endfor %}
+                                    </div>
+
+                                    <br>
+                                    <p class="mb-3">{{ phrase('donation_bonus_items') }}</p>
+                                    <div class="row gy-2 gx-3 align-items-center mb-0">
+                                        <div class="col-xxl-2 col-xl-3 mb-2">
+                                            <div class="input-group">
+                                                <div class="input-group-text">ID</div>
+                                                <input type="text" class="form-control" id="item_id_insert_to_bonus_donate" placeholder="57">
+                                            </div>
+                                        </div>
+                                        <div class="col-xxl-3 col-xl-3 mb-2">
+                                            <div class="input-group">
+                                                <div class="input-group-text">Count</div>
+                                                <input type="text" class="form-control" id="count_insert_to_bonus_donate" placeholder="1000">
+                                            </div>
+                                        </div>
+                                        <div class="col-xxl-4 col-xl-3 mb-2">
+                                            <div class="input-group">
+                                                <div class="input-group-text">Enchant</div>
+                                                <input type="text" class="form-control" id="enchant_insert_to_bonus_donate" placeholder="0">
+                                            </div>
+                                        </div>
+                                        <div class="col-xxl-2 col-xl-3 mb-2">
+                                            <button id="add_insert_to_bonus_donate" type="submit" class="btn btn-primary">{{ phrase(438) }}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="button" class="btn btn-success saveDonateConfig">
+                        {{ phrase(271) }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+{% endblock %}
+
+
+{% block css %}
+
+{% endblock %}
+
+
+{% block js %}
+<script>
+
+    $(document).on('click', '.saveDonateConfig', function () {
+        let tableItemsBonus = {};
+        $('#bonus_Item_donation .nav-tabs .nav-link').each(function () {
+            var tabId = $(this).attr('id');
+            var tabPaneId = $(this).attr('aria-controls');
+            var tabValue = $(this).text().trim(); // Use tab title as key
+            if (tabValue) {
+                tableItemsBonus[tabValue] = gatherTableData(tabPaneId); // Collect rows from tab table
+            }
+        });
+
+        AjaxSend('/admin/donate/bonus/save', 'POST', {
+            minSummaPaySphereCoin: $('#minSummaPaySphereCoin').val(),
+            maxSummaPaySphereCoin: $('#maxSummaPaySphereCoin').val(),
+            defaultSummaPaySphereCoin: $('#defaultSummaPaySphereCoin').val(),
+            sphereCoinCost: $('#sphereCoinCost').val(),
+            ratioUSD: $('#ratioUSD').val(),
+            ratioEUR: $('#ratioEUR').val(),
+            ratioUAH: $('#ratioUAH').val(),
+            ratioRUB: $('#ratioRUB').val(),
+            enableCumulativeDiscountSystem: $('#enableCumulativeDiscountSystem').is(':checked'),
+            table_CumulativeDiscountSystem: extractTableData('table_CumulativeDiscountSystem'),
+            enableOneTimeBonus: $('#enableOneTimeBonus').is(':checked'),
+            table_EnableOneTimeBonus: extractTableData('table_EnableOneTimeBonus'),
+            enableSystemDiscountsOnItemPurchases: $('#enableSystemDiscountsOnItemPurchases').is(':checked'),
+            table_SystemDiscountsOnItemPurchases: extractTableData('table_SystemDiscountsOnItemPurchases'),
+            enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity: $('#enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity').is(':checked'),
+            table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity: extractTableData('table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity'),
+            table_ListOfItemsForDiscount: extractTableData('table_ListOfItemsForDiscount'),
+            rewardForDonatingItems: $('#rewardForDonatingItems').is(':checked'),
+            tableItemsBonus: tableItemsBonus,
+            item_id_to_game_transfer: $('#item_id_to_game_transfer').val(),
+            count_items_to_game_transfer: $('#count_items_to_game_transfer').val(),
+            donate_item_to_game_transfer: $('#donate_item_to_game_transfer').val(),
+        }, false);
+    });
+
+
+    function addNewRow(tableId) {
+        var newRow = `<tr>
+            <th scope="row"><input type="text" class="form-control"></th>
+            <td><input type="text" class="form-control"></td>
+            <td>
+                <div class="hstack gap-2 flex-wrap">
+                    <a href="javascript:void(0);" class="text-success fs-14 lh-1"><i class="ri-save-3-line"></i></a>
+                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+                </div>
+            </td>
+          </tr>`;
+        $(tableId + ' tbody').append(newRow);
+    }
+
+    $('#AddNewCumulativeDiscountSystem').click(function () {
+        addNewRow('#table_CumulativeDiscountSystem');
+    });
+
+
+    $('#AddNewEnableOneTimeBonus').click(function () {
+        addNewRow('#table_EnableOneTimeBonus');
+    });
+
+    $('#AddNewSystemDiscountsOnItemPurchases').click(function () {
+        addNewRow('#table_SystemDiscountsOnItemPurchases');
+    });
+
+    $('#AddNewIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity').click(function () {
+        addNewRow('#table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity');
+    });
+
+    $('#AddNewListOfItemsForDiscount').click(function () {
+        addNewRow('#table_ListOfItemsForDiscount');
+    });
+
+    const editableTableScope = '#table_CumulativeDiscountSystem, #table_EnableOneTimeBonus, #table_SystemDiscountsOnItemPurchases, #table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity, #table_ListOfItemsForDiscount';
+
+    $(document).on('click', editableTableScope + ' .ri-delete-bin-5-line', function () {
+        $(this).closest('tr').remove();
+    });
+
+    $(document).on('click', editableTableScope + ' .ri-edit-line', function () {
+        var $row = $(this).closest('tr');
+        var currentValue1 = $row.find('th:nth-child(1)').text().trim();
+        var currentValue2 = $row.find('td:nth-child(1)').text().trim();
+        var newRow = `<tr>
+            <th scope="row"><input type="text" class="form-control" value="${currentValue1}"></th>
+            <td><input type="text" class="form-control" value="${currentValue2}"></td>
+            <td>
+                <div class="hstack gap-2 flex-wrap">
+                    <a href="javascript:void(0);" class="text-success fs-14 lh-1"><i class="ri-save-3-line"></i></a>
+                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+                </div>
+            </td>
+          </tr>`;
+        $row.replaceWith(newRow);
+    });
+
+    $(document).on('click', editableTableScope + ' .ri-save-3-line', function () {
+        var $row = $(this).closest('tr');
+        var input1Value = $row.find('th input').val().trim();
+        var input2Value = $row.find('td input').val().trim();
+        var updatedRow = `<tr>
+            <th scope="row">${input1Value}</th>
+            <td>${input2Value}</td>
+            <td>
+                <div class="hstack gap-2 flex-wrap">
+                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i class="ri-edit-line"></i></a>
+                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+                </div>
+            </td>
+          </tr>`;
+        $row.replaceWith(updatedRow);
+    });
+
+    $(document).on('click', '.removeTableItemsBonus', function () {
+        $(this).closest('tr').remove();
+    });
+
+
+    $('#add_insert_to_bonus_donate').click(function () {
+
+        let itemId = $('#item_id_insert_to_bonus_donate').val();
+        let count = $('#count_insert_to_bonus_donate').val();
+        let enchant = $('#enchant_insert_to_bonus_donate').val();
+        let activeTabPane = $('#bonus_Item_donation .tab-pane.active.show');
+
+        let icon = '';
+        AjaxSend('/admin/client/item/info', 'POST', { 'itemID': itemId }, true).then(function (response) {
+            icon = response.item.icon;
+            let table = activeTabPane.find('table');
+            let newRow = '<tr>' +
+                '<th scope="row"><span class="avatar avatar-sm"><img src="' + icon + '" alt="img"></span></th>' +
+                '<td>' + itemId + '</td>' +
+                '<td>' + count + '</td>' +
+                '<td>' + enchant + '</td>' +
+                '<td><a href="javascript:void(0);" class="text-danger fs-14 lh-1 removeTableItemsBonus"><i class="ri-delete-bin-5-line"></i></a></td>' +
+                '</tr>';
+            table.find('tbody').append(newRow);
+        },
+        );
+
+    });
+
+    $(document).on('click', '#addCostItem', function () {
+        var costItemName = $('#costItem').val().trim(); // Read tab name
+        if (!costItemName) {
+            notifyError('Введите название вкладки');
+            return;
+        }
+
+        var hasSameTitle = false;
+        $('#myTab .nav-link').each(function () {
+            if ($(this).text().trim().toLowerCase() === costItemName.toLowerCase()) {
+                hasSameTitle = true;
+            }
+        });
+
+        if (hasSameTitle) {
+            notifyError('Вкладка с таким названием уже существует');
+            return;
+        }
+
+        var tabSlug = costItemName.toLowerCase().replace(/[^a-z0-9а-яё\s_-]/gi, '').replace(/\s+/g, '-');
+        if (!tabSlug) {
+            tabSlug = 'custom-tab';
+        }
+
+        var tabID = 'list_' + tabSlug;
+        var tabIndex = 2;
+        while (document.getElementById(tabID + '-tab')) {
+            tabID = 'list_' + tabSlug + '-' + tabIndex;
+            tabIndex++;
+        }
+
+        var isActive = $('#myTab li').length === 0; // First tab should be active
+        var newTab = `
+<li class="nav-item ${isActive ? 'active' : ''}" role="presentation">
+    <button class="nav-link ${isActive ? 'active' : ''}" id="${tabID}-tab" data-bs-toggle="tab"
+            data-bs-target="#${tabID}-pane" type="button" role="tab"
+            aria-controls="${tabID}-pane" aria-selected="${isActive ? 'true' : 'false'}">${costItemName}</button>
+</li>
+`;
+        $('#myTab').append(newTab);
+        var newTabPane = `
+<div class="tab-pane fade ${isActive ? 'show active' : ''}" id="${tabID}-pane" role="tabpanel"
+     aria-labelledby="${tabID}-tab" tabindex="0">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Предмет</th>
+                    <th scope="col">Кол-во</th>
+                    <th scope="col">Заточен</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+`;
+        $('#allItemsBonusData').append(newTabPane);
+    $('#costItem').val('');
+    });
+
+
+    function extractTableData(tableId) {
+        let data = [];
+        $('#' + tableId + ' tbody tr').each(function () {
+            let row = $(this);
+            let obj = {};
+            let isValidRow = true; // Row validity flag.
+
+            $('#' + tableId + ' thead th').each(function (index) {
+                let dataName = $(this).data('name');
+                if (dataName) {
+                    let cell = row.find(index === 0 ? 'th:eq(' + index + ')' : 'td:eq(' + (index - 1) + ')');
+                    let input = cell.find('input');
+                    let value = input.length ? input.val().trim() : cell.text().trim();
+                    if (!value) {
+                        isValidRow = false;
+                    }
+                    obj[dataName] = value;
+                }
+            });
+
+            if (isValidRow) {
+                // Add only valid rows.
+                data.push(obj);
+            }
+        });
+
+        return data;
+    }
+
+
+
+
+    function gatherTableData(tabPaneId) {
+        var data = []; // Data rows for current tab.
+        $('#bonus_Item_donation #' + tabPaneId + ' .table tbody tr').each(function () {
+            var rowData = {
+                id: $(this).find('td:nth-child(2)').text().trim(),
+                count: $(this).find('td:nth-child(3)').text().trim(),
+                enchant: $(this).find('td:nth-child(4)').text().trim(),
+            };
+            data.push(rowData); // Append current row.
+        });
+        return data;
+    }
+
+
+    function loadDonateSettings() {
+        $.ajax({
+            url: '/admin/donate/bonus/get',
+            type: 'POST',
+            dataType: 'json',
+            success: function (data) {
+                if (data) {
+                    fillFormData(data);
+                } else {
+                    notifyError('Нет данных для загрузки');
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error('Ошибка загрузки:', textStatus, errorThrown);
+                notifyError('Ошибка при загрузке данных с сервера');
+            }
+        });
+    }
+
+    // Fill form with loaded data
+    function fillFormData(data) {
+        // Main settings
+        $('#minSummaPaySphereCoin').val(data.minSummaPaySphereCoin);
+        $('#maxSummaPaySphereCoin').val(data.maxSummaPaySphereCoin);
+        $('#defaultSummaPaySphereCoin').val(data.defaultSummaPaySphereCoin);
+        $('#sphereCoinCost').val(data.sphereCoinCost);
+
+        // Currency ratios
+        $('#ratioUSD').val(data.ratioUSD);
+        $('#ratioEUR').val(data.ratioEUR);
+        $('#ratioUAH').val(data.ratioUAH);
+        $('#ratioRUB').val(data.ratioRUB);
+
+        // Transfer-to-game settings
+        $('#item_id_to_game_transfer').val(data.item_id_to_game_transfer);
+        $('#count_items_to_game_transfer').val(data.count_items_to_game_transfer);
+        $('#donate_item_to_game_transfer').val(data.donate_item_to_game_transfer);
+
+        // Checkbox values may come as strings
+        $('#enableCumulativeDiscountSystem').prop('checked', data.enableCumulativeDiscountSystem === "true");
+        $('#enableOneTimeBonus').prop('checked', data.enableOneTimeBonus === "true");
+        $('#enableSystemDiscountsOnItemPurchases').prop('checked', data.enableSystemDiscountsOnItemPurchases === "true");
+        $('#enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity').prop('checked', data.enableIncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity === "true");
+        $('#rewardForDonatingItems').prop('checked', data.rewardForDonatingItems === "true");
+
+        // Fill tables
+        fillTable('#table_CumulativeDiscountSystem', data.table_CumulativeDiscountSystem);
+        fillTable('#table_EnableOneTimeBonus', data.table_EnableOneTimeBonus);
+        fillTable('#table_SystemDiscountsOnItemPurchases', data.table_SystemDiscountsOnItemPurchases);
+        fillTable('#table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity', data.table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity);
+        fillTable('#table_ListOfItemsForDiscount', data.table_ListOfItemsForDiscount);
+
+        // Fill bonus items
+        if (data.tableItemsBonus) {
+            fillBonusItems(data.tableItemsBonus);
+        }
+
+    }
+
+    // Fill generic table
+    function fillTable(tableId, data) {
+        if (!data || !Array.isArray(data)) return;
+
+        const $tbody = $(`${tableId} tbody`);
+        $tbody.empty();
+
+        data.forEach(row => {
+            const $tr = $('<tr>');
+
+            // First column (th)
+            $tr.append($('<th>').attr('scope', 'row').text(row.coin || row.count));
+
+            // Second column (td)
+            $tr.append($('<td>').text(row.percent));
+
+            // Action buttons
+            const $actions = $('<td>').html(`
+            <div class="hstack gap-2 flex-wrap">
+                <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i class="ri-edit-line"></i></a>
+                <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+            </div>
+        `);
+
+            $tr.append($actions);
+            $tbody.append($tr);
+        });
+    }
+
+    // Fill bonus-item tabs
+    function fillBonusItems(bonusData) {
+        // Clear existing tabs/content
+        $('#myTab').empty();
+        $('#allItemsBonusData').empty();
+
+        Object.entries(bonusData).forEach(([key, items], index) => {
+            const tabId = `list_${index + 1}`;
+            const isActive = index === 0;
+
+            const $tab = $(`
+            <li class="nav-item" role="presentation">
+                <button class="nav-link ${isActive ? 'active' : ''}"
+                        id="${tabId}"
+                        data-bs-toggle="tab"
+                        data-bs-target="#${tabId}-pane"
+                        type="button"
+                        role="tab"
+                        aria-controls="${tabId}-pane"
+                        aria-selected="${isActive}">${key}</button>
+            </li>
+        `);
+
+            $('#myTab').append($tab);
+
+            const $content = $(`
+            <div class="tab-pane fade ${isActive ? 'show active' : ''}"
+                 id="${tabId}-pane"
+                 role="tabpanel"
+                 aria-labelledby="${tabId}"
+                 tabindex="0">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">ID</th>
+                                <th scope="col">Количество</th>
+                                <th scope="col">Заточка</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        `);
+
+            const $tbody = $content.find('tbody');
+
+            items.forEach(item => {
+                const iconSrc = (item.item && item.item.icon) ? item.item.icon : '';
+                const $row = $(`
+                <tr>
+                    <th scope="row">
+                        <span class="avatar avatar-sm">
+                            <img src="${iconSrc}" alt="img">
+                        </span>
+                    </th>
+                    <td>${item.id}</td>
+                    <td>${item.count}</td>
+                    <td>${item.enchant}</td>
+                    <td>
+                        <a href="javascript:void(0);" class="text-danger fs-14 lh-1 removeTableItemsBonus">
+                            <i class="ri-delete-bin-5-line"></i>
+                        </a>
+                    </td>
+                </tr>
+            `);
+
+                $tbody.append($row);
+
+                // If icon missing in data, try to fetch it asynchronously
+                if (!iconSrc && item.id) {
+                    AjaxSend('/admin/client/item/info', 'POST', { 'itemID': item.id }, true).then(function (response) {
+                        if (response && response.item && response.item.icon) {
+                            $row.find('img').attr('src', response.item.icon);
+                        }
+                    }).catch(function () { /* ignore */ });
+                }
+            });
+
+            $('#allItemsBonusData').append($content);
+        });
+    }
+
+    function notifyError(message) {
+        console.error(message);
+    }
+
+    $(document).ready(function () {
+        loadDonateSettings();
+    });
+
+    $(document).ready(function () {
+        var genericExamples = document.querySelectorAll("[data-trigger]");
+        for (let i = 0; i < genericExamples.length; ++i) {
+            var element = genericExamples[i];
+            var selectedValue = element.value || "";
+
+            new Choices(element, {
+                allowHTML: false,
+                placeholderValue: "This is a placeholder set in the config",
+                searchPlaceholderValue: "Search",
+                items: [selectedValue],
+                choices: [{
+                    value: selectedValue,
+                    label: selectedValue
+                }]
+            });
+        }
+    });
+
+</script>
+{% endblock %}

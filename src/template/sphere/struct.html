@@ -2,21 +2,21 @@
 <html lang="en" dir="ltr" {% for key, value in config().palette().getAll() %} {{key}}="{{value}}" {% endfor %}>
 
 <head>
-
+{% set title = block('title') %}
   <!-- Meta Data -->
   <meta charset="UTF-8">
   <meta name='viewport' content='width=device-width, initial-scale=1.0'>
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>{% block title %}{% endblock %} {{ config().other().getAllTitlePage() }}</title>
-  <meta name="Description" content="{{ config().other().getAllTitlePage() }}">
+  <meta name="Description" content="{% if pageDesc is defined and pageDesc %}{{ pageDesc|clean_page_desc }}{% else %}{{ title }} {{ config().other().getAllTitlePage() }}{% endif %}">
   <meta name="keywords" content="{{ config().other().getKeywords() }}">
 
-  <meta property="og:title" content="{{ config().other().getAllTitlePage() }}">
+  <meta property="og:title" content="{{ title }} {{ config().other().getAllTitlePage() }}">
   <meta property="og:description" content="{{ config().other().getKeywords() }}">
   <meta property="og:image" content="{{config().logo().getLogo()}}">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="{{ config().other().getAllTitlePage() }}">
+  <meta property="og:site_name" content="{{ title }} {{ config().other().getAllTitlePage() }}">
 
   {{ config().logo().favicon() }}
 
@@ -98,6 +98,7 @@
   {% endif %}
    
   {{ include('modals.html') }}
+  {{ include('modal_donate.html') }}
 
   <div class="page">
     <!-- app-header -->

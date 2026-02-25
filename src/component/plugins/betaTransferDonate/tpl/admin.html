@@ -77,6 +77,7 @@
               </div>
             </div>
           </div>
+
         </div>
 
         <div class="card mb-3 shadow-sm">
@@ -167,6 +168,37 @@
               </table>
             </div>
 
+            
+          <div class="col-12 col-lg-12">
+            {% set supportedCountries = settings.supported_countries|default(['world']) %}
+            {% set countryList = {'en': 'English'}|merge(getCountryList()) %}
+            <div class="card mb-3 shadow-sm h-100">
+              <div class="card-header">
+                <strong><i class="bi bi-globe2 me-2"></i>Поддерживаемые страны</strong>
+              </div>
+              <div class="card-body" style="max-height: 320px; overflow-y: auto;">
+                <div class="row">
+                  {% for code, countryName in countryList %}
+                  <div class="col-md-4">
+                    <div class="form-check form-switch mb-2">
+                      <input class="form-check-input"
+                             type="checkbox"
+                             role="switch"
+                             id="betatransfer-country-{{ code|e('html_attr') }}"
+                             name="supported_countries[]"
+                             value="{{ code|lower|e('html_attr') }}"
+                             {{ (code|lower in supportedCountries) ? 'checked' : '' }}>
+                      <label class="form-check-label" for="betatransfer-country-{{ code|e('html_attr') }}">
+                        {{ code|upper }} — {{ countryName }}
+                      </label>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+          
             <div class="p-3 bg-light border-top">
               <small class="text-muted">
                 <i class="bi bi-info-circle me-1"></i>
@@ -175,6 +207,8 @@
             </div>
           </div>
         </div>
+
+        
 
         <div class="text-end mt-2">
           <button type="submit" class="btn btn-primary">

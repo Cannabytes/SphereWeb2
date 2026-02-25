@@ -1,0 +1,181 @@
+{% extends 'struct.html' %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="card custom-card">
+    <div class="card-header justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <a href="/admin/extensions/paid" class="avatar border text-muted me-2">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+            <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+          </svg>
+        </a>
+        <div>
+          <div class="h5 mb-0">CryptoCloud</div>
+          <div class="text-muted small">Управление платежной системой CryptoCloud</div>
+        </div>
+      </div>
+
+      <div class="custom-toggle-switch d-flex align-items-center">
+        <input class="pluginActivating" id="enablePlugin" name="{{ pluginName }}" type="checkbox" {% if getPluginActive(pluginName) %}checked{% endif %}>
+        <label for="enablePlugin" class="label-success ms-2"></label>
+        <span class="ms-3 text-muted small">Активировать plugin</span>
+      </div>
+    </div>
+
+    <div class="card-body">
+      {% if not getPluginActive(pluginName) %}
+      <div class="alert alert-warning" role="alert">
+        Plugin выключен. Включите toggle выше.
+      </div>
+      {% endif %}
+
+      <form id="cryptocloudSettingsForm" method="post" action="/admin/plugin/cryptocloud/save">
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <label for="shop_id" class="form-label">Shop ID</label>
+            <input id="shop_id" type="text" class="form-control" name="shop_id" value="{{ shopId }}" required>
+          </div>
+
+          <div class="col-md-4">
+            <label for="api_key" class="form-label">API Key</label>
+            <input id="api_key" type="text" class="form-control" name="api_key" value="{{ apiKey }}" required>
+          </div>
+
+          <div class="col-md-4">
+            <label for="secret_key" class="form-label">Secret Key</label>
+            <input id="secret_key" type="text" class="form-control" name="secret_key" value="{{ secretKey }}" required>
+          </div>
+
+          <div class="col-md-3">
+            <label for="currency" class="form-label">Валюта</label>
+            <input id="currency" type="text" class="form-control" name="currency" value="{{ currency }}" placeholder="USD" required>
+          </div>
+        </div>
+
+        <div class="card mb-3 shadow-sm">
+          <div class="card-header bg-light">
+            <strong><i class="bi bi-link-45deg me-2"></i>Ссылки для кабинета CryptoCloud</strong>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label">Webhook URL</label>
+              <div class="input-group">
+                <div id="webhookUrlText" class="form-control">{{ webhookUrl }}</div>
+                <button class="btn btn-outline-secondary copy-url" type="button" data-target="#webhookUrlText">Копировать</button>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Return URL</label>
+              <div class="input-group">
+                <div id="returnUrlText" class="form-control">{{ returnUrl }}</div>
+                <button class="btn btn-outline-secondary copy-url" type="button" data-target="#returnUrlText">Копировать</button>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Success URL</label>
+              <div class="input-group">
+                <div id="successUrlText" class="form-control">{{ successUrl }}</div>
+                <button class="btn btn-outline-secondary copy-url" type="button" data-target="#successUrlText">Копировать</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label">Fail URL</label>
+              <div class="input-group">
+                <div id="failUrlText" class="form-control">{{ failUrl }}</div>
+                <button class="btn btn-outline-secondary copy-url" type="button" data-target="#failUrlText">Копировать</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% set supportedCountries = selectedCountries|default(['world']) %}
+        {% set countryList = {'en': 'English'}|merge(getCountryList()) %}
+        <div class="card mb-3 shadow-sm">
+          <div class="card-header bg-light">
+            <strong><i class="bi bi-globe2 me-2"></i>Поддерживаемые страны</strong>
+          </div>
+          <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+            <div class="row">
+              {% for code, countryName in countryList %}
+              <div class="col-md-4 col-lg-3">
+                <div class="form-check form-switch mb-2">
+                  <input class="form-check-input"
+                         type="checkbox"
+                         role="switch"
+                         id="cryptocloud-country-{{ code|e('html_attr') }}"
+                         name="supported_countries[]"
+                         value="{{ code|lower|e('html_attr') }}"
+                         {{ (code|lower in supportedCountries) ? 'checked' : '' }}>
+                  <label class="form-check-label" for="cryptocloud-country-{{ code|e('html_attr') }}">
+                    {{ code|upper }} — {{ countryName }}
+                  </label>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <div class="text-end">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save"></i> Сохранить настройки
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(function() {
+  const pluginActive = '{{ getPluginActive(pluginName) ? "1" : "0" }}' === '1';
+  if (!pluginActive) {
+    $('#cryptocloudSettingsForm :input').prop('disabled', true);
+    $('#enablePlugin').prop('disabled', false);
+  }
+
+  $('#enablePlugin').on('change', function() {
+    const value = $(this).is(':checked');
+    AjaxSend('/admin/plugin/save/activator', 'POST', {
+      pluginName: '{{ pluginName }}',
+      setting: 'enablePlugin',
+      value: value,
+      serverId: 0
+    }, true).then(function() {
+      window.location.reload();
+    });
+  });
+
+  $('#cryptocloudSettingsForm').on('submit', function(e) {
+    e.preventDefault();
+    AjaxSend('/admin/plugin/cryptocloud/save', 'POST', $(this).serialize());
+  });
+
+  $(document).on('click', '.copy-url', function() {
+    const selector = $(this).data('target');
+    const url = $(selector).text().trim();
+    if (!url) return;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(function() {
+        board.success('Скопировано в буфер обмена');
+      }).catch(function() {
+        board.error('Не удалось скопировать');
+      });
+    } else {
+      const $temp = $('<input>');
+      $('body').append($temp);
+      $temp.val(url).select();
+      try { document.execCommand('copy'); board.success('Скопировано в буфер обмена'); } catch (e) { board.error('Не удалось скопировать'); }
+      $temp.remove();
+    }
+  });
+});
+</script>
+{% endblock %}

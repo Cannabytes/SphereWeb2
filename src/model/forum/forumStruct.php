@@ -122,8 +122,7 @@ class forumStruct {
                                         t.id AS thread_id,
                                         u.name AS username,
                                         u.id AS user_id,
-                                        u.avatar, 
-                                        CONCAT('forums/threads/', t.id, '/posts/', p.id) AS post_url
+                                        u.avatar
                                     FROM
                                         forum_posts AS p
                                     JOIN
@@ -139,6 +138,8 @@ class forumStruct {
         foreach ($rows as &$row) {
             $row['message'] = $this->stripBBCode($row['message']);
             $row['avatar'] = $row['avatar'] ? '/uploads/avatar/' . $row['avatar'] : '/uploads/avatar/none.jpeg';
+            $transliteratedTitle = $this->transliterateToEn($row['title']);
+            $row['post_url'] = '/forum/topic/' . $transliteratedTitle . '.' . $row['thread_id'] . '#post-' . $row['post_id'];
         }
 
         return $rows;

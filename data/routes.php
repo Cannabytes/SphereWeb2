@@ -757,6 +757,20 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  5701 => 
+  array (
+    'enable' => 1,
+    'method' => 'POST',
+    'pattern' => '/admin/setting/donate/migrate-to-global',
+    'func' => 'controller\\admin\\options::migrateDonateConfigToGlobal',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
   58 => 
   array (
     'enable' => 1,
@@ -3083,5 +3097,61 @@ return array (
     'weight' => 0,
     'page' => '',
     'comment' => '',
+  ),
+  233 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/donate',
+    'func' => 'controller\\admin\\donateGlobal::showPlugins',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Donate plugins list',
+  ),
+  234 => 
+  array (
+    'enable' => true,
+    'method' => 'GET',
+    'pattern' => '/admin/donate/bonus',
+    'func' => 'controller\\admin\\donateGlobal::show',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Global donate bonus settings page',
+  ),
+  235 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/donate/bonus/save',
+    'func' => 'controller\\admin\\donateGlobal::save',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Save global donate bonus settings',
+  ),
+  236 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/donate/bonus/get',
+    'func' => 'controller\\admin\\donateGlobal::getDonateSetting',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Get global donate bonus settings',
   ),
 );

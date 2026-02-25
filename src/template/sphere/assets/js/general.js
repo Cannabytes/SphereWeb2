@@ -588,19 +588,110 @@ $('.select_default_server').on('change', function() {
     });
 });
 
+// ========== ВЫБОР ПЕРСОНАЖА В ГАЛЕРЕЕ ==========
+$(document).on('click', '.js-character-selector', function() {
+    const $card = $(this);
+    const playerName = $card.data('player');
+    const account = $card.data('account');
+    const level = $card.data('level');
+
+    // Проверяем был ли уже выбран этот персонаж
+    const wasSelected = $card.hasClass('selected');
+
+    // Удаляем класс selected со всех карточек
+    $('.js-character-selector').removeClass('selected');
+
+    // Если был выбран тот же персонаж, перезапускаем анимацию
+    if (wasSelected) {
+        // Удаляем класс и перезапускаем анимацию через reflow
+        $card.removeClass('selected');
+        // Trigger reflow to restart animation
+        void $card[0].offsetWidth;
+        $card.addClass('selected');
+    } else {
+        // Добавляем класс selected к нажатой карточке
+        $card.addClass('selected');
+    }
+
+    // Сохраняем выбранные данные в hidden inputs
+    $('#selected_character_data').val(playerName);
+    $('#selected_account_data').val(account);
+
+    // Обновляем текст о том какому персонажу будет отправлено
+    updateCharWillBeSentLabel(playerName);
+
+    // Показываем индикатор выбора консолью (опционально)
+    console.log(`✓ Выбран персонаж: ${playerName} [Lvl ${level}] из аккаунта ${account}`);
+});
+
+// ========== ФУНКЦИЯ ДЛЯ ОБНОВЛЕНИЯ ТЕКСТА ОТПРАВКИ ==========
+function updateCharWillBeSentLabel(characterName) {
+    const $label = $('#charWillBeSentLabel');
+    if ($label.length === 0) return;
+
+    // Получаем оригинальный текст из data-атрибута
+    const originalText = $label.data('original-text');
+    
+    if (!originalText) {
+        console.warn('Original text not found in data-original-text attribute');
+        return;
+    }
+
+    // Заменяем {char_name} на имя персонажа или пустоту
+    let updatedText = originalText.replace('{char_name}', characterName || '');
+    
+    // Получаем HTML часть с изображением и остальным контентом
+    let fullHTML = $label.html();
+    let imgPart = fullHTML.substring(fullHTML.indexOf('<img'));
+    
+    // Обновляем HTML с новым текстом и сохраняя остальную часть
+    $label.html(updatedText + ' ' + imgPart);
+}
+
+// ========== ИНИЦИАЛИЗАЦИЯ ГАЛЕРЕИ ПРИ ОТКРЫТИИ МОДАЛА ==========
+$('#sendToPlayer').on('show.bs.modal', function() {
+    // Выбираем первого персонажа по умолчанию, если никто не выбран
+    const $firstCharacter = $('.js-character-selector').first();
+    if ($firstCharacter.length > 0 && !$('.js-character-selector.selected').length) {
+        $firstCharacter.click();
+    } else {
+        // Если есть выбранный персонаж, обновляем текст
+        const selectedCharName = $('#selected_character_data').val();
+        if (selectedCharName) {
+            updateCharWillBeSentLabel(selectedCharName);
+        }
+    }
+});
+
 // Отправка коинов в игру, на персонажа
 $(document).on('click', '#sendToPlayerBtn', function () {
     const $btn = $(this);
     const originalText = $btn.html();
 
+    // Получаем выбранного персонажа
+    const playerName = $('#selected_character_data').val();
+    const account = $('#selected_account_data').val();
+
+    // Валидация: проверяем что персонаж выбран
+    if (!playerName || !account) {
+        noticeError('Пожалуйста, выберите персонажа');
+        return;
+    }
+
+    // Получаем количество коинов
+    let coin = $('#muchSphereCoin').val();
+
+    // Валидация количества коинов
+    if (!coin || coin <= 0) {
+        noticeError('Введите корректное количество коинов');
+        return;
+    }
+
     // Блокируем кнопку и добавляем анимацию загрузки
     $btn.prop('disabled', true)
         .html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Отправка...');
 
-    let playerName = $('#send_player_name').val();
-    let coin = $('#muchSphereCoin').val();
-    let account = $('#send_player_name option:selected').data('account');
-
+    // Отправляем запрос на сервер
     AjaxSend('/send/to/player', 'POST', {
         player: playerName,
         coin: coin,
@@ -608,13 +699,22 @@ $(document).on('click', '#sendToPlayerBtn', function () {
     }, true).then(function (response) {
         responseAnalysis(response);
         if (response.ok) {
-            $('#sendToPlayerModal').modal('hide');
+            // Закрываем модальное окно через небольшую задержку для визуального эффекта
+            setTimeout(function() {
+                $('#sendToPlayer').modal('hide');
+                // Сбрасываем выбор персонажа для следующего раза
+                $('.js-character-selector').removeClass('selected');
+                $('#selected_character_data').val('');
+                $('#selected_account_data').val('');
+            }, 800);
         }
     }).catch(function (error) {
         // Обработка ошибок
         console.error('Ошибка при отправке:', error);
+        noticeError('Ошибка соединения с сервером. Пожалуйста, попробуйте снова.');
     }).finally(function () {
         // Восстанавливаем кнопку в любом случае
         $btn.prop('disabled', false).html(originalText);
     });
 });
+

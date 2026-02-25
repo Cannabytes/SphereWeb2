@@ -163,6 +163,9 @@ class stream
         if (str_contains($link, 'trovo.live')) {
             return 'trovo';
         }
+        if (str_contains($link, 'w.tv')) {
+            return 'w.tv';
+        }
         return 'unknown';
     }
 

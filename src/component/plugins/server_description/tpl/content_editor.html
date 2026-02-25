@@ -1,0 +1,1297 @@
+﻿{% extends 'struct.html' %}
+
+{% block title %}Wiki - {{ section.name }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{template}}/assets/libs/quill/quill.snow.css">
+<style>
+    .editor-container {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .ql-toolbar.ql-snow {
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        padding: 8px 15px;
+    }
+    .ql-container.ql-snow {
+        border: none;
+        font-size: 15px;
+        min-height: 600px;
+    }
+    .lang-tabs .nav-link {
+        border: none;
+        margin-right: 5px;
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-weight: 500;
+        color: #6c757d;
+        transition: all 0.2s;
+    }
+    .lang-tabs .nav-link.active {
+        background: rgba(var(--primary-rgb), 0.1);
+        color: var(--primary-color);
+    }
+    .wiki-sidebar-tools .btn {
+        text-align: left;
+        margin-bottom: 8px;
+        border: 1px solid #e9ebef;
+        color: #495057;
+        transition: all 0.2s;
+    }
+    .wiki-sidebar-tools .btn:hover {
+        border-color: var(--primary-color);
+        background: rgba(var(--primary-rgb), 0.02);
+        color: var(--primary-color);
+    }
+    .featured-image-container {
+        position: relative;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: rgba(0,0,0,0.01);
+        border-radius: 8px;
+        border: 1px solid #e9ebef;
+    }
+    .featured-image-preview {
+        position: relative;
+        max-width: 300px;
+        margin-top: 10px;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    .featured-image-preview img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+    .featured-image-controls {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        display: none;
+        gap: 5px;
+    }
+    .featured-image-preview:hover .featured-image-controls {
+        display: flex;
+    }
+    .featured-image-controls .btn-sm {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+    .ql-editor img {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .ql-editor img:hover {
+        filter: brightness(0.9);
+    }
+    .image-upload-progress {
+        display: none;
+        margin-top: 10px;
+    }
+    .ql-toolbar .ql-image::before {
+        content: "📷";
+    }
+    
+    /* Resize handles для изображений */
+    .ql-editor img.resizable {
+        position: relative;
+    }
+    
+    .ql-editor img.resizable {
+        outline: 2px dashed var(--primary-color);
+        outline-offset: 2px;
+    }
+    
+    .resize-overlay {
+        position: fixed;
+        pointer-events: none;
+        z-index: 1000;
+    }
+    
+    .resize-handle {
+        position: absolute;
+        background: var(--primary-color);
+        border: 2px solid white;
+        pointer-events: all;
+        z-index: 1001;
+        transition: all 0.1s;
+    }
+    
+    /* Угловые handles - квадратные 12x12 */
+    .resize-handle.nw, .resize-handle.ne, .resize-handle.sw, .resize-handle.se {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+    }
+    .resize-handle.nw { cursor: nw-resize; }
+    .resize-handle.ne { cursor: ne-resize; }
+    .resize-handle.sw { cursor: sw-resize; }
+    .resize-handle.se { cursor: se-resize; }
+    
+    /* Боковые handles - удлинённые 30x8 или 8x30 */
+    .resize-handle.n, .resize-handle.s {
+        width: 30px;
+        height: 8px;
+        border-radius: 4px;
+        left: 50%;
+    }
+    .resize-handle.n { cursor: n-resize; }
+    .resize-handle.s { cursor: s-resize; }
+    
+    .resize-handle.e, .resize-handle.w {
+        width: 8px;
+        height: 30px;
+        border-radius: 4px;
+        top: 50%;
+    }
+    .resize-handle.e { cursor: e-resize; }
+    .resize-handle.w { cursor: w-resize; }
+    
+    .resize-handle:hover {
+        background: var(--primary-color);
+        box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.7);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-9">
+            <div class="card custom-card">
+                <div class="card-header justify-content-between">
+                    <div class="card-title">
+                        <a href="/admin/plugin/server_description" class="btn btn-sm btn-light me-2">
+                           <i class="fe fe-arrow-left"></i>
+                        </a>
+                        {{ phrase('Section Editor') }}: {{ section.name }}
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary btn-sm" id="save_btn">
+                            <i class="fe fe-save"></i>
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            {{ phrase('Save Changes') }}
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Выбор языка -->
+                    <ul class="nav nav-pills lang-tabs mb-4 bg-light p-1 rounded" role="tablist">
+                        {% for lang in languages %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if lang.getIsActive() %}active{% endif %}" data-bs-toggle="tab" href="#lang_{{lang.getLang()}}" data-lang="{{lang.getLang()}}">
+                                <span class="avatar avatar-xs me-1">
+                                    <img src="/uploads/images/flags/{{lang.getLang()}}.png" alt="{{lang.getLang()}}" onerror="this.src='/uploads/images/flags/en.png'">
+                                </span>
+                                {{ lang.getName() }}
+                                {% if section.lang_description[lang.getLang()] is not empty %}
+                                 <span class="badge bg-success ms-1 p-1 rounded-circle" style="width: 6px; height: 6px;"></span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="tab-content">
+                        {% for lang in languages %}
+                        <div class="tab-pane fade {% if lang.getIsActive() %}show active{% endif %}" id="lang_{{lang.getLang()}}">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">{{ phrase('Section Name') }} ({{ lang.getName() }})</label>
+                                <input type="text" class="form-control section-name-input" data-lang="{{ lang.getLang() }}" value="{{ section.lang_name[lang.getLang()]|default(section.name) }}">
+                            </div>
+                            <div class="editor-container border">
+                                <div id="editor_{{lang.getLang()}}" class="wiki-editor">{{ section.lang_description[lang.getLang()]|raw }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3">
+            <div class="wiki-sidebar-tools">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">{{ phrase('Wiki Constructor') }}</div>
+                    </div>
+                    <div class="card-body">
+                        <p class="small text-muted mb-3">{{ phrase('Wiki Constructor Description') }}</p>
+                        
+                        <div class="d-grid">
+                            <button class="btn btn-light btn-sm" id="insert_image_btn" style="display: none;">
+                                <i class="fe fe-image me-2"></i> {{ phrase('Insert Image') }}
+                            </button>
+                            <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modal_tabs">
+                                <i class="fe fe-layers me-2"></i> {{ phrase('Insert Tabs') }}
+                            </button>
+                            <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modal_spoiler">
+                                <i class="fe fe-plus-square me-2"></i> {{ phrase('Insert Spoiler') }}
+                            </button>
+                            <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modal_table">
+                                <i class="fe fe-grid me-2"></i> {{ phrase('Create Table') }}
+                            </button>
+                            <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modal_cards">
+                                <i class="fe fe-layout me-2"></i> {{ phrase('Card Blocks') }}
+                            </button>
+                            <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modal_add_item">
+                                <i class="fe fe-box me-2"></i> {{ phrase('Add Item') }}
+                            </button>
+                            <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modal_add_skill">
+                                <i class="fe fe-zap me-2"></i> {{ phrase('Add Skill') }}
+                            </button>
+                            <button class="btn btn-light btn-sm" onclick="wikiEditor.insertTag('[tooltip text=\'{{ phrase('Tooltip Text Default') }}\']{{ phrase('Tooltip Hover Default') }}[/tooltip]')">
+                                <i class="fe fe-help-circle me-2"></i> {{ phrase('Tooltip') }}
+                            </button>
+                        </div>
+
+                        <hr>
+                        <button class="btn btn-outline-info btn-sm w-100" onclick="window.open('/wiki/{{serverId}}', '_blank')">
+                            <i class="fe fe-external-link"></i> {{ phrase('Preview') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Content Image Upload -->
+<div class="modal fade" id="modal_content_image" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">{{ phrase('Insert Image into Content') }}</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">{{ phrase('Select image file') }}</label>
+                    <input type="file" id="content_image_file" class="form-control" accept="image/*">
+                </div>
+                <div class="image-upload-progress" id="content_progress">
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase('Cancel') }}</button>
+                <button type="button" class="btn btn-primary" onclick="wikiEditor.uploadContentImage()">{{ phrase('Insert') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Card Blocks -->
+<div class="modal fade" id="modal_cards" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">{{ phrase('Card Block Constructor') }}</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-pills mb-4" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active d-flex align-items-center gap-2" id="tab_simple_card" data-bs-toggle="tab" data-bs-target="#simple_card_pane" type="button">
+                            <i class="fe fe-maximize"></i> {{ phrase('Single Card') }}
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link d-flex align-items-center gap-2" id="tab_cards_row" data-bs-toggle="tab" data-bs-target="#cards_row_pane" type="button">
+                            <i class="fe fe-columns"></i> {{ phrase('Cards Row') }}
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- Single Card Tab -->
+                    <div class="tab-pane fade show active" id="simple_card_pane">
+                        <div class="alert alert-info small mb-3" role="alert">
+                            <i class="fe fe-info"></i> <strong>{{ phrase('Single Card') }}</strong> - {{ phrase('creates one full-width card. For side-by-side cards, use the') }} <strong>"{{ phrase('Cards Row') }}"</strong> {{ phrase('tab.') }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ phrase('Card Title') }} ({{ phrase('optional') }})</label>
+                            <input type="text" id="card_title" class="form-control" placeholder="{{ phrase('e.g., Features') }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ phrase('Card Content') }}</label>
+                            <textarea id="card_content" class="form-control" rows="4" placeholder="{{ phrase('Card content...') }}"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ phrase('Background Color') }}</label>
+                            <select id="card_bg" class="form-select">
+                                <option value="">{{ phrase('No Background') }}</option>
+                                <option value="bg-light">{{ phrase('Background Light') }}</option>
+                                <option value="bg-primary-light">{{ phrase('Background Primary Light') }}</option>
+                                <option value="bg-success-light">{{ phrase('Background Success Light') }}</option>
+                                <option value="bg-warning-light">{{ phrase('Background Warning Light') }}</option>
+                                <option value="bg-danger-light">{{ phrase('Background Danger Light') }}</option>
+                                <option value="bg-info-light">{{ phrase('Background Info Light') }}</option>
+                            </select>
+                        </div>
+                        <div class="d-grid">
+                            <button class="btn btn-primary" onclick="wikiEditor.insertSimpleCard()">{{ phrase('Insert') }}</button>
+                        </div>
+                    </div>
+
+                    <!-- Cards Row Tab -->
+                    <div class="tab-pane fade" id="cards_row_pane">
+                        <div class="alert alert-info small mb-3" role="alert">
+                            <i class="fe fe-info"></i> <strong>{{ phrase('Cards Row') }}</strong> - {{ phrase('creates multiple cards arranged side by side. Choose width to fit your layout (e.g., 3 cards = "Quarter Width").') }}
+                        </div>
+
+                        <div class="mb-3 d-grid gap-2 grid-cols-2" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="wikiEditor.createQuickCardRow(3, 'col-xl-4')">
+                                <i class="fe fe-layout"></i> {{ phrase('3 Cards') }}
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="wikiEditor.createQuickCardRow(4, 'col-xl-3')">
+                                <i class="fe fe-layout"></i> {{ phrase('4 Cards') }}
+                            </button>
+                        </div>
+
+                        <p class="text-muted small mb-3">{{ phrase('or add cards manually:') }}</p>
+                        
+                        <div id="cards_row_list">
+                            <div class="card-row-item mb-3 p-3 border rounded" >
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">{{ phrase('Card Title') }} ({{ phrase('optional') }})</label>
+                                    <input type="text" class="form-control form-control-sm card-row-title" placeholder="{{ phrase('e.g., Feature 1') }}">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">{{ phrase('Card Content') }}</label>
+                                    <textarea class="form-control form-control-sm card-row-content" rows="2" placeholder="{{ phrase('Content...') }}"></textarea>
+                                </div>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-7">
+                                        <label class="form-label small fw-bold">{{ phrase('Column Width') }}</label>
+                                        <select class="form-select form-select-sm card-row-width">
+                                            <option value="col-xl-3">👉 {{ phrase('4 per row') }} (col-xl-3)</option>
+                                            <option value="col-xl-4">👉 {{ phrase('3 per row') }} (col-xl-4)</option>
+                                            <option value="col-xl-6">👉 {{ phrase('2 per row') }} (col-xl-6)</option>
+                                            <option value="col-xl-12">👉 {{ phrase('1 per row') }} (col-xl-12)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-5">
+                                        <label class="form-label small fw-bold">{{ phrase('Background Color') }}</label>
+                                        <select class="form-select form-select-sm card-row-bg">
+                                            <option value="">{{ phrase('None') }}</option>
+                                            <option value="bg-light">{{ phrase('Light') }}</option>
+                                            <option value="bg-primary-light">{{ phrase('Primary') }}</option>
+                                            <option value="bg-success-light">{{ phrase('Success') }}</option>
+                                            <option value="bg-warning-light">{{ phrase('Warning') }}</option>
+                                            <option value="bg-danger-light">{{ phrase('Danger') }}</option>
+                                            <option value="bg-info-light">{{ phrase('Info') }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-danger-light w-100" onclick="this.closest('.card-row-item').remove()"><i class="fe fe-trash"></i> {{ phrase('Delete') }}</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary mb-3 w-100" onclick="wikiEditor.addCardRowItem()"><i class="fe fe-plus"></i> {{ phrase('Add Card') }}</button>
+                        <div class="d-grid">
+                            <button class="btn btn-primary" onclick="wikiEditor.insertCardRow()">{{ phrase('Insert') }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Tabs -->
+<div class="modal fade" id="modal_tabs" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">{{ phrase('Tabs Constructor') }}</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="tabs_generator_list">
+                    <div class="row g-2 mb-3 align-items-end tab-entry">
+                        <div class="col-4">
+                            <label class="form-label small">{{ phrase('Title') }}</label>
+                            <input type="text" class="form-control form-control-sm tab-title" value="Tab 1">
+                        </div>
+                        <div class="col-7">
+                            <label class="form-label small">{{ phrase('Content') }}</label>
+                            <textarea class="form-control form-control-sm tab-content-text" rows="2"></textarea>
+                        </div>
+                        <div class="col-1">
+                            <button class="btn btn-sm btn-danger-light" onclick="this.closest('.row').remove()"><i class="fe fe-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-xs btn-outline-primary" onclick="wikiEditor.addTabRow()">+ {{ phrase('Add more tab') }}</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="wikiEditor.insertTabs()">{{ phrase('Insert') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Spoiler -->
+<div class="modal fade" id="modal_spoiler" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">{{ phrase('Spoiler Constructor') }}</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">{{ phrase('Spoiler Title') }}</label>
+                    <input type="text" id="spoiler_title" class="form-control" placeholder="{{ phrase('Spoiler Title Placeholder') }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ phrase('Spoiler Content') }}</label>
+                    <textarea id="spoiler_content" class="form-control" rows="5"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="wikiEditor.insertSpoiler()">{{ phrase('Insert') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Table -->
+<div class="modal fade" id="modal_table" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">{{ phrase('Create Table') }}</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">{{ phrase('Number of Rows') }}</label>
+                    <input type="number" id="table_rows" class="form-control" value="3" min="1" max="50">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ phrase('Number of Columns') }}</label>
+                    <input type="number" id="table_cols" class="form-control" value="3" min="1" max="20">
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" id="table_header" class="form-check-input" checked>
+                    <label class="form-check-label" for="table_header">
+                        {{ phrase('Use first row as header') }}
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase('Cancel') }}</button>
+                <button type="button" class="btn btn-primary" onclick="wikiEditor.insertTable()">{{ phrase('Insert') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add Item -->
+<div class="modal fade" id="modal_add_item" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title"><i class="fe fe-box me-2"></i> {{ phrase('Add Item') }}</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">{{ phrase('Item ID') }}</label>
+                    <input type="number" id="item_id_input" class="form-control" placeholder="{{ phrase('Enter item ID (e.g., 57)') }}" min="1">
+                    <small class="form-text text-muted mt-1">{{ phrase('Insert the numeric ID of the item you want to display') }}</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase('Cancel') }}</button>
+                <button type="button" class="btn btn-primary" onclick="wikiEditor.insertItem()">{{ phrase('Insert') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add Skill -->
+<div class="modal fade" id="modal_add_skill" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title"><i class="fe fe-zap me-2"></i> {{ phrase('Add Skill') }}</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">{{ phrase('Skill ID') }}</label>
+                    <input type="number" id="skill_id_input" class="form-control" placeholder="{{ phrase('Enter skill ID (e.g., 1024)') }}" min="1">
+                    <small class="form-text text-muted mt-1">{{ phrase('Insert the numeric ID of the skill you want to display') }}</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase('Cancel') }}</button>
+                <button type="button" class="btn btn-primary" onclick="wikiEditor.insertSkill()">{{ phrase('Insert') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{{template}}/assets/libs/quill/quill.min.js"></script>
+<script>
+    // Расширяем формат изображения в Quill, чтобы он поддерживал атрибуты стиля и размеров
+    const Image = Quill.import('formats/image');
+    class ResizableImage extends Image {
+        static formats(domNode) {
+            let formats = super.formats(domNode);
+            if (domNode.hasAttribute('style')) formats.style = domNode.getAttribute('style');
+            if (domNode.hasAttribute('width')) formats.width = domNode.getAttribute('width');
+            if (domNode.hasAttribute('height')) formats.height = domNode.getAttribute('height');
+            if (domNode.hasAttribute('data-width')) formats['data-width'] = domNode.getAttribute('data-width');
+            if (domNode.hasAttribute('data-height')) formats['data-height'] = domNode.getAttribute('data-height');
+            return formats;
+        }
+        format(name, value) {
+            if (['style', 'width', 'height', 'data-width', 'data-height'].includes(name)) {
+                if (value) {
+                    this.domNode.setAttribute(name, value);
+                } else {
+                    this.domNode.removeAttribute(name);
+                }
+            } else {
+                super.format(name, value);
+            }
+        }
+    }
+    Quill.register(ResizableImage, true);
+
+    const wikiEditor = {
+        editors: {},
+        langs: [{% for lang in languages %}'{{lang.getLang()}}'{% if not loop.last %}, {% endif %}{% endfor %}],
+        
+        init() {
+            this.langs.forEach(l => {
+                this.editors[l] = new Quill('#editor_' + l, {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            [{ 'header': [1, 2, 3, false] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            ['link', 'blockquote', 'code-block'],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            [{ 'align': [] }],
+                            [{ 'color': [] }, { 'background': [] }],
+                            ['image'],
+                            ['clean']
+                        ]
+                    }
+                    ,
+                    formats: ['header','bold','italic','underline','strike','link','blockquote','code-block','list','bullet','align','image','color','background', 'style', 'width', 'height', 'data-width', 'data-height']
+                });
+                
+                // Обработка Ctrl+V и вставки изображений
+                this.editors[l].root.addEventListener('paste', (e) => {
+                    const items = e.clipboardData?.items;
+                    if (!items) return;
+                    
+                    // Проверяем на изображения
+                    for (let item of items) {
+                        if (item.type.indexOf('image') !== -1) {
+                            e.preventDefault();
+                            const file = item.getAsFile();
+                            this.handleImageFile(file, l);
+                            return;
+                        }
+                    }
+                    
+                    // Проверяем на текст и обрабатываем переносы строк
+                    for (let item of items) {
+                        if (item.type.indexOf('text/plain') !== -1) {
+                            e.preventDefault();
+                            item.getAsString((text) => {
+                                // Разбиваем текст на строки и экранируем HTML спецсимволы
+                                const lines = text.split('\n').map(line => 
+                                    line
+                                        .replace(/&/g, '&amp;')
+                                        .replace(/</g, '&lt;')
+                                        .replace(/>/g, '&gt;')
+                                );
+                                
+                                // Вставляем все строки в один параграф с <br> между ними
+                                const html = '<p>' + lines.join('<br>') + '</p>';
+                                
+                                const quill = this.editors[l];
+                                const range = quill.getSelection(true);
+                                quill.clipboard.dangerouslyPasteHTML(range.index, html);
+                            });
+                            return;
+                        }
+                    }
+                });
+                
+                // Обработка click'а на кнопку image в toolbar
+                const toolbar = document.querySelector(`[id*="editor_${l}"]`).closest('.editor-container').querySelector('.ql-toolbar');
+                if (toolbar) {
+                    const imageBtn = toolbar.querySelector('.ql-image');
+                    if (imageBtn) {
+                        imageBtn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            bootstrap.Modal.getOrCreateInstance('#modal_content_image').show();
+                        });
+                    }
+                }
+            });
+        },
+
+        getActiveLang() {
+            return document.querySelector('.lang-tabs .nav-link.active').dataset.lang;
+        },
+
+        insertTag(text) {
+            const lang = this.getActiveLang();
+            const quill = this.editors[lang];
+            const range = quill.getSelection(true) || { index: 0 };
+
+            // If text looks like BBCode (contains [ and ]) insert as plain text
+            // to avoid Quill interpreting it as HTML and stripping line breaks.
+            if (/\[.*\]/s.test(text)) {
+                quill.insertText(range.index, text);
+            } else if (quill.clipboard && typeof quill.clipboard.dangerouslyPasteHTML === 'function') {
+                quill.clipboard.dangerouslyPasteHTML(range.index, text);
+            } else if (typeof quill.pasteHTML === 'function') {
+                quill.pasteHTML(text);
+            } else {
+                quill.insertText(range.index, text);
+            }
+        },
+
+        // ===== CONTENT IMAGE FUNCTIONS =====
+        handleImageFile(file, lang) {
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            fetch('/admin/plugin/server_description/upload/image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    const range = this.editors[lang].getSelection(true);
+                    this.editors[lang].insertEmbed(range.index, 'image', data.file.url);
+                    this.editors[lang].setSelection(range.index + 1);
+                } else {
+                    board.error('Upload failed: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(e => {
+                board.error('Upload error: ' + e.message);
+            });
+        },
+
+        uploadContentImage() {
+            const fileInput = document.getElementById('content_image_file');
+            if (!fileInput.files.length) {
+                board.error('Please select an image');
+                return;
+            }
+            
+            const lang = this.getActiveLang();
+            const file = fileInput.files[0];
+            
+            const progressBar = document.querySelector('#content_progress .progress-bar');
+            document.getElementById('content_progress').style.display = 'block';
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            fetch('/admin/plugin/server_description/upload/image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    const range = this.editors[lang].getSelection(true);
+                    this.editors[lang].insertEmbed(range.index, 'image', data.file.url);
+                    this.editors[lang].setSelection(range.index + 1);
+                    bootstrap.Modal.getInstance(document.getElementById('modal_content_image')).hide();
+                    fileInput.value = '';
+                    board.success('Image inserted successfully');
+                } else {
+                    board.error('Upload failed: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(e => {
+                board.error('Upload error: ' + e.message);
+            })
+            .finally(() => {
+                document.getElementById('content_progress').style.display = 'none';
+            });
+        },
+
+        addTabRow() {
+            const html = `
+                <div class="row g-2 mb-3 align-items-end tab-entry">
+                    <div class="col-4"><input type="text" class="form-control form-control-sm tab-title" value="{{ phrase('New Tab') }}"></div>
+                    <div class="col-7"><textarea class="form-control form-control-sm tab-content-text" rows="2"></textarea></div>
+                    <div class="col-1"><button class="btn btn-sm btn-danger-light" onclick="this.closest('.row').remove()"><i class="fe fe-trash"></i></button></div>
+                </div>`;
+            document.getElementById('tabs_generator_list').insertAdjacentHTML('beforeend', html);
+        },
+
+        insertTabs() {
+            let bb = '[tabs]\n';
+            document.querySelectorAll('.tab-entry').forEach(el => {
+                const title = el.querySelector('.tab-title').value;
+                const content = el.querySelector('.tab-content-text').value;
+                bb += `[tab title="${title}"]${content}[/tab]\n`;
+            });
+            bb += '[/tabs]';
+            this.insertTag(bb);
+            bootstrap.Modal.getInstance(document.getElementById('modal_tabs')).hide();
+        },
+
+        insertSpoiler() {
+            const title = document.getElementById('spoiler_title').value;
+            const content = document.getElementById('spoiler_content').value;
+            this.insertTag(`[spoiler title="${title}"]${content}[/spoiler]`);
+            bootstrap.Modal.getInstance(document.getElementById('modal_spoiler')).hide();
+        },
+
+        insertTable() {
+            const rows = parseInt(document.getElementById('table_rows').value);
+            const cols = parseInt(document.getElementById('table_cols').value);
+            const useHeader = document.getElementById('table_header').checked;
+
+            let bb = '[table]\n';
+            for (let r = 0; r < rows; r++) {
+                bb += ' [tr]';
+                for (let c = 0; c < cols; c++) {
+                    const tag = (r === 0 && useHeader) ? 'th' : 'td';
+                    bb += `[${tag}]{{ phrase('Cell') }}[/${tag}]`;
+                }
+                bb += '[/tr]\n';
+            }
+            bb += '[/table]';
+            this.insertTag(bb);
+            bootstrap.Modal.getInstance(document.getElementById('modal_table')).hide();
+        },
+
+        insertItem() {
+            const itemId = document.getElementById('item_id_input').value.trim();
+            if (!itemId) {
+                board.error('Please enter an item ID');
+                return;
+            }
+            if (isNaN(itemId) || parseInt(itemId) < 1) {
+                board.error('Item ID must be a valid number');
+                return;
+            }
+            this.insertTag(`{ITEM ID=${itemId}}`);
+            bootstrap.Modal.getInstance(document.getElementById('modal_add_item')).hide();
+            document.getElementById('item_id_input').value = '';
+            board.success('Item tag inserted');
+        },
+
+        insertSkill() {
+            const skillId = document.getElementById('skill_id_input').value.trim();
+            if (!skillId) {
+                board.error('Please enter a skill ID');
+                return;
+            }
+            if (isNaN(skillId) || parseInt(skillId) < 1) {
+                board.error('Skill ID must be a valid number');
+                return;
+            }
+            this.insertTag(`{SKILL ID=${skillId}}`);
+            bootstrap.Modal.getInstance(document.getElementById('modal_add_skill')).hide();
+            document.getElementById('skill_id_input').value = '';
+            board.success('Skill tag inserted');
+        },
+
+        // ===== CARD BLOCKS FUNCTIONS =====
+        insertSimpleCard() {
+            const title = document.getElementById('card_title').value.trim();
+            const content = document.getElementById('card_content').value.trim();
+            const bg = document.getElementById('card_bg').value;
+
+            if (!content) {
+                board.error('Please enter card content');
+                return;
+            }
+
+            let bb = '[card';
+            if (title) {
+                bb += ` title="${title}"`;
+            }
+            if (bg) {
+                bb += ` bg="${bg}"`;
+            }
+            bb += `]${content}[/card]`;
+
+            this.insertTag(bb);
+            
+            // Clear form
+            document.getElementById('card_title').value = '';
+            document.getElementById('card_content').value = '';
+            document.getElementById('card_bg').value = '';
+            
+            bootstrap.Modal.getInstance(document.getElementById('modal_cards')).hide();
+            board.success('Card inserted');
+        },
+
+        addCardRowItem() {
+            const html = `
+                <div class="card-row-item mb-3 p-3 border rounded" >
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">{{ phrase('Card Title') }} ({{ phrase('optional') }})</label>
+                        <input type="text" class="form-control form-control-sm card-row-title" placeholder="e.g., Feature 1">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">{{ phrase('Card Content') }}</label>
+                        <textarea class="form-control form-control-sm card-row-content" rows="2" placeholder="Content..."></textarea>
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-7">
+                            <label class="form-label small fw-bold">{{ phrase('Column Width') }}</label>
+                            <select class="form-select form-select-sm card-row-width">
+                                <option value="col-xl-3">👉 4 per row (col-xl-3)</option>
+                                <option value="col-xl-4">👉 3 per row (col-xl-4)</option>
+                                <option value="col-xl-6">👉 2 per row (col-xl-6)</option>
+                                <option value="col-xl-12">👉 1 per row (col-xl-12)</option>
+                            </select>
+                        </div>
+                        <div class="col-5">
+                            <label class="form-label small fw-bold">{{ phrase('Background Color') }}</label>
+                            <select class="form-select form-select-sm card-row-bg">
+                                <option value="">None</option>
+                                <option value="bg-light">Light</option>
+                                <option value="bg-primary-light">Primary</option>
+                                <option value="bg-success-light">Success</option>
+                                <option value="bg-warning-light">Warning</option>
+                                <option value="bg-danger-light">Danger</option>
+                                <option value="bg-info-light">Info</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-danger-light w-100" onclick="this.closest('.card-row-item').remove()"><i class="fe fe-trash"></i> {{ phrase('Delete') }}</button>
+                </div>`;
+            document.getElementById('cards_row_list').insertAdjacentHTML('beforeend', html);
+        },
+
+        createQuickCardRow(count, width) {
+            // Clear existing items
+            document.getElementById('cards_row_list').innerHTML = '';
+            
+            // Create specified number of cards
+            for (let i = 0; i < count; i++) {
+                const html = `
+                    <div class="card-row-item mb-3 p-3 border rounded">
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">{{ phrase('Card Title') }} ({{ phrase('optional') }})</label>
+                            <input type="text" class="form-control form-control-sm card-row-title" placeholder="e.g., Feature ${i + 1}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">{{ phrase('Card Content') }}</label>
+                            <textarea class="form-control form-control-sm card-row-content" rows="2" placeholder="Content..."></textarea>
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-7">
+                                <label class="form-label small fw-bold">{{ phrase('Column Width') }}</label>
+                                <select class="form-select form-select-sm card-row-width">
+                                    <option value="col-xl-3" ${width === 'col-xl-3' ? 'selected' : ''}>👉 4 per row (col-xl-3)</option>
+                                    <option value="col-xl-4" ${width === 'col-xl-4' ? 'selected' : ''}>👉 3 per row (col-xl-4)</option>
+                                    <option value="col-xl-6" ${width === 'col-xl-6' ? 'selected' : ''}>👉 2 per row (col-xl-6)</option>
+                                    <option value="col-xl-12" ${width === 'col-xl-12' ? 'selected' : ''}>👉 1 per row (col-xl-12)</option>
+                                </select>
+                            </div>
+                            <div class="col-5">
+                                <label class="form-label small fw-bold">{{ phrase('Background Color') }}</label>
+                                <select class="form-select form-select-sm card-row-bg">
+                                    <option value="">None</option>
+                                    <option value="bg-light">Light</option>
+                                    <option value="bg-primary-light">Primary</option>
+                                    <option value="bg-success-light">Success</option>
+                                    <option value="bg-warning-light">Warning</option>
+                                    <option value="bg-danger-light">Danger</option>
+                                    <option value="bg-info-light">Info</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-danger-light w-100" onclick="this.closest('.card-row-item').remove()"><i class="fe fe-trash"></i> {{ phrase('Delete') }}</button>
+                    </div>`;
+                document.getElementById('cards_row_list').insertAdjacentHTML('beforeend', html);
+            }
+        },
+
+        insertCardRow() {
+            const items = document.querySelectorAll('.card-row-item');
+            if (items.length === 0) {
+                board.error('Please add at least one card');
+                return;
+            }
+
+            let bb = '[card-row]';
+            items.forEach(item => {
+                const title = item.querySelector('.card-row-title').value.trim();
+                const content = item.querySelector('.card-row-content').value.trim();
+                const width = item.querySelector('.card-row-width').value;
+                const bg = item.querySelector('.card-row-bg').value;
+
+                if (!content) return;
+
+                bb += '[card';
+                if (title) {
+                    bb += ` title="${title}"`;
+                }
+                bb += ` class="${width}"`;
+                if (bg) {
+                    bb += ` bg="${bg}"`;
+                }
+                bb += `]${content}[/card]`;
+            });
+            bb += '[/card-row]';
+
+            this.insertTag(bb);
+            
+            // Clear all items except first
+            document.querySelectorAll('.card-row-item').forEach((el, idx) => {
+                if (idx > 0) el.remove();
+            });
+            
+            // Clear first item
+            const firstItem = document.querySelector('.card-row-item');
+            if (firstItem) {
+                firstItem.querySelector('.card-row-title').value = '';
+                firstItem.querySelector('.card-row-content').value = '';
+                firstItem.querySelector('.card-row-width').value = 'col-xl-3';
+                firstItem.querySelector('.card-row-bg').value = '';
+            }
+            
+            bootstrap.Modal.getInstance(document.getElementById('modal_cards')).hide();
+            board.success('Card row inserted');
+        },
+
+        // ===== IMAGE RESIZE FUNCTIONS =====
+        initImageResize() {
+            this.langs.forEach(lang => {
+                const editor = document.querySelector('#editor_' + lang);
+                if (!editor) return;
+                
+                // При клике на изображение в редакторе
+                editor.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'IMG') {
+                        this.makeImageResizable(e.target);
+                    }
+                });
+                
+                // При клике вне изображения
+                editor.addEventListener('click', (e) => {
+                    if (e.target.tagName !== 'IMG') {
+                        this.removeAllResizeWrappers();
+                    }
+                });
+            });
+        },
+
+        makeImageResizable(img) {
+            // Если уже выбрано, просто обновляем позиции
+            if (img.classList.contains('resizable')) {
+                this.updateResizeHandles(img);
+                return;
+            }
+            
+            // Удаляем старые handles
+            this.removeAllResizeWrappers();
+            
+            // Добавляем класс к img
+            img.classList.add('resizable');
+            
+            // Создаём handles в отдельном overlay слое
+            if (!window.resizeOverlay) {
+                window.resizeOverlay = document.createElement('div');
+                window.resizeOverlay.className = 'resize-overlay';
+                document.body.appendChild(window.resizeOverlay);
+            }
+            
+            // Генерируем уникальный ID для этого набора handles
+            const handleSetId = 'handle-set-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            img.dataset.handleSetId = handleSetId;
+            
+            const rect = img.getBoundingClientRect();
+            const self = this;
+            // Угловые handles и боковые
+            const handles = ['nw', 'ne', 'sw', 'se', 'n', 's', 'e', 'w'];
+            
+            handles.forEach(pos => {
+                const handle = document.createElement('div');
+                handle.className = `resize-handle ${pos}`;
+                handle.dataset.handleSetId = handleSetId;
+                
+                // Используем анонимную функцию для сохранения контекста img и pos
+                handle.addEventListener('mousedown', (e) => {
+                    self.onResizeStart(e, img, pos);
+                });
+                
+                handle.id = `handle-${pos}-${Date.now()}`;
+                window.resizeOverlay.appendChild(handle);
+            });
+            
+            this.updateResizeHandles(img);
+            
+            // Обновляем позицию при скролле
+            const scrollHandler = () => {
+                if (img.classList.contains('resizable')) {
+                    this.updateResizeHandles(img);
+                }
+            };
+            
+            window.addEventListener('scroll', scrollHandler);
+            img.dataset.scrollHandler = Date.now(); // Сохраняем идентификатор для возможного удаления
+        },
+
+        updateResizeHandles(img) {
+            const rect = img.getBoundingClientRect();
+            const handleSetId = img.dataset.handleSetId;
+            
+            if (!handleSetId) return;
+            
+            // Берём только те handles, которые относятся к этому изображению
+            const handles = document.querySelectorAll(`.resize-overlay .resize-handle[data-handle-set-id="${handleSetId}"]`);
+            
+            // Позиции для угловых handles
+            const cornerOffsets = {
+                'nw': { x: -6, y: -6 },
+                'ne': { x: rect.width - 6, y: -6 },
+                'sw': { x: -6, y: rect.height - 6 },
+                'se': { x: rect.width - 6, y: rect.height - 6 }
+            };
+            
+            handles.forEach(handle => {
+                const posClass = Array.from(handle.classList).find(c => 
+                    ['nw', 'ne', 'sw', 'se', 'n', 's', 'e', 'w'].includes(c)
+                );
+                
+                if (!posClass) return;
+                
+                let x = rect.left;
+                let y = rect.top;
+                
+                if (cornerOffsets[posClass]) {
+                    // Угловой handle
+                    const offset = cornerOffsets[posClass];
+                    handle.style.left = (x + offset.x) + 'px';
+                    handle.style.top = (y + offset.y) + 'px';
+                } else if (posClass === 'n') {
+                    // Верхний боковой handle
+                    handle.style.left = (x + rect.width / 2 - 15) + 'px';
+                    handle.style.top = (y - 4) + 'px';
+                } else if (posClass === 's') {
+                    // Нижний боковой handle
+                    handle.style.left = (x + rect.width / 2 - 15) + 'px';
+                    handle.style.top = (y + rect.height - 4) + 'px';
+                } else if (posClass === 'e') {
+                    // Правый боковой handle
+                    handle.style.left = (x + rect.width - 4) + 'px';
+                    handle.style.top = (y + rect.height / 2 - 15) + 'px';
+                } else if (posClass === 'w') {
+                    // Левый боковой handle
+                    handle.style.left = (x - 4) + 'px';
+                    handle.style.top = (y + rect.height / 2 - 15) + 'px';
+                }
+            });
+        },
+
+        removeAllResizeWrappers() {
+            // Удаляем класс со всех img
+            document.querySelectorAll('.ql-editor img.resizable').forEach(img => {
+                img.classList.remove('resizable');
+            });
+            
+            // Удаляем все handles из overlay
+            if (window.resizeOverlay) {
+                window.resizeOverlay.innerHTML = '';
+            }
+        },
+
+        onResizeStart(e, img, position) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const startX = e.clientX;
+            const startY = e.clientY;
+            const rect = img.getBoundingClientRect();
+            const startWidth = rect.width;
+            const startHeight = rect.height;
+            const aspectRatio = startWidth / startHeight;
+            const sensitivity = 1.5; // Коэффициент чувствительности
+            const self = this;
+            
+            // Определяем "направление наружу" для каждого handle
+            // Это вектор, вдоль которого нужно тянуть, чтобы УВЕЛИЧИТЬ изображение
+            const directions = {
+                'se': { x: 1, y: 1 },   // Нижний правый: вправо-вниз
+                'sw': { x: -1, y: 1 },  // Нижний левый: влево-вниз
+                'ne': { x: 1, y: -1 },  // Верхний правый: вправо-вверх
+                'nw': { x: -1, y: -1 }, // Верхний левый: влево-вверх
+                'e': { x: 1, y: 0 },    // Правый: вправо
+                'w': { x: -1, y: 0 },   // Левый: влево
+                's': { x: 0, y: 1 },    // Нижний: вниз
+                'n': { x: 0, y: -1 }    // Верхний: вверх
+            };
+            
+            const direction = directions[position];
+            
+            const onMouseMove = (moveE) => {
+                // Вычисляем смещение мыши
+                const deltaX = moveE.clientX - startX;
+                const deltaY = moveE.clientY - startY;
+                
+                let newWidth = startWidth;
+                let newHeight = startHeight;
+                
+                // Для угловых handles используем оба направления
+                if (['se', 'sw', 'ne', 'nw'].includes(position)) {
+                    // Проектируем движение на диагональное направление
+                    const projection = (deltaX * direction.x + deltaY * direction.y) / sensitivity;
+                    newWidth = Math.max(50, startWidth + projection);
+                    newHeight = newWidth / aspectRatio;
+                }
+                // Для боковых handles используем одно направление
+                else if (['e', 'w'].includes(position)) {
+                    // Проектируем только на X
+                    const projection = (deltaX * direction.x) / sensitivity;
+                    newWidth = Math.max(50, startWidth + projection);
+                    newHeight = newWidth / aspectRatio;
+                } else if (['s', 'n'].includes(position)) {
+                    // Проектируем только на Y
+                    const projection = (deltaY * direction.y) / sensitivity;
+                    newHeight = Math.max(50, startHeight + projection);
+                    newWidth = newHeight * aspectRatio;
+                }
+                
+                // Применяем новые размеры к img
+                img.style.width = Math.round(newWidth) + 'px';
+                img.style.height = Math.round(newHeight) + 'px';
+                
+                // Сохраняем размеры в атрибуты data-width и data-height
+                img.setAttribute('data-width', Math.round(newWidth));
+                img.setAttribute('data-height', Math.round(newHeight));
+                
+                // Обновляем позиции handles в следующем frame браузера
+                // чтобы гарантировать, что getBoundingClientRect() вернет обновленные значения
+                requestAnimationFrame(() => {
+                    self.updateResizeHandles(img);
+                });
+            };
+            
+            const onMouseUp = () => {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            };
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+    };
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+        wikiEditor.init();
+        
+        // Инициализируем resize функциональность для изображений
+        wikiEditor.initImageResize();
+
+        // Функция для очистки HTML от лишних <p> тегов вокруг bbcode
+        function cleanBBCodeHTML(html) {
+            html = html || '';
+            
+            // Нормализуем пустые <p> теги
+            // <p><br></p> уже правильный формат для пустой строки - оставляем как есть
+            // <p> </p> -> <p><br></p>
+            html = html.replace(/<p>\s+<\/p>/gi, '<p><br></p>');
+            
+            // Просто удаляем пробелы в начале и конце строки
+            html = html.replace(/^\s+/, '').replace(/\s+$/, '');
+            
+            return html;
+        }
+
+        // Функция для извлечения HTML из Quill с очисткой и обработкой BBCode
+        function getEditorContent(quillEditor) {
+            // Получаем HTML из редактора Quill - он уже имеет правильные <p> теги
+            let html = quillEditor.root.innerHTML;
+            
+            console.log('Raw HTML:', html);
+            
+            // Очищаем HTML от лишних тегов
+            html = cleanBBCodeHTML(html);
+            
+            console.log('HTML after cleanup:', html);
+            
+            return html;
+        }
+
+        function saveSection() {
+            const $btn = $('#save_btn');
+            const $icon = $btn.find('.fe-save');
+            const $loader = $btn.find('.spinner-border');
+
+            if ($btn.prop('disabled')) return;
+
+            $btn.prop('disabled', true);
+            $icon.addClass('d-none');
+            $loader.removeClass('d-none');
+
+            let data = {
+                id: {{ section.id }},
+                lang: {},
+                lang_name: {}
+            };
+
+            wikiEditor.langs.forEach(l => {
+                // Получаем HTML контент из редактора, который включает изображения
+                data.lang[l] = getEditorContent(wikiEditor.editors[l]);
+                data.lang_name[l] = $(`.section-name-input[data-lang="${l}"]`).val();
+            });
+
+            // Определяем общее название для админки (приоритет EN -> RU -> первое доступное)
+            data.name = data.lang_name['en'] || data.lang_name['ru'] || Object.values(data.lang_name).find(v => v) || '';
+
+            console.log('Final data to save:', data);
+            AjaxSend('/admin/plugin/server_description/save', 'POST', data)
+                .then(function(response) {
+                    setTimeout(() => {
+                        $btn.prop('disabled', false);
+                        $icon.removeClass('d-none');
+                        $loader.addClass('d-none');
+                    }, 500);
+                })
+                .catch(function(error) {
+                    $btn.prop('disabled', false);
+                    $icon.removeClass('d-none');
+                    $loader.addClass('d-none');
+                });
+        }
+
+        $('#save_btn').on('click', function() {
+            saveSection();
+        });
+
+        $(document).on('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && (e.which === 83 || e.keyCode === 83)) {
+                e.preventDefault();
+                saveSection();
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+
+

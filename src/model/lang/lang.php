@@ -339,7 +339,21 @@ class lang
         }
         if (!$is_plugin) {
             if (array_key_exists($key, $this->cache)) {
-                return sprintf($this->cache[$key], ...$values);
+                $cachedPhrase = $this->cache[$key];
+
+                if (empty($values)) {
+                    return $cachedPhrase;
+                }
+
+                $missing_values_count = max(0, substr_count($cachedPhrase, '%s') - count($values));
+                $default_values = array_fill(0, $missing_values_count, '');
+                $preparedValues = array_merge($values, $default_values);
+
+                try {
+                    return vsprintf($cachedPhrase, $preparedValues);
+                } catch (\ValueError $e) {
+                    return $cachedPhrase;
+                }
             }
             $phrase = $this->phrasesData[$key];
         }

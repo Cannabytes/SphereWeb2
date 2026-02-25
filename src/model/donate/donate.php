@@ -76,6 +76,17 @@ class donate
         self::set_uuid($uuid, $pay_system_name, $request);
     }
 
+    public static function sphereCoinSmartCalc(float $count, float $ratio, float $sphereCoinCost): float
+    {
+        if ($sphereCoinCost >= 1.0) {
+            $result = $count * ($ratio / $sphereCoinCost);
+        } else {
+            $result = $count * ($ratio * $sphereCoinCost);
+        }
+        return round($result, 2);
+    }
+
+
     /**
      * @param $uuid
      * @param $pay_system_name

@@ -1,7 +1,7 @@
 <?php
 return [
     'betatransfer_donate' => 'BetaTransfer Донат',
-    'betatransfer_donate_description' => 'Плагін оплати через BetaTransfer з багатьма способами оплати',
+    'betatransfer_donate_description' => 'Плагін оплати через BetaTransfer',
     'betatransfer_select_method' => 'Оберіть спосіб оплати',
     'betatransfer_enter_amount' => 'Введіть суму',
     'betatransfer_min_amount' => 'Мінімальна сума',

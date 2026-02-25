@@ -859,6 +859,44 @@ class options
         board::success("Настройки сохранены");
     }
 
+    public static function migrateDonateConfigToGlobal(): void
+    {
+        $post = json_encode($_POST, JSON_UNESCAPED_UNICODE);
+        if (!$post) {
+            board::error("Ошибка парсинга JSON");
+        }
+
+        $data = json_decode($post, true);
+        if (!is_array($data)) {
+            board::error("Некорректные данные");
+        }
+
+        if (isset($data['donateSystems']) && is_array($data['donateSystems'])) {
+            foreach ($data['donateSystems'] as $i => $system) {
+                $sysData = reset($system);
+                if (empty($sysData['inputs'])) {
+                    unset($data['donateSystems'][$i]);
+                }
+            }
+        }
+
+        $data['serverId'] = 0;
+        $post = json_encode($data, JSON_UNESCAPED_UNICODE);
+
+        sql::sql("DELETE FROM `settings` WHERE `key` = '__config_donate__' AND serverId = ? ", [
+            0,
+        ]);
+        sql::run("INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES ('__config_donate__', ?, ?, ?)", [
+            $post,
+            0,
+            time::mysql(),
+        ]);
+
+        user::self()->addLog(logTypes::LOG_SAVE_CONFIG, 581);
+        board::redirect('/admin/donate/bonus');
+        board::success("Настройки доната перенесены в глобальную систему");
+    }
+
     public static function saveConfigReferral(): void
     {
         $post = json_encode($_POST);

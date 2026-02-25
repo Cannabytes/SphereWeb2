@@ -571,6 +571,31 @@ class tpl
             return base64_encode($string);
         }));
 
+        $twig->addFilter(new TwigFilter('clean_page_desc', function ($text, $maxLength = 160) {
+            if (empty($text)) {
+                return '';
+            }
+            
+            // Remove BBCode tags [tag]...[/tag]
+            $text = preg_replace('/\[(.*?)\]/s', '', $text);
+            
+            // Remove HTML tags
+            $text = strip_tags($text);
+            
+            // Decode HTML entities
+            $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+            
+            // Clean up extra whitespace
+            $text = trim(preg_replace('/\s+/', ' ', $text));
+            
+            // Truncate to max length
+            if (mb_strlen($text, 'utf-8') > $maxLength) {
+                $text = mb_substr($text, 0, $maxLength - 3, 'utf-8') . '...';
+            }
+            
+            return $text;
+        }));
+
         $twig->addFunction(new TwigFunction('template', function ($var = null) {
             return str_replace([
                 "//",
@@ -660,35 +685,41 @@ class tpl
             }
         }));
 
-        $twig->addFunction(new TwigFunction('get_plugins_include', function ($includeName) {
+        $twig->addFunction(new TwigFunction('getPluginsByCategory', function ($category) {
             if (empty(self::$pluginsAllCustomAndComponents)) {
-                $pluginsAllCustom = self::processPluginsDir("custom/plugins/");
-                $pluginsAllComponents = self::processPluginsDir("src/component/plugins/");
-                self::$pluginsAllCustomAndComponents = array_merge($pluginsAllCustom, $pluginsAllComponents);
+                self::pluginsAll();
             }
+            $plugins = [];
+            foreach (self::$pluginsAllCustomAndComponents as $plugin) {
+                if (isset($plugin['PLUGIN_CATEGORY']) && $plugin['PLUGIN_CATEGORY'] == $category) {
+                    if (isset($plugin['PLUGIN_ENABLE']) && !$plugin['PLUGIN_ENABLE']) {
+                        continue;
+                    }
+                    $plugins[] = $plugin;
+                }
+            }
+            return $plugins;
+        }));
 
-            // Разделяем плагины с полем SORT и без него
+        $twig->addFunction(new TwigFunction('get_plugins_include', function ($includeName) {
+            $allPlugins = self::pluginsAll();
+            $plugins = self::pluginsAll();
             $pluginsWithSort = [];
             $pluginsWithoutSort = [];
-
-            foreach (self::$pluginsAllCustomAndComponents as $plugin) {
+            foreach ($plugins as $plugin) {
                 if (isset($plugin['SORT'])) {
                     $pluginsWithSort[] = $plugin;
                 } else {
                     $pluginsWithoutSort[] = $plugin;
                 }
             }
-
-            // Сортируем плагины с полем SORT по возрастанию
             usort($pluginsWithSort, function ($a, $b) {
                 return $b['SORT'] <=> $a['SORT'];
             });
-
-            // Объединяем массивы: сначала отсортированные, затем остальные
-            self::$pluginsAllCustomAndComponents = array_merge($pluginsWithSort, $pluginsWithoutSort);
-
+            $sortedPlugins = array_merge($pluginsWithSort, $pluginsWithoutSort);
+            self::$pluginsAllCustomAndComponents = $sortedPlugins;
             $templates = [];
-            foreach (self::$pluginsAllCustomAndComponents as $plugin) {
+            foreach ($sortedPlugins as $plugin) {
                 if (isset($plugin['INCLUDES']) && (!isset($plugin['PLUGIN_ENABLE']) || $plugin['PLUGIN_ENABLE'])) {
                     foreach ($plugin['INCLUDES'] as $name => $file) {
                         if ($name == $includeName) {
@@ -697,7 +728,6 @@ class tpl
                     }
                 }
             }
-
             return $templates;
         }));
 
@@ -1861,29 +1891,67 @@ class tpl
     private static function processPluginsDir($dir, $isCustom = false): array
     {
         $pluginsAll = [];
-        $pluginsDir = fileSys::dir_list($dir);
-        foreach ($pluginsDir as $key => $value) {
+        $cleanDir = trim($dir, "/\\");
+        $absDir = fileSys::localdir(DIRECTORY_SEPARATOR . $cleanDir, true);
+
+        $pluginsDir = fileSys::dir_list($absDir);
+        
+        if ($pluginsDir === false) {
+             $pluginsDir = fileSys::dir_list($cleanDir);
+             if ($pluginsDir === false) {
+                 return [];
+             }
+             $baseDir = $cleanDir;
+        } else {
+             $baseDir = $absDir;
+        }
+
+        foreach ($pluginsDir as $value) {
+            // Log what we are processing
+            // file_put_contents(__DIR__ . '/../../plugin_debug.log', "Processing: $value in $baseDir\n", FILE_APPEND);
+
             if (in_array($value, self::$pluginNames)) {
+                // file_put_contents(__DIR__ . '/../../plugin_debug.log', "Skipping $value (already loaded)\n", FILE_APPEND);
                 continue;
             }
-            $settingsPath = fileSys::get_dir("$dir/$value/settings.php");
+            
+            $settingsPath = $baseDir . DIRECTORY_SEPARATOR . $value . DIRECTORY_SEPARATOR . "settings.php";
+            
             if (!file_exists($settingsPath)) {
-                unset($pluginsDir[$key]);
+                // file_put_contents(__DIR__ . '/../../plugin_debug.log', "Settings not found: $settingsPath\n", FILE_APPEND);
                 continue;
             }
-            $setting = include $settingsPath;
+
+            try {
+                $setting = include $settingsPath;
+                if (!is_array($setting)) {
+                    // file_put_contents(__DIR__ . '/../../plugin_debug.log', "Settings not array: $value\n", FILE_APPEND);
+                    continue;
+                }
+            } catch (\Throwable $e) {
+                // file_put_contents(__DIR__ . '/../../plugin_debug.log', "Error loading $value: " . $e->getMessage() . "\n", FILE_APPEND);
+                continue;
+            }
+            
             if (isset($setting['PLUGIN_HIDE']) && $setting['PLUGIN_HIDE']) {
-                unset($pluginsDir[$key]);
+                // file_put_contents(__DIR__ . '/../../plugin_debug.log', "Hidden: $value\n", FILE_APPEND);
+                // Even if hidden, we might want to track name to prevent component override?
+                // But generally hidden plugins are disabled/ignored.
+                // However, original code did unset($pluginsDir[$key]); continue;
+                // It did NOT add to self::$pluginNames. So component version WOULD override if custom is hidden?
+                // No, original code looped through CUSTOM then COMPONENT.
+                // If custom hidden, it's skipped. pluginNames NOT updated.
+                // Then component processed. pluginNames NOT has it. Component loads.
+                // So hiding a custom plugin allows component plugin to show. Correct.
                 continue;
             }
+            
             $setting['PLUGIN_DIR_NAME'] = $value;
-            if ($isCustom) {
-                $setting['isCustom'] = true;
-            } else {
-                $setting['isCustom'] = false;
-            }
+            $setting['isCustom'] = $isCustom;
+            
             self::$pluginNames[] = $value;
-            $pluginsAll[$key] = $setting;
+            $pluginsAll[] = $setting;
+            // file_put_contents(__DIR__ . '/../../plugin_debug.log', "Loaded: " . ($setting['PLUGIN_NAME'] ?? $value) . "\n", FILE_APPEND);
         }
 
         return $pluginsAll;
@@ -1892,6 +1960,7 @@ class tpl
     public static function pluginsAll(): array
     {
         if (empty(self::$pluginsAllCustomAndComponents)) {
+            self::$pluginNames = [];
             $pluginsAllCustom = self::processPluginsDir("custom/plugins/");
             $pluginsAllComponents = self::processPluginsDir("src/component/plugins/");
             self::$pluginsAllCustomAndComponents = array_merge($pluginsAllCustom, $pluginsAllComponents);

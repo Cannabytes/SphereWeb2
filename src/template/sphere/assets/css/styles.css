@@ -17037,7 +17037,7 @@ code[class*=language-] {
   margin: 0;
 }
 .app-sidebar .side-menu__item {
-  padding: 10px 20px;
+  padding: 0px 20px;
   font-size: 15px;
   font-weight: 400;
   position: relative;

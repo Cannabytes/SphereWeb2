@@ -19,6 +19,7 @@
 
         <div class="row">
           {% for plugin in show_plugins() %}
+          {% if plugin.PLUGIN_CATEGORY != 'paysystem' %}
           <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
             <div class="card custom-card shadow-none border">
               <div class="card-body p-4">
@@ -39,6 +40,7 @@
               </div>
             </div>
           </div>
+          {% endif %}
           {% endfor %}
         </div>
 

@@ -60,7 +60,17 @@
           </a>
         </li>
 
+        {% if config().hasGlobalDonateConfig() %}
+        <li class="slide {{classColorMenu()}}">
+          <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#modal_donate" class="side-menu__item">
+            <i class="fe fe-dollar-sign side-menu__icon"></i>
+            <span class="side-menu__label">{{phrase('balance_topup')}}</span>
+            <span class="badge bg-success-transparent ms-2 count_sphere_coin">{{ getUser().getDonate() }}</span>
+          </a>
+        </li>
+        {% endif %}
 
+        {% if not config().hasGlobalDonateConfig() %}
         <li class="slide enable_balance {{classColorMenu()}}" {% if config().enabled().isEnableBalance()==false
           %}style="display: none;" {% endif %}>
           <a href="/balance" class="side-menu__item">
@@ -69,6 +79,7 @@
             <span class="badge bg-success-transparent ms-2 count_sphere_coin">{{ getUser().getDonate() }}</span>
           </a>
         </li>
+        {% endif %}
 
         <li class="slide enable_send_balance_game {{classColorMenu()}}" {% if
           config().enabled().isEnableSendBalanceGame()==false %}style="display: none;" {% endif %}>

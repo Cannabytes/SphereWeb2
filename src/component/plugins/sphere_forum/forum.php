@@ -378,6 +378,15 @@ class forum
                 );
             }
 
+            // Extract first post content for page description
+            $pageDesc = '';
+            if (!empty($posts)) {
+                $firstPost = reset($posts);
+                if ($firstPost) {
+                    $pageDesc = $firstPost->getContent();
+                }
+            }
+
             tpl::addVar([
                 "category" => $category,
                 "categoryTitle" => $categoryName,
@@ -391,6 +400,7 @@ class forum
                 "categoryParents" => $categoryParents,
                 "isSubscribed" => $isSubscribed, // Добавляем статус подписки
                 "firstPostId" => $firstPostId,
+                "pageDesc" => $pageDesc,
             ]);
 
             tpl::displayPlugin("sphere_forum/tpl/read.html");

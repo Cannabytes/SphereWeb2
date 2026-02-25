@@ -1,0 +1,363 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{ phrase('payment_title', 'freekassa') }}{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-8">
+            <!-- Заголовок -->
+            <div class="card custom-card mb-4">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <span class="avatar avatar-md avatar-rounded bg-primary">
+                                <i class="bi bi-wallet2 fs-20"></i>
+                            </span>
+                        </div>
+                        <div>
+                            <h4 class="fw-semibold mb-1">{{ phrase('payment_title', 'freekassa') }}</h4>
+                            <p class="text-muted mb-0 fs-12">{{ phrase('payment_subtitle', 'freekassa') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                        <!-- Форма оплаты -->
+            <div class="card custom-card">
+                <div class="card-body">
+                    <div id="paymentForm">
+                        
+                        <!-- Выбор магазина -->
+                        {% if instances|length > 1 %}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-shop me-1"></i>
+                                {{ phrase('select_shop', 'freekassa') }}
+                            </label>
+                            <div class="row g-3">
+                                {% for instance in instances %}
+                                <div class="col-xl-6">
+                                    <input type="radio" class="btn-check" name="instance_id" id="instance_{{ instance.id }}" value="{{ instance.id }}" data-currency="{{ instance.currency }}" {% if loop.first %}checked{% endif %}>
+                                    <label class="btn btn-outline-primary w-100 text-start p-3" for="instance_{{ instance.id }}">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong class="d-block">{{ instance.name }}</strong>
+                                                <small class="text-muted">
+                                                    {{ phrase('currency', 'freekassa') }}: {{ instance.currency }}
+                                                </small>
+                                            </div>
+                                            {% if instance.test_mode == 1 %}
+                                            <span class="badge bg-warning">TEST</span>
+                                            {% endif %}
+                                        </div>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% else %}
+                        <input type="hidden" name="instance_id" value="{{ instances[0].id }}" data-currency="{{ instances[0].currency }}">
+                        {% endif %}
+
+                        <!-- Выбор способа оплаты -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-credit-card me-1"></i>
+                                {{ phrase('payment_method', 'freekassa') }}
+                            </label>
+                            <div class="row g-2" id="paymentMethods">
+                                {% if currencies is empty %}
+                                    <div class="col-12">
+                                        <div class="alert alert-warning mb-0">
+                                            {{ phrase('no_payment_methods', 'freekassa') }}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    {% for currency in currencies %}
+                                        <div class="col-xl-3 col-md-4 col-sm-6">
+                                              <input type="radio" class="btn-check" name="payment_method" 
+                                                  id="pm_{{ currency.id }}" value="{{ currency.id }}" 
+                                                  data-min="{{ currency.limits.min|default(minAmount) }}"
+                                                  data-max="{{ currency.limits.max|default(maxAmount) }}"
+                                                  data-fee="{{ currency.fee.user|default(0) }}"
+                                                  data-currency="{{ currency.currency|default('') }}"
+                                                  {% if loop.first %}checked{% endif %}>
+                                            <label class="btn btn-outline-primary w-100 p-2 text-center h-100 d-flex flex-column align-items-center justify-content-center" for="pm_{{ currency.id }}">
+                                                <small class="h4">{{ currency.name }}</small>
+                                                {% if currency.currency is defined and currency.currency %}
+                                                    <small class="text-muted mt-1" >{{ currency.currency }}</small>
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Сумма платежа -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-cash-stack me-1"></i>
+                                {{ phrase('amount', 'freekassa') }}
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text">
+                                    <i class="bi bi-coin"></i>
+                                </span>
+                                    <input type="number" class="form-control" id="amount" name="amount" 
+                                        value="{{ donateCount }}" 
+                                        step="1" 
+                                        required>
+                                <span class="input-group-text">Coins</span>
+                            </div>
+                            <small class="text-muted d-block mt-1">
+                                <i class="bi bi-info-circle me-1"></i>
+                                {{ phrase('limits', 'freekassa') }}: <span id="minAmountDisplay"><strong>{{ (currencies|first).limits.min|default(minAmount) }} {{ (currencies|first).currency|default('RUB') }}</strong></span> - <span id="maxAmountDisplay"><strong>{{ (currencies|first).limits.max|default(maxAmount) }} {{ (currencies|first).currency|default('RUB') }}</strong></span>
+                                <span id="feeDisplay" class="ms-2" style="display:none;">
+                                    ({{ phrase('fee', 'freekassa') }}: <span id="feeValue">0</span>%)
+                                </span>
+                            </small>
+                        </div>
+
+                        <!-- Слайдер суммы -->
+                        <div class="mb-4">
+                            <div id="amountSlider" class="noUi-target"></div>
+                        </div>
+
+                        <!-- Стоимость -->
+                        <div class="card custom-card shadow-sm border-primary mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">Итоговая стоимость:</span>
+                                    <h4 class="fw-bold mb-0 text-primary" id="totalCost"><span id="totalCostValue">0.00</span> <span id="costCurrency">RUB</span></h4>
+                                </div>
+                                <small class="text-muted d-block mt-2">
+                                    {% set sphereCoinCost = getServer().donate().getSphereCoinCost() %}
+                                    {% if sphereCoinCost >= 1 %}
+                                        {% set RUB_rate = getServer().donate().getRatioRUB() / sphereCoinCost %}
+                                    {% else %}
+                                        {% set RUB_rate = getServer().donate().getRatioRUB() * sphereCoinCost %}
+                                    {% endif %}
+                                    Курс: 1 Coin = <span id="coinRate">{{ RUB_rate }}</span> <span id="rateCurrency">RUB</span>
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Кнопка оплаты -->
+                        <div class="d-grid">
+                            <button type="button" class="btn btn-primary btn-lg" id="payButton">
+                                <i class="bi bi-arrow-right-circle me-2"></i>
+                                {{ phrase('pay_button', 'freekassa') }}
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            
+<!-- Модальное окно загрузки -->
+<div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-5">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Загрузка...</span>
+                </div>
+                <h5 class="fw-semibold mb-2">{{ phrase('creating_payment', 'freekassa') }}</h5>
+                <p class="text-muted mb-0">Пожалуйста, подождите...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/src/component/plugins/freekassa/tpl/payment.js?{{ time() }}"></script>
+
+<!-- Debug helper: логируем клик и вызываем submitPayment если доступна -->
+<script>
+    (function(){
+        const btn = document.getElementById('payButton');
+        if (!btn) return;
+
+        btn.addEventListener('click', function(e){
+            console.log('Freekassa debug: payButton clicked');
+            try {
+                if (typeof submitPayment === 'function') {
+                    console.log('Freekassa debug: calling submitPayment()');
+                    submitPayment();
+                } else {
+                    console.error('Freekassa debug: submitPayment is not defined');
+                    if (typeof noticeError === 'function') noticeError('submitPayment не доступна — смотрите консоль');
+                }
+            } catch (err) {
+                console.error('Freekassa debug: exception calling submitPayment', err);
+                if (typeof noticeError === 'function') noticeError('Ошибка при вызове submitPayment — смотрите консоль');
+            }
+        });
+
+        // Глобальный ловец ошибок для дебага
+        window.addEventListener('error', function(ev){
+            console.error('Freekassa window error:', ev.error || ev.message || ev);
+        });
+        window.addEventListener('unhandledrejection', function(ev){
+            console.error('Freekassa unhandled rejection:', ev.reason);
+        });
+    })();
+</script>
+
+<style>
+/* Дополнительные стили для слайдера */
+#amountSlider {
+    height: 8px;
+    border-radius: 4px;
+}
+
+.btn-check:checked + .btn-outline-primary,
+.btn-check:checked + .btn-outline-warning,
+.btn-check:checked + .btn-outline-info,
+.btn-check:checked + .btn-outline-success,
+.btn-check:checked + .btn-outline-secondary,
+.btn-check:checked + .btn-outline-danger {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-warning:hover,
+.btn-outline-info:hover,
+.btn-outline-success:hover {
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+</style>
+
+<!-- noUiSlider for amount slider and in-page cost calculation -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+
+<script>
+    (function(){
+        const $ = document.querySelector.bind(document);
+        const amountInput = document.getElementById('amount');
+        const sliderEl = document.getElementById('amountSlider');
+        const totalCostEl = document.getElementById('totalCost');
+        const totalCostValueEl = document.getElementById('totalCostValue');
+        const costCurrencyEl = document.getElementById('costCurrency');
+        const coinRateEl = document.getElementById('coinRate');
+        const minAmountDisplay = document.getElementById('minAmountDisplay');
+        const maxAmountDisplay = document.getElementById('maxAmountDisplay');
+        const feeDisplay = document.getElementById('feeDisplay');
+        const feeValue = document.getElementById('feeValue');
+
+        if (!amountInput || !sliderEl || !totalCostEl || !totalCostValueEl || !costCurrencyEl || !coinRateEl) return;
+
+        const parseNum = (s)=>{ return parseFloat(String(s).replace(/[^0-9+\-.]/g,'')) || 0 };
+
+        function getSelectedMethod(){ return document.querySelector('input[name="payment_method"]:checked'); }
+        function getSelectedInstance(){ return document.querySelector('input[name="instance_id"]:checked'); }
+
+        function updateLimitsAndFee(){
+            const pm = getSelectedMethod();
+            if (!pm) return;
+            const min = pm.dataset.min ? parseInt(pm.dataset.min,10) : 1;
+            const max = pm.dataset.max ? parseInt(pm.dataset.max,10) : 100000;
+            const fee = pm.dataset.fee ? parseFloat(pm.dataset.fee) : 0;
+            const currency = pm.dataset.currency ? pm.dataset.currency : (document.getElementById('rateCurrency') ? document.getElementById('rateCurrency').textContent : 'RUB');
+
+            minAmountDisplay.innerHTML = `<strong>${min} ${currency}</strong>`;
+            maxAmountDisplay.innerHTML = `<strong>${max} ${currency}</strong>`;
+            feeValue.textContent = fee;
+            feeDisplay.style.display = fee > 0 ? 'inline' : 'none';
+
+            // clamp input value only if user entered a valid number
+            const raw = (amountInput.value || '').toString().trim();
+            let val = null;
+            if (raw !== '') {
+                val = parseInt(raw,10);
+                if (isNaN(val)) {
+                    val = null;
+                }
+            }
+
+            if (val !== null) {
+                if (val < min) val = min;
+                if (val > max) val = max;
+                amountInput.value = val;
+            }
+
+            // update slider range and value (don't set slider when input is empty)
+            if (sliderEl.noUiSlider){
+                sliderEl.noUiSlider.updateOptions({
+                    range: { min: min, max: max }
+                });
+                if (val !== null) sliderEl.noUiSlider.set(val);
+            } else {
+                noUiSlider.create(sliderEl, {
+                    start: val,
+                    connect: [true,false],
+                    step: 1,
+                    range: { min: min, max: max }
+                });
+                sliderEl.noUiSlider.on('update', function(values){
+                    const v = Math.round(values[0]);
+                    amountInput.value = v;
+                    updateTotalCost();
+                });
+            }
+
+            updateTotalCost();
+        }
+
+        function updateTotalCost(){
+            const amount = parseInt(amountInput.value,10) || 0;
+            const coinRate = parseNum(coinRateEl.textContent || coinRateEl.innerText);
+            const pm = getSelectedMethod();
+            const fee = pm && pm.dataset.fee ? parseFloat(pm.dataset.fee) : 0;
+            const currency = 'RUB';
+
+            let cost = amount * coinRate;
+            if (fee) cost = cost * (1 + fee/100);
+
+            totalCostValueEl.textContent = cost.toFixed(2);
+            costCurrencyEl.textContent = currency;
+        }
+
+        // wire events
+        document.addEventListener('change', function(e){
+            if (e.target && e.target.name === 'payment_method'){
+                updateLimitsAndFee();
+            }
+            if (e.target && e.target.name === 'instance_id'){
+                updateTotalCost();
+            }
+        });
+
+        amountInput.addEventListener('input', function(){
+            const raw = (this.value || '').toString().trim();
+            if (sliderEl.noUiSlider){
+                if (raw === '') {
+                    // user is typing — don't update slider to avoid fighting input
+                } else {
+                    const v = parseInt(raw,10) || 0;
+                    sliderEl.noUiSlider.set(v);
+                }
+            }
+            updateTotalCost();
+        });
+
+        // initialize
+        try { updateLimitsAndFee(); } catch (e) { console.warn('Init cost calc failed', e); }
+
+        // expose helper for debugging
+        window.updateFreekassaCost = updateTotalCost;
+    })();
+</script>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

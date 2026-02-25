@@ -1,7 +1,7 @@
 <?php
 return [
     'betatransfer_donate' => 'Δωρεά BetaTransfer',
-    'betatransfer_donate_description' => 'Πρόσθετο πληρωμών μέσω BetaTransfer με πολλαπλούς τρόπους πληρωμής',
+    'betatransfer_donate_description' => 'Πρόσθετο πληρωμών μέσω BetaTransfer',
     'betatransfer_select_method' => 'Επιλέξτε μέθοδο πληρωμής',
     'betatransfer_enter_amount' => 'Εισαγάγετε το ποσό',
     'betatransfer_min_amount' => 'Ελάχιστο ποσό',

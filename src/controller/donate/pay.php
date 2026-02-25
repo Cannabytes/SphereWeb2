@@ -28,12 +28,26 @@ class pay
             return;
         }
         $donateSysNames    = [];
+        $paymentSystemsLinks = [];
         $donate = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getDonateConfig();
         foreach ($donate->getDonateSystems() as $system) {
             if ( ! $system->isEnable()) {
                 continue;
             }
             $donateSysNames[] = $system;
+            
+            // Получаем PLUGIN_LINK для платежной системы-плагина
+            $pluginLink = null;
+            $systemName = $system->getName() ?? '';
+            
+            // Проверяем, является ли платежная система плагином
+            $pluginActive = plugin::getPluginActive($systemName);
+            if ($pluginActive) {
+                $pluginSettings = plugin::getSetting($systemName);
+                $pluginLink = $pluginSettings['PLUGIN_LINK'] ?? null;
+            }
+            
+            $paymentSystemsLinks[$systemName] = $pluginLink;
         }
 
         // Check if betaTransferDonate plugin is active
@@ -67,6 +81,7 @@ class pay
         tpl::addVar("count_all_donate_bonus", $donateSum);
         tpl::addVar("count_all_donate_bonus_percent", $percent);
         tpl::addVar("donateSysNames", $donateSysNames);
+        tpl::addVar("paymentSystemsLinks", $paymentSystemsLinks);
         tpl::display("/pay.html");
     }
 

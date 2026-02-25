@@ -1,0 +1,1305 @@
+{% set item = get_item_info(getServer().donate().getItemIdToGameTransfer()) %}
+{% set sphereCoinCost = getServer().donate().getSphereCoinCost() %}
+{% set sphereCoinCost = (sphereCoinCost > 0) ? sphereCoinCost : 1 %}
+
+{% if sphereCoinCost >= 1 %}
+{% set USD_val = getServer().donate().getRatioUSD() / sphereCoinCost %}
+{% set EUR_val = getServer().donate().getRatioEUR() / sphereCoinCost %}
+{% set RUB_val = getServer().donate().getRatioRUB() / sphereCoinCost %}
+{% set UAH_val = getServer().donate().getRatioUAH() / sphereCoinCost %}
+{% else %}
+{% set USD_val = getServer().donate().getRatioUSD() * sphereCoinCost %}
+{% set EUR_val = getServer().donate().getRatioEUR() * sphereCoinCost %}
+{% set RUB_val = getServer().donate().getRatioRUB() * sphereCoinCost %}
+{% set UAH_val = getServer().donate().getRatioUAH() * sphereCoinCost %}
+{% endif %}
+
+{% set userCountry = getUser() ? getUser().getCountry()|upper : '' %}
+{% if userCountry == 'UA' %}
+{% set mainCurrency = 'UAH' %}
+{% set otherCurrencies = { 'USD': USD_val, 'EUR': EUR_val, 'RUB': RUB_val } %}
+{% elseif userCountry == 'RU' %}
+{% set mainCurrency = 'RUB' %}
+{% set otherCurrencies = { 'USD': USD_val, 'EUR': EUR_val, 'UAH': UAH_val } %}
+{% else %}
+{% set mainCurrency = 'USD' %}
+{% set otherCurrencies = { 'EUR': EUR_val, 'RUB': RUB_val, 'UAH': UAH_val } %}
+{% endif %}
+
+<!-- Подключение noUiSlider -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+
+<!-- Основное модальное окно доната -->
+<div class="modal fade" id="modal_donate" tabindex="-1" aria-labelledby="modal_donate_label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content border-0">
+            <div class="modal-header">
+                <div class="d-flex align-items-center">
+                    <i class="ri-copper-coin-fill fs-2 text-primary me-2"></i>
+                    <div>
+                        <h5 class="modal-title fw-bold" id="modal_donate_label">{{ phrase('balance_topup') }}</h5>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-0">
+                <div class="row g-0">
+                    <!-- Левая колонка: Калькулятор -->
+                    <div class="col-xl-5 p-4 border-end">
+                        <div class="calculator-container">
+                            <div class="text-center mb-4">
+                                <label
+                                    class="form-label text-muted small text-uppercase fw-bold mb-3">{{phrase('how_many_donate_coin_buy')|raw}}</label>
+                                <div class="coin-input-wrapper mb-4">
+                                    <div
+                                        class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border">
+                                        <button class="btn btn-light border-0 px-4" id="modal_product-quantity-minus">
+                                            <i class="ri-subtract-line"></i>
+                                        </button>
+                                        <input min="{{getServer().donate().getMinSummaPaySphereCoin()}}"
+                                            max="{{getServer().donate().getMaxSummaPaySphereCoin()}}" type="text"
+                                            class="form-control border-0 text-center fw-bold fs-2 py-3"
+                                            id="modal_numberOfCoinsPurchased"
+                                            value="{{ donateCount|default(getServer().donate().getDefaultSummaPaySphereCoin()) }}">
+                                        <button class="btn btn-light border-0 px-4" id="modal_product-quantity-plus">
+                                            <i class="ri-add-line"></i>
+                                        </button>
+                                    </div>
+                                    <div class="px-3">
+                                        <div id="modal_coinsRangeSlider" class="mt-5"></div>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid mb-4">
+                                    <button type="button"
+                                        class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-sm"
+                                        id="modal_donate_next_btn">
+                                        {{phrase('next')|default('ДАЛЕЕ')}} <i class="ri-arrow-right-line ms-2"></i>
+                                    </button>
+
+                                    
+                                </div>
+
+                                   {% if config().other().getBalanceNotice() is not empty %}
+                                        <div class="alert alert-primary alert-dismissible fade show custom-alert-icon shadow"
+                                            role="alert">{{ config().other().getBalanceNotice()|raw }}</div>
+                                        {% endif %}
+                                            
+                            </div>
+
+                            <div class="cost-summary-box p-4 rounded-4 border">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <span
+                                        class="text-muted fw-bold small text-uppercase">{{phrase('estimated_cost')}}</span>
+                                    <div class="text-end">
+                                        <span class="d-block fs-2 fw-bold text-primary lh-1">
+                                            <span class="modal_cost-summary-main">0</span>
+                                            <small class="fs-6 modal_main-currency-label">{{ mainCurrency }}</small>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="row g-2">
+                                    {% for code, val in otherCurrencies %}
+                                    <div class="col-4">
+                                        <div class="p-2 rounded border text-center">
+                                            <div class="text-muted fs-10 fw-bold">{{ code }}</div>
+                                            <div class="fw-bold modal_currency-value small" data-cost="{{ val }}"
+                                                data-count="{{ code|lower }}">0</div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Правая колонка: Бонусы -->
+                    <div class="col-xl-7 p-4 bg-light bg-opacity-10">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <h5 class="fw-bold mb-0">
+                                <i class="ri-gift-line me-2 text-success"></i> {{phrase('bonuses')}}
+                            </h5>
+                        </div>
+
+                        <ul class="nav nav-pills custom-nav-pills mb-4" role="tablist">
+                            {% if getServer().donate().isRewardForDonatingItems() %}
+                            <li class="nav-item flex-fill">
+                                <button class="nav-link py-2 active" data-bs-toggle="tab"
+                                    data-bs-target="#modal-home-vertical">{{phrase('item_bonuses')}}</button>
+                            </li>
+                            {% endif %}
+                            {% if getServer().donate().isEnableOneTimeBonus() %}
+                            <li class="nav-item flex-fill">
+                                <button
+                                    class="nav-link py-2 {% if not getServer().donate().isRewardForDonatingItems() %}active{% endif %}"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#modal-about-vertical">{{phrase('one_time_bonus')}}</button>
+                            </li>
+                            {% endif %}
+                            {% if getServer().donate().isEnableCumulativeDiscountSystem() %}
+                            <li class="nav-item flex-fill">
+                                <button
+                                    class="nav-link py-2 {% if not getServer().donate().isRewardForDonatingItems() and not getServer().donate().isEnableOneTimeBonus() %}active{% endif %}"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#modal-services-vertical">{{phrase('accum_bonuses')}}</button>
+                            </li>
+                            {% endif %}
+                        </ul>
+
+                        <div class="tab-content">
+                            {% if getServer().donate().isRewardForDonatingItems() %}
+                            <div class="tab-pane fade show active" id="modal-home-vertical" role="tabpanel">
+                                <div class="compact-bonus-list mx-auto">
+                                    <div class="bonus-scroll-container">
+                                        {% for cost, bonus in getServer().donate().getTableItemsBonus() %}
+                                        <div class="modal_bonus_items mb-2" data-cost="{{cost}}">
+                                            <div
+                                                class="bonus-group-card rounded-3 transition-all h-auto bg-white border">
+                                                <div class="bonus-card-top d-flex align-items-center mb-2">
+                                                    <div class="badge bg-light text-dark small py-1 px-2">От {{cost}}
+                                                        коинов</div>
+                                                    <div class="ms-3 flex-grow-1">
+                                                        <div class="progress-spark" aria-hidden="true">
+                                                            <div class="spark-bar" style="width:0%"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="bonus-table-container">
+                                                    <div class="table-responsive">
+                                                        <table
+                                                            class="table table-sm table-borderless mb-0 align-middle">
+                                                            <tbody>
+                                                                {% for item in bonus %}
+                                                                <tr>
+                                                                    <td style="width:56px;">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <div class="icon-wrap me-2">
+                                                                                <img src="{{item.item.getIcon()}}"
+                                                                                    alt="{{ item.item.itemName() }}"
+                                                                                    loading="lazy">
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td class="ps-0">
+                                                                        <div class="fw-bold small">
+                                                                            {{item.item.getAddName()}}
+                                                                            {{item.item.itemName()}} <span
+                                                                                class="text-muted small">x{{item.count}}</span>
+                                                                        </div>
+                                                                        <div class="text-muted small">{{
+                                                                            item.item.getDescription()|default('Наградной
+                                                                            предмет') }}</div>
+                                                                    </td>
+                                                                </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if getServer().donate().isEnableOneTimeBonus() %}
+                            <div class="tab-pane fade {% if not getServer().donate().isRewardForDonatingItems() %}show active{% endif %}"
+                                id="modal-about-vertical" role="tabpanel">
+                                <div class="row g-3 modal_one-time-bonus-table">
+                                    {% for bonus in getServer().donate().getTableEnableOneTimeBonus() %}
+                                    <div class="col-6 col-md-4">
+                                        <div class="one-time-bonus-card-v2 p-4 rounded-4 text-center transition-all bg-white shadow-sm border"
+                                            data-coin="{{bonus.coin}}">
+                                            <div class="fs-2 fw-black text-primary">+{{bonus.percent}}%</div>
+                                            <div class="fs-11 text-muted fw-bold text-uppercase mt-2">от {{bonus.coin}}
+                                                монет</div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if getServer().donate().isEnableCumulativeDiscountSystem() %}
+                            <div class="tab-pane fade {% if not getServer().donate().isRewardForDonatingItems() and not getServer().donate().isEnableOneTimeBonus() %}show active{% endif %}"
+                                id="modal-services-vertical" role="tabpanel">
+                                <div class="table-responsive rounded-4 shadow-sm bg-white overflow-hidden">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th class="ps-4 py-3 text-muted fs-11 text-uppercase fw-bold">
+                                                    {{phrase('funds_accum')}}</th>
+                                                <th class="py-3 text-muted fs-11 text-uppercase fw-bold text-end pe-4">
+                                                    {{phrase('reward_pct')}}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for bonus in getServer().donate().getTableCumulativeDiscountSystem() %}
+                                            <tr class="align-middle">
+                                                <td class="ps-4 py-3 fw-bold">{{bonus.coin}} <span
+                                                        class="text-muted small fw-normal">монет</span></td>
+                                                <td class="text-end pe-4 py-3"><span
+                                                        class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">+{{bonus.percent}}%</span>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно платежных систем -->
+<div class="modal fade" id="modal_payment_systems" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4">
+            <div class="modal-header">
+                <div class="d-flex align-items-center">
+                    <button type="button" class="btn btn-sm btn-light border-0 me-2" id="payment_header_back_btn"
+                        aria-label="Back to donate">
+                        <i class="ri-arrow-left-line"></i>
+                    </button>
+                    <h5 class="modal-title fw-bold" id="payment_modal_title">{{ phrase('sel_payment_sys') }}</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="payment_modal_body">
+                <!-- Container for payment selection or form -->
+                <div id="payment_systems_select">
+
+                    <div class="row g-3">
+                        {% set paymentPlugins = getPluginsByCategory('paysystem') %}
+                        {% set activePaymentPlugins = [] %}
+                        {% for plugin in paymentPlugins %}
+                            {% set pluginCode = plugin.PLUGIN_DIR_NAME|default(plugin.PLUGIN_NAME|default(''))|lower %}
+                            {% if getPluginActive(pluginCode) %}
+                                {% set activePaymentPlugins = activePaymentPlugins|merge([plugin]) %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if activePaymentPlugins|length > 0 %}
+                        {% for plugin in activePaymentPlugins %}
+                        <div class="col-12 col-md-6">
+                            {% set pluginSettings = plugin.PLUGIN_LINK ?? null %}
+                            {% set pluginCode = plugin.PLUGIN_DIR_NAME|default(plugin.PLUGIN_NAME|default(''))|lower %}
+                            {% set pluginSettingData = pluginCode ? getPluginSetting(pluginCode) : {} %}
+                            {% set pluginCountries =
+                            plugin.supported_countries|default(pluginSettingData.supported_countries|default([])) %}
+                            {% if pluginCountries is not iterable or pluginCountries|length == 0 %}
+                            {% set pluginCountries = ['world'] %}
+                            {% endif %}
+                            <a href="{{ pluginSettings }}" data-base-href="{{ pluginSettings }}"
+                                data-description="{{ plugin.PLUGIN_DESCRIPTION|default('')|e('html_attr') }}"
+                                class="border rounded-3 p-3 d-flex align-items-center text-start payment-plugin-item text-decoration-none text-dark w-100"
+                                style="cursor: pointer; transition: all 0.2s;">
+                                {% if plugin.PLUGIN_ICON %}
+                                <i class="{{ plugin.PLUGIN_ICON }} fs-3 me-3"></i>
+                                {% else %}
+                                <i class="bi bi-cash-coin fs-3 me-3 text-primary"></i>
+                                {% endif %}
+                                <div>
+                                    <div class="fw-bold small">{{ plugin.PLUGIN_NAME }}</div>
+                                    {% set desc = plugin.PLUGIN_DESCRIPTION|default('') %}
+                                    {% if desc %}
+                                    <div class="fs-10 text-muted">{{ phrase(desc)|raw }}</div>
+                                    {% else %}
+                                    <div class="fs-10 text-muted">{{ phrase('payment_system_description') }}</div>
+                                    {% endif %}
+                                    <div class="payment-plugin-flags mt-2">
+                                        {% for countryCode in pluginCountries %}
+                                        {% set cc = countryCode|lower %}
+                                        <span class="payment-plugin-flag" title="{{ cc|upper }}">
+                                            <img src="/uploads/images/flags/{{ cc }}.png" alt="{{ cc|upper }}"
+                                                onerror="this.onerror=null;this.src='/uploads/images/flags/world.png';">
+                                        </span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="col-12">
+                            <div class="alert alert-warning text-center mb-0">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                {{phrase('payment_systems_not_configured')}}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Container for payment form (shown after selection) -->
+                <div id="payment_form_container" style="display: none;">
+                    <!-- Form will be loaded here via AJAX -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .lh-1 {
+        line-height: 1;
+    }
+
+    .fs-10 {
+        font-size: 10px;
+    }
+
+    #modal_donate #modal_numberOfCoinsPurchased:focus {
+        box-shadow: none;
+        border-color: var(--bs-primary);
+    }
+
+    #modal_donate .noUi-target {
+        height: 8px !important;
+        border-radius: 10px !important;
+        background: #eaedf1 !important;
+        border: none !important;
+    }
+
+    #modal_donate .noUi-connect {
+        background: linear-gradient(to right, var(--bs-primary), #5a99ec) !important;
+        animation: colorShift 4s infinite ease-in-out !important;
+    }
+
+    @keyframes colorShift {
+        0% {
+            filter: hue-rotate(0deg);
+        }
+
+        50% {
+            filter: hue-rotate(30deg);
+        }
+
+        100% {
+            filter: hue-rotate(0deg);
+        }
+    }
+
+    #modal_donate .noUi-handle {
+        width: 34px !important;
+        height: 34px !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        cursor: pointer !important;
+        right: -17px !important;
+        top: -14px !important;
+        background-image: url("{{item.getIcon()}}") !important;
+        background-size: contain !important;
+        background-position: center center !important;
+        background-repeat: no-repeat !important;
+        z-index: 20 !important;
+        overflow: visible !important;
+    }
+
+    #modal_donate .noUi-handle::before,
+    #modal_donate .noUi-handle::after {
+        display: none !important;
+    }
+
+    #modal_donate .one-time-highlight {
+        border-color: var(--bs-primary) !important;
+        background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Redesigned bonus cards (compact, Bootstrap colors) */
+    .modal_bonus_items {
+        transition: all .2s ease;
+    }
+
+    .compact-bonus-list .modal_bonus_items {
+        margin-bottom: .35rem;
+    }
+
+    .modal_bonus_items .bonus-group-card {
+        background: var(--bs-white, #fff);
+        border: 1px solid var(--bs-border-color);
+        padding: .5rem;
+        transition: transform .25s ease, box-shadow .2s, border-color .2s, opacity .2s;
+        opacity: 0.98;
+        transform: translateY(0);
+    }
+
+    .modal_bonus_items .bonus-card-top {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .modal_bonus_items .badge {
+        font-weight: 700;
+    }
+
+    .modal_bonus_items .progress-spark {
+        height: 5px;
+        background: transparent;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .modal_bonus_items .spark-bar {
+        height: 100%;
+        background: var(--bs-primary);
+        width: 0%;
+        transition: width .5s ease;
+    }
+
+    .modal_bonus_items .icon-wrap {
+        width: 48px;
+        height: 48px;
+        flex: 0 0 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: .5rem;
+    }
+
+    .modal_bonus_items .icon-wrap img {
+        width: 36px;
+        height: 36px;
+        object-fit: contain;
+        display: block;
+    }
+
+    /* Remove internal table row separators for compact bonus list */
+    .compact-bonus-list .table.table-borderless td,
+    .compact-bonus-list .table.table-borderless th {
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* Eligible state (uses Bootstrap primary color) */
+    .modal_bonus_items.eligible .bonus-group-card {
+        opacity: 1;
+    }
+
+    .modal_bonus_items.eligible .badge {
+        box-shadow: 0 10px 30px rgba(13, 110, 253, 0.08);
+    }
+
+    .modal_bonus_items .bonus-group-card.new-eligible {
+        animation: popIn 420ms cubic-bezier(.18, .9, .32, 1) forwards;
+    }
+
+    @keyframes popIn {
+        0% {
+            transform: translateY(6px) scale(.98);
+            opacity: 0
+        }
+
+        60% {
+            transform: translateY(-2px) scale(1.01);
+            opacity: 1
+        }
+
+        100% {
+            transform: translateY(-6px) scale(1);
+        }
+    }
+
+    /* Non-eligible items appear muted (grayscale icon and reduced opacity) */
+    .modal_bonus_items:not(.eligible) .icon-wrap img {
+        filter: grayscale(100%) contrast(.9) opacity(.55);
+        transition: filter .3s ease, opacity .3s ease;
+    }
+
+    /* Yellow smooth highlight for eligible group (Bootstrap warning) */
+    .modal_bonus_items.eligible .bonus-group-card {
+        border-color: rgba(255, 193, 7, 0.65) !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 0 0 8px rgba(255, 193, 7, 0.06);
+        transition: box-shadow .35s ease, border-color .35s ease, transform .25s ease;
+    }
+
+    .payment-plugin-item {
+        transition: all 0.2s ease;
+    }
+
+    .payment-plugin-flags {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+
+    .payment-plugin-flag {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        overflow: hidden;
+        display: inline-flex;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .payment-plugin-flag img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .payment-plugin-item:hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.05);
+        border-color: var(--bs-primary) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .payment-plugin-item.border-primary {
+        background-color: rgba(var(--bs-primary-rgb), 0.08);
+    }
+
+    #payment_form_container {
+        min-height: 300px;
+    }
+
+    .modal_cost-summary-main.flash {
+        animation: flash-animation 0.5s ease-out;
+    }
+
+    /* Smooth fade transitions for modals */
+    .modal.fade {
+        transition: opacity 0.35s ease, visibility 0.35s ease !important;
+    }
+
+    .modal.fade:not(.show) {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
+    .modal.fade.show {
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+
+    /* Smooth fade for modal backdrop */
+    .modal-backdrop.fade {
+        transition: opacity 0.35s ease !important;
+    }
+
+    .modal-backdrop.fade:not(.show) {
+        opacity: 0 !important;
+    }
+
+    .modal-backdrop.fade.show {
+        opacity: 0.5 !important;
+    }
+
+    #modal_donate.modal-stacked-hidden {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
+    #modal_donate.modal-foreground {
+        z-index: 1070 !important;
+    }
+
+    #modal_payment_systems.show {
+        z-index: 1080 !important;
+    }
+
+    #modal_payment_systems.show~.modal-backdrop {
+        z-index: 1075 !important;
+    }
+
+    /* Elegant pop-in animation for donate modal content */
+    @keyframes modalPopIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.92) rotateY(8deg);
+        }
+
+        50% {
+            transform: scale(1.04) rotateY(-2deg);
+        }
+
+        100% {
+            opacity: 1;
+            transform: scale(1) rotateY(0deg);
+        }
+    }
+
+    /* Elegant pop-out animation for donate modal content */
+    @keyframes modalPopOut {
+        0% {
+            opacity: 1;
+            transform: scale(1) rotateY(0deg);
+        }
+
+        50% {
+            transform: scale(1.02) rotateY(3deg);
+        }
+
+        100% {
+            opacity: 0;
+            transform: scale(0.88) rotateY(-10deg);
+        }
+    }
+
+    #modal_donate.show .modal-dialog {
+        animation: modalPopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    #modal_donate:not(.show) .modal-dialog {
+        animation: modalPopOut 0.4s cubic-bezier(0.36, 0, 0.66, -0.56) forwards;
+    }
+
+    @keyframes flash-animation {
+        0% {
+            color: var(--bs-success);
+            transform: scale(1.1);
+        }
+
+        100% {
+            color: var(--bs-primary);
+            transform: scale(1);
+        }
+    }
+</style>
+
+<script>
+    // Global Bootstrap Modal error handler - add this BEFORE other scripts
+    if (typeof window !== 'undefined') {
+        const originalError = console.error;
+        window.addEventListener('error', function (event) {
+            if (event.message && event.message.includes('_config')) {
+                console.warn('Bootstrap Modal Config Error Caught:', {
+                    message: event.message,
+                    filename: event.filename,
+                    lineno: event.lineno,
+                    stack: event.error ? event.error.stack : 'No stack',
+                    timestamp: new Date().toISOString()
+                });
+                // Return true to prevent the error from propagating
+                event.preventDefault();
+            }
+        }, true);
+    }
+
+    (function ($) {
+        'use strict';
+
+        const ModalBonusManager = (function () {
+            const highlightOneTimeBonusRow = (enteredValue) => {
+                const $cards = $('.one-time-bonus-card-v2');
+                $cards.removeClass('one-time-highlight');
+                let $cardToHighlight = null;
+                let maxCoin = -1;
+
+                $cards.each(function () {
+                    const cardCoin = parseInt($(this).data('coin'));
+                    if (enteredValue >= cardCoin && cardCoin > maxCoin) {
+                        maxCoin = cardCoin;
+                        $cardToHighlight = $(this);
+                    }
+                });
+
+                if ($cardToHighlight) $cardToHighlight.addClass('one-time-highlight');
+            };
+
+            // store original order on first run
+            let _originalOrderSet = false;
+            const ensureOriginalOrder = () => {
+                if (_originalOrderSet) return;
+                const $panels = $('.modal_bonus_items');
+                $panels.each(function (i) { $(this).attr('data-orig-order', i); });
+                _originalOrderSet = true;
+            };
+
+            const selectBonusPanel = (coinCount) => {
+                const $panels = $('.modal_bonus_items');
+                let visibleCount = 0;
+                const count = Number(String(coinCount).replace(/[^0-9.-]+/g, '')) || 0;
+
+                // Find highest tier cost <= count
+                let maxCost = -1;
+                $panels.each(function () {
+                    const raw = $(this).attr('data-cost');
+                    const cost = Number(String(raw).replace(/[^0-9.-]+/g, '')) || 0;
+                    if (count >= cost && cost > maxCost) maxCost = cost;
+                });
+
+                // ensure we have original order recorded
+                ensureOriginalOrder();
+
+                // Mark only panels that exactly match the highest qualifying tier
+                $panels.each(function () {
+                    const raw = $(this).attr('data-cost');
+                    const cost = Number(String(raw).replace(/[^0-9.-]+/g, '')) || 0;
+                    const $el = $(this);
+                    const wasEligible = $el.hasClass('eligible');
+
+                    if (maxCost >= 0 && cost === maxCost) {
+                        $el.addClass('eligible');
+                        visibleCount++;
+                        if (!wasEligible) {
+                            $el.find('.bonus-group-card').addClass('new-eligible');
+                            setTimeout(() => $el.find('.bonus-group-card').removeClass('new-eligible'), 700);
+                        }
+                    } else {
+                        $el.removeClass('eligible');
+                    }
+                });
+
+                // Move eligible panels to the top (sorted by cost desc) and restore order when none
+                const $container = $('.bonus-scroll-container').first();
+                if ($container && $container.length) {
+                    const $eligible = $panels.filter('.eligible').toArray().sort((a, b) => {
+                        return Number($(b).attr('data-cost')) - Number($(a).attr('data-cost'));
+                    });
+
+                    if ($eligible.length > 0) {
+                        // prepend in order so highest-cost eligible is first
+                        $eligible.forEach(el => $container.prepend(el));
+                    } else {
+                        // restore original order
+                        const $all = $panels.toArray().sort((a, b) => {
+                            return Number($(a).attr('data-orig-order')) - Number($(b).attr('data-orig-order'));
+                        });
+                        $all.forEach(el => $container.append(el));
+                    }
+                }
+
+                const $noBonusMsg = $('#no-bonuses-msg-new');
+                if (visibleCount > 0) $noBonusMsg.hide(); else $noBonusMsg.show();
+
+                highlightOneTimeBonusRow(count);
+            };
+
+            return { selectBonusPanel };
+        })();
+
+        const ModalCurrencyManager = (function () {
+            const currencies = {
+                usd: parseFloat('{{USD_val|default(0)|number_format(4, ".", "")}}') || 0,
+                eur: parseFloat('{{EUR_val|default(0)|number_format(4, ".", "")}}') || 0,
+                rub: parseFloat('{{RUB_val|default(0)|number_format(4, ".", "")}}') || 0,
+                uah: parseFloat('{{UAH_val|default(0)|number_format(4, ".", "")}}') || 0
+            };
+            const mainCurrency = '{{ mainCurrency|lower }}';
+
+            const updateCurrencyValues = (coinCount) => {
+                const count = parseInt(coinCount) || 0;
+
+                // Обновляем все значения в сетке
+                $('.modal_currency-value').each(function () {
+                    const code = $(this).data('count');
+                    if (currencies[code] !== undefined) {
+                        $(this).text((count * currencies[code]).toFixed(2));
+                    }
+                });
+
+                // Обновляем главную стоимость
+                if (currencies[mainCurrency] !== undefined) {
+                    const $mainCost = $('.modal_cost-summary-main');
+                    $mainCost.text((count * currencies[mainCurrency]).toFixed(2));
+
+                    // Эффект вспышки
+                    $mainCost.addClass('flash');
+                    setTimeout(() => $mainCost.removeClass('flash'), 500);
+                }
+            };
+            return { updateCurrencyValues };
+        })();
+
+        const PaymentLinkManager = (function () {
+            const $items = () => $('.payment-plugin-item');
+
+            const update = (count) => {
+                const c = parseInt(count) || 0;
+                $items().each(function () {
+                    const $el = $(this);
+                    const base = $el.data('base-href') || $el.attr('href') || '';
+                    if (!base) return;
+                    // normalize: remove trailing slash then append count
+                    const normalized = base.replace(/\/+$/, '');
+                    const newHref = normalized + '/' + c;
+                    $el.attr('href', newHref);
+                });
+            };
+
+            return { update };
+        })();
+
+        const ModalCoinsInputManager = (function () {
+            let slider = null;
+            const $inputField = $('#modal_numberOfCoinsPurchased');
+            const min = parseInt($inputField.attr('min')) || 1;
+            const max = parseInt($inputField.attr('max')) || 10000;
+
+            const initialize = () => {
+                if (slider && slider.noUiSlider) return;
+
+                setupQuantityButtons();
+                initializeSlider();
+
+                $inputField.on('input change', function () {
+                    let val = $(this).val().replace(/[^0-9]/g, '');
+                    let value = parseInt(val);
+                    if (isNaN(value)) return;
+                    if (value > max) value = max;
+                    if (slider && slider.noUiSlider) {
+                        slider.noUiSlider.set(value);
+                    }
+                    updateAll(value);
+                });
+
+                $inputField.on('blur', function () {
+                    let value = parseInt($(this).val()) || min;
+                    if (value < min) value = min;
+                    $(this).val(value);
+                    if (slider && slider.noUiSlider) {
+                        slider.noUiSlider.set(value);
+                    }
+                    updateAll(value);
+                });
+
+                const startVal = parseInt($inputField.val()) || min;
+                updateAll(startVal);
+            };
+
+            const updateAll = (value) => {
+                ModalCurrencyManager.updateCurrencyValues(value);
+                ModalBonusManager.selectBonusPanel(value);
+                // Update payment links to include selected count
+                if (typeof PaymentLinkManager !== 'undefined') PaymentLinkManager.update(value);
+            };
+
+            const setupQuantityButtons = () => {
+                // Improved controls: single step on press, then slow repeating while holding
+                const makeRepeatingControl = ($btn, delta) => {
+                    let repeatTimer = null;
+                    let repeatInterval = null;
+                    const initialDelay = 300; // ms before repeating
+                    const repeatRate = 200; // ms between repeated steps (not fast)
+
+                    const step = () => {
+                        let current = parseInt($inputField.val()) || min;
+                        let next = current + delta;
+                        if (next < min) next = min;
+                        if (next > max) next = max;
+                        if (next !== current) {
+                            $inputField.val(next).trigger('change');
+                        }
+                    };
+
+                    const onPointerDown = (ev) => {
+                        ev.preventDefault();
+                        // immediate single step
+                        step();
+                        // then schedule repeating steps after a small delay
+                        repeatTimer = setTimeout(() => {
+                            repeatInterval = setInterval(step, repeatRate);
+                        }, initialDelay);
+                    };
+
+                    const clearRepeat = () => {
+                        if (repeatTimer) { clearTimeout(repeatTimer); repeatTimer = null; }
+                        if (repeatInterval) { clearInterval(repeatInterval); repeatInterval = null; }
+                    };
+
+                    // Use pointer events to support mouse/touch consistently
+                    $btn.off('pointerdown').on('pointerdown', onPointerDown);
+                    // stop repeating on pointerup/pointercancel/leave
+                    $btn.off('pointerup pointercancel pointerleave').on('pointerup pointercancel pointerleave', clearRepeat);
+                    // also clear if pointer leaves the whole document (safety)
+                    $(document).off('pointerup.repeatingControl').on('pointerup.repeatingControl', clearRepeat);
+                };
+
+                makeRepeatingControl($('#modal_product-quantity-minus'), -1);
+                makeRepeatingControl($('#modal_product-quantity-plus'), +1);
+            };
+
+            const initializeSlider = () => {
+                const sliderElement = document.getElementById('modal_coinsRangeSlider');
+                if (!sliderElement || typeof noUiSlider === 'undefined' || sliderElement.noUiSlider) return;
+
+                try {
+                    const range = { 'min': min, 'max': max };
+                    // Динамически настраиваем нелинейность, если макс. значение большое
+                    if (max > 5000) {
+                        range['20%'] = 500;
+                        range['40%'] = 1000;
+                        range['70%'] = 5000;
+                    }
+
+                    noUiSlider.create(sliderElement, {
+                        start: [parseInt($inputField.val()) || min],
+                        connect: [true, false],
+                        range: range,
+                        step: 1
+                    });
+
+                    sliderElement.noUiSlider.on('update', function (values, handle) {
+                        const value = Math.round(values[handle]);
+                        if ($inputField.val() != value) {
+                            $inputField.val(value).trigger('change');
+                            updateAll(value);
+                        }
+                    });
+                } catch (e) {
+                    console.error("noUiSlider initialization failed:", e);
+                }
+            };
+
+            return { initialize };
+        })();
+
+        $(document).ready(function () {
+            // Preventive patch for Bootstrap Modal _config issue
+            // Ensures all modal instances have proper _config before they're shown
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                const OriginalShow = bootstrap.Modal.prototype.show;
+                bootstrap.Modal.prototype.show = function () {
+                    // Ensure _config exists and has backdrop property
+                    if (!this._config) {
+                        console.warn('Modal instance missing _config, initializing defaults');
+                        this._config = {
+                            backdrop: true,
+                            keyboard: true,
+                            focus: true
+                        };
+                    }
+                    if (!this._config.backdrop) {
+                        this._config.backdrop = true;
+                    }
+                    try {
+                        return OriginalShow.call(this);
+                    } catch (e) {
+                        console.error('Modal.show() error:', e);
+                        throw e;
+                    }
+                };
+            }
+
+            // Wrap Bootstrap modal handling with error protection
+            $(document).on('click', '[data-bs-toggle="modal"]', function (e) {
+                try {
+                    const target = $(this).attr('data-bs-target');
+                    if (target && target.startsWith('#')) {
+                        const elem = document.getElementById(target.substring(1));
+                        if (elem) {
+                            // Validate element structure before Bootstrap handles it
+                            const hasDialog = elem.querySelector('.modal-dialog');
+                            const hasContent = elem.querySelector('.modal-content');
+                            if (!hasDialog || !hasContent) {
+                                console.error('Modal element has invalid structure:', target);
+                                e.preventDefault();
+                                e.stopImmediatePropagation();
+                                return false;
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error('Modal pre-validation error:', err);
+                }
+            });
+
+            $('#modal_donate').on('shown.bs.modal', function () {
+                ModalCoinsInputManager.initialize();
+            });
+
+            const hasBootstrapModalApi = () => {
+                return typeof bootstrap !== 'undefined' && bootstrap.Modal;
+            };
+
+            const hasJqueryModalApi = () => {
+                return typeof $ !== 'undefined' && $.fn && typeof $.fn.modal === 'function';
+            };
+
+            let donateAnchoredByPayment = false;
+            let isReturningToDonate = false;
+            let paymentBackdropElement = null;
+
+            const setDonateGhosted = (ghosted) => {
+                const donateElem = document.getElementById('modal_donate');
+                if (!donateElem) return;
+                donateElem.classList.toggle('modal-stacked-hidden', Boolean(ghosted));
+            };
+
+            const setupPaymentBackdropClick = () => {
+                // Find the backdrop for payment modal and handle clicks
+                setTimeout(() => {
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    if (backdrops.length > 0) {
+                        paymentBackdropElement = backdrops[backdrops.length - 1];
+                        if (paymentBackdropElement) {
+                            paymentBackdropElement.style.cursor = 'pointer';
+                            paymentBackdropElement.addEventListener('click', returnToDonate);
+                        }
+                    }
+                }, 50);
+            };
+
+            const cleanupPaymentBackdrop = () => {
+                if (paymentBackdropElement) {
+                    paymentBackdropElement.removeEventListener('click', returnToDonate);
+                    paymentBackdropElement = null;
+                }
+            };
+
+            const ensureDonateForeground = () => {
+                const donateElem = document.getElementById('modal_donate');
+                if (!donateElem) return;
+
+                donateElem.classList.add('modal-foreground', 'show');
+                donateElem.style.display = 'block';
+                // Ensure donate modal is above any backdrop immediately
+                donateElem.style.zIndex = '2000';
+                donateElem.removeAttribute('aria-hidden');
+                donateElem.setAttribute('aria-modal', 'true');
+                document.body.classList.add('modal-open');
+            };
+
+            // Safe modal instance getter - handles both selectors and elements
+            const getSafeModalInstance = (input) => {
+                if (!hasBootstrapModalApi()) return null;
+
+                let elem = input;
+                // If input is a string selector, try to get the element
+                if (typeof input === 'string') {
+                    elem = document.querySelector(input);
+                    if (!elem) {
+                        console.warn(`Modal element not found for selector: ${input}`);
+                        return null;
+                    }
+                }
+
+                // Validate element
+                if (!elem || !(elem instanceof Element)) {
+                    console.warn('Invalid modal element provided');
+                    return null;
+                }
+
+                // Validate modal structure (must have .modal-dialog and .modal-content)
+                if (!elem.querySelector('.modal-dialog') || !elem.querySelector('.modal-content')) {
+                    console.warn('Modal element missing required .modal-dialog or .modal-content structure');
+                    return null;
+                }
+
+                try {
+                    return bootstrap.Modal.getOrCreateInstance(elem);
+                } catch (e) {
+                    console.error('Failed to initialize modal:', e);
+                    return null;
+                }
+            };
+
+            const getModalInstance = (elem) => {
+                if (!elem || !hasBootstrapModalApi()) return null;
+                return bootstrap.Modal.getOrCreateInstance(elem);
+            };
+
+            const showModal = (elem) => {
+                if (!elem) return;
+
+                const modal = getSafeModalInstance(elem);
+                if (modal) {
+                    modal.show();
+                    return;
+                }
+
+                if (hasJqueryModalApi()) {
+                    $(elem).modal('show');
+                    return;
+                }
+
+                elem.style.display = 'block';
+                elem.classList.add('show');
+                elem.removeAttribute('aria-hidden');
+                elem.setAttribute('aria-modal', 'true');
+                document.body.classList.add('modal-open');
+            };
+
+            const hideModal = (elem) => {
+                if (!elem) return;
+
+                const modal = getSafeModalInstance(elem);
+                if (modal) {
+                    modal.hide();
+                    return;
+                }
+
+                if (hasJqueryModalApi()) {
+                    $(elem).modal('hide');
+                    return;
+                }
+
+                elem.classList.remove('show');
+                elem.style.display = 'none';
+                elem.setAttribute('aria-hidden', 'true');
+                elem.removeAttribute('aria-modal');
+            };
+
+            const openPaymentOverDonate = () => {
+                const donateElem = document.getElementById('modal_donate');
+                const paymentElem = document.getElementById('modal_payment_systems');
+                if (!donateElem || !paymentElem) return;
+
+                donateAnchoredByPayment = true;
+                isReturningToDonate = false;
+
+                // Set donate as ghosted BEFORE showing payment modal
+                setDonateGhosted(true);
+
+                // Show payment modal with proper z-index
+                const modal = getSafeModalInstance(paymentElem);
+                if (modal) {
+                    paymentElem.style.zIndex = '1080';
+                    modal.show();
+                } else if (hasJqueryModalApi()) {
+                    paymentElem.style.zIndex = '1080';
+                    $(paymentElem).modal('show');
+                } else {
+                    paymentElem.style.display = 'block';
+                    paymentElem.style.zIndex = '1080';
+                    paymentElem.classList.add('show');
+                    paymentElem.removeAttribute('aria-hidden');
+                    paymentElem.setAttribute('aria-modal', 'true');
+                }
+
+                setupPaymentBackdropClick();
+            };
+
+            const returnToDonate = (e) => {
+                // Handle both direct calls and event listeners
+                if (e && e.preventDefault) e.preventDefault();
+
+                const paymentElem = document.getElementById('modal_payment_systems');
+                if (!paymentElem) return;
+
+                isReturningToDonate = true;
+
+                const modal = getSafeModalInstance(paymentElem);
+                if (modal) {
+                    modal.hide();
+                } else if (hasJqueryModalApi()) {
+                    $(paymentElem).modal('hide');
+                } else {
+                    hideModal(paymentElem);
+                }
+            };
+
+            $('#modal_donate_next_btn').on('click', function () {
+                openPaymentOverDonate();
+            });
+
+            $('#modal_payment_systems').on('hidden.bs.modal', function () {
+                const donateElem = document.getElementById('modal_donate');
+                cleanupPaymentBackdrop();
+
+                if (isReturningToDonate) {
+                    isReturningToDonate = false;
+                    donateAnchoredByPayment = false;
+                    setDonateGhosted(false);
+                    ensureDonateForeground();
+                    return;
+                }
+
+                if (donateAnchoredByPayment && donateElem) {
+                    donateAnchoredByPayment = false;
+                    setDonateGhosted(false);
+                    hideModal(donateElem);
+                }
+            });
+
+            $('#modal_donate').on('hidden.bs.modal', function () {
+                donateAnchoredByPayment = false;
+                isReturningToDonate = false;
+                setDonateGhosted(false);
+                this.classList.remove('modal-foreground');
+                cleanupPaymentBackdrop();
+                try { this.style.zIndex = ''; } catch (e) { }
+            });
+
+            // Ensure when opening donate modal any leftover manual backdrops/overlays are cleaned
+            // and the donate modal is forced to foreground to avoid appearing under backdrop.
+            $('#modal_donate').on('show.bs.modal', function () {
+                // remove any manual artifacts that could cover the modal
+                try {
+                    document.querySelectorAll('.modal-backdrop.manual-backdrop, .modal-switch-overlay').forEach(el => el.remove());
+                } catch (e) { /* ignore */ }
+                ensureDonateForeground();
+                // small delay to ensure Bootstrap attaches its own backdrop beneath the modal
+                setTimeout(() => {
+                    const donateElem = document.getElementById('modal_donate');
+                    if (donateElem) {
+                        donateElem.classList.add('modal-foreground');
+                        donateElem.style.zIndex = '1070';
+                    }
+                }, 8);
+            });
+
+            // Back button: close payment modal and return to donate modal underneath
+            $('#payment_header_back_btn').on('click', returnToDonate);
+
+            // Auto-open donate modal when URL contains #donate (e.g. /main#donate)
+            try {
+                if (window.location.hash && window.location.hash.toLowerCase() === '#donate') {
+                    const donateElem = document.getElementById('modal_donate');
+                    if (donateElem) {
+                        // Prefer Bootstrap modal API if available
+                        if (hasBootstrapModalApi()) {
+                            const donateModal = getSafeModalInstance(donateElem);
+                            if (donateModal) {
+                                donateElem.style.zIndex = '1070';
+                                donateModal.show();
+                            }
+                        } else if (hasJqueryModalApi()) {
+                            donateElem.style.zIndex = '1070';
+                            $(donateElem).modal('show');
+                        } else {
+                            donateElem.style.display = 'block';
+                            donateElem.style.zIndex = '1070';
+                            donateElem.classList.add('show');
+                            donateElem.removeAttribute('aria-hidden');
+                            donateElem.setAttribute('aria-modal', 'true');
+                            document.body.classList.add('modal-open');
+                        }
+
+                        setTimeout(() => { try { ModalCoinsInputManager.initialize(); } catch (e) { } }, 50);
+
+                        // Remove hash when modal is closed to avoid re-opening on refresh
+                        const removeHash = () => {
+                            try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch (e) { }
+                        };
+
+                        if (hasBootstrapModalApi() || hasJqueryModalApi()) {
+                            $('#modal_donate').on('hidden.bs.modal', removeHash);
+                        } else {
+                            // Fallback: attach to close buttons inside modal
+                            const closeBtns = donateElem.querySelectorAll('[data-bs-dismiss="modal"], .btn-close');
+                            closeBtns.forEach(btn => btn.addEventListener('click', removeHash));
+                        }
+                    }
+                }
+            } catch (e) { /* ignore errors */ }
+
+
+        });
+
+    })(jQuery);
+</script>
