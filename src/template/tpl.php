@@ -575,24 +575,13 @@ class tpl
             if (empty($text)) {
                 return '';
             }
-            
-            // Remove BBCode tags [tag]...[/tag]
             $text = preg_replace('/\[(.*?)\]/s', '', $text);
-            
-            // Remove HTML tags
             $text = strip_tags($text);
-            
-            // Decode HTML entities
             $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
-            
-            // Clean up extra whitespace
             $text = trim(preg_replace('/\s+/', ' ', $text));
-            
-            // Truncate to max length
             if (mb_strlen($text, 'utf-8') > $maxLength) {
                 $text = mb_substr($text, 0, $maxLength - 3, 'utf-8') . '...';
             }
-            
             return $text;
         }));
 
