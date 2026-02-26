@@ -105,7 +105,7 @@ class severpay extends \Ofey\Logan22\model\donate\pay_abstract {
             exit;
         }
 
-        // \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
+        \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
         $inputJSON = file_get_contents('php://input');
 
         $input = json_decode($inputJSON, TRUE);
