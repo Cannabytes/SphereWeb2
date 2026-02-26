@@ -147,6 +147,26 @@ let winningItemId = null;
 let winningReceivedTime = null;
 let winningItemCount = 0; // Переменная для количества
 
+// Функция форматирования количества (1-3, 1k-3k, 1kk-3kk)
+function formatCountRange(min, max) {
+    function formatNumber(num) {
+        if (num >= 1000000) {
+            return (num / 1000000).toFixed(0) + 'kk';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(0) + 'k';
+        }
+        return num.toString();
+    }
+    
+    const minFormatted = formatNumber(min);
+    const maxFormatted = formatNumber(max);
+    
+    if (minFormatted === maxFormatted) {
+        return `(${minFormatted})`;
+    }
+    return `(${minFormatted}-${maxFormatted})`;
+}
+
 // Массив исходных предметов
 const items = [
     {% for wr in winroll.items %}
@@ -154,8 +174,10 @@ const items = [
 {% set enchant = wr.enchant %}
 {
     id: "{{ wr.id }}",
-          name: "{{ enchant > 0 ? '+' ~ enchant ~ ' ' ~ item.getItemName() | raw : item.getItemName() | raw }}",
-      image: "{{ item.getIcon() }}"
+    name: "{{ enchant > 0 ? '+' ~ enchant ~ ' ' ~ item.getItemName() | raw : item.getItemName() | raw }}",
+    image: "{{ item.getIcon() }}",
+    minCount: {{ wr.minCount }},
+    maxCount: {{ wr.maxCount }}
 },
 {% endfor %}
 ];
@@ -259,9 +281,10 @@ repeatedItems.forEach((itemObj) => {
     imgEl.width = 32;
     imgEl.height = 32;
 
-    // Название
+    // Название с форматированием количества
     const nameEl = document.createElement("div");
-    nameEl.textContent = itemObj.name;
+    const countRange = formatCountRange(itemObj.minCount, itemObj.maxCount);
+    nameEl.textContent = itemObj.name + " " + countRange;
 
     // Сохраняем важную инфу
     div.dataset.id = itemObj.id;
