@@ -6,7 +6,8 @@ use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\user;
 
-class severpay extends \Ofey\Logan22\model\donate\pay_abstract {
+class severpay extends \Ofey\Logan22\model\donate\pay_abstract
+{
 
     //Включена/отключена платежная система
     protected static bool $enable = true;
@@ -37,11 +38,12 @@ class severpay extends \Ofey\Logan22\model\donate\pay_abstract {
      * @return void
      * Генерируем ссылку для перехода на сайт оплаты
      */
-    function create_link(): void {
+    function create_link(): void
+    {
         user::self()->isAuth() ?: board::notice(false, lang::get_phrase(234));
         donate::isOnlyAdmin(self::class);
 
-        if(empty(self::getConfigValue('mid')) OR empty(self::getConfigValue('token'))){
+        if (empty(self::getConfigValue('mid')) or empty(self::getConfigValue('token'))) {
             board::error("SeverPay configuration is empty");
         }
         filter_input(INPUT_POST, 'count', FILTER_VALIDATE_INT) ?: board::notice(false, "Введите сумму цифрой");
@@ -57,7 +59,7 @@ class severpay extends \Ofey\Logan22\model\donate\pay_abstract {
 
         $currency = config::load()->donate()->getDonateSystems(get_called_class())?->getCurrency() ?? self::getCurrency();
         $amount = self::sphereCoinSmartCalc($_POST['count'], $donate->getRatio($currency), $donate->getSphereCoinCost());
-        
+
         $mid = self::getConfigValue('mid');
         $token = self::getConfigValue('token');
         $order_id = user::self()->getId() . '_' . time();
@@ -99,9 +101,10 @@ class severpay extends \Ofey\Logan22\model\donate\pay_abstract {
     }
 
     //Получение информации об оплате
-    function webhook(): void {
+    function webhook(): void
+    {
         if (!(config::load()->donate()->getDonateSystems('severpay')?->isEnable() ?? false)) {
-             echo 'disabled';
+            echo 'disabled';
             exit;
         }
 
@@ -121,27 +124,37 @@ class severpay extends \Ofey\Logan22\model\donate\pay_abstract {
         $sign = hash_hmac("sha256", json_encode($input), $token);
 
         if (!hash_equals($input_sign, $sign)) {
-            die('Wrong sign');
+            http_response_code(400);
+            echo json_encode([
+                'status' => false,
+                'msg' => 'Wrong sign'
+            ]);
+            exit;
         }
 
         if ($input['type'] !== 'payin') {
-            die('Invalid type');
+            http_response_code(400);
+            echo json_encode([
+                'status' => false,
+                'msg' => 'Invalid type'
+            ]);
+            exit;
         }
 
         $data = $input['data'];
         if ($data['status'] === 'success') {
-            
+
             $amount = $data['amount'];
             $order_id = $data['order_id'];
             $user_id = explode('_', $order_id)[0];
 
             try {
-                donate::control_uuid($input_sign, get_called_class());
+                donate::control_uuid(uuid: $input_sign, pay_system_name: get_called_class(), request: $data);
             } catch (\Throwable $e) {
                 echo json_encode(['status' => false, 'msg' => 'UUID control failed']);
                 return;
             }
-            
+
             try {
                 $amount = donate::currency($amount, $data['currency']);
             } catch (\Throwable $e) {
@@ -152,12 +165,11 @@ class severpay extends \Ofey\Logan22\model\donate\pay_abstract {
             try {
                 self::telegramNotice(user::getUserId($user_id), $data['amount'], $data['currency'], $amount, get_called_class());
             } catch (\Throwable $e) {
-               
             }
 
             try {
                 user::getUserId($user_id)->donateAdd($amount)
-                ->AddHistoryDonate(amount: $amount, pay_system: get_called_class(), input: $inputJSON );
+                    ->AddHistoryDonate(amount: $amount, pay_system: get_called_class(), input: $inputJSON);
             } catch (\Throwable $e) {
                 echo json_encode(['status' => false, 'msg' => 'Failed to add funds']);
                 return;
@@ -166,7 +178,6 @@ class severpay extends \Ofey\Logan22\model\donate\pay_abstract {
             try {
                 donate::addUserBonus($user_id, $amount);
             } catch (\Throwable $e) {
-                
             }
 
             echo json_encode(['status' => true]);
@@ -174,5 +185,4 @@ class severpay extends \Ofey\Logan22\model\donate\pay_abstract {
             echo json_encode(['status' => false, 'msg' => 'Payment not successful']);
         }
     }
-
 }
