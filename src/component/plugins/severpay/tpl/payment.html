@@ -48,7 +48,7 @@
               <label class="form-label fw-semibold">{{ phrase('severpay_amount_label') }}</label>
               <div class="input-group input-group-lg">
                 <input type="number" class="form-control" id="amount" name="amount" value="{{ defaultAmount }}" step="1" required>
-                <span class="input-group-text" id="currencyLabel">{{ merchants[0].currency|default('RUB') }}</span>
+                <span class="input-group-text" id="currencyLabel">Donate Coin</span>
               </div>
               <small class="text-muted d-block mt-2">
                 {{ phrase('severpay_minimum') }}: {{ minAmount }}, {{ phrase('severpay_maximum') }}: {{ maxAmount }}
@@ -73,9 +73,7 @@
 <script>
 $(function() {
   function updateCurrencyLabel() {
-    const $selectedCard = $('#merchantCards .merchant-card.selected');
-    const currency = $selectedCard.length ? $selectedCard.data('currency') : ($('#merchant_index').val() ? $('#merchantCards .merchant-card').first().data('currency') : 'RUB');
-    $('#currencyLabel').text(currency || 'RUB');
+    $('#currencyLabel').text('Donate Coin');
   }
 
   // Merchant card selection

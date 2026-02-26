@@ -84,7 +84,7 @@ class severpay
         return empty($normalized) ? ['world'] : $normalized;
     }
 
-    
+
 
     private function getMerchants(): array
     {
@@ -182,10 +182,15 @@ class severpay
             redirect::location('/login');
             return;
         }
-
         $merchants = $this->getMerchants();
+
         if (empty($merchants)) {
-            board::error(lang::get_phrase('severpay_no_merchants'));
+            if ($this->isAjax()) {
+                board::error(lang::get_phrase('severpay_no_merchants'));
+            }else{
+                echo 'Не настроено ни одного мерчанта. Обратитесь к администратору.';
+                exit;
+            }
         }
 
         $donateConfig = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
