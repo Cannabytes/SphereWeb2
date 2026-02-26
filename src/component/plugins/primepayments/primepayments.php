@@ -141,6 +141,10 @@ class primepayments
 
     public function createPayment(): void
     {
+        if (!$this->getPluginSetting('enabled', false)) {
+            board::error('Plugin is disabled');
+        }
+
         if (!user::self()->isAuth()) {
             board::error(lang::get_phrase(234));
         }
@@ -213,6 +217,11 @@ class primepayments
 
     public function webhook(): void
     {
+        if (!$this->getPluginSetting('enabled', false)) {
+            echo 'disabled';
+            return;
+        }
+
         if (!$this->isConfigured()) {
             echo 'disabled';
             return;

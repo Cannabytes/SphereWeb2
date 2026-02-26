@@ -210,6 +210,8 @@ class cryptocloud
         $currency = $this->getCurrency();
         $donateConfig = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
 
+        $count = donate::sphereCoinSmartCalc($count, $donateConfig->getRatio($currency), $donateConfig->getSphereCoinCost());
+
         if ($count < $donateConfig->getMinSummaPaySphereCoin()) {
             board::error('Минимальное пополнение: ' . $donateConfig->getMinSummaPaySphereCoin());
         }

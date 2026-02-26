@@ -341,7 +341,6 @@ class freekassa
         if (!user::self()->isAuth()) {
             board::error(lang::get_phrase(234));
         }
-
         $amount = (float)($_POST['amount'] ?? 0);
         $payment_method = (int)($_POST['payment_method'] ?? 0);
 

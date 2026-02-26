@@ -5,7 +5,7 @@ return [
     "PLUGIN_ENABLE" => true,
     "PLUGIN_NAME" => "PayPal",
     "PLUGIN_PHRASE_ID" => "paypal",
-    "PLUGIN_VERSION" => "1.0.0",
+    "PLUGIN_VERSION" => "2.0.0",
     "PLUGIN_AUTHOR" => "Logan22",
     "PLUGIN_GITHUB" => "",
     "PLUGIN_DESCRIPTION" => "paypal_desc",

@@ -217,6 +217,11 @@ class betaTransferDonate
      */
     public function createPayment(): void
     {
+        $settings = plugin::getSetting($this->getNameClass());
+        if (!($settings['enabled'] ?? false)) {
+            board::error('Plugin is disabled');
+        }
+
         if (!user::self()->isAuth()) {
             board::notice(false, lang::get_phrase(234));
         }
@@ -243,20 +248,25 @@ class betaTransferDonate
 
         $method = $paymentMethods[$paymentMethod];
         $currency = $method['currency'];
-  
+        $userAmount = donate::sphereCoinToMoney($userAmount, $currency);
+
+        $server = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId());
+        $donate = $server->donate();
+        $amount = donate::sphereCoinSmartCalc($userAmount, $donate->getRatio($currency), $donate->getSphereCoinCost());
+
         // Проверка лимитов на итоговую сумму
-        if ($userAmount < $method['min']) {
+        if ($amount < $method['min']) {
             board::error("Минимальная сумма пополнения: {$method['min']} {$currency}");
         }
 
-        if ($userAmount > $method['max']) {
+        if ($amount > $method['max']) {
             board::error("Максимальная сумма пополнения: {$method['max']} {$currency}");
         }
 
         $orderId = user::self()->getId() . '_' . time() . '_' . mt_rand(1000, 9999);
 
         $options = [
-            'amount' => round($userAmount, 2),
+            'amount' => round($amount, 2),
             'currency' => $currency,
             'orderId' => $orderId,
             'paymentSystem' => $method['paymentSystem'],
@@ -365,6 +375,9 @@ class betaTransferDonate
     public function webhook(): void
     {
         $settings = plugin::getSetting($this->getNameClass());
+        if (!($settings['enabled'] ?? false)) {
+            die('Plugin disabled');
+        }
 
         if (empty($settings['public_api_key']) || empty($settings['secret_api_key'])) {
             die('FAIL: API keys not configured');

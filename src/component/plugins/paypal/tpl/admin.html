@@ -11,66 +11,100 @@
           </svg>
         </a>
         <div>
-          <div class="h5 mb-0">PayPal</div>
-          <div class="text-muted small">Управление PayPal Checkout и webhook</div>
+          <div class="h5 mb-0">{{ phrase('paypal_admin_title') }}</div>
+          <div class="text-muted small">{{ phrase('paypal_admin_description') }}</div>
         </div>
       </div>
 
       <div class="custom-toggle-switch d-flex align-items-center">
         <input class="pluginActivating" id="enablePlugin" name="{{ pluginName }}" type="checkbox" {% if getPluginActive(pluginName) %}checked{% endif %}>
         <label for="enablePlugin" class="label-success ms-2"></label>
-        <span class="ms-3 text-muted small">Активировать plugin</span>
+        <span class="ms-3 text-muted small">{{ phrase('paypal_activate_plugin') }}</span>
       </div>
     </div>
 
     <div class="card-body">
       {% if not getPluginActive(pluginName) %}
       <div class="alert alert-warning" role="alert">
-        Plugin выключен. Включите toggle выше.
+        {{ phrase('paypal_plugin_disabled') }}
       </div>
       {% endif %}
 
       <form id="paypalSettingsForm" method="post" action="/admin/plugin/paypal/save">
         <div class="row g-3 mb-3">
           <div class="col-12">
-            <label class="form-label">Webhook URL</label>
+            <label class="form-label">{{ phrase('paypal_webhook_url') }}</label>
             <div class="input-group">
               <div id="webhookUrlText" class="form-control">{{ webhookUrl }}</div>
-              <button id="copyWebhookBtn" type="button" class="btn btn-outline-secondary" title="Копировать">Копировать</button>
+              <button id="copyWebhookBtn" type="button" class="btn btn-outline-secondary" title="Copy">{{ phrase('paypal_webhook_copy') }}</button>
             </div>
-            <div class="form-text">Укажите этот URL в PayPal Webhooks.</div>
+            <div class="form-text">{{ phrase('paypal_webhook_note') }}</div>
           </div>
         </div>
 
         <div class="card mb-3 shadow-sm">
-          <div class="card-header bg-light">
-            <strong><i class="bi bi-key me-2"></i>PayPal Credentials</strong>
+          <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <strong><i class="bi bi-key me-2"></i>{{ phrase('paypal_accounts_title') }}</strong>
+            <button id="addAccount" type="button" class="btn btn-success btn-sm">
+              <i class="bi bi-plus-circle"></i> {{ phrase('paypal_add_account') }}
+            </button>
           </div>
-          <div class="card-body">
-            <div class="row g-3">
-              <div class="col-md-3">
-                <label class="form-label">Mode</label>
-                <select class="form-select" name="mode" required>
-                  <option value="LIVE" {{ mode == 'LIVE' ? 'selected' : '' }}>LIVE</option>
-                  <option value="SANDBOX" {{ mode == 'SANDBOX' ? 'selected' : '' }}>SANDBOX</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Валюта</label>
-                <input type="text" class="form-control" name="currency" value="{{ currency }}" maxlength="10" placeholder="USD">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Client ID (обязательно)</label>
-                <input type="text" class="form-control" name="client_id" value="{{ clientId }}" placeholder="PayPal client id" required>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Secret key (обязательно)</label>
-                <input type="text" class="form-control" name="secret_key" value="{{ secretKey }}" placeholder="PayPal secret" required>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Webhook ID (опционально, но рекомендуется)</label>
-                <input type="text" class="form-control" name="webhook_id" value="{{ webhookId }}" placeholder="WH-...">
-              </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="ps-4" style="width: 30%">{{ phrase('paypal_client_id_label') }}</th>
+                    <th style="width: 30%">{{ phrase('paypal_client_secret_label') }}</th>
+                    <th style="width: 15%">{{ phrase('paypal_mode_label') }}</th>
+                    <th style="width: 15%">{{ phrase('paypal_currency_label') }}</th>
+                    <th style="width: 10%" class="text-center">{{ phrase('paypal_action_label') }}</th>
+                  </tr>
+                </thead>
+                <tbody id="accountRows">
+                  {% for account in accounts %}
+                  <tr class="account-row" data-index="{{ loop.index0 }}">
+                    <td class="ps-4">
+                      <input type="text" class="form-control form-control-sm" name="accounts[{{ loop.index0 }}][client_id]" value="{{ account.client_id }}" placeholder="Client ID" required>
+                    </td>
+                    <td>
+                      <input type="password" class="form-control form-control-sm" name="accounts[{{ loop.index0 }}][client_secret]" value="{{ account.client_secret }}" placeholder="Client Secret" required>
+                    </td>
+                    <td>
+                      <select class="form-select form-select-sm" name="accounts[{{ loop.index0 }}][mode]">
+                        <option value="LIVE" {% if account.mode == 'LIVE' %}selected{% endif %}>{{ phrase('paypal_live') }}</option>
+                        <option value="SANDBOX" {% if account.mode == 'SANDBOX' %}selected{% endif %}>{{ phrase('paypal_sandbox') }}</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select class="form-select form-select-sm" name="accounts[{{ loop.index0 }}][currency]">
+                        <option value="USD" {% if account.currency == 'USD' %}selected{% endif %}>USD</option>
+                        <option value="EUR" {% if account.currency == 'EUR' %}selected{% endif %}>EUR</option>
+                        <option value="GBP" {% if account.currency == 'GBP' %}selected{% endif %}>GBP</option>
+                        <option value="CAD" {% if account.currency == 'CAD' %}selected{% endif %}>CAD</option>
+                        <option value="AUD" {% if account.currency == 'AUD' %}selected{% endif %}>AUD</option>
+                        <option value="JPY" {% if account.currency == 'JPY' %}selected{% endif %}>JPY</option>
+                        <option value="CNY" {% if account.currency == 'CNY' %}selected{% endif %}>CNY</option>
+                        <option value="INR" {% if account.currency == 'INR' %}selected{% endif %}>INR</option>
+                        <option value="MXN" {% if account.currency == 'MXN' %}selected{% endif %}>MXN</option>
+                        <option value="BRL" {% if account.currency == 'BRL' %}selected{% endif %}>BRL</option>
+                        <option value="RUB" {% if account.currency == 'RUB' %}selected{% endif %}>RUB</option>
+                      </select>
+                    </td>
+                    <td class="text-center">
+                      <button type="button" class="btn btn-sm btn-outline-danger remove-account" title="Delete">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="p-3 bg-light border-top">
+              <small class="text-muted">
+                {{ phrase('paypal_accounts_description') }}
+              </small>
             </div>
           </div>
         </div>
@@ -79,7 +113,7 @@
         {% set countryList = {'en': 'English'}|merge(getCountryList()) %}
         <div class="card mb-3 shadow-sm">
           <div class="card-header bg-light">
-            <strong><i class="bi bi-globe2 me-2"></i>Поддерживаемые страны</strong>
+            <strong><i class="bi bi-globe2 me-2"></i>{{ phrase('paypal_supported_countries') }}</strong>
           </div>
           <div class="card-body" style="max-height: 300px; overflow-y: auto;">
             <div class="row">
@@ -105,7 +139,7 @@
 
         <div class="text-end">
           <button type="submit" class="btn btn-primary">
-            <i class="bi bi-save"></i> Сохранить настройки
+            <i class="bi bi-save"></i> {{ phrase('paypal_save_settings') }}
           </button>
         </div>
       </form>
@@ -117,7 +151,7 @@
 {% block js %}
 <script>
 $(function() {
-  const pluginActive = '{{ getPluginActive(pluginName) ? "1" : "0" }}' === '1';
+  const pluginActive = {{ getPluginActive(pluginName) ? 'true' : 'false' }};
   if (!pluginActive) {
     $('#paypalSettingsForm :input').prop('disabled', true);
     $('#enablePlugin').prop('disabled', false);
@@ -135,8 +169,61 @@ $(function() {
     });
   });
 
+  function reindexRows() {
+    $('#accountRows .account-row').each(function(i) {
+      $(this).attr('data-index', i);
+      $(this).find('[name]').each(function() {
+        const name = $(this).attr('name');
+        if (!name) return;
+        $(this).attr('name', name.replace(/accounts\[\d+\]/, 'accounts[' + i + ']'));
+      });
+    });
+  }
+
+  $('#addAccount').on('click', function() {
+    const idx = $('#accountRows .account-row').length;
+    const $row = $(
+      '<tr class="account-row" data-index="' + idx + '">' +
+        '<td class="ps-4"><input type="text" class="form-control form-control-sm" name="accounts[' + idx + '][client_id]" value="" placeholder="Client ID" required></td>' +
+        '<td><input type="password" class="form-control form-control-sm" name="accounts[' + idx + '][client_secret]" value="" placeholder="Client Secret" required></td>' +
+        '<td>' +
+          '<select class="form-select form-select-sm" name="accounts[' + idx + '][mode]">' +
+            '<option value="LIVE">LIVE</option>' +
+            '<option value="SANDBOX">SANDBOX</option>' +
+          '</select>' +
+        '</td>' +
+        '<td>' +
+          '<select class="form-select form-select-sm" name="accounts[' + idx + '][currency]">' +
+            '<option value="USD">USD</option>' +
+            '<option value="EUR">EUR</option>' +
+            '<option value="GBP">GBP</option>' +
+            '<option value="CAD">CAD</option>' +
+            '<option value="AUD">AUD</option>' +
+            '<option value="JPY">JPY</option>' +
+            '<option value="CNY">CNY</option>' +
+            '<option value="INR">INR</option>' +
+            '<option value="MXN">MXN</option>' +
+            '<option value="BRL">BRL</option>' +
+            '<option value="RUB">RUB</option>' +
+          '</select>' +
+        '</td>' +
+        '<td class="text-center">' +
+          '<button type="button" class="btn btn-sm btn-outline-danger remove-account" title="Delete"><i class="bi bi-trash"></i></button>' +
+        '</td>' +
+      '</tr>'
+    );
+    $('#accountRows').append($row);
+    reindexRows();
+  });
+
+  $(document).on('click', '.remove-account', function() {
+    $(this).closest('.account-row').remove();
+    reindexRows();
+  });
+
   $('#paypalSettingsForm').on('submit', function(e) {
     e.preventDefault();
+    reindexRows();
     AjaxSend('/admin/plugin/paypal/save', 'POST', $(this).serialize());
   });
 
@@ -145,18 +232,21 @@ $(function() {
     if (!url) return;
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(url).then(function() {
-        board.success('Скопировано в буфер обмена');
+        board.success('Copied to clipboard');
       }).catch(function() {
-        board.error('Не удалось скопировать');
+        board.error('Failed to copy');
       });
     } else {
       const $temp = $('<input>');
       $('body').append($temp);
       $temp.val(url).select();
-      try { document.execCommand('copy'); board.success('Скопировано в буфер обмена'); } catch (e) { board.error('Не удалось скопировать'); }
+      try { document.execCommand('copy'); board.success('Copied to clipboard'); } catch (e) { board.error('Failed to copy'); }
       $temp.remove();
     }
   });
+
+  reindexRows();
 });
+
 </script>
 {% endblock %}

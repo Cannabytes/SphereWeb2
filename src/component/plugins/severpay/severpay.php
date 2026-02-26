@@ -208,6 +208,10 @@ class severpay
 
     public function createPayment(): void
     {
+        if (!$this->getPluginSetting('enabled', false)) {
+            board::error(lang::get_phrase('severpay_plugin_disabled'));
+        }
+
         if (!user::self()->isAuth()) {
             board::error(lang::get_phrase(234));
         }
@@ -288,6 +292,11 @@ class severpay
 
     public function webhook(): void
     {
+        if (!$this->getPluginSetting('enabled', false)) {
+            echo json_encode(['status' => false, 'msg' => 'Plugin disabled']);
+            return;
+        }
+
         $merchants = $this->getMerchants();
         if (empty($merchants)) {
             echo json_encode(['status' => false, 'msg' => 'No merchant configured']);
