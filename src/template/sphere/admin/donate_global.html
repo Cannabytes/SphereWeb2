@@ -19,14 +19,52 @@
                             </svg>
                         </a>
                         {{ phrase('Donation and Reward Settings') }} • Bonus
+                        {% if allServers|length > 1 and currentServer %}
+                        <span class="ms-3">
+                            <span class="badge bg-primary">{{ currentServer.getName() }} x{{ currentServer.getRateExp() }}</span>
+                        </span>
+                        {% endif %}
                     </div>
-                    <div class="d-flex">
+                    <div class="d-flex gap-2">
+                        {% if allServers|length > 1 %}
+                        <div class="btn-group btn-group-sm" role="group">
+                            {% for server in allServers %}
+                            <a href="/admin/donate/bonus?serverId={{ server.getId() }}" 
+                               class="btn btn-sm {% if server.getId() == currentServerId %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                                {{ server.getName() }} x{{ server.getRateExp() }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Copy settings dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-info dropdown-toggle" type="button" id="copySettingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ri-file-copy-line me-1"></i> Загрузить из другого сервера
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="copySettingsDropdown">
+                                {% for server in allServers %}
+                                {% if server.getId() != currentServerId %}
+                                <li>
+                                    <a class="dropdown-item copyServerSettings" href="javascript:void(0);" data-source-server-id="{{ server.getId() }}" data-source-server-name="{{ server.getName() }}">
+                                        {{ server.getName() }} x{{ server.getRateExp() }}
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                        
                         <button
                             class="btn btn-sm btn-success btn-wave waves-light waves-effect waves-light saveDonateConfig"><i
                                 class="ri-add-line fw-semibold align-middle me-1"></i> {{ phrase(271) }}</button>
                     </div>
                 </div>
                 <div class="card-body">
+                    <!-- Hidden field to store current serverId -->
+                    <input type="hidden" id="currentServerId" value="{{ currentServerId }}">
+                    <input type="hidden" id="currentServerName" value="{% if currentServer %}{{ currentServer.getName() }}{% endif %}">
+                    
                     <div class="alert alert-primary alert-dismissible fade show custom-alert-icon shadow-sm"
                         role="alert">
                         <svg class="svg-primary" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24"
@@ -594,6 +632,7 @@
         });
 
         AjaxSend('/admin/donate/bonus/save', 'POST', {
+            serverId: parseInt($('#currentServerId').val()),
             minSummaPaySphereCoin: $('#minSummaPaySphereCoin').val(),
             maxSummaPaySphereCoin: $('#maxSummaPaySphereCoin').val(),
             defaultSummaPaySphereCoin: $('#defaultSummaPaySphereCoin').val(),
@@ -839,6 +878,9 @@
             url: '/admin/donate/bonus/get',
             type: 'POST',
             dataType: 'json',
+            data: {
+                serverId: parseInt($('#currentServerId').val())
+            },
             success: function (data) {
                 if (data) {
                     fillFormData(data);
@@ -1031,6 +1073,24 @@
                     value: selectedValue,
                     label: selectedValue
                 }]
+            });
+        }
+    });
+
+    // Handle copying settings from other server
+    $(document).on('click', '.copyServerSettings', function () {
+        var sourceServerId = $(this).data('source-server-id');
+        var sourceServerName = $(this).data('source-server-name');
+        var targetServerId = parseInt($('#currentServerId').val());
+        var targetServerName = $('#currentServerName').val();
+
+        if (confirm('Вы уверены что хотите копировать настройки с сервера "' + sourceServerName + '" на сервер "' + targetServerName + '"?\n\nТекущие настройки целевого сервера будут перезаписаны!')) {
+            AjaxSend('/admin/donate/bonus/copy', 'POST', {
+                sourceServerId: sourceServerId,
+                targetServerId: targetServerId
+            }, false).then(function(response) {
+                // Reload the form with new settings
+                loadDonateSettings();
             });
         }
     });

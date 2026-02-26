@@ -40,10 +40,32 @@ class donateGlobal
     {
         validation::user_protection("admin");
 
-        $globalDonate = new donate(0);
+        // Get serverId from URL parameter or use global (0)
+        $serverId = (int)($_GET['serverId'] ?? 0);
+        
+        // Get all servers for navigation
+        $servers = \Ofey\Logan22\model\server\server::getServerAll() ?? [];
+        
+        // Get current server info
+        $currentServer = null;
+        if ($serverId === 0) {
+            // For global settings, create a dummy server object
+            $currentServer = (object)[
+                'id' => 0,
+                'name' => 'Global',
+                'rateExp' => 1
+            ];
+        } else {
+            $currentServer = \Ofey\Logan22\model\server\server::getServer($serverId);
+        }
+
+        $globalDonate = new donate($serverId);
 
         tpl::addVar([
             'globalDonate' => $globalDonate,
+            'currentServerId' => $serverId,
+            'currentServer' => $currentServer,
+            'allServers' => $servers,
         ]);
 
         tpl::display('/admin/donate_global.html');
@@ -52,6 +74,9 @@ class donateGlobal
     public static function save(): void
     {
         validation::user_protection("admin");
+
+        // Get serverId from POST data
+        $serverId = (int)($_POST['serverId'] ?? 0);
 
         $post = json_encode($_POST, JSON_UNESCAPED_UNICODE);
         if (!$post) {
@@ -70,12 +95,14 @@ class donateGlobal
             }
         }
 
-        $data['serverId'] = 0;
+        // Use serverId from POST
+        $data['serverId'] = $serverId;
         $post = json_encode($data, JSON_UNESCAPED_UNICODE);
 
-        sql::sql("DELETE FROM `settings` WHERE `key` = '__config_donate__' AND serverId = 0");
-        sql::run("INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES ('__config_donate__', ?, 0, ?)", [
+        sql::sql("DELETE FROM `settings` WHERE `key` = '__config_donate__' AND serverId = ?", [$serverId]);
+        sql::run("INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES ('__config_donate__', ?, ?, ?)", [
             $post,
+            $serverId,
             time::mysql(),
         ]);
 
@@ -87,7 +114,10 @@ class donateGlobal
     {
         validation::user_protection("admin");
 
-        $row = sql::getRow("SELECT `setting` FROM `settings` WHERE `key` = '__config_donate__' AND serverId = 0");
+        // Get serverId from POST data
+        $serverId = (int)($_POST['serverId'] ?? 0);
+
+        $row = sql::getRow("SELECT `setting` FROM `settings` WHERE `key` = '__config_donate__' AND serverId = ?", [$serverId]);
 
         header('Content-Type: application/json; charset=utf-8');
         if ($row && !empty($row['setting'])) {
@@ -96,5 +126,33 @@ class donateGlobal
         }
 
         echo '{}';
+    }
+
+    public static function copySettingsFromServer(): void
+    {
+        validation::user_protection("admin");
+
+        $sourceServerId = (int)($_POST['sourceServerId'] ?? 0);
+        $targetServerId = (int)($_POST['targetServerId'] ?? 0);
+
+        // Get settings from source server
+        $sourceRow = sql::getRow("SELECT `setting` FROM `settings` WHERE `key` = '__config_donate__' AND serverId = ?", [$sourceServerId]);
+
+        if (!$sourceRow || empty($sourceRow['setting'])) {
+            board::error("Настройки для исходного сервера не найдены");
+            return;
+        }
+
+        // Copy settings to target server
+        $setting = $sourceRow['setting'];
+        sql::sql("DELETE FROM `settings` WHERE `key` = '__config_donate__' AND serverId = ?", [$targetServerId]);
+        sql::run("INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES ('__config_donate__', ?, ?, ?)", [
+            $setting,
+            $targetServerId,
+            time::mysql(),
+        ]);
+
+        user::self()->addLog(logTypes::LOG_SAVE_CONFIG, 581);
+        board::success("Настройки скопированы от сервера #" . $sourceServerId . " на сервер #" . $targetServerId);
     }
 }

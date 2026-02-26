@@ -1,0 +1,83 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{ phrase('auth_log') }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            
+            <div class="card">
+                <div class="card-header bg-primary">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">{{ phrase('auth_log') }}</h5>
+                        <span>{{ total_logins }}</span>
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-bordered mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th class="text-center">{{ phrase('ip') }}</th>
+                                    <th>{{ phrase('country') }}</th>
+                                    <th>{{ phrase('city') }}</th>
+                                    <th>{{ phrase('browser') }}</th>
+                                    <th>{{ phrase('os') }}</th>
+                                    <th>{{ phrase('device') }}</th>
+                                    <th>{{ phrase('date') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if auth_logs|length > 0 %}
+                                    {% for log in auth_logs %}
+                                        <tr>
+                                            <td class="text-center">
+                                                <code>{{ log.ip }}</code>
+                                            </td>
+                                            <td>
+                                                {% if log.country_display != '-' %}
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="/uploads/images/flags/{{ log.country|lower }}.png" 
+                                                             height="20" 
+                                                             class="me-2" 
+                                                             alt="{{ log.country }}" 
+                                                             onerror="this.style.display='none'">
+                                                        <span>{{ log.country_display }}</span>
+                                                    </div>
+                                                {% else %}
+                                                    <span class="text-muted">{{ log.country_display }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ log.city_display }}</td>
+                                            <td>
+                                                <small class="text-muted" title="{{ log.browser_display }}">
+                                                    {{ log.browser_display }}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">{{ log.os_display }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success">{{ log.device_display }}</span>
+                                            </td>
+                                            <td class="text-muted">{{ log.date_formatted }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted py-4">
+                                            {{ phrase('no_data') }}
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -33,12 +33,6 @@ class validation {
         return false;
     }
 
-
-    //Проверка, является ли пользователь админом
-    public static function is_admin(): bool {
-        return auth::get_access_level() == "admin";
-    }
-
     public static function min_len($string, $n = 4): bool {
         return (mb_strlen($string) >= $n);
     }

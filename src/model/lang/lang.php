@@ -330,13 +330,25 @@ class lang
     public function getPhrase($key, ...$values): string
     {
         $is_plugin = false;
-        if (!array_key_exists($key, $this->phrasesData)) {
-            $phrase = $this->get_phrase_plugin($key);
-            if (!$phrase) {
-                return "[Not phrase «{$key}»]";
+        $phrase = null;
+        
+        // Сначала пытаемся найти с точным совпадением
+        if (array_key_exists($key, $this->phrasesData)) {
+            $phrase = $this->phrasesData[$key];
+        } else {
+            // Если не найдено, пытаемся регистронезависимый поиск
+            $phrase = $this->searchPhraseInsensitive($key);
+            
+            if ($phrase === null) {
+                // Если всё ещё не найдено, проверяем плагины
+                $phrase = $this->get_phrase_plugin($key);
+                if (!$phrase) {
+                    return "[Not phrase «{$key}»]";
+                }
+                $is_plugin = true;
             }
-            $is_plugin = true;
         }
+        
         if (!$is_plugin) {
             if (array_key_exists($key, $this->cache)) {
                 $cachedPhrase = $this->cache[$key];
@@ -355,7 +367,6 @@ class lang
                     return $cachedPhrase;
                 }
             }
-            $phrase = $this->phrasesData[$key];
         }
 
         $missing_values_count = max(0, substr_count($phrase, '%s') - count($values));
@@ -390,6 +401,23 @@ class lang
         }
 
         return $result;
+    }
+
+    /**
+     * Регистронезависимый поиск фразы по ключу
+     *
+     * @param string $key ключ для поиска
+     * @return string|null найденная фраза или null
+     */
+    private function searchPhraseInsensitive(string $key): ?string
+    {
+        $keyLower = strtolower($key);
+        foreach ($this->phrasesData as $dataKey => $value) {
+            if (strtolower($dataKey) === $keyLower) {
+                return $value;
+            }
+        }
+        return null;
     }
 
     public function get_phrase_plugin($key)
