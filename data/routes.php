@@ -9,7 +9,7 @@ return array (
     'func' => 'controller\main\main::index',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -23,7 +23,7 @@ return array (
     'func' => 'controller\config\config::setLang',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -37,7 +37,7 @@ return array (
     'func' => 'controller\admin\options::new_server',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -51,7 +51,7 @@ return array (
     'func' => 'component\chronicle\client::get_base_collection_class',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -65,7 +65,7 @@ return array (
     'func' => NULL,
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => 'statistic.html',
@@ -79,7 +79,7 @@ return array (
     'func' => 'controller\donate\pay::shop',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -93,7 +93,7 @@ return array (
     'func' => 'controller\route\route::add',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -107,7 +107,7 @@ return array (
     'func' => 'controller\route\route::getDirFiles',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -121,7 +121,7 @@ return array (
     'func' => 'controller\route\route::update_enable',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -135,8 +135,8 @@ return array (
     'func' => 'controller\ticket\ticket::all',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -150,7 +150,7 @@ return array (
     'func' => 'controller\ticket\ticket::ticketAdmin',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -164,8 +164,8 @@ return array (
     'func' => 'controller\ticket\ticket::message',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -179,7 +179,7 @@ return array (
     'func' => 'controller\route\route::edit',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 1,
     'page' => '',
@@ -193,7 +193,7 @@ return array (
     'func' => NULL,
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => 'admin/shop_add.html',
@@ -207,7 +207,7 @@ return array (
     'func' => 'model\admin\donate::add_item',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => 'admin/shop_add.html',
@@ -221,7 +221,7 @@ return array (
     'func' => 'model\admin\donate::remove_item',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -235,8 +235,8 @@ return array (
     'func' => 'controller\donate\shop::getShopObjectJSON',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -250,8 +250,8 @@ return array (
     'func' => 'controller\donate\pay::buyShopItem',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -265,8 +265,8 @@ return array (
     'func' => 'model\donate\donate::toWarehouse',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -280,8 +280,8 @@ return array (
     'func' => 'controller\user\profile\change::show_avatar_page',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -295,8 +295,8 @@ return array (
     'func' => 'controller\\user\\auth_log::show',
     'access' => 
     array (
-      0 => 'admin',
-      1 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -310,7 +310,7 @@ return array (
     'func' => 'model\forum\forum::saveConfig',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -324,7 +324,7 @@ return array (
     'func' => NULL,
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '/admin/phrases.html',
@@ -338,7 +338,7 @@ return array (
     'func' => 'model\phrases\phrases::save',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -352,7 +352,7 @@ return array (
     'func' => 'model\config\config::save',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -366,7 +366,7 @@ return array (
     'func' => NULL,
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '/admin/selfupdate.html',
@@ -380,7 +380,7 @@ return array (
     'func' => 'controller\route\route::all',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -394,7 +394,7 @@ return array (
     'func' => NULL,
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => 'pages.html',
@@ -408,7 +408,7 @@ return array (
     'func' => 'controller\install\install::rules',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -422,8 +422,8 @@ return array (
     'func' => 'controller\donate\pay::pay',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -437,7 +437,7 @@ return array (
     'func' => 'controller\admin\options::server_show',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -451,7 +451,7 @@ return array (
     'func' => NULL,
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => 'admin/pages.html',
@@ -465,7 +465,7 @@ return array (
     'func' => NULL,
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '/admin/page_edit.html',
@@ -479,7 +479,7 @@ return array (
     'func' => NULL,
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '/admin/page_create.html',
@@ -493,7 +493,7 @@ return array (
     'func' => NULL,
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '/page.html',
@@ -507,8 +507,8 @@ return array (
     'func' => 'controller\user\profile\change::save_avatar',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -522,7 +522,7 @@ return array (
     'func' => 'controller\admin\users::showAll',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -536,7 +536,7 @@ return array (
     'func' => 'controller\promo\promo::index',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -550,8 +550,8 @@ return array (
     'func' => 'controller\user\auth\auth::logout',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -565,7 +565,7 @@ return array (
     'func' => 'controller\user\auth\auth::index',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -579,7 +579,7 @@ return array (
     'func' => 'component\captcha\captcha::defence',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -593,8 +593,8 @@ return array (
     'func' => 'controller\registration\account::requestNewAccount',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -608,8 +608,8 @@ return array (
     'func' => 'controller\account\characters\inventory::sendToGame',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => 'sendtogame.html',
@@ -623,8 +623,8 @@ return array (
     'func' => 'controller\account\password\change::password',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -638,7 +638,7 @@ return array (
     'func' => 'controller\admin\options::test_connect_db_selected_name',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -652,7 +652,7 @@ return array (
     'func' => 'controller\admin\options::create_server',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -666,7 +666,7 @@ return array (
     'func' => 'controller\user\default_server::change',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -680,7 +680,7 @@ return array (
     'func' => 'controller\admin\startpack::index',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '/admin/startpack.html',
@@ -694,7 +694,7 @@ return array (
     'func' => 'component\image\client_icon::get_item_info_json',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -708,7 +708,7 @@ return array (
     'func' => 'controller\admin\startpack::add',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -722,8 +722,8 @@ return array (
     'func' => 'controller\admin\startpack::purchase',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -737,8 +737,8 @@ return array (
     'func' => 'controller\admin\startpack::purchaseWarehouse',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -752,7 +752,7 @@ return array (
     'func' => 'controller\admin\options::saveConfigDonate',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -766,7 +766,7 @@ return array (
     'func' => 'controller\admin\options::migrateDonateConfigToGlobal',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -780,7 +780,7 @@ return array (
     'func' => 'controller\admin\options::saveConfigReferral',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -794,7 +794,7 @@ return array (
     'func' => 'controller\admin\options::servers_show',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -808,7 +808,7 @@ return array (
     'func' => 'controller\admin\options::server_edit',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -822,7 +822,7 @@ return array (
     'func' => 'controller\admin\options::saveGeneral',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -836,7 +836,7 @@ return array (
     'func' => 'controller\admin\options::saveOther',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -850,7 +850,7 @@ return array (
     'func' => 'controller\admin\options::saveMySQL',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -864,8 +864,8 @@ return array (
     'func' => 'controller\account\characters\relocation::playerMove',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -879,7 +879,7 @@ return array (
     'func' => 'controller\admin\donate::add_bonus_money',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -893,8 +893,8 @@ return array (
     'func' => 'controller\account\comparison\comparison::synchronization',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -908,8 +908,8 @@ return array (
     'func' => 'controller\donate\pay::pay',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -923,7 +923,7 @@ return array (
     'func' => 'controller\logo\logo::logo',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -937,8 +937,8 @@ return array (
     'func' => 'controller\referral\referral::show',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -952,8 +952,8 @@ return array (
     'func' => 'controller\account\characters\inventory::warehouseToGame',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -967,8 +967,8 @@ return array (
     'func' => 'controller\user\profile\change::save',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -982,7 +982,7 @@ return array (
     'func' => 'controller\logo\logo::favicon',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -996,8 +996,8 @@ return array (
     'func' => 'controller\referral\referral::bonus',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1011,8 +1011,8 @@ return array (
     'func' => 'controller\account\characters\hwid::reset',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1026,7 +1026,7 @@ return array (
     'func' => 'component\account\generation::createPrefix',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -1040,7 +1040,7 @@ return array (
     'func' => 'controller\admin\options::updateCollection',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1054,7 +1054,7 @@ return array (
     'func' => 'component\mail\mail::sendTest',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1068,7 +1068,7 @@ return array (
     'func' => NULL,
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '/admin/mailing.html',
@@ -1082,7 +1082,7 @@ return array (
     'func' => '',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '/admin/logs.html',
@@ -1096,7 +1096,7 @@ return array (
     'func' => 'model\log\log::getNewLogs',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1110,7 +1110,7 @@ return array (
     'func' => 'controller\admin\statistic::getStatistic',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1124,7 +1124,7 @@ return array (
     'func' => 'controller\admin\bonuscode::create_pack',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1138,7 +1138,7 @@ return array (
     'func' => 'controller\admin\bonuscode::genereate',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1152,8 +1152,8 @@ return array (
     'func' => 'controller\account\bonus\bonus::receiving',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1307,7 +1307,7 @@ return array (
     'func' => 'controller\admin\bonuscode::show_code',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1321,7 +1321,7 @@ return array (
     'func' => 'model\github\update::checkNewCommit',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1335,7 +1335,7 @@ return array (
     'func' => 'controller\admin\options::delete_server',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1349,7 +1349,7 @@ return array (
     'func' => 'controller\admin\index::index',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1363,7 +1363,7 @@ return array (
     'func' => 'controller\admin\plugin::show',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1377,7 +1377,7 @@ return array (
     'func' => 'model\github\update::getUpdateProgress',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1391,7 +1391,7 @@ return array (
     'func' => 'controller\admin\page::create_news',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1405,7 +1405,7 @@ return array (
     'func' => 'controller\admin\page::update_news',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1419,7 +1419,7 @@ return array (
     'func' => 'controller\admin\page::trash_send',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1433,7 +1433,7 @@ return array (
     'func' => 'controller\admin\users::getUserInfo',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '/admin/user_profile.html',
@@ -1447,7 +1447,7 @@ return array (
     'func' => 'controller\admin\users::edit',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1461,7 +1461,7 @@ return array (
     'func' => 'controller\sphereapi\sphereapi::index',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1475,7 +1475,7 @@ return array (
     'func' => 'controller\sphereapi\sphereapi::save',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1489,7 +1489,7 @@ return array (
     'func' => 'controller\sphereapi\sphereapi::check',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1503,7 +1503,7 @@ return array (
     'func' => 'model\github\update::autoRemoteUpdate',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -1517,7 +1517,7 @@ return array (
     'func' => 'model\notification\notification::get_new_notification',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -1531,7 +1531,7 @@ return array (
     'func' => 'controller\admin\users::addItemUserToWarehouse',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1545,7 +1545,7 @@ return array (
     'func' => 'controller\stream\stream::show',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -1559,8 +1559,8 @@ return array (
     'func' => 'controller\stream\stream::add',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1574,7 +1574,7 @@ return array (
     'func' => 'controller\admin\stream::show',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1588,7 +1588,7 @@ return array (
     'func' => 'controller\admin\stream::satisfy',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1602,7 +1602,7 @@ return array (
     'func' => 'controller\stream\stream::getUserStream',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -1616,8 +1616,8 @@ return array (
     'func' => 'controller\stream\stream::userDeleteStream',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1631,7 +1631,7 @@ return array (
     'func' => 'controller\admin\stream::setAutoCheck',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1645,7 +1645,7 @@ return array (
     'func' => 'component\cron\arrival::receiving',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -1659,7 +1659,7 @@ return array (
     'func' => 'controller\admin\stream::removeAutoCheck',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1673,7 +1673,7 @@ return array (
     'func' => 'controller\admin\stream::removeStream',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1687,7 +1687,7 @@ return array (
     'func' => 'controller\save\background\background::save',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1701,7 +1701,7 @@ return array (
     'func' => 'controller\admin\bonuscode::delete',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1715,7 +1715,7 @@ return array (
     'func' => 'controller\admin\server::server_reconnect',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1729,7 +1729,7 @@ return array (
     'func' => 'controller\admin\swbalance::get',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1743,7 +1743,7 @@ return array (
     'func' => 'controller\admin\startpack::removePack',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1757,7 +1757,7 @@ return array (
     'func' => '',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '/admin/phrases_custom.html',
@@ -1771,7 +1771,7 @@ return array (
     'func' => 'model\phrases\phrases::saveCustom',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1785,7 +1785,7 @@ return array (
     'func' => 'controller\admin\swbalance::pay',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1799,7 +1799,7 @@ return array (
     'func' => 'controller\admin\swbalance::payInvoice',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1813,7 +1813,7 @@ return array (
     'func' => 'controller\admin\swbalance::historyPay',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1827,7 +1827,7 @@ return array (
     'func' => 'controller\admin\options::removeLoginserver',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1841,7 +1841,7 @@ return array (
     'func' => 'controller\admin\options::getTemplateInfo',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1855,8 +1855,8 @@ return array (
     'func' => 'component\sphere\superuser::create',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -1870,7 +1870,7 @@ return array (
     'func' => '',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '/admin/balance_faq.html',
@@ -1884,7 +1884,7 @@ return array (
     'func' => 'model\plugin\plugin::__save_activator_plugin',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1898,7 +1898,7 @@ return array (
     'func' => 'model\plugin\plugin::saveSetting',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1912,7 +1912,7 @@ return array (
     'func' => 'controller\admin\swbalance::renewLicense',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1926,7 +1926,7 @@ return array (
     'func' => 'controller\admin\options::add_new_mysql_connect_to_server',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1940,7 +1940,7 @@ return array (
     'func' => 'controller\admin\options::server_edit_save',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1954,7 +1954,7 @@ return array (
     'func' => 'controller\admin\databases::show',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1968,7 +1968,7 @@ return array (
     'func' => 'controller\admin\stream::test',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1982,7 +1982,7 @@ return array (
     'func' => 'controller\admin\databases::downloadAccounts',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -1996,7 +1996,7 @@ return array (
     'func' => 'controller\admin\databases::deleteImportFile',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2010,7 +2010,7 @@ return array (
     'func' => 'controller\admin\errors::getErrors',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2024,7 +2024,7 @@ return array (
     'func' => 'controller\admin\errors::clear',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2038,7 +2038,7 @@ return array (
     'func' => 'controller\admin\databases::delete',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2052,7 +2052,7 @@ return array (
     'func' => 'controller\admin\options::changePositionServer',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2066,7 +2066,7 @@ return array (
     'func' => 'controller\admin\setDonateServer::show',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2080,7 +2080,7 @@ return array (
     'func' => 'controller\admin\options::setDefaultServer',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2094,7 +2094,7 @@ return array (
     'func' => 'controller\admin\statistic::getDonate',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2108,7 +2108,7 @@ return array (
     'func' => 'controller\admin\databases::connectionQualityCheck',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2122,7 +2122,7 @@ return array (
     'func' => 'controller\admin\databases::portQualityCheck',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2136,7 +2136,7 @@ return array (
     'func' => 'controller\admin\databases::loadAccounts',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2150,7 +2150,7 @@ return array (
     'func' => 'controller\admin\referral::showOption',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2164,7 +2164,7 @@ return array (
     'func' => 'controller\support\support::show',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -2178,8 +2178,8 @@ return array (
     'func' => 'controller\support\support::read',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -2193,8 +2193,8 @@ return array (
     'func' => 'controller\support\support::create',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -2208,8 +2208,8 @@ return array (
     'func' => 'controller\support\support::requestCreate',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -2223,8 +2223,8 @@ return array (
     'func' => 'controller\support\support::requestReply',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2238,8 +2238,8 @@ return array (
     'func' => 'controller\support\support::showThread',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -2253,7 +2253,7 @@ return array (
     'func' => 'controller\support\support::addSection',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2267,7 +2267,7 @@ return array (
     'func' => 'controller\support\support::deleteSection',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2281,7 +2281,7 @@ return array (
     'func' => 'controller\support\support::deleteTopic',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2295,7 +2295,7 @@ return array (
     'func' => 'controller\support\support::updateModeratorsPrivilege',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2309,8 +2309,8 @@ return array (
     'func' => 'controller\support\support::closeTopic',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -2324,8 +2324,8 @@ return array (
     'func' => 'controller\support\support::fileLoad',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -2339,8 +2339,8 @@ return array (
     'func' => 'controller\support\support::deletePost',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -2354,8 +2354,8 @@ return array (
     'func' => 'controller\support\support::toMove',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -2369,7 +2369,7 @@ return array (
     'func' => 'controller\admin\telegram::testSendNotice',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2383,7 +2383,7 @@ return array (
     'func' => 'controller\admin\databases::updateLoginserver',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2397,7 +2397,7 @@ return array (
     'func' => 'controller\admin\setDonateServer::getDonateSetting',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2411,7 +2411,7 @@ return array (
     'func' => 'controller\admin\enabled::setEnabled',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2425,7 +2425,7 @@ return array (
     'func' => 'controller\admin\swbalance::buyPack',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2439,7 +2439,7 @@ return array (
     'func' => 'controller\admin\databases::pollProgress',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2467,7 +2467,7 @@ return array (
     'func' => 'controller\admin\databases::updateGameserver',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2481,7 +2481,7 @@ return array (
     'func' => 'controller\admin\bonuscode::delete_all',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2495,7 +2495,7 @@ return array (
     'func' => 'controller\admin\bonuscode::delete_general_all_servers',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2509,7 +2509,7 @@ return array (
     'func' => 'controller\admin\startpack::update',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2523,7 +2523,7 @@ return array (
     'func' => 'controller\admin\options::getServerFunction',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2537,7 +2537,7 @@ return array (
     'func' => 'controller\admin\options::removeItemsWarehouse',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2551,7 +2551,7 @@ return array (
     'func' => 'controller\admin\options::getAllItemsInWarehouse',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2565,7 +2565,7 @@ return array (
     'func' => 'controller\admin\users::deleteItemUserToWarehouse',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2579,8 +2579,8 @@ return array (
     'func' => 'controller\account\characters\inventory::splitItem',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -2594,7 +2594,7 @@ return array (
     'func' => 'controller\admin\options::saveStackItems',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2608,8 +2608,8 @@ return array (
     'func' => 'controller\admin\options::stackInventoryItems',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -2623,8 +2623,8 @@ return array (
     'func' => 'controller\account\characters\account::delete',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2638,7 +2638,7 @@ return array (
     'func' => 'controller\admin\options::saveRegistrationBonusItems',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2652,7 +2652,7 @@ return array (
     'func' => 'controller\admin\options::saveItemsSendTime',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2666,7 +2666,7 @@ return array (
     'func' => 'controller\admin\telegram::testGetThread',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2680,7 +2680,7 @@ return array (
     'func' => 'controller\admin\donate::change_category_item',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2694,7 +2694,7 @@ return array (
     'func' => 'controller\admin\telegram::createNoticeTopics',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2708,8 +2708,8 @@ return array (
     'func' => 'controller\support\support::getRefreshMessage',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2723,7 +2723,7 @@ return array (
     'func' => 'controller\admin\users::data',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2737,7 +2737,7 @@ return array (
     'func' => 'controller\admin\users::searchLite',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2751,7 +2751,7 @@ return array (
     'func' => 'controller\admin\statistic::donateData',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2765,7 +2765,7 @@ return array (
     'func' => 'controller\admin\users::showAll',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2779,7 +2779,7 @@ return array (
     'func' => 'controller\admin\users::searchByEmail',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2807,8 +2807,8 @@ return array (
     'func' => 'controller\support\support::createDialogByAdmin',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -2822,8 +2822,8 @@ return array (
     'func' => 'controller\support\support::massSendMessages',
     'access' => 
     array (
-      0 => 'admin',
-      0 => 'user',
+      'admin',
+      'user',
     ),
     'weight' => 0,
     'page' => '',
@@ -2837,7 +2837,7 @@ return array (
     'func' => 'controller\sphereapi\sphereapi::changeDomain',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2851,7 +2851,7 @@ return array (
     'func' => 'controller\user\auth\twofaController::showVerifyPage',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -2865,7 +2865,7 @@ return array (
     'func' => 'controller\user\auth\twofaController::verify',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -2879,8 +2879,8 @@ return array (
     'func' => 'controller\user\auth\twofaController::setup',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2894,8 +2894,8 @@ return array (
     'func' => 'controller\user\auth\twofaController::enable',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2909,8 +2909,8 @@ return array (
     'func' => 'controller\user\auth\twofaController::disable',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2924,8 +2924,8 @@ return array (
     'func' => 'controller\user\auth\auth::returnToMain',
     'access' => 
     array (
-      0 => 'user',
-      0 => 'admin',
+      'user',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2939,7 +2939,7 @@ return array (
     'func' => 'controller\admin\users::showAll',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2953,7 +2953,7 @@ return array (
     'func' => 'controller\admin\users::showAll',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2967,7 +2967,7 @@ return array (
     'func' => 'controller\route\custom_route::all',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2981,7 +2981,7 @@ return array (
     'func' => 'controller\route\custom_route::add',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -2995,7 +2995,7 @@ return array (
     'func' => 'controller\route\custom_route::getDirFiles',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -3009,7 +3009,7 @@ return array (
     'func' => 'controller\route\custom_route::update_enable',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -3023,7 +3023,7 @@ return array (
     'func' => 'controller\route\custom_route::edit',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 1,
     'page' => '',
@@ -3037,7 +3037,7 @@ return array (
     'func' => 'controller\route\custom_route::delete',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -3051,7 +3051,7 @@ return array (
     'func' => 'controller\route\custom_route::checkPatternExists',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -3065,7 +3065,7 @@ return array (
     'func' => 'controller\admin\startpack::save_settings',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -3079,7 +3079,7 @@ return array (
     'func' => 'controller\admin\statistic::donateClear',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -3093,7 +3093,7 @@ return array (
     'func' => 'controller\statistic\statistic::show_json_stats',
     'access' => 
     array (
-      0 => 'any',
+      'any',
     ),
     'weight' => 0,
     'page' => '',
@@ -3107,7 +3107,7 @@ return array (
     'func' => 'controller\admin\donateGlobal::showPlugins',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -3121,7 +3121,7 @@ return array (
     'func' => 'controller\admin\donateGlobal::show',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -3135,7 +3135,7 @@ return array (
     'func' => 'controller\admin\donateGlobal::save',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -3149,7 +3149,7 @@ return array (
     'func' => 'controller\admin\donateGlobal::getDonateSetting',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
@@ -3163,7 +3163,7 @@ return array (
     'func' => 'controller\admin\donateGlobal::copySettingsFromServer',
     'access' => 
     array (
-      0 => 'admin',
+      'admin',
     ),
     'weight' => 0,
     'page' => '',
