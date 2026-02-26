@@ -633,25 +633,7 @@
                                                 {{ phrase('sphere_plugins') }}
                                             </button>
                                         </li>
-
-                                        <li class="nav-item rounded" role="presentation">
-                                            <button class="nav-link " id="php-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#php-tab-pane" type="button" role="tab"
-                                                    aria-controls="php-tab-pane" aria-selected="true"><i
-                                                  class="bi bi-clipboard2-data me-1 align-middle d-inline-block fs-16"></i>
-                                                Web-Server
-                                            </button>
-                                        </li>
  
-                                        <li class="nav-item rounded" role="presentation">
-                                            <button aria-controls="license-tab-pane" aria-selected="true" class="nav-link "
-                                                    data-bs-target="#license-tab-pane" data-bs-toggle="tab" id="licence-tab"
-                                                    role="tab" type="button"><i
-                                                  class="bi bi-cloud-download me-1 align-middle d-inline-block fs-16"></i>
-                                                {{ phrase('license') }}
-                                            </button>
-                                        </li>
-
                                     </ul>
                                 </div>
                             </div>
@@ -1271,178 +1253,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="tab-pane fade p-0 border-0" id="php-tab-pane"
-                                         role="tabpanel" aria-labelledby="followers-tab" tabindex="0">
-                                        <div class="row">
-
-                                            <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                                <div class="card custom-card shadow-none border">
-
-                                                    {% set serverInfo = getAdvancedServerInfo() %}
-                                                    <div class="container-fluid p-4">
-                                                        <div class="row g-4">
-                                                            {% for section, data in serverInfo %}
-                                                            <div class="col-12">
-                                                                <div class="card shadow-sm">
-                                                                    <div class="card-header bg-light">
-                                                                        <h5 class="card-title mb-0">
-                                                                            {% if section == 'main' %}
-                                                                            <i class="bi bi-gear-fill me-2"></i>
-                                                                            {% elseif section == 'security' %}
-                                                                            <i class="bi bi-shield-fill-check me-2"></i>
-                                                                            {% elseif section == 'extensions' %}
-                                                                            <i class="bi bi-puzzle-fill me-2"></i>
-                                                                            {% elseif section == 'uploads' %}
-                                                                            <i class="bi bi-upload me-2"></i>
-                                                                            {% elseif section == 'sessions' %}
-                                                                            <i class="bi bi-clock-history me-2"></i>
-                                                                            {% elseif section == 'system' %}
-                                                                            <i class="bi bi-cpu-fill me-2"></i>
-                                                                            {% elseif section == 'ports' %}
-                                                                            <i class="bi bi-hdd-network-fill me-2"></i>
-                                                                            {% endif %}
-                                                                            {{ data.title }}
-                                                                        </h5>
-                                                                    </div>
-                                                                    <div class="card-body">
-                                                                        <div class="table-responsive">
-                                                                            <table class="table table-hover table-striped">
-                                                                                <thead>
-                                                                                <tr>
-                                                                                    <th style="width: 25%">Параметр</th>
-                                                                                    <th style="width: 25%">Значение</th>
-                                                                                    <th style="width: 15%">Статус</th>
-                                                                                    <th style="width: 35%">
-                                                                                        Рекомендация
-                                                                                    </th>
-                                                                                </tr>
-                                                                                </thead>
-                                                                                <tbody>
-                                                                                {% for key, info in data.items %}
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        <span class="fw-medium">{{ info.description }}</span>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <code class="bg-light px-2 py-1 rounded">{{
-                                                                                            info.value }}</code>
-                                                                                    </td>
-                                                                                    <td>
-                                                <span class="badge bg-{{ info.status }} rounded-pill d-inline-flex align-items-center">
-                                                    {% if info.status == 'success' %}
-                                                        <i class="bi bi-check-circle-fill me-1"></i> OK
-                                                    {% elseif info.status == 'warning' %}
-                                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Внимание
-                                                    {% elseif info.status == 'danger' %}
-                                                        <i class="bi bi-x-circle-fill me-1"></i> Проблема
-                                                    {% else %}
-                                                        <i class="bi bi-info-circle-fill me-1"></i> Инфо
-                                                    {% endif %}
-                                                </span>
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <small class="text-muted">{{
-                                                                                            info.recommendation
-                                                                                            }}</small>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                {% endfor %}
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            {% endfor %}
-                                                        </div>
-
-                                                        <!-- Общее резюме -->
-                                                        <div class="row mt-4">
-                                                            <div class="col-12">
-                                                                <div class="card shadow-sm">
-                                                                    <div class="card-header bg-light">
-                                                                        <h5 class="card-title mb-0">
-                                                                            <i class="bi bi-clipboard-data-fill me-2"></i>
-                                                                            {{ phrase('overall_summary') }}
-
-                                                                        </h5>
-                                                                    </div>
-                                                                    <div class="card-body">
-                                                                        <div class="row g-4">
-                                                                            {% set total = {'success': 0, 'warning': 0,
-                                                                            'danger': 0, 'info': 0} %}
-                                                                            {% for section in serverInfo %}
-                                                                            {% for item in section.items %}
-                                                                            {% set total = total|merge({(item.status):
-                                                                            total[item.status] + 1}) %}
-                                                                            {% endfor %}
-                                                                            {% endfor %}
-
-                                                                            <div class="col-md-3">
-                                                                                <div class="border rounded p-3 text-center bg-success bg-opacity-10">
-                                                                                    <h3 class="text-success mb-0">{{
-                                                                                        total.success }}</h3>
-                                                                                    <small class="text-muted">{{ phrase('optimal') }}</small>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-md-3">
-                                                                                <div class="border rounded p-3 text-center bg-warning bg-opacity-10">
-                                                                                    <h3 class="text-warning mb-0">{{
-                                                                                        total.warning }}</h3>
-                                                                                    <small class="text-muted">{{ phrase('requires_attention') }}</small>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-md-3">
-                                                                                <div class="border rounded p-3 text-center bg-danger bg-opacity-10">
-                                                                                    <h3 class="text-danger mb-0">{{
-                                                                                        total.danger }}</h3>
-                                                                                    <small class="text-muted">{{ phrase('critical_issues') }}</small>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-md-3">
-                                                                                <div class="border rounded p-3 text-center bg-info bg-opacity-10">
-                                                                                    <h3 class="text-info mb-0">{{
-                                                                                        total.info }}</h3>
-                                                                                    <small class="text-muted">{{ phrase('informational') }}</small>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div class="alert alert-info mt-4 mb-0">
-                                                                            <i class="bi bi-info-circle-fill me-2"></i>
-                                                                            {{ phrase('server_optimization_recommendation')|raw }}
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
- 
-
-                                    <div aria-labelledby="followers-tab" class="tab-pane fade p-0 border-0"
-                                         id="license-tab-pane" role="tabpanel" tabindex="0">
-                                        <div class="row">
-
-                                            <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                                <div class="card custom-card shadow-none border">
-
-
-                                                    <div class="container mt-5">
-                                                        {{ phrase('license_agreement')|raw }}
-                                                    </div>
-
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                     
 
                                 </div>
                             </div>
@@ -1462,6 +1273,12 @@
 {% block css %}
 <link rel="stylesheet" href="{{template}}/assets/libs/sweetalert2/sweetalert2.min.css">
 <link rel="stylesheet" href="{{template}}/assets/libs/swiper/swiper-bundle.min.css">
+
+<style>
+    .tab-pane:not(.show) {
+        display: none !important;
+    }
+</style>
 
 {% endblock %}
 

@@ -286,7 +286,7 @@
                         {% set paymentPlugins = getPluginsByCategory('paysystem') %}
                         {% set activePaymentPlugins = [] %}
                         {% for plugin in paymentPlugins %}
-                            {% set pluginCode = plugin.PLUGIN_DIR_NAME|default(plugin.PLUGIN_NAME|default(''))|lower %}
+                            {% set pluginCode = plugin.PLUGIN_DIR_NAME|default(plugin.PLUGIN_NAME|default('')) %}
                             {% if getPluginActive(pluginCode) %}
                                 {% set activePaymentPlugins = activePaymentPlugins|merge([plugin]) %}
                             {% endif %}
@@ -295,7 +295,7 @@
                         {% for plugin in activePaymentPlugins %}
                         <div class="col-12 col-md-6">
                             {% set pluginSettings = plugin.PLUGIN_LINK ?? null %}
-                            {% set pluginCode = plugin.PLUGIN_DIR_NAME|default(plugin.PLUGIN_NAME|default(''))|lower %}
+                            {% set pluginCode = plugin.PLUGIN_DIR_NAME|default(plugin.PLUGIN_NAME|default('')) %}
                             {% set pluginSettingData = pluginCode ? getPluginSetting(pluginCode) : {} %}
                             {% set pluginCountries =
                             plugin.supported_countries|default(pluginSettingData.supported_countries|default([])) %}

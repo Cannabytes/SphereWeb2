@@ -211,12 +211,13 @@ $(function() {
       const $temp = $('<input>');
       $('body').append($temp);
       $temp.val(url).select();
-      try { document.execCommand('copy'); board.success('{{ \"Скопировано в буфер обмена\"|trans }}'); } catch (e) { board.error('{{ \"Не удалось скопировать\"|trans }}'); }
+      try { document.execCommand('copy'); board.success('{{ "Скопировано в буфер обмена" }}'); } catch (e) { board.error('{{ "Не удалось скопировать" }}'); }
       $temp.remove();
     }
   });
 
   reindexRows();
 });
+
 </script>
 {% endblock %}

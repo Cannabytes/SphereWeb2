@@ -233,7 +233,7 @@ $(function() {
   $('#enablePlugin').on('change', function() {
     var setting = $(this).attr('id');
     var value = $(this).is(':checked');
-    AjaxSend('/admin/plugin/save/activator', 'POST', { pluginName: '{{ pluginName }}', setting: setting, value: value }, true).then(function() { window.location.reload(); });
+    AjaxSend('/admin/plugin/save/activator', 'POST', { pluginName: '{{ pluginName }}', serverId:0, setting: setting, value: value }, true).then(function() { window.location.reload(); });
   });
 
   function reindex(){

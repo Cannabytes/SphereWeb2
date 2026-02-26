@@ -684,6 +684,11 @@ class tpl
                     if (isset($plugin['PLUGIN_ENABLE']) && !$plugin['PLUGIN_ENABLE']) {
                         continue;
                     }
+                    // Проверяем, активен ли плагин в базе данных
+                    $pluginDirName = $plugin['PLUGIN_DIR_NAME'] ?? '';
+                    if (!$pluginDirName || !plugin::getPluginActive($pluginDirName)) {
+                        continue;
+                    }
                     $plugins[] = $plugin;
                 }
             }
