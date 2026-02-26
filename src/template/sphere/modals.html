@@ -210,8 +210,8 @@
 /* ========== Галерея персонажей для модального окна sendToPlayer ========== */
 .characters-gallery {
   display: flex;
-  flex-direction: row;
-  gap: 0.65rem;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .account-section {
@@ -228,7 +228,9 @@
 }
 
 .account-title {
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 0.8rem;
   letter-spacing: 0.5px;
 }
@@ -504,13 +506,45 @@
   display: inline-block;
 }
 
-/* Убедимся что галерея видна при одном персонаже */
+/* Галерея: блоки аккаунтов идут в ряд и переносятся по мере заполнения */
 #sendToPlayer .characters-gallery {
   display: flex;
   flex-direction: row;
-  gap: 0.65rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.5rem;
   width: 100%;
-  min-height: auto;
+  max-height: 38vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.3rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 215, 0, 0.3) transparent;
+}
+
+/* Блок аккаунта: ширина ровно по содержимому (1 персонаж = маленький блок, 5 = широкий) */
+#sendToPlayer .characters-gallery > .card {
+  flex: 0 0 auto;
+  width: fit-content;
+  /* ~5 персонажей на ряд максимум, потом перенось внутри блока */
+  max-width: calc(5 * 70px + 4 * 0.5rem + 2 * 0.85rem + 2px);
+}
+
+#sendToPlayer .characters-gallery::-webkit-scrollbar {
+  width: 4px;
+}
+
+#sendToPlayer .characters-gallery::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#sendToPlayer .characters-gallery::-webkit-scrollbar-thumb {
+  background: rgba(255, 215, 0, 0.3);
+  border-radius: 4px;
+}
+
+#sendToPlayer .characters-gallery::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 215, 0, 0.55);
 }
 
 #sendToPlayer .account-section {
@@ -521,7 +555,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  width: 100%;
+  width: fit-content;
 }
 
 #sendToPlayer .character-card {
@@ -770,14 +804,17 @@ function showToast(type, message) {
 
           {# Галерея персонажей, разделённая по аккаунтам #}
           <div class="col-12">
-            <label class="form-label">{{ phrase('player') }}</label>
+            <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+              <label class="form-label mb-0">{{ phrase('player') }}</label>
+              <input type="text" id="searchCharactersInput" class="form-control form-control-sm" placeholder="{{ phrase('Search...') }}" style="max-width: 200px;">
+            </div>
             {% if getUser().getCountPlayers() == 0 %}
               <div class="alert alert-info">{{ phrase('no_chars') }}</div>
             {% else %}
-              <div class="characters-gallery" style="min-height: 140px;">
+              <div class="characters-gallery">
                 {% for i, account in getUser().getAccounts() %}
                   {% if account.getCharactersCount() > 0 %}
-                  <div class="card shadow-sm bg-dark-transparent border-0 mb-3">
+                  <div class="card shadow-sm bg-dark-transparent border-0">
                     <div class="account-section">
                       <div class="account-title">
                         <small class="text-muted">{{ phrase('account') }}:</small>
@@ -965,6 +1002,12 @@ function showToast(type, message) {
 
     // При открытии модального окна sendToPlayer убеждаемся что персонаж выбран
     $('#sendToPlayer').on('show.bs.modal', function() {
+      // Очищаем поле поиска и показываем всех персонажей
+      $('#searchCharactersInput').val('');
+      const $gallery = $('.characters-gallery');
+      $gallery.find('> .card').show();
+      $gallery.find('.character-card').show();
+
       setTimeout(function() {
         const $selectedCharacter = $('.js-character-selector.selected');
         if ($selectedCharacter.length === 0) {
@@ -983,6 +1026,61 @@ function showToast(type, message) {
     $('#sendToPlayer').on('hide.bs.modal', function() {
       // Опционально: можно оставить выбор или очистить
       // По текущей логике в general.js выбор очищается после отправки
+      // Очищаем поле поиска при закрытии модала
+      $('#searchCharactersInput').val('');
+    });
+
+    // ========== Поиск/фильтрация персонажей ==========
+    $('#searchCharactersInput').on('input', function() {
+      const query = $(this).val().toLowerCase().trim();
+      const $gallery = $('.characters-gallery');
+      const $accountCards = $gallery.find('> .card');
+
+      if (query.length === 0) {
+        // Если поиск пуст — показываем всё
+        $accountCards.show();
+        $gallery.find('.account-section').show();
+        $gallery.find('.character-card').show();
+        return;
+      }
+
+      // Проходим по каждому блоку-аккаунту
+      $accountCards.each(function() {
+        const $accountSection = $(this).find('.account-section');
+        const accountName = $accountSection.find('.account-title strong').text().toLowerCase();
+        const $characters = $accountSection.find('.character-card');
+        let hasVisibleCharacters = false;
+
+        // Проверяем совпадение с названием аккаунта
+        const accountMatches = accountName.includes(query);
+
+        // Если совпал аккаунт — показываем всех персонажей в блоке
+        if (accountMatches) {
+          $characters.show();
+          hasVisibleCharacters = true;
+        } else {
+          // Иначе фильтруем персонажей по имени
+          $characters.each(function() {
+            const characterName = $(this).data('player').toLowerCase();
+            const characterMatches = characterName.includes(query);
+
+            // Показываем/скрываем персонажа
+            if (characterMatches) {
+              $(this).show();
+              hasVisibleCharacters = true;
+            } else {
+              $(this).hide();
+            }
+          });
+        }
+
+        // Показываем/скрываем весь блок аккаунта если есть видимые персонажи
+        if (hasVisibleCharacters) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
     });
   });
 
