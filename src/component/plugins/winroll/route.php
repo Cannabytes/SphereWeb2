@@ -35,5 +35,14 @@ $routes = [
         "call" => function () {
             (new \Ofey\Logan22\component\plugins\winRoll\winroll())->spin();
         },
-    ]
+    ],
+
+    [
+        "method" => "GET",
+        "pattern" => "/winroll/audio/(:any)",
+        "file" => "winroll.php",
+        "call" => function ($filename) {
+            (new \Ofey\Logan22\component\plugins\winRoll\winroll())->getAudio($filename);
+        },
+    ],
 ];

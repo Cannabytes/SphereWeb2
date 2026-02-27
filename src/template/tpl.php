@@ -8,6 +8,7 @@ use Exception;
 use InvalidArgumentException;
 use Ofey\Logan22\component\account\generation;
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\cache\PaymentSystemSort;
 use Ofey\Logan22\component\captcha\google;
 use Ofey\Logan22\component\chronicle\client;
 use Ofey\Logan22\component\chronicle\race_class;
@@ -691,6 +692,10 @@ class tpl
                     }
                     $plugins[] = $plugin;
                 }
+            }
+            // Apply admin-defined sort order for payment systems
+            if ($category === 'paysystem') {
+                $plugins = PaymentSystemSort::applySortOrder($plugins);
             }
             return $plugins;
         }));

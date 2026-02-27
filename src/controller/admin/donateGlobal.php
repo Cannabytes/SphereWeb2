@@ -3,6 +3,7 @@
 namespace Ofey\Logan22\controller\admin;
 
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\cache\PaymentSystemSort;
 use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\config\donate;
 use Ofey\Logan22\model\db\sql;
@@ -29,11 +30,43 @@ class donateGlobal
             }
         }
 
+        // Apply saved sort order
+        $paymentPlugins = PaymentSystemSort::applySortOrder($paymentPlugins);
+
         tpl::addVar([
             'paymentPlugins' => $paymentPlugins,
         ]);
 
         tpl::display('/admin/donate_plugins.html');
+    }
+
+    /**
+     * Save the sort order for paysystem plugins.
+     * Expects JSON body: { "order": ["plugin_dir1", "plugin_dir2", ...] }
+     */
+    public static function savePaysystemSort(): void
+    {
+        validation::user_protection("admin");
+
+        $body = file_get_contents('php://input');
+        $data = json_decode($body, true);
+
+        if (!isset($data['order']) || !is_array($data['order'])) {
+            http_response_code(400);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['success' => false, 'message' => 'Invalid order data']);
+            return;
+        }
+
+        // Sanitise: allow only non-empty strings
+        $order = array_values(array_filter(array_map('strval', $data['order']), function ($v) {
+            return $v !== '';
+        }));
+
+        $saved = PaymentSystemSort::save($order);
+
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['success' => $saved]);
     }
 
     public static function show(): void

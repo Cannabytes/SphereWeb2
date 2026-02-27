@@ -3142,4 +3142,18 @@ return array (
     'page' => '',
     'comment' => 'Copy donate bonus settings from one server to another',
   ),
+  223 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/admin/donate/plugins/sort',
+    'func' => 'controller\admin\donateGlobal::savePaysystemSort',
+    'access' => 
+    array (
+      'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Save sort order for paysystem plugins',
+  ),
 );

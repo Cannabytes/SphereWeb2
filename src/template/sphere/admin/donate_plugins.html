@@ -15,7 +15,12 @@
                         </a>
                         {{ phrase('Payment Systems') }}
                     </div>
-                    <div class="d-flex">
+                    <div class="d-flex gap-2">
+                        {% if paymentPlugins|length > 0 %}
+                        <button type="button" id="btn-save-sort" class="btn btn-sm btn-success btn-wave waves-light d-none" onclick="saveSortOrder()">
+                            <i class="ri-save-line fw-semibold align-middle me-1"></i> Сохранить порядок
+                        </button>
+                        {% endif %}
                         <a href="/admin/donate/bonus" class="btn btn-sm btn-primary btn-wave waves-light">
                             <i class="ri-gift-line fw-semibold align-middle me-1"></i> Вознаграждения
                         </a>
@@ -24,17 +29,21 @@
                 <div class="card-body">
                     <div class="alert alert-info alert-dismissible fade show custom-alert-icon shadow-sm" role="alert">
                         <svg class="svg-info" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" width="1.5rem" fill="#000000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"></path></svg>
-                        Настройте платежные системы для приема пожертвований. Каждая система имеет свои параметры и ключи API.
+                        Настройте платежные системы для приема пожертвований. Перетащите карточки мышью, чтобы изменить порядок отображения.
                     </div>
 
                     {% if paymentPlugins|length > 0 %}
-                    <div class="row">
+                    <div class="row g-3" id="paysystem-sortable">
                         {% for plugin in paymentPlugins %}
                         {% set isPluginEnabled = getPluginActive(plugin.PLUGIN_DIR_NAME) %}
-                        <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                            <div class="card custom-card shadow-none border {% if isPluginEnabled %}border-success{% endif %}">
+                        <div class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 col-sm-12 paysystem-card-col"
+                             data-plugin-dir="{{ plugin.PLUGIN_DIR_NAME }}">
+                            <div class="card custom-card shadow-none border h-100 {% if isPluginEnabled %}border-success{% endif %} paysystem-card">
                                 <div class="card-body p-4">
-                                    <div class="d-flex align-items-start">
+                                    <div class="paysystem-drag-handle" title="Перетащите для изменения порядка">
+                                        <i class="ri-draggable fs-5 text-muted"></i>
+                                    </div>
+                                    <div class="d-flex align-items-start mt-1">
                                         <div class="me-3">
                                             <span class="avatar avatar-lg {% if isPluginEnabled %}bg-success-transparent{% else %}bg-primary-transparent{% endif %}">
                                                 <i class="{{ plugin.PLUGIN_ICON ?? 'bi bi-credit-card' }} fs-2"></i>
@@ -44,9 +53,9 @@
                                             <div class="d-flex align-items-center gap-2">
                                                 <h6 class="fw-semibold mb-0">{{ plugin.PLUGIN_NAME }}</h6>
                                                 {% if isPluginEnabled %}
-                                                <span class="text-success">{{ phrase('enabled') }}</span>
+                                                <span class="badge bg-success-transparent text-success">{{ phrase('enabled') }}</span>
                                                 {% else %}
-                                                <span class="text-secondary">{{ phrase('disabled') }}</span>
+                                                <span class="badge bg-secondary-transparent text-secondary">{{ phrase('disabled') }}</span>
                                                 {% endif %}
                                             </div>
                                             <p class="text-muted fs-12 mb-0 mt-2">
@@ -82,12 +91,92 @@
     </div>
 
 </div>
+
+<!-- Toast notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999" id="sort-toast-container">
+    <div id="sort-toast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="sort-toast-message">
+                Порядок сохранён
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block css %}
 <style>
+    #paysystem-sortable {
+        transition: min-height 0.2s ease;
+    }
+
+    .paysystem-card-col {
+        transition: transform 0.18s ease, opacity 0.18s ease;
+        cursor: default;
+    }
+
+    .paysystem-card {
+        transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.18s ease;
+    }
+
+    /* Drag handle icon – visual hint only */
+    .paysystem-drag-handle {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        opacity: 0.35;
+        transition: opacity 0.2s ease;
+        line-height: 1;
+        user-select: none;
+        pointer-events: none;   /* icon doesn't block card clicks */
+        z-index: 5;
+    }
+
+    .paysystem-card:hover .paysystem-drag-handle {
+        opacity: 0.8;
+    }
+
+    /* Whole card is the drag zone */
+    .paysystem-card-col {
+        cursor: grab;
+    }
+
+    .paysystem-card-col:active {
+        cursor: grabbing;
+    }
+
+    /* Override grab cursor on interactive elements inside */
+    .paysystem-card-col a,
+    .paysystem-card-col button {
+        cursor: pointer;
+    }
+
+    /* While dragging – ghost card */
+    .paysystem-card-col.sortable-ghost {
+        opacity: 0.35;
+    }
+
+    .paysystem-card-col.sortable-ghost .paysystem-card {
+        border-style: dashed !important;
+        background: rgba(var(--bs-primary-rgb), 0.04);
+    }
+
+    /* The card being dragged (clone) */
+    .paysystem-card-col.sortable-chosen .paysystem-card {
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18) !important;
+        transform: scale(1.03) rotate(1.5deg);
+        z-index: 100;
+    }
+
+    /* Drop placeholder visual */
+    .paysystem-card-col.sortable-drag .paysystem-card {
+        border-color: var(--bs-primary) !important;
+    }
+
     .card {
-        transition: all .3s ease;
+        transition: box-shadow .3s ease, transform .18s ease;
+        position: relative;
     }
 
     .card:hover {
@@ -98,11 +187,132 @@
         border-color: #198754 !important;
     }
 
-    .card.bg-success-subtle {
-        background-color: #f0f9f6 !important;
+    /* Animate the save button appearance */
+    #btn-save-sort {
+        animation: fadeInDown 0.3s ease;
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Sort-active glow on the entire grid */
+    #paysystem-sortable.sort-dirty {
+        box-shadow: inset 0 0 0 2px rgba(var(--bs-success-rgb), 0.25);
+        border-radius: 0.5rem;
+        padding: 8px;
+        margin: -8px;
     }
 </style>
 {% endblock %}
 
 {% block js %}
+<!-- SortableJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    const grid      = document.getElementById('paysystem-sortable');
+    const saveBtn   = document.getElementById('btn-save-sort');
+    const toast     = document.getElementById('sort-toast');
+    const toastMsg  = document.getElementById('sort-toast-message');
+
+    if (!grid) return;
+
+    // ── Helpers ────────────────────────────────────────────────────────────────
+
+    function showToast(message, type /* 'success' | 'danger' */) {
+        toastMsg.textContent = message;
+        toast.className = 'toast align-items-center text-white border-0 bg-' + type;
+        const bsToast = bootstrap.Toast.getOrCreateInstance(toast, { delay: 3000 });
+        bsToast.show();
+    }
+
+    function markDirty() {
+        if (saveBtn) {
+            saveBtn.classList.remove('d-none');
+        }
+        grid.classList.add('sort-dirty');
+    }
+
+    function markClean() {
+        if (saveBtn) {
+            saveBtn.classList.add('d-none');
+        }
+        grid.classList.remove('sort-dirty');
+    }
+
+    function getCurrentOrder() {
+        return [...grid.querySelectorAll('.paysystem-card-col')]
+            .map(el => el.dataset.pluginDir)
+            .filter(Boolean);
+    }
+
+    // ── SortableJS instance ────────────────────────────────────────────────────
+
+    Sortable.create(grid, {
+        animation      : 150,
+        easing         : 'cubic-bezier(0.25, 1, 0.5, 1)',
+        ghostClass     : 'sortable-ghost',
+        chosenClass    : 'sortable-chosen',
+        dragClass      : 'sortable-drag',
+        draggable      : '.paysystem-card-col',
+        forceFallback  : false,
+        filter         : 'a, button',   // clicks on links/buttons still work normally
+        preventOnFilter: false,
+
+        onStart: function () {
+            document.body.style.cursor = 'grabbing';
+        },
+        onEnd: function (evt) {
+            document.body.style.cursor = '';
+            if (evt.oldIndex !== evt.newIndex) {
+                markDirty();
+            }
+        }
+    });
+
+    // ── Save order ─────────────────────────────────────────────────────────────
+
+    window.saveSortOrder = function () {
+        const order = getCurrentOrder();
+
+        if (!saveBtn) return;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Сохранение…';
+
+        fetch('/admin/donate/plugins/sort', {
+            method : 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body   : JSON.stringify({ order })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data && data.success) {
+                markClean();
+                showToast('Порядок платёжных систем сохранён ✓', 'success');
+            } else {
+                throw new Error('Server returned success=false');
+            }
+        })
+        .catch(() => {
+            showToast('Ошибка сохранения. Попробуйте ещё раз.', 'danger');
+        })
+        .finally(() => {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="ri-save-line fw-semibold align-middle me-1"></i> Сохранить порядок';
+        });
+    };
+
+    // Warn before leaving with unsaved changes
+    window.addEventListener('beforeunload', function (e) {
+        if (saveBtn && !saveBtn.classList.contains('d-none')) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+})();
+</script>
 {% endblock %}

@@ -75,8 +75,11 @@ class winroll
             if(!user::self()->donateDeduct($cost)){
                 board::error(lang::get_phrase('An error occurred while writing off'));
             }
-
-            user::self()->addToWarehouse($winrolls['serverId'], $itemId, $count, $enchant, 'your winnings');
+            if($itemId == -1){
+                user::self()->donateAdd($count);
+            }else{
+                user::self()->addToWarehouse($winrolls['serverId'], $itemId, $count, $enchant, 'your winnings');
+            }
             user::self()->addLog(logTypes::LOG_WINROW_WIN, "winroll_action", [$itemId, $enchant, $itemInfo->getItemName(), $count]);
             board::alert([
                 'id' => $winrolls['result']['id'],
@@ -127,6 +130,39 @@ class winroll
             board::error($ok['error']);
         }
 
+    }
+
+    /**
+     * Служит для раздачи аудиофайлов плагина
+     */
+    public function getAudio($filename): void
+    {
+        // Получаем полный путь к файлу
+        $filePath = __DIR__ . '/tpl/audio/' . basename($filename);
+        
+        // Проверяем безопасность - файл должен быть в папке audio
+        $audioDir = realpath(__DIR__ . '/tpl/audio/');
+        $realFilePath = realpath($filePath);
+        
+        if (!$audioDir || !$realFilePath || strpos($realFilePath, $audioDir) !== 0) {
+            http_response_code(404);
+            exit;
+        }
+        
+        // Проверяем только MP3 файлы
+        if (!file_exists($realFilePath) || pathinfo($realFilePath, PATHINFO_EXTENSION) !== 'mp3') {
+            http_response_code(404);
+            exit;
+        }
+        
+        // Раздаем файл
+        header('Content-Type: audio/mpeg');
+        header('Content-Length: ' . filesize($realFilePath));
+        header('Cache-Control: public, max-age=31536000');
+        header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 31536000));
+        
+        readfile($realFilePath);
+        exit;
     }
 
 }
