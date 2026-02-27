@@ -217,7 +217,7 @@ function submitPayment() {
     .then(data => {
         loadingModal.hide();
         
-        if (data.status === 'success' && data.url) {
+        if (data.type === 'success' && data.url) {
             // Перенаправляем на страницу оплаты
             window.location.href = data.url;
         } else {
