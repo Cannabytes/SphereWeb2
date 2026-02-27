@@ -964,7 +964,7 @@ return [
     'create_admin_desc' => 'Тепер створіть свій обліковий запис адміністратора.',
     'create_bonus_codes' => 'Створення бонус кодів',
     'create_patch' => 'Створити патч',
-    'create_phrase_link' => 'Створити свою фразу можна <a href=\'/admin/phrases\' target=\'_blank\'>тут</a>.',
+    'create_phrase_link' => 'Створити свою фразу можно <a href=\'/admin/phrases/custom\' target=\'_blank\'>тут</a>.',
     'create_router' => 'Створити маршрутизатор',
     'create_token' => 'Створити токен',
     'create_token_on_this_page' => 'Створити токен на цій сторінці.',

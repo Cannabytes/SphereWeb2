@@ -1579,44 +1579,80 @@ class tpl
             return "/" . $fullImagePath;
         }));
 
-        $twig->addFunction(new TwigFunction('all_phrase', function () {
-            $languages = fileSys::get_dir_files("/data/languages", [
-                'basename' => true,
-                'sort' => false,
-                'fetchAll' => true,
-            ]);
+        $twig->addFunction(new TwigFunction('all_phrase', function ($perPage = 100) {
+            static $fullData = null;
+            
+            // Получаем номер страницы из GET параметров
+            $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+            
+            // Кэшируем только в памяти для этого запроса
+            if ($fullData === null) {
+                // Загружаем языки
+                $languages = fileSys::get_dir_files("/data/languages", [
+                    'basename' => true,
+                    'sort' => false,
+                    'fetchAll' => true,
+                ]);
 
-            $languages = array_map(
-                function ($item) {
-                    return preg_replace('/\.php$/', '', $item);
-                },
-                array_filter($languages, function ($item) {
-                    return str_ends_with($item, '.php');
-                })
-            );
+                $languages = array_map(
+                    function ($item) {
+                        return preg_replace('/\.php$/', '', $item);
+                    },
+                    array_filter($languages, function ($item) {
+                        return str_ends_with($item, '.php');
+                    })
+                );
 
-            $combinedArray = [];
-            foreach ($languages as $language) {
-                $language_phrases = include fileSys::get_dir("/data/languages/" . $language . ".php");
-                foreach ($language_phrases as $key => $phrase) {
-                    $combinedArray[$key][$language] = $phrase;
-                }
-            }
+                // Инициализируем массив с пустыми значениями сразу
+                $combinedArray = [];
+                $langDefaults = array_fill_keys($languages, '');
 
-            // Добавляем пустые строки для отсутствующих языковых значений
-            foreach ($combinedArray as $key => $phrases) {
+                // Загружаем фразы для каждого языка
                 foreach ($languages as $language) {
-                    if (!array_key_exists($language, $phrases)) {
-                        $combinedArray[$key][$language] = ""; // Добавляем пустую строку
+                    $langFile = fileSys::get_dir("/data/languages/" . $language . ".php");
+                    if (@file_exists($langFile)) {
+                        $language_phrases = include $langFile;
+                        if (is_array($language_phrases)) {
+                            foreach ($language_phrases as $key => $phrase) {
+                                if (!isset($combinedArray[$key])) {
+                                    $combinedArray[$key] = $langDefaults;
+                                }
+                                $combinedArray[$key][$language] = $phrase;
+                            }
+                        }
                     }
                 }
-            }
-            // Сортировка фраз в каждом языке
-            foreach ($combinedArray as $key => &$phrases) {
-                ksort($phrases);
+
+                // Сортируем ключи фраз один раз
+                ksort($combinedArray);
+
+                $fullData = ['lang_list' => $languages, 'phrases' => $combinedArray];
             }
 
-            return ['lang_list' => $languages, 'phrases' => $combinedArray];
+            // Пагинируем результат
+            $allPhrases = $fullData['phrases'];
+            $totalPhrases = count($allPhrases);
+            $totalPages = ceil($totalPhrases / $perPage);
+            
+            // Гарантируем что страница в пределах допустимого
+            $page = max(1, min($page, $totalPages));
+            $offset = ($page - 1) * $perPage;
+            
+            // Берем только нужную страницу
+            $paginatedPhrases = array_slice($allPhrases, $offset, $perPage, true);
+
+            return [
+                'lang_list' => $fullData['lang_list'],
+                'phrases' => $paginatedPhrases,
+                'pagination' => [
+                    'current_page' => $page,
+                    'per_page' => $perPage,
+                    'total' => $totalPhrases,
+                    'total_pages' => $totalPages,
+                    'has_next' => $page < $totalPages,
+                    'has_prev' => $page > 1
+                ]
+            ];
         }));
 
         $twig->addFunction(new TwigFunction('all_phrase_custom', function () {

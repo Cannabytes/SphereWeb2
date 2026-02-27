@@ -319,34 +319,6 @@ return array (
   22 => 
   array (
     'enable' => 1,
-    'method' => 'GET',
-    'pattern' => '/admin/phrases',
-    'func' => NULL,
-    'access' => 
-    array (
-      'admin',
-    ),
-    'weight' => 0,
-    'page' => '/admin/phrases.html',
-    'comment' => 'Set multilang phrases',
-  ),
-  23 => 
-  array (
-    'enable' => 1,
-    'method' => 'POST',
-    'pattern' => '/admin/phrases',
-    'func' => 'model\phrases\phrases::save',
-    'access' => 
-    array (
-      'admin',
-    ),
-    'weight' => 0,
-    'page' => '',
-    'comment' => '',
-  ),
-  24 => 
-  array (
-    'enable' => 1,
     'method' => 'POST',
     'pattern' => '/admin/config/save',
     'func' => 'model\config\config::save',
@@ -358,6 +330,7 @@ return array (
     'page' => '',
     'comment' => 'Save Sphere config',
   ),
+  
   25 => 
   array (
     'enable' => 1,

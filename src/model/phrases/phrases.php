@@ -16,6 +16,10 @@ class phrases
         $phrases = $_POST['phrases'] ?? board::error("Not phrases array");
         $phrasesArray = json_decode($phrases, true);
 
+        if (empty($phrasesArray)) {
+            board::error("Пустой массив фраз");
+        }
+
         $phraseFormat = [];
 
         foreach($phrasesArray AS $key=>$phrases){
@@ -34,12 +38,29 @@ class phrases
             board::error("Ошибка: Директория '$directory' не доступна для записи.");
         }
 
-        foreach ($phraseFormat as $key => $values) {
-            $fileName = $directory . $key . '.php';
+        foreach ($phraseFormat as $lang => $newPhrases) {
+            $fileName = $directory . $lang . '.php';
+
+            // Загружаем существующие фразы (если файл существует)
+            $existingPhrases = [];
+            if (file_exists($fileName)) {
+                $existingPhrases = include $fileName;
+                if (!is_array($existingPhrases)) {
+                    $existingPhrases = [];
+                }
+            }
+
+            // Обновляем только те ключи, которые пришли
+            foreach ($newPhrases as $key => $value) {
+                $existingPhrases[$key] = $value;
+            }
+
+            // Сортируем по ключам для консистентности
+            ksort($existingPhrases);
 
             $data = "<?php\nreturn [\n";
 
-            foreach ($values as $subKey => $value) {
+            foreach ($existingPhrases as $subKey => $value) {
                 $value = str_replace("\"", "'", $value);
                 $escapedValue = addslashes($value);
                 $data .= "\t'$subKey' => '{$escapedValue}',\n";
@@ -66,6 +87,10 @@ class phrases
         $phrases = $_POST['phrases'] ?? board::error("Not phrases array");
         $phrasesArray = json_decode($phrases, true);
 
+        if (empty($phrasesArray)) {
+            board::error("Пустой массив фраз");
+        }
+
         $phraseFormat = [];
 
         foreach($phrasesArray AS $key=>$phrases){
@@ -83,10 +108,28 @@ class phrases
             board::error("Ошибка: Директория '$directory' не доступна для записи.");
         }
 
-        foreach ($phraseFormat as $key => $values) {
-            $fileName = $directory . $key . '.php';
+        foreach ($phraseFormat as $lang => $newPhrases) {
+            $fileName = $directory . $lang . '.php';
+
+            // Загружаем существующие фразы (если файл существует)
+            $existingPhrases = [];
+            if (file_exists($fileName)) {
+                $existingPhrases = include $fileName;
+                if (!is_array($existingPhrases)) {
+                    $existingPhrases = [];
+                }
+            }
+
+            // Обновляем только те ключи, которые пришли
+            foreach ($newPhrases as $key => $value) {
+                $existingPhrases[$key] = $value;
+            }
+
+            // Сортируем по ключам для консистентности
+            ksort($existingPhrases);
+
             $data = "<?php\nreturn [\n";
-            foreach ($values as $subKey => $value) {
+            foreach ($existingPhrases as $subKey => $value) {
                 $value = str_replace("\"", "'", $value);
                 $escapedValue = addslashes($value);
                 $data .= "\t'$subKey' => '{$escapedValue}',\n";

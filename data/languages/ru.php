@@ -978,7 +978,7 @@ return array(
 	'create_admin_desc' => 'Теперь создайте свой аккаунт администратора.',
 	'create_bonus_codes' => 'Создание бонус кодов',
 	'create_patch' => 'Создать патч',
-	'create_phrase_link' => 'Создать свою фразу можно <a href=\'/admin/phrases\' target=\'_blank\'>тут</a>.',
+	'create_phrase_link' => 'Создать свою фразу можно <a href=\'/admin/phrases/custom\' target=\'_blank\'>тут</a>.',
 	'create_router' => 'Создать маршрутизатор',
 	'create_token' => 'Создать токен',
 	'create_token_on_this_page' => 'Создать токен на этой странице.',

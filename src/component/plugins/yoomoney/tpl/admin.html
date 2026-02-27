@@ -1,0 +1,203 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{ phrase('admin_panel', 'yoomoney') }}{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <!-- Хлебные крошки и заголовок -->
+    <div class="row mb-3">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header d-flex align-items-center">
+                    <a href="/admin" class="avatar border text-muted me-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+                        </svg>
+                    </a>
+                    <div class="flex-fill">
+                        <h4 class="fw-semibold mb-0">
+                            <i class="bi bi-wallet2 me-2"></i>
+                            {{ phrase('admin_panel', 'yoomoney') }}
+                        </h4>
+                        <p class="text-muted mb-0 fs-12">{{ phrase('yoomoney_desc', 'yoomoney') }}</p>
+                    </div>
+                    <div class="ms-auto">
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" role="switch" id="plugin_enabled" {% if enabled %}checked{% endif %}>
+                            <label class="form-check-label fw-semibold" for="plugin_enabled">{{ phrase('plugin_enabled', 'yoomoney') }}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <h5 class="fw-semibold mb-0"><i class="bi bi-globe2 me-2"></i>{{ phrase('supported_countries', 'yoomoney') }}</h5>
+                </div>
+                <div class="card-body">
+                    {% set supportedCountries = selectedCountries|default(['world']) %}
+                    {% set countryList = {'en': 'English'}|merge(getCountryList()) %}
+                    <div class="row" style="max-height: 300px; overflow-y: auto;">
+                        {% for code, countryName in countryList %}
+                        <div class="col-md-4 col-lg-3">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       role="switch"
+                                       id="yoomoney-country-{{ code|e('html_attr') }}"
+                                       name="supported_countries[]"
+                                       value="{{ code|lower|e('html_attr') }}"
+                                       {{ (code|lower in supportedCountries) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="yoomoney-country-{{ code|e('html_attr') }}">
+                                    {{ code|upper }} — {{ countryName }}
+                                </label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Webhook URL -->
+    <div class="row mb-3">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <h5 class="fw-semibold mb-0"><i class="bi bi-webhook me-2"></i>{{ phrase('webhook_url', 'yoomoney') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="webhookUrl" value="{{ webhookUrl }}" readonly>
+                        <button class="btn btn-outline-secondary" type="button" onclick="copyWebhookUrl()">
+                            <i class="bi bi-clipboard"></i> Копировать
+                        </button>
+                    </div>
+                    <small class="text-muted d-block mt-2">
+                        <i class="bi bi-info-circle me-1"></i>
+                        {{ phrase('webhook_hint', 'yoomoney') }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Управление магазинами -->
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card custom-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-semibold mb-0">{{ phrase('instances_management', 'yoomoney') }}</h5>
+                        <button class="btn btn-primary btn-sm" onclick="openInstanceModal()" {% if instances is not empty %}style="display: none;"{% endif %}>
+                            <i class="bi bi-plus-lg me-1"></i>
+                            {{ phrase('add_instance', 'yoomoney') }}
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover text-nowrap" id="instancesTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>{{ phrase('instance_name', 'yoomoney') }}</th>
+                                    <th>{{ phrase('shop_id', 'yoomoney') }}</th>
+                                    <th>{{ phrase('actions', 'yoomoney') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if instances is empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        <i class="bi bi-inbox fs-40 d-block mb-2"></i>
+                                        {{ phrase('no_instances', 'yoomoney') }}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                {% for instance in instances %}
+                                <tr data-instance-id="{{ instance.id }}">
+                                    <td>{{ instance.id }}</td>
+                                    <td>
+                                        <strong>{{ instance.name }}</strong>
+                                        {% if instance.description %}
+                                        <br><small class="text-muted">{{ instance.description }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td><code>{{ instance.shop_id }}</code></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-sm btn-primary-light" onclick="editInstance()" title="{{ phrase('edit', 'yoomoney') }}">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger-light" onclick="deleteInstance()" title="{{ phrase('delete', 'yoomoney') }}">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для создания/редактирования магазина -->
+<div class="modal fade" id="instanceModal" tabindex="-1" aria-labelledby="instanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="instanceModalLabel">{{ phrase('add_instance', 'yoomoney') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="instanceForm">
+                    <div class="row">
+                        <div class="col-xl-12 mb-3">
+                            <label for="instance_name" class="form-label">{{ phrase('instance_name', 'yoomoney') }} <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="instance_name" name="name" required placeholder="{{ phrase('instance_name', 'yoomoney') }}">
+                        </div>
+
+                        <div class="col-xl-12 mb-3">
+                            <label for="instance_shop_id" class="form-label">{{ phrase('shop_id', 'yoomoney') }} <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="instance_shop_id" name="shop_id" required placeholder="{{ phrase('shop_id_placeholder', 'yoomoney') }}">
+                            <small class="text-muted">{{ phrase('shop_id_hint', 'yoomoney') }}</small>
+                        </div>
+
+                        <div class="col-xl-12 mb-3">
+                            <label for="instance_secret_key" class="form-label">{{ phrase('secret_key', 'yoomoney') }} <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="instance_secret_key" name="secret_key" required placeholder="{{ phrase('secret_key_placeholder', 'yoomoney') }}">
+                            <small class="text-muted">{{ phrase('secret_key_hint', 'yoomoney') }}</small>
+                        </div>
+
+                        <div class="col-xl-12 mb-3">
+                            <label for="instance_description" class="form-label">{{ phrase('instance_description', 'yoomoney') }}</label>
+                            <textarea class="form-control" id="instance_description" name="description" rows="2" placeholder="{{ phrase('instance_description', 'yoomoney') }}"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase('cancel', 'yoomoney') }}</button>
+                <button type="button" class="btn btn-primary" onclick="saveInstance()">
+                    <i class="bi bi-check-lg me-1"></i>
+                    {{ phrase('save', 'yoomoney') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/src/component/plugins/yoomoney/tpl/admin.js?v={{ time() }}"></script>
+
+{% endblock %}

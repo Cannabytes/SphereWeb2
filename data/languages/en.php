@@ -1355,7 +1355,7 @@ You can get the CAPTCHA keys here - <a href=\'https://www.google.com/recaptcha/a
 	'menu_launcher' => 'Launcher',
 	'menu_links_instructions' => 'You can add your own links to the menu.
 <br>
-phraseId - the name of the phrase, specifically its key from the <a class=\'text-primary\' href=\'/admin/phrases\' target=\'_blank\'>translations table</a>.<br>
+phraseId - the name of the phrase, specifically its key from the <a class=\'text-primary\' href=\'/admin/phrases/custom\' target=\'_blank\'>translations table</a>.<br>
 When choosing an icon, you need to copy its style.<br>
 Icon styles can be chosen here<br>
 <div class=\'bd-example flex-container\'>

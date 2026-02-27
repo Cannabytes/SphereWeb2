@@ -1,0 +1,436 @@
+<?php
+
+namespace yoomoney;
+
+use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\controller\admin\telegram;
+use Ofey\Logan22\model\plugin\BasePaymentPlugin;
+use Ofey\Logan22\model\admin\validation;
+use Ofey\Logan22\model\donate\donate;
+use Ofey\Logan22\model\plugin\plugin;
+use Ofey\Logan22\model\user\user;
+use Ofey\Logan22\template\tpl;
+use ReflectionClass;
+
+/**
+ * Основной класс плагина YooMoney
+ * https://yoomoney.ru/document/api-dlya-razrabotchikov
+ */
+class yoomoney extends BasePaymentPlugin
+{
+    // URL для формирования платежа
+    private const PAYMENT_URL = 'https://yoomoney.ru/quickpay/confirm.xml';
+
+    // Список разрешенных IP адресов YooMoney для webhook
+    private const ALLOWED_IPS = [
+        '185.71.76.0/27',
+        '185.71.77.0/27',
+        '77.75.153.0/25',
+        '77.75.156.11',
+        '77.75.156.35',
+        '77.75.154.128/25',
+        '2a02:5180::/32'
+    ];
+
+    public function __construct()
+    {
+        if (!is_array($this->getPluginSetting('shop'))) {
+            $this->setPluginSetting('shop', []);
+        }
+    }
+
+    /**
+     * Получить данные магазина
+     */
+    private function getShop(): ?array
+    {
+        $shop = $this->getPluginSetting('shop');
+        return is_array($shop) && !empty($shop) ? $shop : null;
+    }
+
+    protected function isConfigured(): bool
+    {
+        $shop = $this->getShop();
+        return $shop !== null && !empty($shop['receiver']);
+    }
+
+    /**
+     * Административная панель плагина
+     */
+    public function admin(): void
+    {
+        validation::user_protection('admin');
+
+        $shop = $this->getShop();
+        $instances = $shop ? [$shop] : [];
+
+        tpl::addVar([
+            'title' => lang::get_phrase('admin_panel', 'yoomoney'),
+            'pluginName' => $this->getNameClass(),
+            'instances' => $instances,
+            'enabled' => $this->getPluginSetting('enabled', false),
+            'selectedCountries' => $this->sanitizeSupportedCountries($this->getPluginSetting('supported_countries', ['world'])),
+            'webhookUrl' => ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/plugin/yoomoney/webhook',
+        ]);
+
+        tpl::displayPlugin('/yoomoney/tpl/admin.html');
+    }
+
+    /**
+     * Сохранить глобальные настройки
+     */
+    public function saveGlobalSettings(): void
+    {
+        validation::user_protection('admin');
+
+        $enabledRaw = $_POST['enabled'] ?? null;
+        $enabled = $enabledRaw === null
+            ? (bool)$this->getPluginSetting('enabled', false)
+            : filter_var($enabledRaw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        if ($enabled === null) {
+            $enabled = (bool)$this->getPluginSetting('enabled', false);
+        }
+
+        $supportedCountries = array_key_exists('supported_countries', $_POST)
+            ? $this->sanitizeSupportedCountries($_POST['supported_countries'])
+            : $this->sanitizeSupportedCountries($this->getPluginSetting('supported_countries', ['world']));
+
+        // Сохраняем статус в собственных настройках плагина
+        $this->setPluginSetting('enabled', $enabled);
+        $this->setPluginSetting('supported_countries', $supportedCountries);
+
+        // Используем системный метод для синхронизации в реестре '__PLUGIN__'
+        $_POST['pluginName'] = $this->getNameClass();
+        $_POST['setting'] = 'enablePlugin';
+        $_POST['value'] = $enabled;
+        $_POST['serverId'] = 0;
+        plugin::__save_activator_plugin();
+
+        board::success(lang::get_phrase('settings_saved', 'yoomoney'));
+    }
+
+    /**
+     * Создать/обновить магазин
+     */
+    public function createInstance(): void
+    {
+        validation::user_protection('admin');
+
+        $name = $_POST['name'] ?? '';
+        $shopId = $_POST['shop_id'] ?? '';
+        $secretKey = $_POST['secret_key'] ?? '';
+        $description = $_POST['description'] ?? '';
+        $supportedCountries = array_key_exists('supported_countries', $_POST)
+            ? $this->sanitizeSupportedCountries($_POST['supported_countries'])
+            : $this->sanitizeSupportedCountries($this->getPluginSetting('supported_countries', ['world']));
+
+        if (empty($name) || empty($shopId) || empty($secretKey)) {
+            board::error(lang::get_phrase('error_invalid_data', 'yoomoney'));
+        }
+
+        $shop = [
+            'id' => 1,
+            'name' => $name,
+            'shop_id' => $shopId,
+            'secret_key' => $secretKey,
+            'description' => $description,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ];
+
+        $this->setPluginSetting('shop', $shop);
+        $this->setPluginSetting('supported_countries', $supportedCountries);
+        board::success(lang::get_phrase('instance_created', 'yoomoney'));
+    }
+
+    /**
+     * Обновить магазин
+     */
+    public function updateInstance(): void
+    {
+        validation::user_protection('admin');
+
+        $name = $_POST['name'] ?? '';
+        $shopId = $_POST['shop_id'] ?? '';
+        $secretKey = $_POST['secret_key'] ?? '';
+        $description = $_POST['description'] ?? '';
+        $supportedCountries = array_key_exists('supported_countries', $_POST)
+            ? $this->sanitizeSupportedCountries($_POST['supported_countries'])
+            : $this->sanitizeSupportedCountries($this->getPluginSetting('supported_countries', ['world']));
+
+        if (empty($name) || empty($shopId) || empty($secretKey)) {
+            board::error(lang::get_phrase('error_invalid_data', 'yoomoney'));
+        }
+
+        $shop = $this->getShop();
+        if (!$shop) {
+            board::error(lang::get_phrase('error_instance_not_found', 'yoomoney'));
+        }
+
+        $shop['name'] = $name;
+        $shop['shop_id'] = $shopId;
+        $shop['secret_key'] = $secretKey;
+        $shop['description'] = $description;
+        $shop['updated_at'] = date('Y-m-d H:i:s');
+
+        $this->setPluginSetting('shop', $shop);
+        $this->setPluginSetting('supported_countries', $supportedCountries);
+        board::success(lang::get_phrase('instance_updated', 'yoomoney'));
+    }
+
+    /**
+     * Удалить магазин
+     */
+    public function deleteInstance(): void
+    {
+        validation::user_protection('admin');
+
+        $this->setPluginSetting('shop', []);
+        board::success(lang::get_phrase('instance_deleted', 'yoomoney'));
+    }
+
+    /**
+     * Получить данные магазина в JSON
+     */
+    public function getInstanceData(): void
+    {
+        validation::user_protection('admin');
+
+        $shop = $this->getShop();
+        if (!$shop) {
+            board::error(lang::get_phrase('error_instance_not_found', 'yoomoney'));
+        }
+
+        board::alert([
+            'ok' => true,
+            'instance' => $shop
+        ]);
+    }
+
+    /**
+     * Страница оплаты для пользователей
+     */
+    public function payment(?int $count = null): void
+    {
+        if (!$this->isPluginActive()) {
+            if ($this->isAjax()) {
+                board::notice(false, lang::get_phrase('plugin_disabled', 'yoomoney'));
+            } else {
+                redirect::location('/main');
+            }
+            return;
+        }
+
+        if (!user::self()->isAuth()) {
+            if ($this->isAjax()) {
+                board::response('error', lang::get_phrase(234));
+            } else {
+                redirect::location('/login');
+            }
+        }
+
+        $shop = $this->getShop();
+        if (!$shop) {
+            board::notice(false, lang::get_phrase('no_instances', 'yoomoney'));
+        }
+
+        $server = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId());
+        $donate = $server->donate();
+
+        tpl::addVar([
+            'title' => lang::get_phrase('payment_title', 'yoomoney'),
+            'instances' => $shop ? [$shop] : [],
+            'minAmount' => $donate->getMinSummaPaySphereCoin(),
+            'maxAmount' => $donate->getMaxSummaPaySphereCoin(),
+            'defaultAmount' => is_null($count) ? $donate->getDefaultSummaPaySphereCoin() : (int)$count,
+            'sphereCoinCost' => $donate->getSphereCoinCost(),
+            'donateCount' => is_null($count) ? null : (int)$count,
+        ]);
+
+        tpl::displayPlugin('/yoomoney/tpl/payment.html');
+    }
+
+    /**
+     * Создать новый платеж
+     */
+    public function createPayment(): void
+    {
+        if (!$this->isPluginActive()) {
+            board::error(lang::get_phrase('plugin_disabled', 'yoomoney'));
+        }
+
+        if (!user::self()->isAuth()) {
+            board::error(lang::get_phrase(234));
+        }
+
+        $amount = (float)($_POST['amount'] ?? 0);
+
+        if ($amount <= 0) {
+            board::error(lang::get_phrase('error_invalid_amount', 'yoomoney'));
+        }
+
+        $shop = $this->getShop();
+        if (!$shop) {
+            board::error(lang::get_phrase('error_instance_not_found', 'yoomoney'));
+        }
+
+        $server = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId());
+        $donate = $server->donate();
+
+        if ($amount < $donate->getMinSummaPaySphereCoin()) {
+            board::error('Минимальная сумма: ' . $donate->getMinSummaPaySphereCoin());
+        }
+
+        if ($amount > $donate->getMaxSummaPaySphereCoin()) {
+            board::error('Максимальная сумма: ' . $donate->getMaxSummaPaySphereCoin());
+        }
+
+        $currency = 'RUB';
+        $calculatedAmount = donate::sphereCoinSmartCalc($amount, $donate->getRatio($currency), $donate->getSphereCoinCost());
+
+        $params = [
+            'receiver' => $shop['shop_id'],
+            'sum' => (string)$calculatedAmount,
+            'quickpay-form' => 'donate',
+            'label' => user::self()->getId(),
+            'paymentType' => 'AC',
+            'successURL' => \Ofey\Logan22\component\request\url::host('/donate/pay'),
+        ];
+
+        $paymentUrl = self::PAYMENT_URL . '?' . http_build_query($params);
+        board::response('success', ['url' => $paymentUrl]);
+    }
+
+    /**
+     * Webhook для получения уведомлений от YooMoney
+     */
+    public function webhook(): void
+    {
+        if (!$this->isPluginActive()) {
+            echo 'disabled';
+            exit;
+        }
+
+        // Проверка IP
+        $clientIp = $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'];
+        if (!$this->isIpAllowed($clientIp)) {
+            die('Access denied: IP not allowed');
+        }
+
+        $shop = $this->getShop();
+        if (!$shop) {
+            die('Shop not configured');
+        }
+
+        if (empty($shop['secret_key'])) {
+            die('Secret key not configured');
+        }
+
+        $notification_type = $_POST['notification_type'] ?? '';
+        if ($notification_type != 'card-incoming') {
+            exit();
+        }
+
+        $request_hash = $_POST['sha1_hash'] ?? '';
+        $withdraw_amount = $_POST['withdraw_amount'] ?? 0;
+        $operation_id = $_POST['operation_id'] ?? 0;
+        $amount = $_POST['amount'] ?? 0;
+        $currency = $_POST['currency'] ?? 0;
+        $datetime = $_POST['datetime'] ?? '';
+        $sender = $_POST['sender'] ?? '';
+        $codepro = $_POST['codepro'] ?? '';
+        $user_id = $_POST['label'] ?? '';
+        $notification_secret = $shop['secret_key'];
+
+        $hash = sha1("{$notification_type}&{$operation_id}&{$amount}&{$currency}&{$datetime}&{$sender}&{$codepro}&{$notification_secret}&{$user_id}");
+
+        if ($hash !== $request_hash) {
+            exit();
+        }
+
+        $currency = 'RUB';
+        donate::control_uuid($operation_id, $this->getNameClass());
+
+        try {
+            $donateAmount = donate::currency($withdraw_amount, $currency);
+        } catch (\Throwable $e) {
+            echo json_encode(['status' => false, 'msg' => 'Currency conversion failed']);
+            return;
+        }
+
+        try {
+            telegram::telegramNotice(user::getUserId($user_id), $withdraw_amount, $currency, $donateAmount, $this->getNameClass());
+        } catch (\Throwable $e) {
+        }
+
+        try {
+            user::getUserId($user_id)
+                ->donateAdd($donateAmount)
+                ->AddHistoryDonate(amount: $donateAmount, pay_system: $this->getNameClass());
+        } catch (\Throwable $e) {
+            echo json_encode(['status' => false, 'msg' => 'Failed to add funds']);
+            return;
+        }
+
+        try {
+            donate::addUserBonus($user_id, $donateAmount);
+        } catch (\Throwable $e) {
+        }
+
+        exit();
+    }
+
+    /**
+     * Проверка, разрешен ли IP адрес
+     */
+    private function isIpAllowed(string $ip): bool
+    {
+        foreach (self::ALLOWED_IPS as $allowedIp) {
+            if (strpos($allowedIp, '/') !== false) {
+                // Это подсеть
+                if ($this->ipInRange($ip, $allowedIp)) {
+                    return true;
+                }
+            } else {
+                // Это конкретный IP
+                if ($ip === $allowedIp) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Проверка, находится ли IP в подсети
+     */
+    private function ipInRange(string $ip, string $range): bool
+    {
+        list($subnet, $mask) = explode('/', $range);
+        
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            // IPv6
+            $ip_bin = inet_pton($ip);
+            $subnet_bin = inet_pton($subnet);
+            $mask = (int)$mask;
+            
+            $ip_bits = '';
+            $subnet_bits = '';
+            
+            for ($i = 0; $i < strlen($ip_bin); $i++) {
+                $ip_bits .= str_pad(decbin(ord($ip_bin[$i])), 8, '0', STR_PAD_LEFT);
+                $subnet_bits .= str_pad(decbin(ord($subnet_bin[$i])), 8, '0', STR_PAD_LEFT);
+            }
+            
+            return substr($ip_bits, 0, $mask) === substr($subnet_bits, 0, $mask);
+        } else {
+            // IPv4
+            $ip_long = ip2long($ip);
+            $subnet_long = ip2long($subnet);
+            $mask_long = -1 << (32 - (int)$mask);
+            return ($ip_long & $mask_long) === ($subnet_long & $mask_long);
+        }
+    }
+}

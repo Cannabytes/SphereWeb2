@@ -1,0 +1,253 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{ phrase('payment_title', 'yoomoney') }}{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-8">
+            <!-- Заголовок -->
+            <div class="card custom-card mb-4">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <span class="avatar avatar-md avatar-rounded bg-primary">
+                                <i class="bi bi-wallet2 fs-20"></i>
+                            </span>
+                        </div>
+                        <div>
+                            <h4 class="fw-semibold mb-1">{{ phrase('payment_title', 'yoomoney') }}</h4>
+                            <p class="text-muted mb-0 fs-12">{{ phrase('yoomoney_desc', 'yoomoney') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Форма оплаты -->
+            <div class="card custom-card">
+                <div class="card-body">
+                    <div id="paymentForm">
+                        
+                        <!-- Сумма платежа -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-cash-stack me-1"></i>
+                                {{ phrase('amount', 'yoomoney') }}
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text">
+                                    <i class="bi bi-coin"></i>
+                                </span>
+                                <input type="number" class="form-control" id="amount" name="amount" 
+                                    value="{{ donateCount }}" 
+                                    min="{{ minAmount }}" 
+                                    max="{{ maxAmount }}"
+                                    step="1" 
+                                    required>
+                                <span class="input-group-text">Donate Coin</span>
+                            </div>
+                            <small class="text-muted d-block mt-1">
+                                <i class="bi bi-info-circle me-1"></i>
+                                {{ phrase('limits', 'yoomoney') }}: <strong>{{ minAmount }} - {{ maxAmount }} Coins</strong>
+                            </small>
+                        </div>
+
+                        <!-- Стоимость -->
+                        <div class="card custom-card shadow-sm border-primary mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">{{ phrase('you_receive', 'yoomoney') }}:</span>
+                                    <h4 class="fw-bold mb-0 text-success">
+                                        <span id="receiveAmount">{{ donateCount ?: defaultAmount }}</span> 
+                                        <span>{{ phrase('sphere_coins', 'yoomoney') }}</span>
+                                    </h4>
+                                </div>
+                                <hr class="my-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">{{ phrase('total_cost', 'yoomoney') }}:</span>
+                                    <h4 class="fw-bold mb-0 text-primary">
+                                        <span id="totalCostValue">0.00</span> <span>RUB</span>
+                                    </h4>
+                                </div>
+                                <small class="text-muted d-block mt-2">
+                                    {% set sphereCoinCost = getServer().donate().getSphereCoinCost() %}
+                                    {% if sphereCoinCost >= 1 %}
+                                        {% set RUB_rate = getServer().donate().getRatioRUB() / sphereCoinCost %}
+                                    {% else %}
+                                        {% set RUB_rate = getServer().donate().getRatioRUB() * sphereCoinCost %}
+                                    {% endif %}
+                                    {{ phrase('rate', 'yoomoney') }}: 1 Coin = <span id="coinRate">{{ RUB_rate }}</span> RUB
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Информация о YooMoney -->
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            После нажатия кнопки оплаты вы будете перенаправлены на страницу YooMoney для завершения платежа.
+                        </div>
+
+                        <!-- Кнопка оплаты -->
+                        <div class="d-grid">
+                            <button type="button" class="btn btn-primary btn-lg" id="payButton">
+                                <i class="bi bi-arrow-right-circle me-2"></i>
+                                {{ phrase('pay_button', 'yoomoney') }}
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно загрузки -->
+<div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-5">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Загрузка...</span>
+                </div>
+                <h5 class="fw-semibold mb-2">{{ phrase('creating_payment', 'yoomoney') }}</h5>
+                <p class="text-muted mb-0">Пожалуйста, подождите...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Константы
+const MIN_AMOUNT = {{ minAmount }};
+const MAX_AMOUNT = {{ maxAmount }};
+const DEFAULT_AMOUNT = {{ defaultAmount }};
+const SPHERE_COIN_COST = {{ sphereCoinCost }};
+
+{% set sphereCoinCost = getServer().donate().getSphereCoinCost() %}
+{% if sphereCoinCost >= 1 %}
+    {% set RUB_rate = getServer().donate().getRatioRUB() / sphereCoinCost %}
+{% else %}
+    {% set RUB_rate = getServer().donate().getRatioRUB() * sphereCoinCost %}
+{% endif %}
+const RUB_RATE = {{ RUB_rate }};
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', function() {
+    const amountInput = document.getElementById('amount');
+    const payButton = document.getElementById('payButton');
+    
+    // Обработчик изменения суммы
+    if (amountInput) {
+        amountInput.addEventListener('input', updateCalculations);
+        updateCalculations(); // Первичный расчет
+    }
+    
+    // Обработчик кнопки оплаты
+    if (payButton) {
+        payButton.addEventListener('click', submitPayment);
+    }
+});
+
+/**
+ * Обновить расчеты
+ */
+function updateCalculations() {
+    const amountInput = document.getElementById('amount');
+    const receiveAmount = document.getElementById('receiveAmount');
+    const totalCostValue = document.getElementById('totalCostValue');
+    
+    if (!amountInput) return;
+    
+    let amount = parseFloat(amountInput.value) || 0;
+    
+    // Ограничиваем значения
+    if (amount < MIN_AMOUNT) amount = MIN_AMOUNT;
+    if (amount > MAX_AMOUNT) amount = MAX_AMOUNT;
+    
+    // Обновляем поля
+    if (receiveAmount) {
+        receiveAmount.textContent = amount.toFixed(0);
+    }
+    
+    // Рассчитываем стоимость
+    const totalCost = amount * RUB_RATE;
+    if (totalCostValue) {
+        totalCostValue.textContent = totalCost.toFixed(2);
+    }
+}
+
+/**
+ * Отправить форму оплаты
+ */
+function submitPayment() {
+    const amountInput = document.getElementById('amount');
+    
+    if (!amountInput) {
+        showNotification('Ошибка', 'Не удалось получить сумму', 'error');
+        return;
+    }
+    
+    const amount = parseFloat(amountInput.value);
+    
+    // Валидация
+    if (isNaN(amount) || amount < MIN_AMOUNT || amount > MAX_AMOUNT) {
+        showNotification('Ошибка', `Пожалуйста, введите сумму от ${MIN_AMOUNT} до ${MAX_AMOUNT}`, 'error');
+        return;
+    }
+    
+    // Показываем модальное окно загрузки
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    loadingModal.show();
+    
+    // Отправляем запрос
+    const formData = new FormData();
+    formData.append('amount', amount);
+    
+    fetch('/yoomoney/payment/create', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        loadingModal.hide();
+        
+        if (data.status === 'success' && data.url) {
+            // Перенаправляем на страницу оплаты
+            window.location.href = data.url;
+        } else {
+            showNotification('Ошибка', data.message || 'Не удалось создать платеж', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        loadingModal.hide();
+        showNotification('Ошибка', 'Произошла ошибка при создании платежа', 'error');
+    });
+}
+
+/**
+ * Показать уведомление
+ */
+function showNotification(title, message, type = 'info') {
+    if (typeof showAlert === 'function') {
+        showAlert(message, type);
+    } else if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: type === 'success' ? 'success' : type === 'error' ? 'error' : 'info',
+            confirmButtonText: 'OK'
+        });
+    } else {
+        alert(title + ': ' + message);
+    }
+}
+</script>
+
+{% endblock %}

@@ -9,66 +9,24 @@ use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\plugin\plugin;
+use Ofey\Logan22\model\plugin\BasePaymentPlugin;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 use ReflectionClass;
 
-class primepayments
+class primepayments extends BasePaymentPlugin
 {
-    private ?string $nameClass = null;
-
     private const API_URL = 'https://pay.primepayments.io/API/v2/';
 
     private const DEFAULT_CURRENCY = 'RUB';
 
     private const DEFAULT_PAY_WAY = '1';
 
-    private function getNameClass(): string
+    protected function isConfigured(): bool
     {
-        if ($this->nameClass === null) {
-            $this->nameClass = strtolower((new ReflectionClass($this))->getShortName());
-        }
-
-        return $this->nameClass;
-    }
-
-    private function getPluginSetting(string $key, mixed $default = null): mixed
-    {
-        $settings = plugin::getSetting($this->getNameClass());
-        return $settings[$key] ?? $default;
-    }
-
-    private function setPluginSetting(string $key, mixed $value): void
-    {
-        $pluginSettings = plugin::get($this->getNameClass());
-        $pluginSettings->save([
-            'setting' => $key,
-            'value' => $value,
-            'type' => gettype($value),
-            'serverId' => 0,
-        ]);
-    }
-
-    private function sanitizeSupportedCountries(mixed $countries): array
-    {
-        if (!is_array($countries)) {
-            return ['ru'];
-        }
-
-        $normalized = [];
-        foreach ($countries as $country) {
-            if (!is_string($country)) {
-                continue;
-            }
-            $code = strtolower(trim($country));
-            if ($code === '' || !preg_match('/^[a-z0-9-]+$/', $code)) {
-                continue;
-            }
-            $normalized[] = $code;
-        }
-
-        $normalized = array_values(array_unique($normalized));
-        return empty($normalized) ? ['ru'] : $normalized;
+        return (string)$this->getPluginSetting('project_id', '') !== ''
+            && (string)$this->getPluginSetting('secret_1', '') !== ''
+            && (string)$this->getPluginSetting('secret_2', '') !== '';
     }
 
     public function admin(): void
@@ -141,8 +99,12 @@ class primepayments
 
     public function createPayment(): void
     {
-        if (!$this->getPluginSetting('enabled', false)) {
-            board::error('Plugin is disabled');
+        if (!$this->isPluginActive()) {
+            if ($this->isAjax()) {
+                board::error('Плагин выключен');
+            }
+            redirect::location('/main');
+            return;
         }
 
         if (!user::self()->isAuth()) {
@@ -217,7 +179,7 @@ class primepayments
 
     public function webhook(): void
     {
-        if (!$this->getPluginSetting('enabled', false)) {
+        if (!$this->isPluginActive()) {
             echo 'disabled';
             return;
         }
@@ -304,18 +266,5 @@ class primepayments
             'body' => $body,
             'error' => $error,
         ];
-    }
-
-    private function isConfigured(): bool
-    {
-        return (string)$this->getPluginSetting('project_id', '') !== ''
-            && (string)$this->getPluginSetting('secret_1', '') !== ''
-            && (string)$this->getPluginSetting('secret_2', '') !== '';
-    }
-
-    private function isAjax(): bool
-    {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && strtolower((string)$_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
 }

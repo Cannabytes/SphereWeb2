@@ -10,14 +10,13 @@ use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\plugin\plugin;
+use Ofey\Logan22\model\plugin\BasePaymentPlugin;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 use ReflectionClass;
 
-class severpay
+class severpay extends BasePaymentPlugin
 {
-    private ?string $nameClass = null;
-
     private const API_CREATE_URL = 'https://severpay.io/api/merchant/payin/create';
 
     private const ALLOWED_CURRENCIES = ['RUB', 'EUR', 'BYN'];
@@ -36,55 +35,11 @@ class severpay
         }
     }
 
-    private function getNameClass(): string
+    protected function isConfigured(): bool
     {
-        if ($this->nameClass === null) {
-            $this->nameClass = strtolower((new ReflectionClass($this))->getShortName());
-        }
-
-        return $this->nameClass;
+        $merchants = $this->getMerchants();
+        return !empty($merchants);
     }
-
-    private function getPluginSetting(string $key, mixed $default = null): mixed
-    {
-        $settings = plugin::getSetting($this->getNameClass());
-        return $settings[$key] ?? $default;
-    }
-
-    private function setPluginSetting(string $key, mixed $value): void
-    {
-        $pluginSettings = plugin::get($this->getNameClass());
-        $pluginSettings->save([
-            'setting' => $key,
-            'value' => $value,
-            'type' => gettype($value),
-            'serverId' => 0,
-        ]);
-    }
-
-    private function sanitizeSupportedCountries(mixed $countries): array
-    {
-        if (!is_array($countries)) {
-            return ['world'];
-        }
-
-        $normalized = [];
-        foreach ($countries as $country) {
-            if (!is_string($country)) {
-                continue;
-            }
-            $code = strtolower(trim($country));
-            if ($code === '' || !preg_match('/^[a-z0-9-]+$/', $code)) {
-                continue;
-            }
-            $normalized[] = $code;
-        }
-
-        $normalized = array_values(array_unique($normalized));
-        return empty($normalized) ? ['world'] : $normalized;
-    }
-
-
 
     private function getMerchants(): array
     {
@@ -208,8 +163,12 @@ class severpay
 
     public function createPayment(): void
     {
-        if (!$this->getPluginSetting('enabled', false)) {
-            board::error(lang::get_phrase('severpay_plugin_disabled'));
+        if (!$this->isPluginActive()) {
+            if ($this->isAjax()) {
+                board::error('Плагин выключен');
+            }
+            redirect::location('/main');
+            return;
         }
 
         if (!user::self()->isAuth()) {
@@ -292,7 +251,7 @@ class severpay
 
     public function webhook(): void
     {
-        if (!$this->getPluginSetting('enabled', false)) {
+        if (!$this->isPluginActive()) {
             echo json_encode(['status' => false, 'msg' => 'Plugin disabled']);
             return;
         }
@@ -412,10 +371,5 @@ class severpay
             'httpCode' => $httpCode,
             'body' => $body,
         ];
-    }
-
-    private function isAjax(): bool
-    {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower((string)$_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
 }

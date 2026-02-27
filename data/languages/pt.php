@@ -965,7 +965,7 @@ login automático no jogo, sem autenticação no jogo. Por exemplo, o SphereLaun
     'create_admin_desc' => 'Agora crie sua conta de administrador.',
     'create_bonus_codes' => 'Criar códigos bônus',
     'create_patch' => 'Criar patch',
-    'create_phrase_link' => 'Criar sua frase <a href=\'/admin/phrases\' target=\'_blank\'>aqui</a>.',
+    'create_phrase_link' => 'Criar sua frase <a href=\'/admin/phrases/custom\' target=\'_blank\'>aqui</a>.',
     'create_router' => 'Criar roteador',
     'create_token' => 'Criar token',
     'create_token_on_this_page' => 'Criar token nesta página.',

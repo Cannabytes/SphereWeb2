@@ -96,6 +96,9 @@ class plugin
 
     static public function getPluginActive($name = null)
     {
+         if ($name === null) {
+            return self::getPlugins();
+        }
         if ($name === null) {
             return self::getAllPlugins();
         }

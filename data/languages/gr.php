@@ -943,7 +943,7 @@ return [
     'create_admin_desc' => 'Τώρα δημιουργήστε τον λογαριασμό σας διαχειριστή.',
     'create_bonus_codes' => 'Δημιουργία bonus κωδικών',
     'create_patch' => 'Δημιουργία patch',
-    'create_phrase_link' => 'Μπορείτε να δημιουργήσετε τη φράση σας <a href=\'/admin/phrases\' target=\'_blank\'>εδώ</a>.',
+    'create_phrase_link' => 'Μπορείτε να δημιουργήσετε τη φράση σας <a href=\'/admin/phrases/custom\' target=\'_blank\'>εδώ</a>.',
     'create_router' => 'Δημιουργία δρομολογητή',
     'create_token' => 'Δημιουργία token',
     'create_token_on_this_page' => 'Δημιουργία token σε αυτήν τη σελίδα.',

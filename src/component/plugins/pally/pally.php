@@ -6,6 +6,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\controller\admin\telegram;
+use Ofey\Logan22\model\plugin\BasePaymentPlugin;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\plugin\plugin;
@@ -13,72 +14,16 @@ use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 use ReflectionClass;
 
-class pally
+class pally extends BasePaymentPlugin
 {
-    private ?string $nameClass = null;
-
     private const API_CREATE_URL = 'https://pal24.pro/api/v1/bill/create';
 
     private const DEFAULT_CURRENCY = 'RUB';
 
-    private function getNameClass(): string
-    {
-        if ($this->nameClass === null) {
-            $this->nameClass = strtolower((new ReflectionClass($this))->getShortName());
-        }
-
-        return $this->nameClass;
-    }
-
-    private function getPluginSetting(string $key, mixed $default = null): mixed
-    {
-        $settings = plugin::getSetting($this->getNameClass());
-        return $settings[$key] ?? $default;
-    }
-
-    private function setPluginSetting(string $key, mixed $value): void
-    {
-        $pluginSettings = plugin::get($this->getNameClass());
-        $pluginSettings->save([
-            'setting' => $key,
-            'value' => $value,
-            'type' => gettype($value),
-            'serverId' => 0,
-        ]);
-    }
-
-    private function sanitizeSupportedCountries(mixed $countries): array
-    {
-        if (!is_array($countries)) {
-            return ['ru', 'ua'];
-        }
-
-        $normalized = [];
-        foreach ($countries as $country) {
-            if (!is_string($country)) {
-                continue;
-            }
-            $code = strtolower(trim($country));
-            if ($code === '' || !preg_match('/^[a-z0-9-]+$/', $code)) {
-                continue;
-            }
-            $normalized[] = $code;
-        }
-
-        $normalized = array_values(array_unique($normalized));
-        return empty($normalized) ? ['ru', 'ua'] : $normalized;
-    }
-
-    private function isConfigured(): bool
+    protected function isConfigured(): bool
     {
         return trim((string)$this->getPluginSetting('shop_id', '')) !== ''
             && trim((string)$this->getPluginSetting('api_key', '')) !== '';
-    }
-
-    private function isAjax(): bool
-    {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && strtolower((string)$_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
 
     public function admin(): void

@@ -6,6 +6,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\controller\config\config;
+use Ofey\Logan22\model\plugin\BasePaymentPlugin;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\model\donate\donate;
@@ -16,12 +17,10 @@ use Ofey\Logan22\model\user\userModel;
 
 use ReflectionClass;
 
-class betaTransferDonate
+class betaTransferDonate extends BasePaymentPlugin
 {
     const BASE_URL_V1 = 'https://merchant.betatransfer.io/';
     const BASE_URL_V2 = 'https://api.betatransfer.io/';
-
-    private string|null $nameClass = null;
 
     public function __construct()
     {
@@ -31,34 +30,10 @@ class betaTransferDonate
         ]);
     }
 
-    private function getNameClass(): string
+    protected function isConfigured(): bool
     {
-        if ($this->nameClass == null) {
-            $this->nameClass = (new ReflectionClass($this))->getShortName();
-        }
-        return $this->nameClass;
-    }
-
-    private function sanitizeSupportedCountries(mixed $countries): array
-    {
-        if (!is_array($countries)) {
-            return ['world'];
-        }
-
-        $normalized = [];
-        foreach ($countries as $country) {
-            if (!is_string($country)) {
-                continue;
-            }
-            $code = strtolower(trim($country));
-            if ($code === '' || !preg_match('/^[a-z0-9-]+$/', $code)) {
-                continue;
-            }
-            $normalized[] = $code;
-        }
-
-        $normalized = array_values(array_unique($normalized));
-        return empty($normalized) ? ['world'] : $normalized;
+        $settings = plugin::getSetting($this->getNameClass());
+        return !empty($settings['public_api_key']) && !empty($settings['secret_api_key']);
     }
 
     /**
@@ -67,10 +42,10 @@ class betaTransferDonate
     public function adminSettings(): void
     {
         validation::user_protection("admin");
-        
+
         $settings = plugin::getSetting($this->getNameClass());
         $settings['supported_countries'] = $this->sanitizeSupportedCountries($settings['supported_countries'] ?? ['world']);
-        
+
         tpl::addVar([
             'settings' => $settings,
             'pluginName' => $this->getNameClass(),
@@ -90,7 +65,7 @@ class betaTransferDonate
         $secretKey = $_POST['secret_api_key'] ?? '';
         $description = $_POST['description'] ?? '';
         $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? []);
-        
+
         // Payment methods configuration — accept dynamic payment[] from admin UI
         $paymentMethods = [];
         if (isset($_POST['payment']) && is_array($_POST['payment'])) {
@@ -123,7 +98,7 @@ class betaTransferDonate
                 ];
             }
         }
-          
+
         $settingsData = [
             'public_api_key' => $publicKey,
             'secret_api_key' => $secretKey,
@@ -134,7 +109,7 @@ class betaTransferDonate
 
         // Сохраняем настройки через стандартную систему плагинов
         $serverId = 0;
-        
+
         \Ofey\Logan22\model\db\sql::run(
             "DELETE FROM `settings` WHERE `key` = ? AND `serverId` = ?",
             ["__PLUGIN__{$this->getNameClass()}", $serverId]
@@ -159,7 +134,7 @@ class betaTransferDonate
     public function show($count = null): void
     {
         if (!user::self()->isAuth()) {
-           redirect::location("/login");
+            redirect::location("/login");
         }
 
         $settings = plugin::getSetting($this->getNameClass());
@@ -180,7 +155,7 @@ class betaTransferDonate
                 }
             } catch (\Throwable $e) {
             }
-            
+
             if (empty($paymentMethods)) {
                 try {
                     $query2 = \Ofey\Logan22\model\db\sql::run(
@@ -217,9 +192,12 @@ class betaTransferDonate
      */
     public function createPayment(): void
     {
-        $settings = plugin::getSetting($this->getNameClass());
-        if (!($settings['enabled'] ?? false)) {
-            board::error('Plugin is disabled');
+        if (!$this->isPluginActive()) {
+            if ($this->isAjax()) {
+                board::error('Плагин выключен');
+            }
+            redirect::location('/main');
+            return;
         }
 
         if (!user::self()->isAuth()) {
@@ -227,7 +205,7 @@ class betaTransferDonate
         }
 
         $settings = plugin::getSetting($this->getNameClass());
-        
+
         if (empty($settings['public_api_key']) || empty($settings['secret_api_key'])) {
             board::error("BetaTransfer API keys are not configured");
         }
@@ -241,14 +219,13 @@ class betaTransferDonate
         }
 
         $paymentMethods = $settings['payment_methods'] ?? [];
-        
+
         if (!isset($paymentMethods[$paymentMethod])) {
             board::error("Выбранный способ оплаты не найден. Метод: '$paymentMethod'. Доступные методы: " . implode(', ', array_keys($paymentMethods)));
         }
 
         $method = $paymentMethods[$paymentMethod];
         $currency = $method['currency'];
-        $userAmount = donate::sphereCoinToMoney($userAmount, $currency);
 
         $server = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId());
         $donate = $server->donate();
@@ -272,7 +249,7 @@ class betaTransferDonate
             'paymentSystem' => $method['paymentSystem'],
             'fullCallback' => 0,
         ];
-        
+
         // Генерируем подпись
         $options['sign'] = $this->generateSignV1($options, $settings['secret_api_key']);
 
@@ -287,7 +264,7 @@ class betaTransferDonate
 
         if ($response['code'] == 200 && isset($response['body'])) {
             $body = $response['body'];
-            
+
             if (is_string($body)) {
                 $decoded = json_decode($body, true);
                 if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
@@ -314,7 +291,7 @@ class betaTransferDonate
         } else {
             // Ошибка соединения или HTTP код не 200
             $errorMsg = "Ошибка соединения с платежной системой";
-            
+
             if (!empty($response['error'])) {
                 $errorMsg .= ": " . $response['error'];
             } elseif (!empty($response['body'])) {
@@ -324,7 +301,7 @@ class betaTransferDonate
                     $errorMsg .= ": " . $this->parseApiError($response['body']);
                 }
             }
-            
+
             board::error($errorMsg);
         }
     }
@@ -335,7 +312,7 @@ class betaTransferDonate
     private function parseApiError(array $body): string
     {
         $errorMessage = 'Произошла ошибка при создании платежа';
-        
+
         if (isset($body['errors']) && is_array($body['errors'])) {
             $parts = [];
             foreach ($body['errors'] as $field => $errs) {
@@ -351,7 +328,7 @@ class betaTransferDonate
         } elseif (isset($body['message'])) {
             $errorMessage = (string)$body['message'];
         }
-        
+
         return $errorMessage;
     }
 
@@ -364,7 +341,7 @@ class betaTransferDonate
         if ($ratio <= 0 || $sphereCoinCost <= 0) {
             return $userInput;
         }
-        
+
         // Расчет: (пользовательский ввод * курс) / стоимость sphere coin
         return ($userInput * $ratio) / $sphereCoinCost;
     }
@@ -374,14 +351,15 @@ class betaTransferDonate
      */
     public function webhook(): void
     {
-        $settings = plugin::getSetting($this->getNameClass());
-        if (!($settings['enabled'] ?? false)) {
+        if (!$this->isPluginActive()) {
             die('Plugin disabled');
         }
 
-        if (empty($settings['public_api_key']) || empty($settings['secret_api_key'])) {
+        if (!$this->isConfigured()) {
             die('FAIL: API keys not configured');
         }
+
+        $settings = plugin::getSetting($this->getNameClass());
 
         $sign = $_POST['sign'] ?? null;
         $amount = (float)($_POST['amount'] ?? 0);
@@ -397,7 +375,7 @@ class betaTransferDonate
 
             // Добавляем донат пользователю
             user::getUserId($userId)->donateAdd($sphereCoins)->AddHistoryDonate(
-                amount: $sphereCoins, 
+                amount: $sphereCoins,
                 pay_system: $this->getNameClass()
             );
 
@@ -410,7 +388,7 @@ class betaTransferDonate
         die('FAIL');
     }
 
- /**
+    /**
      * @param userModel|null $user - объект пользователя
      * @param $invoice_amount - сумма платежа
      * @param $currency - валюта
@@ -420,11 +398,11 @@ class betaTransferDonate
      */
     public static function telegramNotice(null|userModel $user, $invoice_amount, $currency, $amount, $paySystem): void
     {
-        if(!config::load()->notice()->isTelegramEnable()) {
+        if (!config::load()->notice()->isTelegramEnable()) {
             return;
         }
         if (config::load()->notice()->isDonationCrediting()) {
-            if($user == null){
+            if ($user == null) {
                 $user = user::self();
                 $user->setEmail("NoEmail");
                 $user->setName("NoName");

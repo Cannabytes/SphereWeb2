@@ -6,6 +6,7 @@ use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\controller\admin\telegram;
+use Ofey\Logan22\model\plugin\BasePaymentPlugin;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\plugin\plugin;
@@ -14,10 +15,8 @@ use Ofey\Logan22\template\tpl;
 use ReflectionClass;
 use Stripe\Checkout\Session;
 
-class stripe
+class stripe extends BasePaymentPlugin
 {
-    private ?string $nameClass = null;
-
     private const DEFAULT_CURRENCY = 'USD';
 
     private const DEFAULT_PAYMENT_METHODS = [
@@ -40,64 +39,6 @@ class stripe
         'kr_card',
         'wechat_pay',
     ];
-
-    private function getNameClass(): string
-    {
-        if ($this->nameClass === null) {
-            $this->nameClass = strtolower((new ReflectionClass($this))->getShortName());
-        }
-
-        return $this->nameClass;
-    }
-
-    private function getPluginSetting(string $key, mixed $default = null): mixed
-    {
-        $settings = plugin::getSetting($this->getNameClass());
-        return $settings[$key] ?? $default;
-    }
-
-    private function setPluginSetting(string $key, mixed $value): void
-    {
-        $pluginSettings = plugin::get($this->getNameClass());
-        $pluginSettings->save([
-            'setting' => $key,
-            'value' => $value,
-            'type' => gettype($value),
-            'serverId' => 0,
-        ]);
-    }
-
-    private function sanitizeSupportedCountries(mixed $countries): array
-    {
-        if (!is_array($countries)) {
-            return ['world'];
-        }
-
-        $normalized = [];
-        foreach ($countries as $country) {
-            if (!is_string($country)) {
-                continue;
-            }
-            $code = strtolower(trim($country));
-            if ($code === '' || !preg_match('/^[a-z0-9-]+$/', $code)) {
-                continue;
-            }
-            $normalized[] = $code;
-        }
-
-        $normalized = array_values(array_unique($normalized));
-        return empty($normalized) ? ['world'] : $normalized;
-    }
-
-    private function sanitizeCurrency(string $currency): string
-    {
-        $currency = strtoupper(trim($currency));
-        if ($currency === '' || !preg_match('/^[A-Z0-9]{3,10}$/', $currency)) {
-            return self::DEFAULT_CURRENCY;
-        }
-
-        return $currency;
-    }
 
     private function normalizePaymentMethods(mixed $methods): array
     {
@@ -131,31 +72,13 @@ class stripe
 
     private function getCurrency(): string
     {
-        return $this->sanitizeCurrency((string)$this->getPluginSetting('currency', self::DEFAULT_CURRENCY));
+        return $this->sanitizeCurrency((string)$this->getPluginSetting('currency', self::DEFAULT_CURRENCY), self::DEFAULT_CURRENCY);
     }
 
-    private function getBaseUrl(): string
-    {
-        $scheme = $_SERVER['REQUEST_SCHEME'] ?? 'https';
-        $host = $_SERVER['HTTP_HOST'] ?? '';
-        return $scheme . '://' . $host;
-    }
-
-    private function isPluginActive(): bool
-    {
-        return (bool)plugin::getPluginActive($this->getNameClass());
-    }
-
-    private function isConfigured(): bool
+    protected function isConfigured(): bool
     {
         return trim((string)$this->getPluginSetting('secret_key', '')) !== ''
             && trim((string)$this->getPluginSetting('webhook_secret_key', '')) !== '';
-    }
-
-    private function isAjax(): bool
-    {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && strtolower((string)$_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
 
     public function admin(): void
