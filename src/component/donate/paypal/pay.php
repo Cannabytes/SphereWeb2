@@ -5,6 +5,7 @@ use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\donate\donate;
+use Ofey\Logan22\model\plugin\plugin;
 use Ofey\Logan22\model\user\user;
 
 class paypal extends \Ofey\Logan22\model\donate\pay_abstract
@@ -152,6 +153,12 @@ class paypal extends \Ofey\Logan22\model\donate\pay_abstract
 
     function webhook(): void
     {
+        if (plugin::getPluginActive('paypal')) {
+            $pl = new \paypal\paypal();
+            $pl->webhook();
+            return;
+        }
+
         if (!(config::load()->donate()->getDonateSystems('paypal')?->isEnable() ?? false)) {
             echo 'disabled';
             exit;

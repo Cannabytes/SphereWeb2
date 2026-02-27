@@ -34,6 +34,12 @@ return [
     'unitpay_currency'                  => 'Валюта',
     'unitpay_currency_hint'             => 'Валюта, що використовується для обробки платежів.',
     'unitpay_supported_countries'       => 'Підтримувані країни',
+    'unitpay_additional_settings'       => 'Додаткові налаштування',
+    'unitpay_show_main_page'            => 'Показувати на головній сторінці',
+    'unitpay_add_to_menu'               => 'Додати до меню',
+    'unitpay_shop'                      => 'Магазин',
+    'unitpay_shop_placeholder'          => 'наприклад, 1,2,3',
+    'unitpay_shop_hint'                 => 'Список ID серверів через кому, де доступний плагін.',
     'unitpay_save_settings'             => 'Зберегти налаштування',
 
     // Messages

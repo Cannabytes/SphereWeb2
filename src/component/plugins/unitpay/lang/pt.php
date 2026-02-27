@@ -34,6 +34,12 @@ return [
     'unitpay_currency'                  => 'Moeda',
     'unitpay_currency_hint'             => 'Moeda utilizada para processar pagamentos.',
     'unitpay_supported_countries'       => 'Países suportados',
+    'unitpay_additional_settings'       => 'Configurações adicionais',
+    'unitpay_show_main_page'            => 'Mostrar na página principal',
+    'unitpay_add_to_menu'               => 'Adicionar ao menu',
+    'unitpay_shop'                      => 'Loja',
+    'unitpay_shop_placeholder'          => 'ex. 1,2,3',
+    'unitpay_shop_hint'                 => 'Lista de IDs de servidores separados por vírgula onde o plugin está disponível.',
     'unitpay_save_settings'             => 'Salvar configurações',
 
     // Messages

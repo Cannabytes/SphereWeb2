@@ -68,6 +68,9 @@ class unitpay extends BasePaymentPlugin
             'currency'          => $this->getCurrency(),
             'allowedCurrencies' => self::ALLOWED_CURRENCIES,
             'selectedCountries' => $selectedCountries,
+            'showMainPage'      => $this->getPluginSetting('showMainPage', false),
+            'addToMenu'         => $this->getPluginSetting('addToMenu', false),
+            'shop'              => $this->getPluginSetting('shop', []),
             'webhookUrl'        => ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/unitpay/webhook',
         ]);
 
@@ -87,11 +90,18 @@ class unitpay extends BasePaymentPlugin
         }
 
         $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? []);
+        $showMainPage = (bool)($_POST['showMainPage'] ?? false);
+        $addToMenu = (bool)($_POST['addToMenu'] ?? false);
+        $shopRaw = trim((string)($_POST['shop'] ?? ''));
+        $shop = $shopRaw === '' ? [] : array_map('intval', array_filter(array_map('trim', explode(',', $shopRaw))));
 
         $this->setPluginSetting('publicKey',           $publicKey);
         $this->setPluginSetting('secretKey',           $secretKey);
         $this->setPluginSetting('currency',            $currency);
         $this->setPluginSetting('supported_countries', $supportedCountries);
+        $this->setPluginSetting('showMainPage',        $showMainPage);
+        $this->setPluginSetting('addToMenu',           $addToMenu);
+        $this->setPluginSetting('shop',                $shop);
 
         board::success(lang::get_phrase('unitpay_settings_saved'));
     }

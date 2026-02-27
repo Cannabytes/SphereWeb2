@@ -34,6 +34,12 @@ return [
     'unitpay_currency'                  => 'Νόμισμα',
     'unitpay_currency_hint'             => 'Νόμισμα που χρησιμοποιείται για την επεξεργασία πληρωμών.',
     'unitpay_supported_countries'       => 'Υποστηριζόμενες χώρες',
+    'unitpay_additional_settings'       => 'Επιπλέον ρυθμίσεις',
+    'unitpay_show_main_page'            => 'Εμφάνιση στην κύρια σελίδα',
+    'unitpay_add_to_menu'               => 'Προσθήκη στο μενού',
+    'unitpay_shop'                      => 'Κατάστημα',
+    'unitpay_shop_placeholder'          => 'π.χ. 1,2,3',
+    'unitpay_shop_hint'                 => 'Λίστα ID διακομιστών διαχωρισμένων με κόμμα όπου είναι διαθέσιμο το πρόσθετο.',
     'unitpay_save_settings'             => 'Αποθήκευση ρυθμίσεων',
 
     // Messages

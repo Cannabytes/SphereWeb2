@@ -34,6 +34,12 @@ return [
     'unitpay_currency'                  => 'Currency',
     'unitpay_currency_hint'             => 'The currency used for payment processing.',
     'unitpay_supported_countries'       => 'Supported countries',
+    'unitpay_additional_settings'       => 'Additional settings',
+    'unitpay_show_main_page'            => 'Show on main page',
+    'unitpay_add_to_menu'               => 'Add to menu',
+    'unitpay_shop'                      => 'Shop',
+    'unitpay_shop_placeholder'          => 'e.g. 1,2,3',
+    'unitpay_shop_hint'                 => 'Comma-separated list of server IDs where the plugin is available.',
     'unitpay_save_settings'             => 'Save settings',
 
     // Messages

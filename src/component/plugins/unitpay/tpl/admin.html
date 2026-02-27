@@ -30,7 +30,7 @@
       </div>
       {% endif %}
 
-      <form id="unitpaySettingsForm" method="post" action="/admin/plugin/unitpay/save">
+      <form id="unitpaySettingsForm" method="post" action="/admin/plugin/unitpay/save" autocomplete="off">
 
         {# Webhook URL #}
         <div class="row g-3 mb-3">
@@ -60,17 +60,17 @@
                        name="publicKey"
                        value="{{ publicKey }}"
                        placeholder="{{ phrase('unitpay_public_key_placeholder') }}"
-                       autocomplete="off">
+                       autocomplete="new-password">
                 <div class="form-text">{{ phrase('unitpay_public_key_hint') }}</div>
               </div>
               <div class="col-md-6">
                 <label class="form-label">{{ phrase('unitpay_secret_key') }}</label>
-                <input type="password"
+                <input type="text"
                        class="form-control"
                        name="secretKey"
                        value="{{ secretKey }}"
                        placeholder="{{ phrase('unitpay_secret_key_placeholder') }}"
-                       autocomplete="off">
+                       autocomplete="new-password">
                 <div class="form-text">{{ phrase('unitpay_secret_key_hint') }}</div>
               </div>
               <div class="col-md-4">
@@ -114,6 +114,8 @@
             </div>
           </div>
         </div>
+
+         
 
         <div class="text-end">
           <button type="submit" class="btn btn-primary">

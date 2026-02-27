@@ -34,6 +34,12 @@ return [
     'unitpay_currency'                  => 'Валюта',
     'unitpay_currency_hint'             => 'Валюта, используемая при обработке платежей.',
     'unitpay_supported_countries'       => 'Поддерживаемые страны',
+    'unitpay_additional_settings'       => 'Дополнительные настройки',
+    'unitpay_show_main_page'            => 'Показывать на главной странице',
+    'unitpay_add_to_menu'               => 'Добавить в меню',
+    'unitpay_shop'                      => 'Магазин',
+    'unitpay_shop_placeholder'          => 'например, 1,2,3',
+    'unitpay_shop_hint'                 => 'Список ID серверов через запятую, где доступен плагин.',
     'unitpay_save_settings'             => 'Сохранить настройки',
 
     // Messages
