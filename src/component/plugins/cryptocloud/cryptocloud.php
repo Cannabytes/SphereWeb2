@@ -139,8 +139,6 @@ class cryptocloud extends BasePaymentPlugin
         $currency = $this->getCurrency();
         $donateConfig = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
 
-        $count = donate::sphereCoinSmartCalc($count, $donateConfig->getRatio($currency), $donateConfig->getSphereCoinCost());
-
         if ($count < $donateConfig->getMinSummaPaySphereCoin()) {
             board::error('Минимальное пополнение: ' . $donateConfig->getMinSummaPaySphereCoin());
         }
@@ -251,13 +249,14 @@ class cryptocloud extends BasePaymentPlugin
         $amountInput = (float)($invoice['amount_usd'] ?? $invoice['amount'] ?? 0);
         $currency = $this->sanitizeCurrency((string)($invoice['currency'] ?? 'USD'));
 
-        try {
-            $amount = donate::currency($amountInput, $currency);
-        } catch (\Throwable $e) {
-            header('HTTP/1.1 400 Bad Request', true, 400);
-            echo 'Currency conversion failed';
-            return;
-        }
+        $amount = $amountInput;
+        // try {
+        //     $amount = donate::currency($amountInput, $currency);
+        // } catch (\Throwable $e) {
+        //     header('HTTP/1.1 400 Bad Request', true, 400);
+        //     echo 'Currency conversion failed';
+        //     return;
+        // }
 
         try {
             telegram::telegramNotice(user::getUserId($userId), $amountInput, $currency, $amount, $this->getNameClass());
