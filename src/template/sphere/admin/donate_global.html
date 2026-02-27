@@ -696,42 +696,93 @@
 
     const editableTableScope = '#table_CumulativeDiscountSystem, #table_EnableOneTimeBonus, #table_SystemDiscountsOnItemPurchases, #table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity, #table_ListOfItemsForDiscount';
 
-    $(document).on('click', editableTableScope + ' .ri-delete-bin-5-line', function () {
-        $(this).closest('tr').remove();
+    $(document).on('click', '.ri-delete-bin-5-line', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var $row = $(this).closest('tr');
+        if ($row.length) {
+            $row.remove();
+        }
+    });
+    
+    $(document).on('click', 'a .ri-delete-bin-5-line', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var $row = $(this).closest('tr');
+        if ($row.length) {
+            $row.remove();
+        }
     });
 
-    $(document).on('click', editableTableScope + ' .ri-edit-line', function () {
+    $(document).on('click', '.ri-edit-line', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var $table = $(this).closest('table');
+        if (!$table.length) return;
+        
+        var tableId = $table.attr('id');
+        var editableTables = ['table_CumulativeDiscountSystem', 'table_EnableOneTimeBonus', 'table_SystemDiscountsOnItemPurchases', 'table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity', 'table_ListOfItemsForDiscount'];
+        
+        if (editableTables.indexOf(tableId) === -1) return;
+        
         var $row = $(this).closest('tr');
-        var currentValue1 = $row.find('th:nth-child(1)').text().trim();
-        var currentValue2 = $row.find('td:nth-child(1)').text().trim();
-        var newRow = `<tr>
-            <th scope="row"><input type="text" class="form-control" value="${currentValue1}"></th>
-            <td><input type="text" class="form-control" value="${currentValue2}"></td>
-            <td>
-                <div class="hstack gap-2 flex-wrap">
-                    <a href="javascript:void(0);" class="text-success fs-14 lh-1"><i class="ri-save-3-line"></i></a>
-                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
-                </div>
-            </td>
-          </tr>`;
-        $row.replaceWith(newRow);
+        var $th = $row.find('th[scope="row"]');
+        var $allTds = $row.find('td');
+        
+        var currentValue1 = $th.text().trim();
+        var currentValue2 = $allTds.eq(0).text().trim();
+        
+        // Замена содержимого ячеек на input элементы
+        $th.html(`<input type="text" class="form-control" value="${currentValue1}">`);
+        $allTds.eq(0).html(`<input type="text" class="form-control" value="${currentValue2}">`);
+        
+        // Замена кнопок на сохранение/отмена
+        $allTds.eq(1).html(`
+            <div class="hstack gap-2 flex-wrap">
+                <a href="javascript:void(0);" class="text-success fs-14 lh-1"><i class="ri-save-3-line"></i></a>
+                <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+            </div>
+        `);
     });
 
-    $(document).on('click', editableTableScope + ' .ri-save-3-line', function () {
+    $(document).on('click', '.ri-save-3-line', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
         var $row = $(this).closest('tr');
-        var input1Value = $row.find('th input').val().trim();
-        var input2Value = $row.find('td input').val().trim();
-        var updatedRow = `<tr>
-            <th scope="row">${input1Value}</th>
-            <td>${input2Value}</td>
-            <td>
-                <div class="hstack gap-2 flex-wrap">
-                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i class="ri-edit-line"></i></a>
-                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
-                </div>
-            </td>
-          </tr>`;
-        $row.replaceWith(updatedRow);
+        var $inputs = $row.find('input');
+        var $th = $row.find('th[scope="row"]');
+        var $allTds = $row.find('td');
+        
+        if ($inputs.length < 2) {
+            alert('Ошибка: не найдены поля ввода');
+            return;
+        }
+        
+        var $input1 = $inputs.eq(0);
+        var $input2 = $inputs.eq(1);
+        var input1Value = ($input1.val() || '').trim();
+        var input2Value = ($input2.val() || '').trim();
+        
+        if (!input1Value || !input2Value) {
+            alert('Пожалуйста, заполните оба поля');
+            return;
+        }
+        
+        // Замена input элементов обратно на текст
+        $th.text(input1Value);
+        $allTds.eq(0).text(input2Value);
+        
+        // Восстановление кнопок редактирования
+        $allTds.eq(1).html(`
+            <div class="hstack gap-2 flex-wrap">
+                <a href="javascript:void(0);" class="text-info fs-14 lh-1"><i class="ri-edit-line"></i></a>
+                <a href="javascript:void(0);" class="text-danger fs-14 lh-1"><i class="ri-delete-bin-5-line"></i></a>
+            </div>
+        `);
     });
 
     $(document).on('click', '.removeTableItemsBonus', function () {
@@ -833,17 +884,28 @@
             let row = $(this);
             let obj = {};
             let isValidRow = true; // Row validity flag.
+            let colIndex = 0;
 
-            $('#' + tableId + ' thead th').each(function (index) {
+            $('#' + tableId + ' thead th').each(function () {
                 let dataName = $(this).data('name');
                 if (dataName) {
-                    let cell = row.find(index === 0 ? 'th:eq(' + index + ')' : 'td:eq(' + (index - 1) + ')');
+                    let cell;
+                    if (colIndex === 0) {
+                        // First column is th
+                        cell = row.find('th[scope="row"]');
+                    } else {
+                        // Other columns are td
+                        cell = row.find('td').eq(colIndex - 1);
+                    }
+                    
                     let input = cell.find('input');
-                    let value = input.length ? input.val().trim() : cell.text().trim();
+                    let value = input.length ? (input.val() || '').trim() : (cell.text() || '').trim();
+                    
                     if (!value) {
                         isValidRow = false;
                     }
                     obj[dataName] = value;
+                    colIndex++;
                 }
             });
 
@@ -862,10 +924,11 @@
     function gatherTableData(tabPaneId) {
         var data = []; // Data rows for current tab.
         $('#bonus_Item_donation #' + tabPaneId + ' .table tbody tr').each(function () {
+            var $row = $(this);
             var rowData = {
-                id: $(this).find('td:nth-child(2)').text().trim(),
-                count: $(this).find('td:nth-child(3)').text().trim(),
-                enchant: $(this).find('td:nth-child(4)').text().trim(),
+                id: $row.find('td').eq(0).text().trim(),
+                count: $row.find('td').eq(1).text().trim(),
+                enchant: $row.find('td').eq(2).text().trim(),
             };
             data.push(rowData); // Append current row.
         });

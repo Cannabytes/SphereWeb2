@@ -620,8 +620,6 @@ $(document).on('click', '.js-character-selector', function() {
     // Обновляем текст о том какому персонажу будет отправлено
     updateCharWillBeSentLabel(playerName);
 
-    // Показываем индикатор выбора консолью (опционально)
-    console.log(`✓ Выбран персонаж: ${playerName} [Lvl ${level}] из аккаунта ${account}`);
 });
 
 // ========== ФУНКЦИЯ ДЛЯ ОБНОВЛЕНИЯ ТЕКСТА ОТПРАВКИ ==========

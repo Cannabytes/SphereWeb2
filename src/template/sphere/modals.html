@@ -651,8 +651,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const formData = new FormData(form);
     
-    console.log('Submitting 2FA enable:', Object.fromEntries(formData));
-    
     fetch('/api/2fa/enable', {
       method: 'POST',
       headers: {
@@ -661,11 +659,9 @@ document.addEventListener('DOMContentLoaded', function() {
       body: formData
     })
     .then(response => {
-      console.log('Response status:', response.status);
       return response.text();
     })
     .then(text => {
-      console.log('Response text:', text);
       try {
         const data = JSON.parse(text);
         if (data.ok) {
@@ -692,15 +688,12 @@ document.addEventListener('DOMContentLoaded', function() {
   const enable2faForm = document.getElementById('enable2faForm');
   if (enable2faForm) {
     enable2faForm.onsubmit = submit2faEnable;
-    console.log('2FA form handler attached');
   } else {
-    console.log('2FA form not found, will attach on modal show');
     // Привязываем при показе модала
     twoFaModal.addEventListener('shown.bs.modal', function() {
       const form = document.getElementById('enable2faForm');
       if (form && !form.onsubmit) {
         form.onsubmit = submit2faEnable;
-        console.log('2FA form handler attached on modal show');
       }
     });
   }
@@ -993,7 +986,6 @@ function showToast(type, message) {
       const $firstCharacter = $('.js-character-selector').first();
       if ($firstCharacter.length > 0 && !$('.js-character-selector.selected').length) {
         $firstCharacter.click();
-        console.log('✓ Character gallery initialized, first character selected');
       }
     };
     
@@ -1014,10 +1006,7 @@ function showToast(type, message) {
           const $firstChar = $('.js-character-selector').first();
           if ($firstChar.length > 0) {
             $firstChar.click();
-            console.log('✓ Modal opened, first character auto-selected');
           }
-        } else {
-          console.log('✓ Modal opened, character already selected: ' + $selectedCharacter.data('player'));
         }
       }, 100);
     });
@@ -2005,7 +1994,6 @@ $(document).ready(function() {
    * @param {Array} items - массив объектов предметов для удаления
    */
   function handleItemRemoval(items) {
-    console.log('Удаление предметов:', items);
 
     // Перебираем все предметы для удаления
     items.forEach(function(item) {
