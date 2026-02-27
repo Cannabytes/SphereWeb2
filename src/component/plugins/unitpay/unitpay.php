@@ -183,6 +183,7 @@ class unitpay extends BasePaymentPlugin
             'currency'          => $currency,
             'desc'              => $desc,
             'sum'               => $amount,
+            'paymentType'       => 'card',
             'customerEmail'     => user::self()->getEmail(),
             'cashItems'         => base64_encode(json_encode([[
                 'name'  => $desc,

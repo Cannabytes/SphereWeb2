@@ -329,6 +329,10 @@ class lang
 
     public function getPhrase($key, ...$values): string
     {
+        if ($key === null) {
+            return "[Null key]";
+        }
+        
         $is_plugin = false;
         $phrase = null;
         
@@ -409,8 +413,11 @@ class lang
      * @param string $key ключ для поиска
      * @return string|null найденная фраза или null
      */
-    private function searchPhraseInsensitive(string $key): ?string
+    private function searchPhraseInsensitive(?string $key): ?string
     {
+        if ($key === null) {
+            return null;
+        }
         $keyLower = strtolower($key);
         foreach ($this->phrasesData as $dataKey => $value) {
             if (strtolower($dataKey) === $keyLower) {

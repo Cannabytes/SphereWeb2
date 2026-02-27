@@ -1212,6 +1212,9 @@ class userModel
      */
     public function getEmail(): string
     {
+        if (strpos($this->email, 'TG:@') === 0) {
+            return substr($this->email, 4) . '@sphereweb.net';
+        }
         return $this->email;
     }
 

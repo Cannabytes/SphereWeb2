@@ -26,13 +26,15 @@
 {% set otherCurrencies = { 'EUR': EUR_val, 'RUB': RUB_val, 'UAH': UAH_val } %}
 {% endif %}
 
+{% set hasBonuses = getServer().donate().isRewardForDonatingItems() or getServer().donate().isEnableOneTimeBonus() or getServer().donate().isEnableCumulativeDiscountSystem() %}
+
 <!-- Подключение noUiSlider -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
 
 <!-- Основное модальное окно доната -->
 <div class="modal fade" id="modal_donate" tabindex="-1" aria-labelledby="modal_donate_label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-dialog modal-dialog-centered {{ hasBonuses ? 'modal-xl' : 'modal-sl' }}">
         <div class="modal-content border-0">
             <div class="modal-header">
                 <div class="d-flex align-items-center">
@@ -47,7 +49,7 @@
             <div class="modal-body p-0">
                 <div class="row g-0">
                     <!-- Левая колонка: Калькулятор -->
-                    <div class="col-xl-5 p-4 border-end">
+                    <div class="col-xl-{{ hasBonuses ? 5 : 12 }} p-4{{ hasBonuses ? ' border-end' : '' }}">
                         <div class="calculator-container">
                             <div class="text-center mb-4">
                                 <label
@@ -116,6 +118,7 @@
                         </div>
                     </div>
 
+                    {% if hasBonuses %}
                     <!-- Правая колонка: Бонусы -->
                     <div class="col-xl-7 p-4 bg-light bg-opacity-10">
                         <div class="d-flex align-items-center justify-content-between mb-4">
@@ -150,6 +153,13 @@
                         </ul>
 
                         <div class="tab-content">
+                            {% set cumulative_discount_sum = getUser() ? getUser().getHistoryDonate(true) : 0 %}
+                            {% set cumulative_discount_percent = 0 %}
+                            {% for bonus in getServer().donate().getTableCumulativeDiscountSystem() %}
+                                {% if cumulative_discount_sum >= bonus.coin %}
+                                    {% set cumulative_discount_percent = bonus.percent %}
+                                {% endif %}
+                            {% endfor %}
                             {% if getServer().donate().isRewardForDonatingItems() %}
                             <div class="tab-pane fade show active" id="modal-home-vertical" role="tabpanel">
                                 <div class="compact-bonus-list mx-auto">
@@ -231,7 +241,10 @@
                             {% if getServer().donate().isEnableCumulativeDiscountSystem() %}
                             <div class="tab-pane fade {% if not getServer().donate().isRewardForDonatingItems() and not getServer().donate().isEnableOneTimeBonus() %}show active{% endif %}"
                                 id="modal-services-vertical" role="tabpanel">
-                                <div class="table-responsive rounded-4 shadow-sm bg-white overflow-hidden">
+                                <div class="px-4 py-3 text-muted fs-12">
+                                    {{ phrase('accum_sys_bonus', cumulative_discount_sum, cumulative_discount_percent)|raw }}
+                                </div>
+                                <div class="table-responsive shadow-sm bg-white overflow-hidden">
                                     <table class="table table-hover mb-0">
                                         <thead class="bg-light">
                                             <tr>
@@ -243,7 +256,7 @@
                                         </thead>
                                         <tbody>
                                             {% for bonus in getServer().donate().getTableCumulativeDiscountSystem() %}
-                                            <tr class="align-middle">
+                                            <tr class="align-middle cumulative-row" data-percent="{{bonus.percent}}">
                                                 <td class="ps-4 py-3 fw-bold">{{bonus.coin}} <span
                                                         class="text-muted small fw-normal">монет</span></td>
                                                 <td class="text-end pe-4 py-3"><span
@@ -258,6 +271,7 @@
                             {% endif %}
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -420,6 +434,21 @@
         background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .modal-cumulative-current {
+        border: 2px solid var(--bs-success) !important;
+        background-color: rgba(var(--bs-success-rgb), 0.2) !important;
+        box-shadow: 0 4px 12px rgba(var(--bs-success-rgb), 0.3) !important;
+        transition: all 0.3s ease !important;
+        border-radius: 6px !important;
+    }
+
+    .modal-cumulative-current th,
+    .modal-cumulative-current td {
+        color: var(--bs-success) !important;
+        font-weight: 700 !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
     }
 
     /* Redesigned bonus cards (compact, Bootstrap colors) */
@@ -720,6 +749,25 @@
                 if ($cardToHighlight) $cardToHighlight.addClass('one-time-highlight');
             };
 
+            const cumulativeBonusPercent = parseFloat('{{ cumulative_discount_percent|default(0)|number_format(2, ".", "") }}') || 0;
+
+            const highlightCumulativeRow = () => {
+                const $rows = $('#modal-services-vertical table tbody tr[data-percent]');
+                if (!$rows.length) return;
+
+                $rows.removeClass('modal-cumulative-current');
+
+                if (!cumulativeBonusPercent) return;
+
+                const $match = $rows.filter(function () {
+                    return parseFloat($(this).attr('data-percent')) === cumulativeBonusPercent;
+                }).first();
+
+                if ($match.length) {
+                    $match.addClass('modal-cumulative-current');
+                }
+            };
+
             // store original order on first run
             let _originalOrderSet = false;
             const ensureOriginalOrder = () => {
@@ -789,7 +837,7 @@
                 highlightOneTimeBonusRow(count);
             };
 
-            return { selectBonusPanel };
+            return { selectBonusPanel, highlightCumulativeRow };
         })();
 
         const ModalCurrencyManager = (function () {
@@ -860,6 +908,7 @@
                     let val = $(this).val().replace(/[^0-9]/g, '');
                     let value = parseInt(val);
                     if (isNaN(value)) return;
+                    if (value < min) value = min;
                     if (value > max) value = max;
                     if (slider && slider.noUiSlider) {
                         slider.noUiSlider.set(value);
@@ -953,6 +1002,8 @@
                         step: 1
                     });
 
+                    slider = sliderElement;
+
                     sliderElement.noUiSlider.on('update', function (values, handle) {
                         const value = Math.round(values[handle]);
                         if ($inputField.val() != value) {
@@ -1021,6 +1072,8 @@
             $('#modal_donate').on('shown.bs.modal', function () {
                 ModalCoinsInputManager.initialize();
             });
+
+            ModalBonusManager.highlightCumulativeRow();
 
             const hasBootstrapModalApi = () => {
                 return typeof bootstrap !== 'undefined' && bootstrap.Modal;

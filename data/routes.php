@@ -3156,4 +3156,18 @@ return array (
     'page' => '',
     'comment' => 'Save sort order for paysystem plugins',
   ),
+  224 => 
+  array (
+    'enable' => 1,
+    'method' => 'GET',
+    'pattern' => '/admin/forum',
+    'func' => NULL,
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => 'admin/forum.html',
+    'comment' => '',
+  ),
 );

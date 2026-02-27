@@ -5,6 +5,7 @@ use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\user;
+use Ofey\Logan22\model\plugin\plugin;
 
 class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
 
@@ -119,6 +120,12 @@ class unitpay extends \Ofey\Logan22\model\donate\pay_abstract {
     function webhook(): void
     {
         try {
+            if (plugin::getPluginActive('unitpay')) {
+                $pl = new \unitpay\unitpay();
+                $pl->webhook();
+                return;
+            }
+
             if (!(config::load()->donate()->getDonateSystems('unitpay')?->isEnable() ?? false)) {
                 $this->sendJsonResponse(['error' => ['message' => 'Service disabled']]);
                 return;

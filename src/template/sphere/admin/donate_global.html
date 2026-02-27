@@ -723,7 +723,8 @@
         var $table = $(this).closest('table');
         if (!$table.length) return;
         
-        var tableId = $table.attr('id');
+        var $container = $table.closest('.table-responsive');
+        var tableId = $container.attr('id') || $table.attr('id');
         var editableTables = ['table_CumulativeDiscountSystem', 'table_EnableOneTimeBonus', 'table_SystemDiscountsOnItemPurchases', 'table_IncludeOneTimeDiscountsOnThePurchaseOfItemsByQuantity', 'table_ListOfItemsForDiscount'];
         
         if (editableTables.indexOf(tableId) === -1) return;

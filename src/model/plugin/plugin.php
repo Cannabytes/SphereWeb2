@@ -63,8 +63,6 @@ class plugin
 
                     foreach ($plugins as $plugin) {
 
-                        // Платёжные плагины (paysystem) загружаем только из записи с serverId = 0.
-                        // Если текущая запись __PLUGIN__ привязана к конкретному серверу — пропускаем.
                         if ($pluginServerId != 0) {
                             $pluginMeta = null;
                             foreach (tpl::pluginsAll() as $pValue) {

@@ -28,8 +28,8 @@
                     <i class="bi bi-puzzle-fill fs-40 text-primary"></i>
                   </span>
                   <div class="mt-2">
-                    <p class="mb-0 fw-semibold">{{phrase(plugin.PLUGIN_PHRASE_ID)}}</p>
-                    <p class="mb-0 text-muted fs-12 mt-2">{{phrase(plugin.PLUGIN_DESCRIPTION)}}</p>
+                    <p class="mb-0 fw-semibold">{{ plugin.PLUGIN_PHRASE_ID ? phrase(plugin.PLUGIN_PHRASE_ID) : (plugin.PLUGIN_NAME ?: 'Unknown Plugin') }}</p>
+                    <p class="mb-0 text-muted fs-12 mt-2">{{ plugin.PLUGIN_DESCRIPTION ? phrase(plugin.PLUGIN_DESCRIPTION) : '' }}</p>
                   </div>
                 </div>
               </div>
