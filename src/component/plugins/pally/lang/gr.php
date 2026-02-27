@@ -11,6 +11,16 @@ return [
     'pally_minimum' => 'Ελάχιστο',
     'pally_maximum' => 'Μέγιστο',
     
+    // Admin panel — πύλες
+    'pally_gateways_title'            => 'Πύλες πληρωμής',
+    'pally_add_gateway'               => 'Προσθήκη πύλης',
+    'pally_gateway_label'             => 'Περιγραφή',
+    'pally_gateway_label_placeholder' => 'π.χ. Visa/Mastercard',
+    'pally_action_label'              => 'Ενέργεια',
+    'pally_remove_gateway'            => 'Αφαίρεση',
+    'pally_gateways_description'      => 'Κάθε πύλη μπορεί να έχει το δικό της API Key, Shop ID, νόμισμα και περιγραφή.',
+    'pally_select_gateway'            => 'Επιλέξτε πύλη πληρωμής',
+
     // Admin panel
     'pally_admin_title' => 'Pally',
     'pally_admin_description' => 'Διαχείριση ταμείου πληρωμών Pally',
@@ -26,7 +36,7 @@ return [
     'pally_save_settings' => 'Αποθήκευση ρυθμίσεων',
     
     // Messages
-    'pally_fill_credentials' => 'Συμπληρώστε shop_id και api_key',
+    'pally_fill_credentials' => 'Προσθέστε τουλάχιστον μία πύλη με shop_id και api_key',
     'pally_settings_saved' => 'Οι ρυθμίσεις του Pally αποθηκεύτηκαν',
     'pally_not_configured' => 'Το Pally δεν έχει ρυθμιστεί. Επικοινωνήστε με τον διαχειριστή.',
     'pally_enter_amount' => 'Εισάγετε το ποσό ως αριθμό',

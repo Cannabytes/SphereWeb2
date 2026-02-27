@@ -40,23 +40,60 @@
             </div>
             <div class="form-text">{{ phrase('pally_webhook_note') }}</div>
           </div>
+        </div>
 
-          <div class="col-md-4">
-            <label for="shop_id" class="form-label">{{ phrase('pally_shop_id') }}</label>
-            <input id="shop_id" type="text" class="form-control" name="shop_id" value="{{ shopId }}" required>
+        {# ── Gateways table ── #}
+        <div class="card mb-3 shadow-sm">
+          <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <strong><i class="bi bi-table me-2"></i>{{ phrase('pally_gateways_title') }}</strong>
+            <button id="addGateway" type="button" class="btn btn-success btn-sm">
+              <i class="bi bi-plus-circle"></i> {{ phrase('pally_add_gateway') }}
+            </button>
           </div>
-
-          <div class="col-md-4">
-            <label for="api_key" class="form-label">{{ phrase('pally_api_key') }}</label>
-            <input id="api_key" type="text" class="form-control" name="api_key" value="{{ apiKey }}" required>
-          </div>
-
-          <div class="col-md-4">
-            <label for="currency" class="form-label">{{ phrase('pally_currency') }}</label>
-            <input id="currency" type="text" class="form-control" name="currency" value="{{ currency }}" placeholder="RUB" required>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="ps-3" style="width:22%">{{ phrase('pally_shop_id') }}</th>
+                    <th style="width:30%">{{ phrase('pally_api_key') }}</th>
+                    <th style="width:14%">{{ phrase('pally_currency') }}</th>
+                    <th style="width:26%">{{ phrase('pally_gateway_label') }}</th>
+                    <th style="width:8%" class="text-center">{{ phrase('pally_action_label') }}</th>
+                  </tr>
+                </thead>
+                <tbody id="gatewayRows">
+                  {% for gw in gateways %}
+                  <tr class="gateway-row" data-index="{{ loop.index0 }}">
+                    <td class="ps-3">
+                      <input type="text" class="form-control" name="gateways[{{ loop.index0 }}][shop_id]" value="{{ gw.shop_id }}" placeholder="12345" required>
+                    </td>
+                    <td>
+                      <input type="text" class="form-control" name="gateways[{{ loop.index0 }}][api_key]" value="{{ gw.api_key }}" placeholder="api key…" required>
+                    </td>
+                    <td>
+                      <input type="text" class="form-control" name="gateways[{{ loop.index0 }}][currency]" value="{{ gw.currency }}" placeholder="RUB" maxlength="8">
+                    </td>
+                    <td>
+                      <input type="text" class="form-control" name="gateways[{{ loop.index0 }}][label]" value="{{ gw.label }}" placeholder="{{ phrase('pally_gateway_label_placeholder') }}">
+                    </td>
+                    <td class="text-center">
+                      <button type="button" class="btn btn-sm btn-outline-danger remove-gateway" title="{{ phrase('pally_remove_gateway') }}">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="p-3 bg-light border-top">
+              <small class="text-muted">{{ phrase('pally_gateways_description') }}</small>
+            </div>
           </div>
         </div>
 
+        {# ── Supported countries ── #}
         {% set supportedCountries = selectedCountries|default(['ru', 'ua']) %}
         {% set countryList = {'en': 'English'}|merge(getCountryList()) %}
         <div class="card mb-3 shadow-sm">
@@ -99,7 +136,7 @@
 {% block js %}
 <script>
 $(function() {
-  const pluginActive = '{{ getPluginActive(pluginName) ? "1" : "0" }}' === '1';
+  const pluginActive = {{ getPluginActive(pluginName) ? 'true' : 'false' }};
   if (!pluginActive) {
     $('#pallySettingsForm :input').prop('disabled', true);
     $('#enablePlugin').prop('disabled', false);
@@ -117,8 +154,42 @@ $(function() {
     });
   });
 
+  function reindexRows() {
+    $('#gatewayRows .gateway-row').each(function(i) {
+      $(this).attr('data-index', i);
+      $(this).find('[name]').each(function() {
+        const name = $(this).attr('name');
+        if (!name) return;
+        $(this).attr('name', name.replace(/gateways\[\d+\]/, 'gateways[' + i + ']'));
+      });
+    });
+  }
+
+  $('#addGateway').on('click', function() {
+    const idx = $('#gatewayRows .gateway-row').length;
+    const $row = $(
+      '<tr class="gateway-row" data-index="' + idx + '">' +
+        '<td class="ps-3"><input type="text" class="form-control" name="gateways[' + idx + '][shop_id]" placeholder="12345" required></td>' +
+        '<td><input type="text" class="form-control" name="gateways[' + idx + '][api_key]" placeholder="api key…" required></td>' +
+        '<td><input type="text" class="form-control" name="gateways[' + idx + '][currency]" placeholder="RUB" maxlength="8" value="RUB"></td>' +
+        '<td><input type="text" class="form-control" name="gateways[' + idx + '][label]" placeholder="{{ phrase('pally_gateway_label_placeholder') }}"></td>' +
+        '<td class="text-center">' +
+          '<button type="button" class="btn btn-sm btn-outline-danger remove-gateway" title="{{ phrase('pally_remove_gateway') }}"><i class="bi bi-trash"></i></button>' +
+        '</td>' +
+      '</tr>'
+    );
+    $('#gatewayRows').append($row);
+    reindexRows();
+  });
+
+  $(document).on('click', '.remove-gateway', function() {
+    $(this).closest('.gateway-row').remove();
+    reindexRows();
+  });
+
   $('#pallySettingsForm').on('submit', function(e) {
     e.preventDefault();
+    reindexRows();
     AjaxSend('/admin/plugin/pally/save', 'POST', $(this).serialize());
   });
 

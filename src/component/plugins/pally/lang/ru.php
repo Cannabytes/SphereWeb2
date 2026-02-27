@@ -12,6 +12,16 @@ return [
 
     'pally_description' => 'Платежная система Pally для оплаты через различные методы оплаты',
     
+    // Admin panel — шлюзы
+    'pally_gateways_title'            => 'Шлюзы',
+    'pally_add_gateway'               => 'Добавить шлюз',
+    'pally_gateway_label'             => 'Описание',
+    'pally_gateway_label_placeholder' => 'напр. Visa/Mastercard',
+    'pally_action_label'              => 'Действие',
+    'pally_remove_gateway'            => 'Удалить',
+    'pally_gateways_description'      => 'Каждый шлюз может иметь свой API Key, Shop ID, валюту и описание.',
+    'pally_select_gateway'            => 'Выберите платёжный шлюз',
+
     // Admin panel
     'pally_admin_title' => 'Pally',
     'pally_admin_description' => 'Управление платежной системой Pally',
@@ -27,7 +37,7 @@ return [
     'pally_save_settings' => 'Сохранить настройки',
     
     // Messages
-    'pally_fill_credentials' => 'Заполните shop_id и api_key',
+    'pally_fill_credentials' => 'Добавьте хотя бы один шлюз с shop_id и api_key',
     'pally_settings_saved' => 'Настройки Pally сохранены',
     'pally_not_configured' => 'Pally не настроен. Обратитесь к администратору.',
     'pally_enter_amount' => 'Введите сумму цифрой',

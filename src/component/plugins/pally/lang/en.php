@@ -11,6 +11,16 @@ return [
     'pally_minimum' => 'Minimum',
     'pally_maximum' => 'Maximum',
     
+    // Admin panel — gateways
+    'pally_gateways_title'            => 'Gateways',
+    'pally_add_gateway'               => 'Add gateway',
+    'pally_gateway_label'             => 'Description',
+    'pally_gateway_label_placeholder' => 'e.g. Visa/Mastercard',
+    'pally_action_label'              => 'Action',
+    'pally_remove_gateway'            => 'Remove',
+    'pally_gateways_description'      => 'Each gateway can have its own API Key, Shop ID, currency and description.',
+    'pally_select_gateway'            => 'Select payment gateway',
+
     // Admin panel
     'pally_admin_title' => 'Pally',
     'pally_admin_description' => 'Pally payment system management',
@@ -26,7 +36,7 @@ return [
     'pally_save_settings' => 'Save settings',
     
     // Messages
-    'pally_fill_credentials' => 'Fill in shop_id and api_key',
+    'pally_fill_credentials' => 'Add at least one gateway with shop_id and api_key',
     'pally_settings_saved' => 'Pally settings saved',
     'pally_not_configured' => 'Pally is not configured. Please contact the administrator.',
     'pally_enter_amount' => 'Enter amount as a number',

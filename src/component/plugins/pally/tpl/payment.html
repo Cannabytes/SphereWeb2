@@ -23,6 +23,30 @@
       <div class="card custom-card">
         <div class="card-body">
           <form id="pallyPaymentForm">
+            <input type="hidden" name="gateway_index" id="gateway_index" value="0">
+
+            {# Show gateway selector only when there are 2 or more gateways #}
+            {% if gateways|length >= 2 %}
+            <div class="mb-4">
+              <label class="form-label fw-semibold">{{ phrase('pally_select_gateway') }}</label>
+              <div class="row g-2" id="gatewayCards">
+                {% for gw in gateways %}
+                <div class="col-auto">
+                  <div class="card gateway-card p-3" data-index="{{ loop.index0 }}" data-currency="{{ gw.currency }}"
+                       style="min-width:140px; cursor:pointer; user-select:none;">
+                    <div class="text-center">
+                      <div class="h5 mb-1">{{ gw.currency }}</div>
+                      {% if gw.label %}
+                      <div class="small text-muted">{{ gw.label }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+
             <div class="mb-3">
               <label class="form-label fw-semibold">{{ phrase('pally_amount_label') }}</label>
               <div class="input-group input-group-lg">
@@ -51,6 +75,21 @@
 {% block js %}
 <script>
 $(function() {
+  // Gateway card selection (only rendered when gateways >= 2)
+  $('#gatewayCards').on('click', '.gateway-card', function() {
+    $('#gatewayCards .gateway-card').removeClass('selected border-primary').css('box-shadow', '');
+    $(this).addClass('selected border-primary').css('box-shadow', '0 0 0 0.15rem rgba(13,110,253,.25)');
+    $('#gateway_index').val($(this).data('index'));
+  });
+
+  // Select the first gateway card by default
+  if ($('#gatewayCards .gateway-card').length) {
+    $('#gatewayCards .gateway-card').first()
+      .addClass('selected border-primary')
+      .css('box-shadow', '0 0 0 0.15rem rgba(13,110,253,.25)');
+    $('#gateway_index').val($('#gatewayCards .gateway-card').first().data('index'));
+  }
+
   $('#pallyPaymentForm').on('submit', function(e) {
     e.preventDefault();
 

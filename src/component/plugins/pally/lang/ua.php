@@ -11,6 +11,16 @@ return [
     'pally_minimum' => 'Мінімум',
     'pally_maximum' => 'Максимум',
     
+    // Admin panel — шлюзи
+    'pally_gateways_title'            => 'Шлюзи',
+    'pally_add_gateway'               => 'Додати шлюз',
+    'pally_gateway_label'             => 'Опис',
+    'pally_gateway_label_placeholder' => 'напр. Visa/Mastercard',
+    'pally_action_label'              => 'Дія',
+    'pally_remove_gateway'            => 'Видалити',
+    'pally_gateways_description'      => 'Кожен шлюз може мати свій API Key, Shop ID, валюту та опис.',
+    'pally_select_gateway'            => 'Оберіть платіжний шлюз',
+
     // Admin panel
     'pally_admin_title' => 'Pally',
     'pally_admin_description' => 'Управління платіжною системою Pally',
@@ -26,7 +36,7 @@ return [
     'pally_save_settings' => 'Зберегти налаштування',
     
     // Messages
-    'pally_fill_credentials' => 'Заповніть shop_id та api_key',
+    'pally_fill_credentials' => 'Додайте хоча б один шлюз з shop_id та api_key',
     'pally_settings_saved' => 'Налаштування Pally збережені',
     'pally_not_configured' => 'Pally не налаштований. Зв\'яжіться з адміністратором.',
     'pally_enter_amount' => 'Введіть суму числом',

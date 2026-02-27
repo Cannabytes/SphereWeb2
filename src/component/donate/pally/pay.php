@@ -6,6 +6,7 @@ use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\user;
+use Ofey\Logan22\model\plugin\plugin;
 
 class pally extends \Ofey\Logan22\model\donate\pay_abstract
 {
@@ -24,14 +25,13 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
 
     protected static string $currency_default = 'RUB';
 
-    private array $allowIP = [
-    ];
+    private array $allowIP = [];
 
     public static function inputs(): array
     {
         return [
-          'shop_id'    => '',
-          'api_key' => '',
+            'shop_id'    => '',
+            'api_key' => '',
         ];
     }
 
@@ -81,7 +81,7 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
         curl_close($ch);
         $data = json_decode($json, true);
 
-        if(isset($data['success']) && $data['success'] == 'true') {
+        if (isset($data['success']) && $data['success'] == 'true') {
             echo $data['link_page_url'];
         } else {
             echo json_encode([
@@ -93,6 +93,13 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
 
     function webhook(): void
     {
+
+        if (plugin::getPluginActive('pally')) {
+            $pl = new \pally\pally();
+            $pl->webhook();
+            return;
+        }
+
         if (!(config::load()->donate()->getDonateSystems('pally')?->isEnable() ?? false)) {
             echo 'disabled';
             exit;
@@ -101,7 +108,8 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
         \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
 
         if (strcasecmp($_POST['Status'], 'SUCCESS') !== 0) {
-            echo "Status no success";exit;
+            echo "Status no success";
+            exit;
         }
 
         $invId = $_POST['InvId'] ?? "";
@@ -111,27 +119,26 @@ class pally extends \Ofey\Logan22\model\donate\pay_abstract
         $signatureValue = $_POST['SignatureValue']; // Подпись
 
         //Проверяем подпись
-        if (!$this->checkSignature($signatureValue, $amount, $invId)){
-            echo 'checksum error';exit;
+        if (!$this->checkSignature($signatureValue, $amount, $invId)) {
+            echo 'checksum error';
+            exit;
         }
 
         $amount   = donate::currency($amount, $currencyIn);
         donate::control_uuid($signatureValue, get_called_class());
 
         self::telegramNotice(user::getUserId($user_id), $_POST['OutSum'], $currencyIn, $amount, get_called_class());
-        user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system:  get_called_class());
+        user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system: get_called_class());
         donate::addUserBonus($user_id, $amount);
         echo 'YES';
-
     }
 
     private function checkSignature(string $signatureValue = "", string $outSum = "", string $invId = ""): bool
     {
-       $hash = strtoupper(md5($outSum . ":" . $invId . ":" . self::getConfigValue('api_key')));
-       if ($hash == $signatureValue){
-           return true;
-       }
-       return false;
+        $hash = strtoupper(md5($outSum . ":" . $invId . ":" . self::getConfigValue('api_key')));
+        if ($hash == $signatureValue) {
+            return true;
+        }
+        return false;
     }
-
 }

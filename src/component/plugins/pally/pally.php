@@ -20,10 +20,54 @@ class pally extends BasePaymentPlugin
 
     private const DEFAULT_CURRENCY = 'RUB';
 
+    public function __construct()
+    {
+        if (!is_array($this->getPluginSetting('gateways'))) {
+            $this->setPluginSetting('gateways', []);
+        }
+    }
+
     protected function isConfigured(): bool
     {
-        return trim((string)$this->getPluginSetting('shop_id', '')) !== ''
-            && trim((string)$this->getPluginSetting('api_key', '')) !== '';
+        return !empty($this->getGateways());
+    }
+
+    private function getGateways(): array
+    {
+        $rows = $this->getPluginSetting('gateways', []);
+        if (!is_array($rows)) {
+            return [];
+        }
+        return $this->sanitizeGateways($rows);
+    }
+
+    private function sanitizeGateways(array $rows): array
+    {
+        $result = [];
+        foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $shopId  = trim((string)($row['shop_id'] ?? ''));
+            $apiKey  = trim((string)($row['api_key'] ?? ''));
+            $currency = strtoupper(trim((string)($row['currency'] ?? self::DEFAULT_CURRENCY)));
+            $label   = trim((string)($row['label'] ?? ''));
+
+            if ($shopId === '' || $apiKey === '') {
+                continue;
+            }
+            if (!preg_match('/^[A-Z0-9]{3,8}$/', $currency)) {
+                $currency = self::DEFAULT_CURRENCY;
+            }
+            $result[] = [
+                'id'       => count($result),
+                'shop_id'  => $shopId,
+                'api_key'  => $apiKey,
+                'currency' => $currency,
+                'label'    => $label,
+            ];
+        }
+        return array_values($result);
     }
 
     public function admin(): void
@@ -34,13 +78,11 @@ class pally extends BasePaymentPlugin
         $selectedCountries = $this->sanitizeSupportedCountries($settings['supported_countries'] ?? ['ru', 'ua']);
 
         tpl::addVar([
-            'title' => 'Pally',
-            'pluginName' => $this->getNameClass(),
-            'shopId' => (string)$this->getPluginSetting('shop_id', ''),
-            'apiKey' => (string)$this->getPluginSetting('api_key', ''),
-            'currency' => strtoupper((string)$this->getPluginSetting('currency', self::DEFAULT_CURRENCY)),
+            'title'            => 'Pally',
+            'pluginName'       => $this->getNameClass(),
+            'gateways'         => $this->getGateways(),
             'selectedCountries' => $selectedCountries,
-            'webhookUrl' => ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/pally/webhook',
+            'webhookUrl'       => ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/pally/webhook',
         ]);
 
         tpl::displayPlugin('/pally/tpl/admin.html');
@@ -50,22 +92,29 @@ class pally extends BasePaymentPlugin
     {
         validation::user_protection('admin');
 
-        $shopId = trim((string)($_POST['shop_id'] ?? ''));
-        $apiKey = trim((string)($_POST['api_key'] ?? ''));
-        $currency = strtoupper(trim((string)($_POST['currency'] ?? self::DEFAULT_CURRENCY)));
         $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? ['ru', 'ua']);
 
-        if ($shopId === '' || $apiKey === '') {
+        $gateways = [];
+        if (isset($_POST['gateways']) && is_array($_POST['gateways'])) {
+            foreach ($_POST['gateways'] as $row) {
+                if (!is_array($row)) {
+                    continue;
+                }
+                $gateways[] = [
+                    'shop_id'  => trim((string)($row['shop_id'] ?? '')),
+                    'api_key'  => trim((string)($row['api_key'] ?? '')),
+                    'currency' => strtoupper(trim((string)($row['currency'] ?? self::DEFAULT_CURRENCY))),
+                    'label'    => trim((string)($row['label'] ?? '')),
+                ];
+            }
+        }
+
+        $gateways = $this->sanitizeGateways($gateways);
+        if (empty($gateways)) {
             board::error(lang::get_phrase('pally_fill_credentials'));
         }
 
-        if (!preg_match('/^[A-Z0-9]{3,8}$/', $currency)) {
-            $currency = self::DEFAULT_CURRENCY;
-        }
-
-        $this->setPluginSetting('shop_id', $shopId);
-        $this->setPluginSetting('api_key', $apiKey);
-        $this->setPluginSetting('currency', $currency);
+        $this->setPluginSetting('gateways', $gateways);
         $this->setPluginSetting('supported_countries', $supportedCountries);
 
         board::success(lang::get_phrase('pally_settings_saved'));
@@ -85,13 +134,14 @@ class pally extends BasePaymentPlugin
             board::error(lang::get_phrase('pally_not_configured'));
         }
 
+        $gateways = $this->getGateways();
         $donateConfig = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
 
         tpl::addVar([
-            'title' => 'Pally',
-            'currency' => strtoupper((string)$this->getPluginSetting('currency', self::DEFAULT_CURRENCY)),
-            'minAmount' => $donateConfig->getMinSummaPaySphereCoin(),
-            'maxAmount' => $donateConfig->getMaxSummaPaySphereCoin(),
+            'title'         => 'Pally',
+            'gateways'      => $gateways,
+            'minAmount'     => $donateConfig->getMinSummaPaySphereCoin(),
+            'maxAmount'     => $donateConfig->getMaxSummaPaySphereCoin(),
             'defaultAmount' => is_null($count) ? $donateConfig->getDefaultSummaPaySphereCoin() : (int)$count,
         ]);
 
@@ -113,7 +163,22 @@ class pally extends BasePaymentPlugin
             board::error(lang::get_phrase('pally_enter_amount'));
         }
 
-        $currency = strtoupper((string)$this->getPluginSetting('currency', self::DEFAULT_CURRENCY));
+        $gatewayIndex = (int)($_POST['gateway_index'] ?? 0);
+        $gateways     = $this->getGateways();
+
+        if (!isset($gateways[$gatewayIndex])) {
+            $gatewayIndex = 0;
+        }
+
+        if (empty($gateways)) {
+            board::error(lang::get_phrase('pally_not_configured_admin'));
+        }
+
+        $gateway  = $gateways[$gatewayIndex];
+        $currency = $gateway['currency'];
+        $shopId   = $gateway['shop_id'];
+        $apiKey   = $gateway['api_key'];
+
         if (!preg_match('/^[A-Z0-9]{3,8}$/', $currency)) {
             $currency = self::DEFAULT_CURRENCY;
         }
@@ -134,18 +199,20 @@ class pally extends BasePaymentPlugin
             $donateConfig->getSphereCoinCost()
         );
 
+        $orderId = $gatewayIndex . '_' . time() . random_int(100, 999);
+
         $payload = [
-            'amount' => $amount,
-            'order_id' => (string)(time() . random_int(100, 999)),
-            'type' => 'normal',
-            'shop_id' => (string)$this->getPluginSetting('shop_id', ''),
-            'custom' => (string)user::self()->getId(),
-            'currency_in' => $currency,
+            'amount'               => $amount,
+            'order_id'             => $orderId,
+            'type'                 => 'normal',
+            'shop_id'              => $shopId,
+            'custom'               => (string)user::self()->getId(),
+            'currency_in'          => $currency,
             'payer_pays_commission' => 1,
-            'payer_email' => user::self()->getEmail(),
+            'payer_email'          => user::self()->getEmail(),
         ];
 
-        $response = $this->request(self::API_CREATE_URL, $payload, (string)$this->getPluginSetting('api_key', ''));
+        $response = $this->request(self::API_CREATE_URL, $payload, $apiKey);
 
         if (($response['error'] ?? '') !== '') {
             board::error(sprintf(lang::get_phrase('pally_curl_error'), $response['error']));
@@ -156,7 +223,7 @@ class pally extends BasePaymentPlugin
             board::error(lang::get_phrase('pally_invalid_response'));
         }
 
-        $success = $answer['success'] ?? false;
+        $success   = $answer['success'] ?? false;
         $isSuccess = $success === true || $success === 'true' || $success === 1 || $success === '1';
         if (!$isSuccess) {
             board::error(sprintf(lang::get_phrase('pally_api_error'), (string)($answer['message'] ?? 'Unknown error')));
@@ -172,6 +239,7 @@ class pally extends BasePaymentPlugin
 
     public function webhook(): void
     {
+
         if (!$this->isConfigured()) {
             echo 'disabled';
             return;
@@ -182,10 +250,10 @@ class pally extends BasePaymentPlugin
             return;
         }
 
-        $invId = (string)($_POST['InvId'] ?? '');
-        $outSumRaw = (string)($_POST['OutSum'] ?? '');
-        $currencyIn = (string)($_POST['CurrencyIn'] ?? self::DEFAULT_CURRENCY);
-        $userIdRaw = (string)($_POST['custom'] ?? '');
+        $invId         = (string)($_POST['InvId'] ?? '');
+        $outSumRaw     = (string)($_POST['OutSum'] ?? '');
+        $currencyIn    = (string)($_POST['CurrencyIn'] ?? self::DEFAULT_CURRENCY);
+        $userIdRaw     = (string)($_POST['custom'] ?? '');
         $signatureValue = (string)($_POST['SignatureValue'] ?? '');
 
         if ($invId === '' || $outSumRaw === '' || $signatureValue === '' || $userIdRaw === '') {
@@ -193,7 +261,14 @@ class pally extends BasePaymentPlugin
             return;
         }
 
-        if (!$this->checkSignature($signatureValue, $outSumRaw, $invId)) {
+        // Resolve api_key by gateway index encoded in order_id prefix
+        $apiKey = $this->resolveApiKeyFromInvId($invId);
+        if ($apiKey === null) {
+            echo 'checksum error';
+            return;
+        }
+
+        if (!$this->checkSignature($signatureValue, $outSumRaw, $invId, $apiKey)) {
             echo 'checksum error';
             return;
         }
@@ -220,9 +295,30 @@ class pally extends BasePaymentPlugin
         echo 'YES';
     }
 
-    private function checkSignature(string $signatureValue, string $outSum, string $invId): bool
+    /**
+     * Resolve the correct api_key from the InvId.
+     * New order_ids have the format: {gatewayIndex}_{timestamp}{rand}
+     * Legacy order_ids (no prefix) fall back to the first gateway.
+     */
+    private function resolveApiKeyFromInvId(string $invId): ?string
     {
-        $hash = strtoupper(md5($outSum . ':' . $invId . ':' . (string)$this->getPluginSetting('api_key', '')));
+        $gateways = $this->getGateways();
+
+        if (strpos($invId, '_') !== false) {
+            $parts = explode('_', $invId, 2);
+            $idx   = (int)$parts[0];
+            if (isset($gateways[$idx])) {
+                return $gateways[$idx]['api_key'];
+            }
+        }
+
+        // Legacy / fallback — first gateway
+        return isset($gateways[0]) ? $gateways[0]['api_key'] : null;
+    }
+
+    private function checkSignature(string $signatureValue, string $outSum, string $invId, string $apiKey): bool
+    {
+        $hash = strtoupper(md5($outSum . ':' . $invId . ':' . $apiKey));
         return hash_equals($hash, strtoupper($signatureValue));
     }
 
@@ -240,16 +336,16 @@ class pally extends BasePaymentPlugin
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($ch, CURLOPT_TIMEOUT, 25);
 
-        $body = curl_exec($ch);
-        $error = curl_error($ch);
+        $body    = curl_exec($ch);
+        $error   = curl_error($ch);
         $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         curl_close($ch);
 
         return [
             'httpCode' => $httpCode,
-            'body' => $body,
-            'error' => $error,
+            'body'     => $body,
+            'error'    => $error,
         ];
     }
 }

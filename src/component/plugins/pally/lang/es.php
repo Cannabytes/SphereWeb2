@@ -11,6 +11,16 @@ return [
     'pally_minimum' => 'Mínimo',
     'pally_maximum' => 'Máximo',
     
+    // Admin panel — pasarelas
+    'pally_gateways_title'            => 'Pasarelas de pago',
+    'pally_add_gateway'               => 'Agregar pasarela',
+    'pally_gateway_label'             => 'Descripción',
+    'pally_gateway_label_placeholder' => 'ej. Visa/Mastercard',
+    'pally_action_label'              => 'Acción',
+    'pally_remove_gateway'            => 'Eliminar',
+    'pally_gateways_description'      => 'Cada pasarela puede tener su propia clave API, ID de tienda, moneda y descripción.',
+    'pally_select_gateway'            => 'Seleccione la pasarela de pago',
+
     // Admin panel
     'pally_admin_title' => 'Pally',
     'pally_admin_description' => 'Gestión del sistema de pago Pally',
@@ -26,7 +36,7 @@ return [
     'pally_save_settings' => 'Guardar configuración',
     
     // Messages
-    'pally_fill_credentials' => 'Complete shop_id y api_key',
+    'pally_fill_credentials' => 'Agregue al menos una pasarela con shop_id y api_key',
     'pally_settings_saved' => 'Configuración de Pally guardada',
     'pally_not_configured' => 'Pally no está configurado. Póngase en contacto con el administrador.',
     'pally_enter_amount' => 'Ingrese la cantidad como número',
