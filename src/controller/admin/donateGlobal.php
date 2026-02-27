@@ -73,21 +73,14 @@ class donateGlobal
     {
         validation::user_protection("admin");
 
-        // Get serverId from URL parameter or use global (0)
         $serverId = (int)($_GET['serverId'] ?? 0);
         
-        // Get all servers for navigation
         $servers = \Ofey\Logan22\model\server\server::getServerAll() ?? [];
         
-        // Get current server info
         $currentServer = null;
         if ($serverId === 0) {
-            // For global settings, create a dummy server object
-            $currentServer = (object)[
-                'id' => 0,
-                'name' => 'Global',
-                'rateExp' => 1
-            ];
+            $serverId = user::self()->getServerId();
+            $currentServer = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId());
         } else {
             $currentServer = \Ofey\Logan22\model\server\server::getServer($serverId);
         }
@@ -108,7 +101,6 @@ class donateGlobal
     {
         validation::user_protection("admin");
 
-        // Get serverId from POST data
         $serverId = (int)($_POST['serverId'] ?? 0);
 
         $post = json_encode($_POST, JSON_UNESCAPED_UNICODE);
@@ -128,7 +120,6 @@ class donateGlobal
             }
         }
 
-        // Use serverId from POST
         $data['serverId'] = $serverId;
         $post = json_encode($data, JSON_UNESCAPED_UNICODE);
 

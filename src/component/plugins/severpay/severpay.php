@@ -142,7 +142,7 @@ class severpay extends BasePaymentPlugin
         if (empty($merchants)) {
             if ($this->isAjax()) {
                 board::error(lang::get_phrase('severpay_no_merchants'));
-            }else{
+            } else {
                 echo 'Не настроено ни одного мерчанта. Обратитесь к администратору.';
                 exit;
             }
@@ -285,25 +285,35 @@ class severpay extends BasePaymentPlugin
         }
 
         if ($verifiedMerchant === null) {
-            echo json_encode(['status' => false, 'msg' => 'Wrong sign']);
-            return;
+            http_response_code(400);
+            echo json_encode([
+                'status' => false,
+                'msg' => 'Wrong sign'
+            ]);
+            exit;
         }
 
         if (($input['type'] ?? '') !== 'payin') {
-            echo json_encode(['status' => false, 'msg' => 'Invalid type']);
-            return;
+            http_response_code(400);
+            echo json_encode([
+                'status' => false,
+                'msg' => 'Invalid type'
+            ]);
+            exit;
         }
 
         $data = $input['data'] ?? [];
         if (($data['status'] ?? '') !== 'success') {
+            http_response_code(400);
             echo json_encode(['status' => false, 'msg' => 'Payment not successful']);
-            return;
+            exit;
         }
 
         $orderId = (string)($data['order_id'] ?? '');
         $orderParts = explode('_', $orderId);
         $userId = (int)($orderParts[0] ?? 0);
         if ($userId <= 0) {
+            http_response_code(400);
             echo json_encode(['status' => false, 'msg' => 'Invalid order_id']);
             return;
         }
@@ -313,8 +323,9 @@ class severpay extends BasePaymentPlugin
         $uuid = (string)($data['id'] ?? $inputSign);
 
         try {
-            donate::control_uuid($uuid, $this->getNameClass());
+            donate::control_uuid(uuid: $uuid, pay_system_name: get_called_class(), request: $data);
         } catch (\Throwable $e) {
+            http_response_code(400);
             echo json_encode(['status' => false, 'msg' => 'UUID control failed']);
             return;
         }
@@ -322,6 +333,7 @@ class severpay extends BasePaymentPlugin
         try {
             $amount = donate::currency($amountInput, $currency);
         } catch (\Throwable $e) {
+            http_response_code(400);
             echo json_encode(['status' => false, 'msg' => 'Currency conversion failed']);
             return;
         }
@@ -336,6 +348,7 @@ class severpay extends BasePaymentPlugin
                 ->donateAdd($amount)
                 ->AddHistoryDonate(amount: $amount, pay_system: $this->getNameClass(), input: $inputJSON);
         } catch (\Throwable $e) {
+            http_response_code(400);
             echo json_encode(['status' => false, 'msg' => 'Failed to add funds']);
             return;
         }
