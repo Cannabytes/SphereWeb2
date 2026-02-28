@@ -58,4 +58,5 @@ return [
     'betatransfer_description_label' => 'Περιγραφή του συστήματος πληρωμών',
     'betatransfer_description_placeholder' => 'Εισαγάγετε περιγραφή για εμφάνιση στους χρήστες',
     'betatransfer_description_note' => 'Αυτή η περιγραφή θα εμφανιστεί στο χρήστη στη σελίδα ανανέωσης υπολοίπου',
+    'betatransfer_estimated_cost' => 'Εκτιμώμενο κόστος',
 ];

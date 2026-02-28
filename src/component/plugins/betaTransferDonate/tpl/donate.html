@@ -79,9 +79,9 @@
                              class="form-control" 
                              id="amount" 
                              name="amount" 
-                             placeholder="0.00" 
+                             placeholder="1" 
                              required 
-                             step="0.01"
+                             step="1"
                              value="{{count}}"
                              min="1">
                       <span class="input-group-text fw-bold" id="currencyLabel">Donate Coin</span>
@@ -90,6 +90,10 @@
                       <i class="bi bi-info-circle me-1"></i>
                       {{ phrase('betatransfer_min_amount') }}: <strong><span id="minAmount">0</span> <span id="minCurrency"></span></strong> | 
                       {{ phrase('betatransfer_max_amount') }}: <strong><span id="maxAmount">0</span> <span id="maxCurrency"></span></strong>
+                    </div>
+                    <div class="form-text mt-2">
+                      <i class="bi bi-cash me-1"></i>
+                      {{ phrase('betatransfer_estimated_cost') }}: <strong><span id="costValue">0.00</span> <span id="costCurrency">UAH</span></strong>
                     </div>
                   </div>
 
@@ -123,11 +127,38 @@
 
 {% block js %}
 <script>
+$(document).ready(function() {
 (function() {
   'use strict';
   
   const paymentMethods = JSON.parse('{{ paymentMethods|json_encode|raw }}');
   let selectedMethod = null;
+
+  const CurrencyManager = (function () {
+    const currencies = {
+      usd: parseFloat('{{ USD_val|default(0)|number_format(4, ".", "") }}') || 0,
+      eur: parseFloat('{{ EUR_val|default(0)|number_format(4, ".", "") }}') || 0,
+      rub: parseFloat('{{ RUB_val|default(0)|number_format(4, ".", "") }}') || 0,
+      uah: parseFloat('{{ UAH_val|default(0)|number_format(4, ".", "") }}') || 0
+    };
+    const mainCurrency = '{{ mainCurrency|lower }}';
+
+    const updateCost = (coinCount) => {
+      const count = parseInt(coinCount) || 0;
+      if (currencies[mainCurrency] !== undefined) {
+        const cost = (count * currencies[mainCurrency]).toFixed(2);
+        $('#costValue').text(cost);
+        $('#costCurrency').text(mainCurrency.toUpperCase());
+      }
+    };
+
+    return { updateCost };
+  })();
+
+  // Инициализация стоимости, если count задан
+  if ('{{ count }}') {
+    CurrencyManager.updateCost('{{ count }}');
+  }
 
   // Утилита для безопасного показа уведомлений
 const noticeError = (msg, type = 'info') => {
@@ -145,15 +176,14 @@ const noticeError = (msg, type = 'info') => {
   const updateFormWithMethod = (method, methodKey) => {
     $('#selectedPaymentMethod').val(methodKey);
     $('#selectedMethodName').text('{{ phrase("betatransfer_topup_via")|e("js") }}' + ' ' + method.name);
-    $('#currencyLabel, #minCurrency, #maxCurrency').text('Donate Coin');
+    $('#currencyLabel, #minCurrency, #maxCurrency').text(method.currency);
     $('#minAmount').text(method.min);
     $('#maxAmount').text(method.max);
     $('#amount').attr({
       min: method.min,
       max: method.max,
       placeholder: ("{{ phrase('betatransfer_amount_range')|e('js') }}").replace('{min}', method.min).replace('{max}', method.max)
-    });
-  };
+    });    CurrencyManager.updateCost($('#amount').val());  };
 
   // Плавный переход к секции
   const scrollToSection = (selector, offset = 100) => {
@@ -164,6 +194,11 @@ const noticeError = (msg, type = 'info') => {
       }, 400);
     }
   };
+
+  // Обработчик изменения количества коинов
+  $('#amount').on('input', function() {
+    CurrencyManager.updateCost($(this).val());
+  });
 
   // Выбор способа оплаты
   $('.payment-method-card').on('click', function() {
@@ -269,6 +304,7 @@ const noticeError = (msg, type = 'info') => {
     return false;
   });
 })();
+});
 </script>
 
 <style>

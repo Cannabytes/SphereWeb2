@@ -58,4 +58,5 @@ return [
     'betatransfer_description_label' => 'Опис системи платежів',
     'betatransfer_description_placeholder' => 'Введіть опис для показу користувачам',
     'betatransfer_description_note' => 'Цей опис буде показаний користувачу на сторінці поповнення балансу',
+    'betatransfer_estimated_cost' => 'Приблизна вартість',
 ];

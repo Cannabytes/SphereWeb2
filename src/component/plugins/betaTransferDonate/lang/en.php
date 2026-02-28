@@ -58,4 +58,5 @@ return [
     'betatransfer_description_label' => 'Payment system description',
     'betatransfer_description_placeholder' => 'Enter description to show to users',
     'betatransfer_description_note' => 'This description will be shown to the user on the balance top-up page',
+    'betatransfer_estimated_cost' => 'Estimated cost',
 ];

@@ -58,4 +58,5 @@ return [
     'betatransfer_description_label' => 'Descripción del sistema de pago',
     'betatransfer_description_placeholder' => 'Ingrese la descripción para mostrar a los usuarios',
     'betatransfer_description_note' => 'Esta descripción se mostrará al usuario en la página de recarga de saldo',
+    'betatransfer_estimated_cost' => 'Costo estimado',
 ];

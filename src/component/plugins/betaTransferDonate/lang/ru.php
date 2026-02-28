@@ -58,5 +58,6 @@ return [
     'betatransfer_description_label' => 'Описание платежной системы',
     'betatransfer_description_placeholder' => 'Введите описание для отображения пользователям',
     'betatransfer_description_note' => 'Это описание будет показано пользователю на странице пополнения баланса',
+    'betatransfer_estimated_cost' => 'Примерная стоимость',
 ];
 
