@@ -314,7 +314,7 @@ class yoomoney extends BasePaymentPlugin
         }
 
         // Проверка IP
-        $clientIp = $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'];
+        $clientIp = $clientIp ?? ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR']);
         if (!$this->isIpAllowed($clientIp)) {
             die('Access denied: IP not allowed');
         }
@@ -334,20 +334,20 @@ class yoomoney extends BasePaymentPlugin
         }
 
         $request_hash = $_POST['sha1_hash'] ?? '';
-        $withdraw_amount = $_POST['withdraw_amount'] ?? 0;
-        $operation_id = $_POST['operation_id'] ?? 0;
-        $amount = $_POST['amount'] ?? 0;
-        $currency = $_POST['currency'] ?? 0;
-        $datetime = $_POST['datetime'] ?? '';
-        $sender = $_POST['sender'] ?? '';
-        $codepro = $_POST['codepro'] ?? '';
-        $user_id = $_POST['label'] ?? '';
+        $withdraw_amount = $_POST['withdraw_amount'] ?? '';
+        $operation_id = (string)($_POST['operation_id'] ?? '');
+        $amount = (string)($_POST['amount'] ?? '');
+        $currency = (string)($_POST['currency'] ?? '');
+        $datetime = (string)($_POST['datetime'] ?? '');
+        $sender = (string)($_POST['sender'] ?? '');
+        $codepro = (string)($_POST['codepro'] ?? '');
+        $user_id = (string)($_POST['label'] ?? '');
         $notification_secret = $shop['secret_key'];
 
         $hash = sha1("{$notification_type}&{$operation_id}&{$amount}&{$currency}&{$datetime}&{$sender}&{$codepro}&{$notification_secret}&{$user_id}");
 
         if ($hash !== $request_hash) {
-            exit();
+            exit("sha1_hash mismatch");
         }
 
         $currency = 'RUB';
@@ -379,7 +379,7 @@ class yoomoney extends BasePaymentPlugin
         } catch (\Throwable $e) {
         }
 
-        exit();
+        exit("YES");
     }
 
     /**
@@ -432,5 +432,25 @@ class yoomoney extends BasePaymentPlugin
             $mask_long = -1 << (32 - (int)$mask);
             return ($ip_long & $mask_long) === ($subnet_long & $mask_long);
         }
+    }
+
+    /**
+     * Собрать заголовки запроса в виде массива (фоллбек если getallheaders не доступен)
+     */
+    private function getRequestHeaders(): array
+    {
+        if (function_exists('getallheaders')) {
+            $h = getallheaders();
+            return is_array($h) ? $h : [];
+        }
+
+        $headers = [];
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) === 'HTTP_') {
+                $headerName = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+                $headers[$headerName] = $value;
+            }
+        }
+        return $headers;
     }
 }

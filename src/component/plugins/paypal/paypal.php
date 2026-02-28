@@ -299,33 +299,108 @@ class paypal extends BasePaymentPlugin
         }
 
         $resource = $input['resource'];
-        $orderId = $resource['id'] ?? null;
-        $customId = $resource['custom_id'] ?? $resource['purchase_units'][0]['custom_id'] ?? null;
-        $eventType = $input['event_type'] ?? '';
+        $eventType = (string)($input['event_type'] ?? '');
 
-        if (!$orderId || !$customId) {
-            echo json_encode(['status' => false, 'message' => 'Missing order or customer ID']);
-            return;
-        }
-
-        // Проверяем только события PAYMENT.CAPTURE.COMPLETED
-        if ($eventType !== 'PAYMENT.CAPTURE.COMPLETED') {
+        if (!in_array($eventType, ['CHECKOUT.ORDER.APPROVED', 'CHECKOUT.ORDER.COMPLETED', 'PAYMENT.CAPTURE.COMPLETED'], true)) {
             echo json_encode(['status' => true, 'message' => 'Event type not processed']);
             return;
         }
 
-        // Получаем информацию о платеже и валидируем
-        $captureStatus = $resource['status'] ?? null;
-        $amount = (float)($resource['amount']['value'] ?? 0);
-        $currency = $resource['amount']['currency_code'] ?? null;
+        $orderId = null;
+        if (in_array($eventType, ['CHECKOUT.ORDER.APPROVED', 'CHECKOUT.ORDER.COMPLETED'], true)) {
+            $orderId = $resource['id'] ?? null;
+        } elseif ($eventType === 'PAYMENT.CAPTURE.COMPLETED') {
+            $orderId = $resource['supplementary_data']['related_ids']['order_id'] ?? null;
+        }
 
-        if ($captureStatus !== 'COMPLETED' || !$amount || !$currency) {
-            echo json_encode(['status' => false, 'message' => 'Invalid payment status']);
+        if (!$orderId) {
+            echo json_encode(['status' => false, 'message' => 'Missing order ID']);
+            return;
+        }
+
+        $accounts = $this->getAccounts();
+        if (empty($accounts)) {
+            echo json_encode(['status' => false, 'message' => 'No configured accounts']);
+            return;
+        }
+
+        $orderData = null;
+        $selectedAccount = null;
+
+        foreach ($accounts as $account) {
+            $accessToken = $this->getAccessToken($account['client_id'], $account['client_secret'], $account['mode']);
+            if (!$accessToken) {
+                continue;
+            }
+
+            $apiUrl = $account['mode'] === 'LIVE' ? self::API_URL_LIVE : self::API_URL_SANDBOX;
+            $orderResponse = $this->request($apiUrl . '/v2/checkout/orders/' . $orderId, [], $accessToken, 'GET');
+            if (($orderResponse['httpCode'] ?? 0) !== 200) {
+                continue;
+            }
+
+            $decodedOrder = json_decode((string)($orderResponse['body'] ?? ''), true);
+            if (!is_array($decodedOrder)) {
+                continue;
+            }
+
+            $orderData = $decodedOrder;
+            $selectedAccount = $account;
+            break;
+        }
+
+        if (!$orderData || !$selectedAccount) {
+            echo json_encode(['status' => false, 'message' => 'Order not found in configured accounts']);
+            return;
+        }
+
+        $orderStatus = (string)($orderData['status'] ?? '');
+        if ($orderStatus === 'APPROVED') {
+            $accessToken = $this->getAccessToken($selectedAccount['client_id'], $selectedAccount['client_secret'], $selectedAccount['mode']);
+            if (!$accessToken) {
+                echo json_encode(['status' => false, 'message' => 'Access token error']);
+                return;
+            }
+
+            $apiUrl = $selectedAccount['mode'] === 'LIVE' ? self::API_URL_LIVE : self::API_URL_SANDBOX;
+            $captureResponse = $this->request($apiUrl . '/v2/checkout/orders/' . $orderId . '/capture', new \stdClass(), $accessToken, 'POST');
+
+            if (($captureResponse['httpCode'] ?? 0) !== 201) {
+                echo json_encode(['status' => false, 'message' => 'Capture failed']);
+                return;
+            }
+
+            $capturedOrder = json_decode((string)($captureResponse['body'] ?? ''), true);
+            if (!is_array($capturedOrder)) {
+                echo json_encode(['status' => false, 'message' => 'Invalid capture response']);
+                return;
+            }
+
+            $orderData = $capturedOrder;
+            $orderStatus = (string)($orderData['status'] ?? '');
+        }
+
+        if ($orderStatus !== 'COMPLETED') {
+            echo json_encode(['status' => false, 'message' => 'Order status is not completed']);
+            return;
+        }
+
+        $purchaseUnit = $orderData['purchase_units'][0] ?? null;
+        $capture = $purchaseUnit['payments']['captures'][0] ?? null;
+
+        $customId = $purchaseUnit['custom_id'] ?? $capture['custom_id'] ?? null;
+        $amount = (float)($capture['amount']['value'] ?? 0);
+        $currency = $capture['amount']['currency_code'] ?? null;
+        $captureStatus = $capture['status'] ?? null;
+        $captureId = $capture['id'] ?? null;
+
+        if (!$customId || !$amount || !$currency || $captureStatus !== 'COMPLETED') {
+            echo json_encode(['status' => false, 'message' => 'Invalid payment data']);
             return;
         }
 
         $userId = (int)$customId;
-        $uuid = $orderId;
+        $uuid = $captureId ?: $orderId;
 
         try {
             donate::control_uuid($uuid, $this->getNameClass());
@@ -397,20 +472,28 @@ class paypal extends BasePaymentPlugin
     /**
      * Выполнить HTTP запрос к API
      */
-    private function request(string $url, array $payload, string $accessToken): array
+    private function request(string $url, array|\stdClass $payload, string $accessToken, string $method = 'POST'): array
     {
         $ch = curl_init($url);
-        curl_setopt_array($ch, [
+
+        $httpHeaders = [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $accessToken,
+        ];
+
+        $options = [
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . $accessToken,
-            ],
+            CURLOPT_HTTPHEADER => $httpHeaders,
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 30,
-        ]);
+            CURLOPT_CUSTOMREQUEST => strtoupper($method),
+        ];
+
+        if (strtoupper($method) !== 'GET') {
+            $options[CURLOPT_POSTFIELDS] = json_encode($payload, JSON_UNESCAPED_UNICODE);
+        }
+
+        curl_setopt_array($ch, $options);
 
         $body = curl_exec($ch);
         $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);

@@ -69,8 +69,9 @@
                                             <i class="ri-add-line"></i>
                                         </button>
                                     </div>
-                                    <div class="px-3">
+                                    <div class="px-3 position-relative">
                                         <div id="modal_coinsRangeSlider" class="mt-5"></div>
+                                        <div id="modal_rangeValueBubble" class="value-bubble"></div>
                                     </div>
                                 </div>
 
@@ -416,7 +417,7 @@
         cursor: pointer !important;
         right: -17px !important;
         top: -14px !important;
-        background-image: url("{{item.getIcon()}}") !important;
+        background-image: url("/uploads/images/icon/etc_coins_gold_i00.webp") !important;
         background-size: contain !important;
         background-position: center center !important;
         background-repeat: no-repeat !important;
@@ -427,6 +428,29 @@
     #modal_donate .noUi-handle::before,
     #modal_donate .noUi-handle::after {
         display: none !important;
+    }
+
+    #modal_donate .value-bubble {
+        position: absolute;
+        min-width: 60px;
+        height: auto;
+        padding: 3px 10px;
+        background: #4a89dc;
+        color: #fff;
+        font-weight: 700;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transform: translateY(-40px);
+        pointer-events: none;
+        transition: opacity 0.3s ease, left 0.2s ease;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+        z-index: 22;
+        white-space: nowrap;
+        font-size: 12px;
+        line-height: 1.2;
     }
 
     #modal_donate .one-time-highlight {
@@ -749,6 +773,35 @@
                 if ($cardToHighlight) $cardToHighlight.addClass('one-time-highlight');
             };
 
+            const rawOneTimeBonuses = {{ getServer().donate().getTableEnableOneTimeBonus()|json_encode(constant('JSON_PRETTY_PRINT'))|raw }};
+            const normalizedOneTimeBonuses = (() => {
+                if (Array.isArray(rawOneTimeBonuses)) {
+                    return rawOneTimeBonuses;
+                }
+                if (rawOneTimeBonuses && typeof rawOneTimeBonuses === 'object') {
+                    return Object.values(rawOneTimeBonuses);
+                }
+                return [];
+            })();
+            const sortedOneTimeBonuses = normalizedOneTimeBonuses.slice().sort((a, b) => {
+                const coinA = parseInt(a.coin, 10) || 0;
+                const coinB = parseInt(b.coin, 10) || 0;
+                return coinB - coinA;
+            });
+
+            const calculateBonusCoins = (enteredValue) => {
+                const value = parseInt(enteredValue, 10) || 0;
+                for (let i = 0; i < sortedOneTimeBonuses.length; i++) {
+                    const tier = sortedOneTimeBonuses[i];
+                    const threshold = parseInt(tier.coin, 10) || 0;
+                    const percent = parseFloat(tier.percent) || 0;
+                    if (threshold > 0 && value >= threshold) {
+                        return Math.floor(value * percent / 100);
+                    }
+                }
+                return 0;
+            };
+
             const cumulativeBonusPercent = parseFloat('{{ cumulative_discount_percent|default(0)|number_format(2, ".", "") }}') || 0;
 
             const highlightCumulativeRow = () => {
@@ -837,7 +890,7 @@
                 highlightOneTimeBonusRow(count);
             };
 
-            return { selectBonusPanel, highlightCumulativeRow };
+            return { selectBonusPanel, highlightCumulativeRow, calculateBonusCoins };
         })();
 
         const ModalCurrencyManager = (function () {
@@ -894,9 +947,51 @@
 
         const ModalCoinsInputManager = (function () {
             let slider = null;
+            let sliderElement = null;
             const $inputField = $('#modal_numberOfCoinsPurchased');
+            const $bubble = $('#modal_rangeValueBubble');
             const min = parseInt($inputField.attr('min')) || 1;
             const max = parseInt($inputField.attr('max')) || 10000;
+
+            const updateRangeValueBubble = (value) => {
+                if (!$bubble.length || !sliderElement || !sliderElement.noUiSlider) return;
+                const normalizedValue = parseInt(value) || 0;
+                const handle = sliderElement.querySelector('.noUi-handle');
+                if (!handle) return;
+
+                const sliderRect = sliderElement.getBoundingClientRect();
+                const handleRect = handle.getBoundingClientRect();
+                if (!sliderRect.width || !handleRect.width) return;
+
+                let bubbleWidth = $bubble.outerWidth();
+                if (!bubbleWidth) {
+                    bubbleWidth = 60;
+                }
+
+                let leftPos = handleRect.left + handleRect.width / 2 - sliderRect.left - bubbleWidth / 2;
+                if (!isFinite(leftPos)) {
+                    leftPos = 0;
+                }
+                const maxLeft = Math.max(0, sliderRect.width - bubbleWidth);
+                const finalLeft = Math.max(0, Math.min(maxLeft, leftPos));
+
+                const bonusCoins = typeof ModalBonusManager.calculateBonusCoins === 'function'
+                    ? ModalBonusManager.calculateBonusCoins(normalizedValue)
+                    : 0;
+
+                const bubbleText = bonusCoins > 0
+                    ? `${normalizedValue} | Bonus: +${bonusCoins}`
+                    : normalizedValue.toString();
+
+                $bubble.css({
+                    opacity: 1,
+                    left: `${finalLeft}px`,
+                    transform: 'translateY(-45px)'
+                });
+
+                $bubble.css('min-width', bonusCoins > 0 ? '80px' : '40px');
+                $bubble.text(bubbleText);
+            };
 
             const initialize = () => {
                 if (slider && slider.noUiSlider) return;
@@ -935,6 +1030,7 @@
                 ModalBonusManager.selectBonusPanel(value);
                 // Update payment links to include selected count
                 if (typeof PaymentLinkManager !== 'undefined') PaymentLinkManager.update(value);
+                updateRangeValueBubble(value);
             };
 
             const setupQuantityButtons = () => {
@@ -983,7 +1079,7 @@
             };
 
             const initializeSlider = () => {
-                const sliderElement = document.getElementById('modal_coinsRangeSlider');
+                sliderElement = document.getElementById('modal_coinsRangeSlider');
                 if (!sliderElement || typeof noUiSlider === 'undefined' || sliderElement.noUiSlider) return;
 
                 try {
@@ -1009,7 +1105,22 @@
                         if ($inputField.val() != value) {
                             $inputField.val(value).trigger('change');
                             updateAll(value);
+                        } else {
+                            updateRangeValueBubble(value);
                         }
+                    });
+
+                    sliderElement.noUiSlider.on('start', function () {
+                        const currentValue = parseInt(sliderElement.noUiSlider.get()) || 0;
+                        updateRangeValueBubble(currentValue);
+                    });
+
+                    sliderElement.noUiSlider.on('end', function () {
+                        setTimeout(() => {
+                            if ($bubble.length) {
+                                $bubble.css('opacity', '0');
+                            }
+                        }, 1000);
                     });
                 } catch (e) {
                     console.error("noUiSlider initialization failed:", e);
