@@ -5,7 +5,7 @@
   <div class="card custom-card">
     <div class="card-header justify-content-between align-items-center">
       <div class="d-flex align-items-center">
-        <a href="/admin/extensions/paid" class="avatar border text-muted me-2">
+        <a href="/admin/donate" class="avatar border text-muted me-2">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
             <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
           </svg>
@@ -30,119 +30,117 @@
       </div>
       {% endif %}
 
-      <form id="paypalSettingsForm" method="post" action="/admin/plugin/paypal/save">
-        <div class="row g-3 mb-3">
-          <div class="col-12">
-            <label class="form-label">{{ phrase('paypal_webhook_url') }}</label>
-            <div class="input-group">
-              <div id="webhookUrlText" class="form-control">{{ webhookUrl }}</div>
-              <button id="copyWebhookBtn" type="button" class="btn btn-outline-secondary" title="Copy">{{ phrase('paypal_webhook_copy') }}</button>
-            </div>
-            <div class="form-text">{{ phrase('paypal_webhook_note') }}</div>
+      <div class="row g-3 mb-3">
+        <div class="col-12">
+          <label class="form-label">{{ phrase('paypal_webhook_url') }}</label>
+          <div class="input-group">
+            <div id="webhookUrlText" class="form-control">{{ webhookUrl }}</div>
+            <button id="copyWebhookBtn" type="button" class="btn btn-outline-secondary" title="Copy">{{ phrase('paypal_webhook_copy') }}</button>
           </div>
+          <div class="form-text">{{ phrase('paypal_webhook_note') }}</div>
         </div>
+      </div>
 
-        <div class="card mb-3 shadow-sm">
-          <div class="card-header bg-light d-flex justify-content-between align-items-center">
-            <strong><i class="bi bi-key me-2"></i>{{ phrase('paypal_accounts_title') }}</strong>
-            <button id="addAccount" type="button" class="btn btn-success btn-sm">
-              <i class="bi bi-plus-circle"></i> {{ phrase('paypal_add_account') }}
-            </button>
-          </div>
-          <div class="card-body p-0">
-            <div class="table-responsive">
-              <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                  <tr>
-                    <th class="ps-4" style="width: 30%">{{ phrase('paypal_client_id_label') }}</th>
-                    <th style="width: 30%">{{ phrase('paypal_client_secret_label') }}</th>
-                    <th style="width: 15%">{{ phrase('paypal_mode_label') }}</th>
-                    <th style="width: 15%">{{ phrase('paypal_currency_label') }}</th>
-                    <th style="width: 10%" class="text-center">{{ phrase('paypal_action_label') }}</th>
-                  </tr>
-                </thead>
-                <tbody id="accountRows">
-                  {% for account in accounts %}
-                  <tr class="account-row" data-index="{{ loop.index0 }}">
-                    <td class="ps-4">
-                      <input type="text" class="form-control form-control-sm" name="accounts[{{ loop.index0 }}][client_id]" value="{{ account.client_id }}" placeholder="Client ID" required>
-                    </td>
-                    <td>
-                      <input type="password" class="form-control form-control-sm" name="accounts[{{ loop.index0 }}][client_secret]" value="{{ account.client_secret }}" placeholder="Client Secret" required>
-                    </td>
-                    <td>
-                      <select class="form-select form-select-sm" name="accounts[{{ loop.index0 }}][mode]">
-                        <option value="LIVE" {% if account.mode == 'LIVE' %}selected{% endif %}>{{ phrase('paypal_live') }}</option>
-                        <option value="SANDBOX" {% if account.mode == 'SANDBOX' %}selected{% endif %}>{{ phrase('paypal_sandbox') }}</option>
-                      </select>
-                    </td>
-                    <td>
-                      <select class="form-select form-select-sm" name="accounts[{{ loop.index0 }}][currency]">
-                        <option value="USD" {% if account.currency == 'USD' %}selected{% endif %}>USD</option>
-                        <option value="EUR" {% if account.currency == 'EUR' %}selected{% endif %}>EUR</option>
-                        <option value="GBP" {% if account.currency == 'GBP' %}selected{% endif %}>GBP</option>
-                        <option value="CAD" {% if account.currency == 'CAD' %}selected{% endif %}>CAD</option>
-                        <option value="AUD" {% if account.currency == 'AUD' %}selected{% endif %}>AUD</option>
-                        <option value="JPY" {% if account.currency == 'JPY' %}selected{% endif %}>JPY</option>
-                        <option value="CNY" {% if account.currency == 'CNY' %}selected{% endif %}>CNY</option>
-                        <option value="INR" {% if account.currency == 'INR' %}selected{% endif %}>INR</option>
-                        <option value="MXN" {% if account.currency == 'MXN' %}selected{% endif %}>MXN</option>
-                        <option value="BRL" {% if account.currency == 'BRL' %}selected{% endif %}>BRL</option>
-                        <option value="RUB" {% if account.currency == 'RUB' %}selected{% endif %}>RUB</option>
-                      </select>
-                    </td>
-                    <td class="text-center">
-                      <button type="button" class="btn btn-sm btn-outline-danger remove-account" title="Delete">
-                        <i class="bi bi-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-            <div class="p-3 bg-light border-top">
-              <small class="text-muted">
-                {{ phrase('paypal_accounts_description') }}
-              </small>
-            </div>
-          </div>
-        </div>
-
-        {% set supportedCountries = selectedCountries|default(['world']) %}
-        {% set countryList = {'en': 'English'}|merge(getCountryList()) %}
-        <div class="card mb-3 shadow-sm">
-          <div class="card-header bg-light">
-            <strong><i class="bi bi-globe2 me-2"></i>{{ phrase('paypal_supported_countries') }}</strong>
-          </div>
-          <div class="card-body" style="max-height: 300px; overflow-y: auto;">
-            <div class="row">
-              {% for code, countryName in countryList %}
-              <div class="col-md-4 col-lg-3">
-                <div class="form-check form-switch mb-2">
-                  <input class="form-check-input"
-                         type="checkbox"
-                         role="switch"
-                         id="paypal-country-{{ code|e('html_attr') }}"
-                         name="supported_countries[]"
-                         value="{{ code|lower|e('html_attr') }}"
-                         {{ (code|lower in supportedCountries) ? 'checked' : '' }}>
-                  <label class="form-check-label" for="paypal-country-{{ code|e('html_attr') }}">
-                    {{ code|upper }} — {{ countryName }}
-                  </label>
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-
-        <div class="text-end">
-          <button type="submit" class="btn btn-primary">
-            <i class="bi bi-save"></i> {{ phrase('paypal_save_settings') }}
+      <div class="card mb-3 shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <strong><i class="bi bi-key me-2"></i>{{ phrase('paypal_accounts_title') }}</strong>
+          <button id="addAccount" type="button" class="btn btn-success btn-sm">
+            <i class="bi bi-plus-circle"></i> {{ phrase('paypal_add_account') }}
           </button>
         </div>
-      </form>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="ps-4" style="width: 30%">{{ phrase('paypal_client_id_label') }}</th>
+                  <th style="width: 30%">{{ phrase('paypal_client_secret_label') }}</th>
+                  <th style="width: 15%">{{ phrase('paypal_mode_label') }}</th>
+                  <th style="width: 15%">{{ phrase('paypal_currency_label') }}</th>
+                  <th style="width: 10%" class="text-center">{{ phrase('paypal_action_label') }}</th>
+                </tr>
+              </thead>
+              <tbody id="accountRows">
+                {% for account in accounts %}
+                <tr class="account-row" data-index="{{ loop.index0 }}">
+                  <td class="ps-4">
+                    <input type="text" class="form-control form-control-sm" name="accounts[{{ loop.index0 }}][client_id]" value="{{ account.client_id }}" placeholder="Client ID" required>
+                  </td>
+                  <td>
+                    <input type="password" class="form-control form-control-sm" name="accounts[{{ loop.index0 }}][client_secret]" value="{{ account.client_secret }}" placeholder="Client Secret" required>
+                  </td>
+                  <td>
+                    <select class="form-select form-select-sm" name="accounts[{{ loop.index0 }}][mode]">
+                      <option value="LIVE" {% if account.mode == 'LIVE' %}selected{% endif %}>{{ phrase('paypal_live') }}</option>
+                      <option value="SANDBOX" {% if account.mode == 'SANDBOX' %}selected{% endif %}>{{ phrase('paypal_sandbox') }}</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select class="form-select form-select-sm" name="accounts[{{ loop.index0 }}][currency]">
+                      <option value="USD" {% if account.currency == 'USD' %}selected{% endif %}>USD</option>
+                      <option value="EUR" {% if account.currency == 'EUR' %}selected{% endif %}>EUR</option>
+                      <option value="GBP" {% if account.currency == 'GBP' %}selected{% endif %}>GBP</option>
+                      <option value="CAD" {% if account.currency == 'CAD' %}selected{% endif %}>CAD</option>
+                      <option value="AUD" {% if account.currency == 'AUD' %}selected{% endif %}>AUD</option>
+                      <option value="JPY" {% if account.currency == 'JPY' %}selected{% endif %}>JPY</option>
+                      <option value="CNY" {% if account.currency == 'CNY' %}selected{% endif %}>CNY</option>
+                      <option value="INR" {% if account.currency == 'INR' %}selected{% endif %}>INR</option>
+                      <option value="MXN" {% if account.currency == 'MXN' %}selected{% endif %}>MXN</option>
+                      <option value="BRL" {% if account.currency == 'BRL' %}selected{% endif %}>BRL</option>
+                      <option value="RUB" {% if account.currency == 'RUB' %}selected{% endif %}>RUB</option>
+                    </select>
+                  </td>
+                  <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-account" title="Delete">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="p-3 bg-light border-top">
+            <small class="text-muted">
+              {{ phrase('paypal_accounts_description') }}
+            </small>
+          </div>
+        </div>
+      </div>
+
+      {% set supportedCountries = selectedCountries|default(['world']) %}
+      {% set countryList = {'en': 'English'}|merge(getCountryList()) %}
+      <div class="card mb-3 shadow-sm">
+        <div class="card-header bg-light">
+          <strong><i class="bi bi-globe2 me-2"></i>{{ phrase('paypal_supported_countries') }}</strong>
+        </div>
+        <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+          <div class="row">
+            {% for code, countryName in countryList %}
+            <div class="col-md-4 col-lg-3">
+              <div class="form-check form-switch mb-2">
+                <input class="form-check-input"
+                       type="checkbox"
+                       role="switch"
+                       id="paypal-country-{{ code|e('html_attr') }}"
+                       name="supported_countries[]"
+                       value="{{ code|lower|e('html_attr') }}"
+                       {{ (code|lower in supportedCountries) ? 'checked' : '' }}>
+                <label class="form-check-label" for="paypal-country-{{ code|e('html_attr') }}">
+                  {{ code|upper }} — {{ countryName }}
+                </label>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="text-end">
+        <button id="saveSettings" type="button" class="btn btn-primary">
+          <i class="bi bi-save"></i> {{ phrase('paypal_save_settings') }}
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -152,9 +150,12 @@
 <script>
 $(function() {
   const pluginActive = {{ getPluginActive(pluginName) ? 'true' : 'false' }};
+  
   if (!pluginActive) {
-    $('#paypalSettingsForm :input').prop('disabled', true);
-    $('#enablePlugin').prop('disabled', false);
+    $('#accountRows input, #accountRows select').prop('disabled', true);
+    $('#addAccount').prop('disabled', true);
+    $('input[name="supported_countries[]"]').prop('disabled', true);
+    $('#saveSettings').prop('disabled', true);
   }
 
   $('#enablePlugin').on('change', function() {
@@ -221,10 +222,47 @@ $(function() {
     reindexRows();
   });
 
-  $('#paypalSettingsForm').on('submit', function(e) {
-    e.preventDefault();
+  $('#saveSettings').on('click', function() {
+    const $btn = $(this);
+    
+    // Prevent double submission
+    if ($btn.data('submitting')) {
+      return;
+    }
+    $btn.data('submitting', true);
+    $btn.prop('disabled', true);
+    
     reindexRows();
-    AjaxSend('/admin/plugin/paypal/save', 'POST', $(this).serialize());
+    
+    // Collect form data manually
+    const formData = new FormData();
+    
+    // Collect accounts
+    $('#accountRows .account-row').each(function(i) {
+      const $row = $(this);
+      const clientId = $row.find('[name*="[client_id]"]').val();
+      const clientSecret = $row.find('[name*="[client_secret]"]').val();
+      const mode = $row.find('[name*="[mode]"]').val();
+      const currency = $row.find('[name*="[currency]"]').val();
+      
+      formData.append('accounts[' + i + '][client_id]', clientId);
+      formData.append('accounts[' + i + '][client_secret]', clientSecret);
+      formData.append('accounts[' + i + '][mode]', mode);
+      formData.append('accounts[' + i + '][currency]', currency);
+    });
+    
+    // Collect supported countries
+    $('input[name="supported_countries[]"]:checked').each(function() {
+      formData.append('supported_countries[]', $(this).val());
+    });
+    
+    // Convert FormData to URL encoded string
+    const params = new URLSearchParams(formData).toString();
+    
+    AjaxSend('/admin/plugin/paypal/save', 'POST', params).finally(function() {
+      $btn.data('submitting', false);
+      $btn.prop('disabled', false);
+    });
   });
 
   $('#copyWebhookBtn').on('click', function() {

@@ -338,8 +338,7 @@
                                         {% for countryCode in pluginCountries %}
                                         {% set cc = countryCode|lower %}
                                         <span class="payment-plugin-flag" title="{{ cc|upper }}">
-                                            <img src="/uploads/images/flags/{{ cc }}.png" alt="{{ cc|upper }}"
-                                                onerror="this.onerror=null;this.src='/uploads/images/flags/world.png';">
+                                            <img src="/uploads/images/svg/flags/{{ cc }}.svg" alt="{{ cc|upper }}">
                                         </span>
                                         {% endfor %}
                                     </div>

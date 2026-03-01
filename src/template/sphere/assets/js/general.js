@@ -138,7 +138,7 @@ $.deparam = function(query) {
     return map;
 };
 
-$(document).on('submit', 'form', function (event) {
+$(document).on('submit', 'form:not(#betaTransferSettingsForm)', function (event) {
     event.preventDefault();
     let url = $(this).attr('action');
     let method = $(this).attr('method');
