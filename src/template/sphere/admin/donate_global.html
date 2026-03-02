@@ -64,8 +64,8 @@
                     <input type="hidden" id="currentServerId" value="{{ currentServerId }}">
                     <input type="hidden" id="currentServerName" value="{% if currentServer %}{{ currentServer.getName() }}{% endif %}">
                     
-                    <div class="alert alert-primary alert-dismissible fade show custom-alert-icon shadow-sm"
-                        role="alert">
+                    <div class="noticeError noticeError-primary noticeError-dismissible fade show custom-noticeError-icon shadow-sm"
+                        role="noticeError">
                         <svg class="svg-primary" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24"
                             width="1.5rem" fill="#000000">
                             <path d="M0 0h24v24H0z" fill="none"></path>
@@ -757,7 +757,7 @@
         var $allTds = $row.find('td');
         
         if ($inputs.length < 2) {
-            alert({{ phrase('error_input_fields_not_found') }});
+            noticeError("{{ phrase('error_input_fields_not_found') }}");
             return;
         }
         
@@ -767,7 +767,7 @@
         var input2Value = ($input2.val() || '').trim();
         
         if (!input1Value || !input2Value) {
-            alert({{ phrase('please_fill_both_fields') }});
+            noticeError("{{ phrase('please_fill_both_fields') }}");
             return;
         }
         
@@ -808,15 +808,13 @@
                 '<td><a href="javascript:void(0);" class="text-danger fs-14 lh-1 removeTableItemsBonus"><i class="ri-delete-bin-5-line"></i></a></td>' +
                 '</tr>';
             table.find('tbody').append(newRow);
-        },
-        );
-
+        });
     });
 
     $(document).on('click', '#addCostItem', function () {
         var costItemName = $('#costItem').val().trim(); // Read tab name
         if (!costItemName) {
-            notifyError({{ phrase('enter_tab_name') }});
+            notifyError("{{ phrase('enter_tab_name') }}");
             return;
         }
 
@@ -828,7 +826,7 @@
         });
 
         if (hasSameTitle) {
-            notifyError({{ phrase('tab_name_already_exists') }});
+            notifyError("{{ phrase('tab_name_already_exists') }}");
             return;
         }
 
@@ -947,12 +945,12 @@
                 if (data) {
                     fillFormData(data);
                 } else {
-                    notifyError({{ phrase('no_data_to_load') }});
+                    notifyError("{{ phrase('no_data_to_load') }}");
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.error('Ошибка загрузки:', textStatus, errorThrown);
-                notifyError({{ phrase('error_loading_server_data') }});
+                notifyError("{{ phrase('error_loading_server_data') }}");
             }
         });
     }
@@ -1146,7 +1144,7 @@
         var targetServerId = parseInt($('#currentServerId').val());
         var targetServerName = $('#currentServerName').val();
 
-        if (confirm({{ phrase('confirm_copy_settings_overwrite') }}.replace('"...', '"' + sourceServerName).replace('..."', targetServerName + '"'))) {
+        if (confirm("{{ phrase('confirm_copy_settings_overwrite') }}".replace('"...', '"' + sourceServerName).replace('..."', targetServerName + '"'))) {
             AjaxSend('/admin/donate/bonus/copy', 'POST', {
                 sourceServerId: sourceServerId,
                 targetServerId: targetServerId
