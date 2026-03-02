@@ -276,6 +276,7 @@ class paritypay extends BasePaymentPlugin
         }
 
         $payloadRaw = file_get_contents('php://input');
+
         $payload = json_decode((string)$payloadRaw, true);
         if (!is_array($payload)) {
             echo 'ok';
@@ -289,13 +290,15 @@ class paritypay extends BasePaymentPlugin
         }
 
         $shopId = trim((string)($payload['shop_id'] ?? ''));
+
         $gateway = $this->findGatewayByShopId($shopId);
         if ($gateway === null) {
             echo 'ok';
             return;
         }
 
-        if (!$this->verifyWebhookSignature($payload, $signature, $gateway['secret_key_2'])) {
+        $verify = $this->verifyWebhookSignature($payload, $signature, $gateway['secret_key_2']);
+        if (!$verify) {
             echo 'ok';
             return;
         }
@@ -309,6 +312,7 @@ class paritypay extends BasePaymentPlugin
         $invoiceId = trim((string)($payload['id'] ?? ''));
         $orderId = trim((string)($payload['order_id'] ?? ''));
         $amountRaw = (string)($payload['amount'] ?? '0');
+
         $userId = $this->resolveUserId($payload, $orderId);
 
         if ($invoiceId === '' || $orderId === '' || $userId <= 0) {
@@ -324,13 +328,15 @@ class paritypay extends BasePaymentPlugin
             telegram::telegramNotice($userObject, (float)$amountRaw, $gateway['currency'], $amount, $this->getNameClass());
             $userObject->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system: $this->getNameClass());
             donate::addUserBonus($userId, $amount);
-        } catch (\Throwable) {
+        } catch (\Throwable $ex) {
             echo 'ok';
             return;
         }
 
         echo 'ok';
     }
+
+
 
     private function findGatewayByShopId(string $shopId): ?array
     {
