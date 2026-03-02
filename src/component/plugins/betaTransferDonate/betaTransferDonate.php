@@ -48,6 +48,7 @@ class betaTransferDonate extends BasePaymentPlugin
 
         tpl::addVar([
             'settings' => $settings,
+            'pluginDescription' => (string)($settings['PLUGIN_DESCRIPTION'] ?? $settings['description'] ?? ''),
             'pluginName' => $this->getNameClass(),
         ]);
 
@@ -63,7 +64,8 @@ class betaTransferDonate extends BasePaymentPlugin
 
         $publicKey = $_POST['public_api_key'] ?? '';
         $secretKey = $_POST['secret_api_key'] ?? '';
-        $description = $_POST['description'] ?? '';
+        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? $_POST['description'] ?? ''));
+        $description = $pluginDescription;
         $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? []);
 
         // Payment methods configuration — accept dynamic payment[] from admin UI
@@ -102,6 +104,7 @@ class betaTransferDonate extends BasePaymentPlugin
         $settingsData = [
             'public_api_key' => $publicKey,
             'secret_api_key' => $secretKey,
+            'PLUGIN_DESCRIPTION' => $pluginDescription,
             'description' => $description,
             'supported_countries' => $supportedCountries,
             'payment_methods' => $paymentMethods,

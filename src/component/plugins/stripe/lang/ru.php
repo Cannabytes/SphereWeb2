@@ -2,7 +2,7 @@
 
 return [
     'stripe' => 'Stripe',
-    'stripe_desc' => 'Платежная система Stripe через Checkout Session',
+    'stripe_desc' => 'Платежная система Stripe',
     'replenishment_via_stripe' => 'Пополнение через Stripe',
     'enter_amount_checkout' => 'Введите сумму и перейдите в Stripe Checkout',
     'amount' => 'Сумма',

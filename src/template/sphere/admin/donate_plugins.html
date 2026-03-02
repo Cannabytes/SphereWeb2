@@ -18,18 +18,18 @@
                     <div class="d-flex gap-2">
                         {% if paymentPlugins|length > 0 %}
                         <button type="button" id="btn-save-sort" class="btn btn-sm btn-success btn-wave waves-light d-none" onclick="saveSortOrder()">
-                            <i class="ri-save-line fw-semibold align-middle me-1"></i> Сохранить порядок
+                            <i class="ri-save-line fw-semibold align-middle me-1"></i> {{ phrase('save_order') }}
                         </button>
                         {% endif %}
                         <a href="/admin/donate/bonus" class="btn btn-sm btn-primary btn-wave waves-light">
-                            <i class="ri-gift-line fw-semibold align-middle me-1"></i> Вознаграждения
+                            <i class="ri-gift-line fw-semibold align-middle me-1"></i> {{ phrase('Reward') }}
                         </a>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-info alert-dismissible fade show custom-alert-icon shadow-sm" role="alert">
                         <svg class="svg-info" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" width="1.5rem" fill="#000000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"></path></svg>
-                        Настройте платежные системы для приема пожертвований. Перетащите карточки мышью, чтобы изменить порядок отображения.
+                        {{ phrase('configure_payment_systems_drag_to_reorder') }}
                     </div>
 
                     {% if paymentPlugins|length > 0 %}
@@ -40,7 +40,7 @@
                              data-plugin-dir="{{ plugin.PLUGIN_DIR_NAME }}">
                             <div class="card custom-card shadow-none border h-100 {% if isPluginEnabled %}border-success{% endif %} paysystem-card">
                                 <div class="card-body p-4">
-                                    <div class="paysystem-drag-handle" title="Перетащите для изменения порядка">
+                                    <div class="paysystem-drag-handle" title="{{ phrase('drag_to_reorder') }}">
                                         <i class="ri-draggable fs-5 text-muted"></i>
                                     </div>
                                     <div class="d-flex align-items-start mt-1">
@@ -70,7 +70,7 @@
                                 </div>
                                 <div class="card-footer text-center">
                                     <a href="{{ plugin.PLUGIN_ADMIN_PAGE }}" class="btn btn-sm {% if isPluginEnabled %}btn-success{% else %}btn-primary{% endif %} btn-wave">
-                                        <i class="ri-settings-3-line me-1"></i> Настройки
+                                        <i class="ri-settings-3-line me-1"></i> {{ phrase('settings') }}
                                     </a>
                                 </div>
                             </div>
@@ -80,8 +80,8 @@
                     {% else %}
                     <div class="alert alert-warning text-center" role="alert">
                         <i class="ri-information-line fs-4 me-2"></i>
-                        <strong>Платежные системы не найдены</strong>
-                        <p class="mb-0 mt-2">Установите плагины платежных систем категории "paysystem" для приема пожертвований.</p>
+                        <strong>{{ phrase('payment_systems_not_found') }}</strong>
+                        <p class="mb-0 mt-2">{{ phrase('install_paysystem_plugins') }}</p>
                     </div>
                     {% endif %}
 
@@ -97,7 +97,7 @@
     <div id="sort-toast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body" id="sort-toast-message">
-                Порядок сохранён
+                {{ phrase('order_saved') }}
             </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
@@ -281,7 +281,7 @@
 
         if (!saveBtn) return;
         saveBtn.disabled = true;
-        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Сохранение…';
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> {{ phrase('saving') }}';
 
         fetch('/admin/donate/plugins/sort', {
             method : 'POST',
@@ -292,17 +292,17 @@
         .then(data => {
             if (data && data.success) {
                 markClean();
-                showToast('Порядок платёжных систем сохранён ✓', 'success');
+                showToast('{{ phrase('payment_systems_order_saved') }}', 'success');
             } else {
                 throw new Error('Server returned success=false');
             }
         })
         .catch(() => {
-            showToast('Ошибка сохранения. Попробуйте ещё раз.', 'danger');
+            showToast('{{ phrase('save_error_retry') }}', 'danger');
         })
         .finally(() => {
             saveBtn.disabled = false;
-            saveBtn.innerHTML = '<i class="ri-save-line fw-semibold align-middle me-1"></i> Сохранить порядок';
+            saveBtn.innerHTML = '<i class="ri-save-line fw-semibold align-middle me-1"></i> {{ phrase('save_order') }}';
         });
     };
 

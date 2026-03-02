@@ -80,6 +80,7 @@ class pally extends BasePaymentPlugin
         tpl::addVar([
             'title'            => 'Pally',
             'pluginName'       => $this->getNameClass(),
+            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
             'gateways'         => $this->getGateways(),
             'selectedCountries' => $selectedCountries,
             'webhookUrl'       => ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/pally/webhook',
@@ -93,6 +94,7 @@ class pally extends BasePaymentPlugin
         validation::user_protection('admin');
 
         $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? ['ru', 'ua']);
+        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? ''));
 
         $gateways = [];
         if (isset($_POST['gateways']) && is_array($_POST['gateways'])) {
@@ -116,6 +118,7 @@ class pally extends BasePaymentPlugin
 
         $this->setPluginSetting('gateways', $gateways);
         $this->setPluginSetting('supported_countries', $supportedCountries);
+        $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
 
         board::success(lang::get_phrase('pally_settings_saved'));
     }

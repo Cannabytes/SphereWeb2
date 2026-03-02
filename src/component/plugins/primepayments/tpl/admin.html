@@ -55,6 +55,11 @@
             <label for="secret_2" class="form-label">{{ phrase('primepayments_secret_2') }}</label>
             <input id="secret_2" type="text" class="form-control" name="secret_2" value="{{ secret2 }}" required>
           </div>
+
+          <div class="col-12">
+            <label for="primepayments_plugin_description" class="form-label">{{ phrase('payment_system_description') }}</label>
+            <textarea id="primepayments_plugin_description" class="form-control" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ phrase('primepayments_gateway_description') }}</textarea>
+          </div>
         </div>
 
         {% set supportedCountries = selectedCountries|default(['ru']) %}

@@ -96,6 +96,7 @@ class paypal extends BasePaymentPlugin
         tpl::addVar([
             'title' => 'PayPal',
             'pluginName' => $this->getNameClass(),
+            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
             'accounts' => $this->getAccounts(),
             'selectedCountries' => $selectedCountries,
             'webhookUrl' => ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/paypal/webhook',
@@ -112,6 +113,7 @@ class paypal extends BasePaymentPlugin
         validation::user_protection('admin');
 
         $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? []);
+        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? ''));
 
         $accounts = [];
         if (isset($_POST['accounts']) && is_array($_POST['accounts'])) {
@@ -131,6 +133,7 @@ class paypal extends BasePaymentPlugin
         $accounts = $this->sanitizeAccounts($accounts);
         $this->setPluginSetting('accounts', $accounts);
         $this->setPluginSetting('supported_countries', $supportedCountries);
+        $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
 
         board::success(lang::get_phrase('paypal_settings_saved'));
     }

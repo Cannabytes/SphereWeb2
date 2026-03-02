@@ -34,6 +34,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    const descriptionField = document.getElementById('plugin_description');
+    if (descriptionField) {
+        descriptionField.addEventListener('change', function() {
+            saveSupportedCountriesInstant();
+        });
+    }
+
 });
 
 /**
@@ -180,6 +187,10 @@ function deleteInstance() {
 function togglePluginEnabled(isEnabled) {
     const formData = new FormData();
     formData.append('enabled', isEnabled);
+    const descriptionField = document.getElementById('plugin_description');
+    if (descriptionField) {
+        formData.append('PLUGIN_DESCRIPTION', descriptionField.value || '');
+    }
 
     showLoader();
 
@@ -217,6 +228,10 @@ function saveSupportedCountriesInstant() {
     const formData = new FormData();
     const pluginToggle = document.getElementById('plugin_enabled');
     formData.append('enabled', pluginToggle && pluginToggle.checked ? 'true' : 'false');
+    const descriptionField = document.getElementById('plugin_description');
+    if (descriptionField) {
+        formData.append('PLUGIN_DESCRIPTION', descriptionField.value || '');
+    }
 
     document.querySelectorAll('input[name="supported_countries[]"]:checked').forEach(function(checkbox) {
         formData.append('supported_countries[]', checkbox.value);

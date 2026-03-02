@@ -320,7 +320,6 @@
     PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then((available) => {
       if (!available) {
         // Платформенный аутентификатор отсутствует — прячем кнопку
-        setStatus('{{ phrase('finger_platform_not_found') }}', 'warning');
         fingerBtn.style.display = 'none';
         return;
       }

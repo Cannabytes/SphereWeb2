@@ -94,6 +94,15 @@
           </div>
         </div>
 
+        <div class="card mb-3 shadow-sm">
+          <div class="card-header bg-light">
+            <strong><i class="bi bi-card-text me-2"></i>{{ phrase('payment_system_description') }}</strong>
+          </div>
+          <div class="card-body">
+            <textarea class="form-control" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ phrase('severpay_gateway_description') }}</textarea>
+          </div>
+        </div>
+
         {% set supportedCountries = selectedCountries|default(['world']) %}
         {% set countryList = {'en': 'English'}|merge(getCountryList()) %}
         <div class="card mb-3 shadow-sm">

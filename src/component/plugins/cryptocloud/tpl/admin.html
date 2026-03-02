@@ -30,7 +30,7 @@
       </div>
       {% endif %}
 
-      <form id="cryptocloudSettingsForm" method="post" action="/admin/plugin/cryptocloud/save">
+      <div id="cryptocloudSettings">
         <div class="row g-3 mb-3">
           <div class="col-md-4">
             <label for="shop_id" class="form-label">Shop ID</label>
@@ -50,6 +50,11 @@
           <div class="col-md-3">
             <label for="currency" class="form-label">Валюта</label>
             <input id="currency" type="text" class="form-control" name="currency" value="{{ currency }}" placeholder="USD" required>
+          </div>
+
+          <div class="col-12">
+            <label for="cryptocloud_plugin_description" class="form-label">{{ phrase('payment_system_description') }}</label>
+            <textarea id="cryptocloud_plugin_description" class="form-control" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ phrase('cryptocloud_desc') }}</textarea>
           </div>
         </div>
 
@@ -121,11 +126,11 @@
         </div>
 
         <div class="text-end">
-          <button type="submit" class="btn btn-primary">
+          <button type="button" id="cryptocloudSaveBtn" class="btn btn-primary">
             <i class="bi bi-save"></i> Сохранить настройки
           </button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>
@@ -133,10 +138,10 @@
 
 {% block js %}
 <script>
-$(function() {
+  $(function() {
   const pluginActive = '{{ getPluginActive(pluginName) ? "1" : "0" }}' === '1';
   if (!pluginActive) {
-    $('#cryptocloudSettingsForm :input').prop('disabled', true);
+    $('#cryptocloudSettings :input').prop('disabled', true);
     $('#enablePlugin').prop('disabled', false);
   }
 
@@ -152,9 +157,32 @@ $(function() {
     });
   });
 
-  $('#cryptocloudSettingsForm').on('submit', function(e) {
+  // Explicit save handler to avoid global form submit interceptor
+  $('#cryptocloudSaveBtn').on('click', function(e) {
     e.preventDefault();
-    AjaxSend('/admin/plugin/cryptocloud/save', 'POST', $(this).serialize());
+    const $btn = $(this);
+    if ($btn.prop('disabled')) return;
+    $btn.prop('disabled', true);
+
+    const payload = {
+      shop_id: $('#shop_id').val(),
+      api_key: $('#api_key').val(),
+      secret_key: $('#secret_key').val(),
+      currency: $('#currency').val(),
+      PLUGIN_DESCRIPTION: $('#cryptocloud_plugin_description').val()
+    };
+
+    const countries = $('input[name="supported_countries[]"]:checked').map(function() {
+      return $(this).val();
+    }).get();
+
+    payload['supported_countries[]'] = countries.length ? countries : ['world'];
+
+    AjaxSend('/admin/plugin/cryptocloud/save', 'POST', payload).then(function(response) {
+      $btn.prop('disabled', false);
+    }).catch(function() {
+      $btn.prop('disabled', false);
+    });
   });
 
   $(document).on('click', '.copy-url', function() {

@@ -45,6 +45,7 @@ class cryptocloud extends BasePaymentPlugin
         tpl::addVar([
             'title' => 'CryptoCloud',
             'pluginName' => $this->getNameClass(),
+            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
             'shopId' => (string)$this->getPluginSetting('shop_id', ''),
             'apiKey' => (string)$this->getPluginSetting('api_key', ''),
             'secretKey' => (string)$this->getPluginSetting('secret_key', ''),
@@ -68,6 +69,7 @@ class cryptocloud extends BasePaymentPlugin
         $secretKey = trim((string)($_POST['secret_key'] ?? ''));
         $currency = $this->sanitizeCurrency((string)($_POST['currency'] ?? self::DEFAULT_CURRENCY));
         $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? ['world']);
+        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? ''));
 
         if ($shopId === '' || $apiKey === '' || $secretKey === '') {
             board::error('Заполните shop_id, api_key и secret_key');
@@ -78,6 +80,7 @@ class cryptocloud extends BasePaymentPlugin
         $this->setPluginSetting('secret_key', $secretKey);
         $this->setPluginSetting('currency', $currency);
         $this->setPluginSetting('supported_countries', $supportedCountries);
+        $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
 
         board::success('Настройки CryptoCloud сохранены');
     }

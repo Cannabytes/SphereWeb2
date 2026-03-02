@@ -39,6 +39,7 @@ class primepayments extends BasePaymentPlugin
         tpl::addVar([
             'title' => 'PrimePayments',
             'pluginName' => $this->getNameClass(),
+            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
             'projectId' => (string)$this->getPluginSetting('project_id', ''),
             'secret1' => (string)$this->getPluginSetting('secret_1', ''),
             'secret2' => (string)$this->getPluginSetting('secret_2', ''),
@@ -57,6 +58,7 @@ class primepayments extends BasePaymentPlugin
         $secret1 = trim((string)($_POST['secret_1'] ?? ''));
         $secret2 = trim((string)($_POST['secret_2'] ?? ''));
         $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? ['ru']);
+        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? ''));
 
         if ($projectId === '' || $secret1 === '' || $secret2 === '') {
             board::error(lang::get_phrase('primepayments_fill_credentials'));
@@ -66,6 +68,7 @@ class primepayments extends BasePaymentPlugin
         $this->setPluginSetting('secret_1', $secret1);
         $this->setPluginSetting('secret_2', $secret2);
         $this->setPluginSetting('supported_countries', $supportedCountries);
+        $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
 
         board::success(lang::get_phrase('primepayments_settings_saved'));
     }

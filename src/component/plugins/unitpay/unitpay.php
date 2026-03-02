@@ -63,6 +63,7 @@ class unitpay extends BasePaymentPlugin
         tpl::addVar([
             'title'             => 'UnitPay',
             'pluginName'        => $this->getNameClass(),
+            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
             'publicKey'         => $this->getPublicKey(),
             'secretKey'         => $this->getSecretKey(),
             'currency'          => $this->getCurrency(),
@@ -92,6 +93,7 @@ class unitpay extends BasePaymentPlugin
         $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? []);
         $showMainPage = (bool)($_POST['showMainPage'] ?? false);
         $addToMenu = (bool)($_POST['addToMenu'] ?? false);
+        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? ''));
         $shopRaw = trim((string)($_POST['shop'] ?? ''));
         $shop = $shopRaw === '' ? [] : array_map('intval', array_filter(array_map('trim', explode(',', $shopRaw))));
 
@@ -101,6 +103,7 @@ class unitpay extends BasePaymentPlugin
         $this->setPluginSetting('supported_countries', $supportedCountries);
         $this->setPluginSetting('showMainPage',        $showMainPage);
         $this->setPluginSetting('addToMenu',           $addToMenu);
+        $this->setPluginSetting('PLUGIN_DESCRIPTION',  $pluginDescription);
         $this->setPluginSetting('shop',                $shop);
 
         board::success(lang::get_phrase('unitpay_settings_saved'));

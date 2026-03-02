@@ -93,6 +93,7 @@ class severpay extends BasePaymentPlugin
         tpl::addVar([
             'title' => 'SeverPay',
             'pluginName' => $this->getNameClass(),
+            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
             'merchants' => $this->getMerchants(),
             'selectedCountries' => $selectedCountries,
             'webhookUrl' => ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/severpay/webhook',
@@ -106,6 +107,7 @@ class severpay extends BasePaymentPlugin
         validation::user_protection('admin');
 
         $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? []);
+        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? ''));
 
         $merchants = [];
         if (isset($_POST['merchants']) && is_array($_POST['merchants'])) {
@@ -124,6 +126,7 @@ class severpay extends BasePaymentPlugin
         $merchants = $this->sanitizeMerchants($merchants);
         $this->setPluginSetting('merchants', $merchants);
         $this->setPluginSetting('supported_countries', $supportedCountries);
+        $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
 
         board::success(lang::get_phrase('severpay_settings_saved'));
     }

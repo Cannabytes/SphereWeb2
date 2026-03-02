@@ -312,13 +312,28 @@
                             {% set pluginSettings = plugin.PLUGIN_LINK ?? null %}
                             {% set pluginCode = plugin.PLUGIN_DIR_NAME|default(plugin.PLUGIN_NAME|default('')) %}
                             {% set pluginSettingData = pluginCode ? getPluginSetting(pluginCode) : {} %}
+                            {% set rawDescription = pluginSettingData.PLUGIN_DESCRIPTION
+                                |default(pluginSettingData.description
+                                |default(pluginSettingData.shop.description
+                                |default(plugin.PLUGIN_DESCRIPTION|default('')))) %}
+                            {% set rawDescription = rawDescription is not null ? rawDescription|trim : '' %}
+                            {% if rawDescription %}
+                                {% set translatedDescription = phrase(rawDescription) %}
+                                {% if translatedDescription starts with '[Not phrase' %}
+                                    {% set resolvedDescription = rawDescription %}
+                                {% else %}
+                                    {% set resolvedDescription = translatedDescription %}
+                                {% endif %}
+                            {% else %}
+                                {% set resolvedDescription = phrase('payment_system_description') %}
+                            {% endif %}
                             {% set pluginCountries =
                             plugin.supported_countries|default(pluginSettingData.supported_countries|default([])) %}
                             {% if pluginCountries is not iterable or pluginCountries|length == 0 %}
                             {% set pluginCountries = ['world'] %}
                             {% endif %}
                             <a href="{{ pluginSettings }}" data-base-href="{{ pluginSettings }}"
-                                data-description="{{ plugin.PLUGIN_DESCRIPTION|default('')|e('html_attr') }}"
+                                data-description="{{ resolvedDescription|striptags|e('html_attr') }}"
                                 class="border rounded-3 p-3 d-flex align-items-center text-start payment-plugin-item text-decoration-none text-dark w-100"
                                 style="cursor: pointer; transition: all 0.2s;">
                                 {% if plugin.PLUGIN_ICON %}
@@ -328,12 +343,7 @@
                                 {% endif %}
                                 <div>
                                     <div class="fw-bold small">{{ plugin.PLUGIN_NAME }}</div>
-                                    {% set desc = plugin.PLUGIN_DESCRIPTION|default('') %}
-                                    {% if desc %}
-                                    <div class="fs-10 text-muted">{{ phrase(desc)|raw }}</div>
-                                    {% else %}
-                                    <div class="fs-10 text-muted">{{ phrase('payment_system_description') }}</div>
-                                    {% endif %}
+                                    <div class="fs-10 text-muted">{{ resolvedDescription }}</div>
                                     <div class="payment-plugin-flags mt-2">
                                         {% for countryCode in pluginCountries %}
                                         {% set cc = countryCode|lower %}

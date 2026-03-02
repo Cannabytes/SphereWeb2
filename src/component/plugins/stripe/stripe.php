@@ -91,6 +91,7 @@ class stripe extends BasePaymentPlugin
         tpl::addVar([
             'title' => 'Stripe',
             'pluginName' => $this->getNameClass(),
+            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
             'secretKey' => (string)$this->getPluginSetting('secret_key', ''),
             'publishableKey' => (string)$this->getPluginSetting('publishable_key', ''),
             'webhookSecretKey' => (string)$this->getPluginSetting('webhook_secret_key', ''),
@@ -113,6 +114,7 @@ class stripe extends BasePaymentPlugin
         $currency = $this->sanitizeCurrency((string)($_POST['currency'] ?? self::DEFAULT_CURRENCY));
         $paymentMethods = $this->normalizePaymentMethods($_POST['payment_methods'] ?? self::DEFAULT_PAYMENT_METHODS);
         $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? ['world']);
+        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? ''));
 
         if ($secretKey === '' || $webhookSecretKey === '') {
             board::error('Заполните secret_key и webhook_secret_key');
@@ -124,6 +126,7 @@ class stripe extends BasePaymentPlugin
         $this->setPluginSetting('currency', $currency);
         $this->setPluginSetting('payment_methods', $paymentMethods);
         $this->setPluginSetting('supported_countries', $supportedCountries);
+        $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
 
         board::success('Настройки Stripe сохранены');
     }

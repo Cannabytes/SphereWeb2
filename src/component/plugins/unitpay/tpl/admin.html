@@ -85,6 +85,15 @@
         </div>
       </div>
 
+      <div class="card mb-3 shadow-sm">
+        <div class="card-header bg-light">
+          <strong><i class="bi bi-card-text me-2"></i>{{ phrase('payment_system_description') }}</strong>
+        </div>
+        <div class="card-body">
+          <textarea class="form-control" id="pluginDescription" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ phrase('unitpay_desc') }}</textarea>
+        </div>
+      </div>
+
       {# Supported countries #}
       {% set supportedCountries = selectedCountries|default(['world']) %}
       {% set countryList = {'en': 'English'}|merge(getCountryList()) %}

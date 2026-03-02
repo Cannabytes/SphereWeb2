@@ -73,6 +73,7 @@ class freekassa extends BasePaymentPlugin
             "title" => lang::get_phrase("admin_panel", "freekassa"),
             "pluginName" => $this->getNameClass(),
             "instances" => $instances,
+            "pluginDescription" => (string)$this->getPluginSetting("PLUGIN_DESCRIPTION", (string)($shop['description'] ?? '')),
             "enabled" => $this->getPluginSetting("enabled", false),
             "selectedCountries" => $this->sanitizeSupportedCountries($this->getPluginSetting("supported_countries", ["world"])),
             "webhookUrl" => $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["HTTP_HOST"] . "/plugin/freekassa/webhook",
@@ -98,10 +99,12 @@ class freekassa extends BasePaymentPlugin
         $supportedCountries = array_key_exists('supported_countries', $_POST)
             ? $this->sanitizeSupportedCountries($_POST['supported_countries'])
             : $this->sanitizeSupportedCountries($this->getPluginSetting("supported_countries", ["world"]));
+        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? $this->getPluginSetting('PLUGIN_DESCRIPTION', '')));
 
         // Сохраняем статус в собственных настройках плагина
         $this->setPluginSetting("enabled", $enabled);
         $this->setPluginSetting("supported_countries", $supportedCountries);
+        $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
 
         // Используем системный метод для синхронизации в реестре '__PLUGIN__'
         $_POST['pluginName'] = $this->getNameClass();
@@ -124,6 +127,7 @@ class freekassa extends BasePaymentPlugin
         $secret_word = $_POST["secret_word"] ?? "";
         $secret_word_2 = $_POST["secret_word_2"] ?? "";
         $description = $_POST["description"] ?? "";
+        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? $description));
         $supportedCountries = array_key_exists('supported_countries', $_POST)
             ? $this->sanitizeSupportedCountries($_POST['supported_countries'])
             : $this->sanitizeSupportedCountries($this->getPluginSetting("supported_countries", ["world"]));
@@ -139,12 +143,13 @@ class freekassa extends BasePaymentPlugin
             "api_key" => $api_key,
             "secret_word" => $secret_word,
             "secret_word_2" => $secret_word_2,
-            "description" => $description,
+            "description" => $pluginDescription,
             "created_at" => date("Y-m-d H:i:s"),
             "updated_at" => date("Y-m-d H:i:s"),
         ];
 
         $this->setPluginSetting("shop", $shop);
+        $this->setPluginSetting("PLUGIN_DESCRIPTION", $pluginDescription);
         $this->setPluginSetting("supported_countries", $supportedCountries);
         board::success(lang::get_phrase("instance_created", "freekassa"));
     }
@@ -162,6 +167,7 @@ class freekassa extends BasePaymentPlugin
         $secret_word = $_POST["secret_word"] ?? "";
         $secret_word_2 = $_POST["secret_word_2"] ?? "";
         $description = $_POST["description"] ?? "";
+        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? $description));
         $supportedCountries = array_key_exists('supported_countries', $_POST)
             ? $this->sanitizeSupportedCountries($_POST['supported_countries'])
             : $this->sanitizeSupportedCountries($this->getPluginSetting("supported_countries", ["world"]));
@@ -180,10 +186,11 @@ class freekassa extends BasePaymentPlugin
         $shop["api_key"] = $api_key;
         $shop["secret_word"] = $secret_word;
         $shop["secret_word_2"] = $secret_word_2;
-        $shop["description"] = $description;
+        $shop["description"] = $pluginDescription;
         $shop["updated_at"] = date("Y-m-d H:i:s");
 
         $this->setPluginSetting("shop", $shop);
+        $this->setPluginSetting("PLUGIN_DESCRIPTION", $pluginDescription);
         $this->setPluginSetting("supported_countries", $supportedCountries);
         board::success(lang::get_phrase("instance_updated", "freekassa"));
     }

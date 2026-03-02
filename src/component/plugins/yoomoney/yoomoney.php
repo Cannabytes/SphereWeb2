@@ -70,6 +70,7 @@ class yoomoney extends BasePaymentPlugin
             'title' => lang::get_phrase('admin_panel', 'yoomoney'),
             'pluginName' => $this->getNameClass(),
             'instances' => $instances,
+            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', (string)($shop['description'] ?? '')),
             'enabled' => $this->getPluginSetting('enabled', false),
             'selectedCountries' => $this->sanitizeSupportedCountries($this->getPluginSetting('supported_countries', ['world'])),
             'webhookUrl' => ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/plugin/yoomoney/webhook',
@@ -96,10 +97,12 @@ class yoomoney extends BasePaymentPlugin
         $supportedCountries = array_key_exists('supported_countries', $_POST)
             ? $this->sanitizeSupportedCountries($_POST['supported_countries'])
             : $this->sanitizeSupportedCountries($this->getPluginSetting('supported_countries', ['world']));
+        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? $this->getPluginSetting('PLUGIN_DESCRIPTION', '')));
 
         // Сохраняем статус в собственных настройках плагина
         $this->setPluginSetting('enabled', $enabled);
         $this->setPluginSetting('supported_countries', $supportedCountries);
+        $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
 
         // Используем системный метод для синхронизации в реестре '__PLUGIN__'
         $_POST['pluginName'] = $this->getNameClass();
@@ -122,6 +125,7 @@ class yoomoney extends BasePaymentPlugin
         $shopId = $_POST['shop_id'] ?? '';
         $secretKey = $_POST['secret_key'] ?? '';
         $description = $_POST['description'] ?? '';
+        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? $description));
         $supportedCountries = array_key_exists('supported_countries', $_POST)
             ? $this->sanitizeSupportedCountries($_POST['supported_countries'])
             : $this->sanitizeSupportedCountries($this->getPluginSetting('supported_countries', ['world']));
@@ -135,12 +139,13 @@ class yoomoney extends BasePaymentPlugin
             'name' => $name,
             'shop_id' => $shopId,
             'secret_key' => $secretKey,
-            'description' => $description,
+            'description' => $pluginDescription,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ];
 
         $this->setPluginSetting('shop', $shop);
+        $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
         $this->setPluginSetting('supported_countries', $supportedCountries);
         board::success(lang::get_phrase('instance_created', 'yoomoney'));
     }
@@ -156,6 +161,7 @@ class yoomoney extends BasePaymentPlugin
         $shopId = $_POST['shop_id'] ?? '';
         $secretKey = $_POST['secret_key'] ?? '';
         $description = $_POST['description'] ?? '';
+        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? $description));
         $supportedCountries = array_key_exists('supported_countries', $_POST)
             ? $this->sanitizeSupportedCountries($_POST['supported_countries'])
             : $this->sanitizeSupportedCountries($this->getPluginSetting('supported_countries', ['world']));
@@ -172,10 +178,11 @@ class yoomoney extends BasePaymentPlugin
         $shop['name'] = $name;
         $shop['shop_id'] = $shopId;
         $shop['secret_key'] = $secretKey;
-        $shop['description'] = $description;
+        $shop['description'] = $pluginDescription;
         $shop['updated_at'] = date('Y-m-d H:i:s');
 
         $this->setPluginSetting('shop', $shop);
+        $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
         $this->setPluginSetting('supported_countries', $supportedCountries);
         board::success(lang::get_phrase('instance_updated', 'yoomoney'));
     }
