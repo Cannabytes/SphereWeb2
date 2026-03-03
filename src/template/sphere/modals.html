@@ -917,7 +917,7 @@
 
         </div>
 
-        {% if getUser().getCountPlayers() > 0 %}
+        {% if getUser().getDonate() > 0 %}
         <style>
           /* COIN INPUT COMPONENT STYLES */
 
@@ -1123,7 +1123,7 @@
 
         <div>
 
-          {% if getUser().getCountPlayers() > 0 %}
+          {% if getUser().getDonate() > 0 %}
           <label class="mb-0 fs-12 text-muted" id="charWillBeSentLabel"
             data-original-text="{{phrase('char_will_be_sent')}}">{{phrase('char_will_be_sent')|raw}}
             <img class="avatar avatar-sm rounded" src="{{item.getIcon()}}"> <span class="text-success">{{ item.itemName
