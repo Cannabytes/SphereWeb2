@@ -917,6 +917,7 @@
 
         </div>
 
+      {% if getUser().getCountPlayers() == 0 %}
         <style>
           /* COIN INPUT COMPONENT STYLES */
 
@@ -1115,11 +1116,14 @@
             </div>
           </div>
         </div>
+        {% endif %}
 
       </div>
       <div class="modal-footer d-flex justify-content-between align-items-center">
 
         <div>
+
+          {% if getUser().getCountPlayers() == 0 %}
           <label class="mb-0 fs-12 text-muted" id="charWillBeSentLabel"
             data-original-text="{{phrase('char_will_be_sent')}}">{{phrase('char_will_be_sent')}}
             <img class="avatar avatar-sm rounded" src="{{item.getIcon()}}"> <span class="text-success">{{ item.itemName
@@ -1131,6 +1135,7 @@
               getServer().donate().getCountItemsToGameTransfer() }}
             </span>
           </label>
+          {% endif %}
 
           {% if getUser().isAuth() and getServer().donate().getItemIdToGameTransfer() != 0 %}
           <p class="mb-0 text-muted">
