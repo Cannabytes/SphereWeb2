@@ -230,6 +230,7 @@
       0 0 35px rgba(255, 215, 0, 0.25);
     position: relative;
     cursor: grab;
+    transition: cursor 0.2s ease;
   }
 
   .characters-gallery.dragging {
@@ -240,7 +241,7 @@
   .account-section {
     background: rgba(255, 255, 255, 0.02);
     border-radius: 8px;
-    padding: 0.6rem 0.85rem;
+    padding: 0.6rem 0.70rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
   }
@@ -559,7 +560,9 @@
     display: inline-block;
   }
 
-  /* Галерея: блоки аккаунтов идут в ряд и переносятся по мере заполнения */
+  /* Галерея: flex + JS bin-packing.
+     JS переставляет блоки аккаунтов так, чтобы меньшие — заполняли пустые места
+     (greedy row-packing по 5 персонажей на ряд), flex даёт плотное прилегание блоков. */
   #sendToPlayer .characters-gallery {
     display: flex;
     flex-direction: row;
@@ -582,14 +585,17 @@
       0 0 35px rgba(255, 215, 0, 0.25);
     position: relative;
     cursor: grab;
+    transition: cursor 0.2s ease;
   }
 
-  /* Блок аккаунта: ширина ровно по содержимому (1 персонаж = маленький блок, 5 = широкий) */
+  #sendToPlayer .characters-gallery.dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
   #sendToPlayer .characters-gallery>.card {
     flex: 0 0 auto;
     width: fit-content;
-    /* ~5 персонажей на ряд максимум, потом перенось внутри блока */
-    max-width: calc(5 * 70px + 4 * 0.5rem + 2 * 0.85rem + 2px);
+    /* порядок элементов переставляется через JS (bin-packing) */
   }
 
   #sendToPlayer .characters-gallery::-webkit-scrollbar {
@@ -1290,10 +1296,85 @@
 
   // ========== Инициализация галереи персонажей ==========
   $(document).ready(function () {
+
+    // Exhaustive best-fit bin-packing:
+    // Для каждой строки перебираем все комбинации оставшихся блоков
+    // и выбираем ту, что заполняет строку максимально (минимум остатка).
+    // Всегда включаем первый блок очереди, чтобы гарантировать продвижение вперёд.
+    // При ≤14 блоков в проходе — 2^13 = 8192 итерации, работает мгновенно.
+    const ROW_COLS = 5;
+    const packGallery = function ($gallery) {
+      const $cards = $gallery.children('.card').toArray();
+      if ($cards.length === 0) return;
+
+      const items = $cards.map(function (el) {
+        const count = $(el).find('.character-card').length;
+        return { el: el, size: Math.max(1, Math.min(count, ROW_COLS)) };
+      });
+
+      const packed = [];
+      let remaining = items.slice();
+
+      while (remaining.length > 0) {
+        const n = remaining.length;
+
+        if (n === 1) {
+          packed.push(remaining.shift());
+          break;
+        }
+
+        // Если первый блок сам по себе уже больше ROW_COLS — берём его одного
+        if (remaining[0].size > ROW_COLS) {
+          packed.push(remaining.shift());
+          continue;
+        }
+
+        // Перебираем все нечётные маски (бит 0 всегда включён = первый блок всегда в строке)
+        // Ограничиваем 14 блоками за один проход для производительности
+        const limit = Math.min(n, 14);
+        let bestMask = 1;
+        let bestSum = remaining[0].size;
+
+        for (let mask = 3; mask < (1 << limit); mask += 2) {
+          let sum = 0;
+          for (let i = 0; i < limit; i++) {
+            if (mask & (1 << i)) sum += remaining[i].size;
+          }
+          if (sum <= ROW_COLS && sum > bestSum) {
+            bestSum = sum;
+            bestMask = mask;
+            if (bestSum === ROW_COLS) break; // идеальное заполнение — лучше не будет
+          }
+        }
+
+        // Раскладываем выбранные блоки в packed, остальные — обратно в remaining
+        const nextRemaining = [];
+        for (let i = 0; i < limit; i++) {
+          if (bestMask & (1 << i)) {
+            packed.push(remaining[i]);
+          } else {
+            nextRemaining.push(remaining[i]);
+          }
+        }
+        for (let i = limit; i < n; i++) {
+          nextRemaining.push(remaining[i]);
+        }
+        remaining = nextRemaining;
+      }
+
+      // Переставляем элементы в DOM в оптимальном порядке
+      packed.forEach(function (item) {
+        $gallery.append(item.el);
+      });
+    };
+
     // Выбираем первого персонажа по умолчанию при загрузке страницы
     const initCharacterGallery = function () {
       const $galleryContainer = $('.characters-gallery');
       if ($galleryContainer.length === 0) return;
+
+      // Упаковываем блоки аккаунтов при инициализации
+      packGallery($('#sendToPlayer .characters-gallery'));
 
       const $firstCharacter = $('.js-character-selector').first();
       if ($firstCharacter.length > 0 && !$('.js-character-selector.selected').length) {
@@ -1311,6 +1392,8 @@
       const $gallery = $('.characters-gallery');
       $gallery.find('> .card').show();
       $gallery.find('.character-card').show();
+      // Переупаковываем блоки (на случай если DOM обновился)
+      packGallery($('#sendToPlayer .characters-gallery'));
     });
 
     // Прокручиваем к выбранному персонажу после того как модал полностью открылся
@@ -1446,6 +1529,7 @@
 
     enableDragScroll($('.characters-gallery'));
     enableDragScroll($('#sendToPlayer .characters-gallery'));
+    enableDragScroll($('#warehouseModal .wh-char-selector'));
   });
 
 </script>
@@ -1648,7 +1732,7 @@
         <div class="row">
           <!-- Левая панель: список предметов -->
           <div class="col-md-7 pe-md-2">
-            <div class="card-header" style="padding: 1.0rem 1.5rem;border-color: rgba(255, 255, 255, 0)">
+            <div class="card-header" style="padding: 1.0rem 0.0rem;border-color: rgba(255, 255, 255, 0)">
               <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center gap-2">
                   <span class="fw-bold">{{ phrase(301) }}</span>
@@ -2680,6 +2764,13 @@
     box-shadow:
       inset 0 0 35px rgba(255, 215, 0, 0.1),
       0 0 35px rgba(255, 215, 0, 0.25);
+    cursor: grab;
+    transition: cursor 0.2s ease;
+  }
+
+  #warehouseModal .wh-char-selector.dragging {
+    cursor: grabbing;
+    user-select: none;
   }
 
   #warehouseModal .wh-char-block,
