@@ -261,5 +261,6 @@ return [
     'order' => 'Order',
     'no_payment_methods' => 'Available payment methods not found',
     'no_instances' => 'Active stores not found',
-    'freekassa_desc' => 'FreeKassa payment system with support for multiple payment methods'
+    'freekassa_desc' => 'FreeKassa payment system with support for multiple payment methods',
+    'estimated_cost' => 'Estimated cost',
 ];

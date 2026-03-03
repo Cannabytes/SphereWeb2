@@ -48,4 +48,5 @@ return [
     'paypal_payment_error' => 'Ошибка платежа PayPal: %s',
     'paypal_no_order_id' => 'Не удалось получить ID заказа PayPal',
     'paypal_token_error' => 'Не удалось получить токен доступа PayPal',
+    'paypal_estimated_cost' => 'Примерная стоимость',
 ];

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'primepayments' => 'PrimePayments',
@@ -39,4 +39,5 @@ return [
     'primepayments_api_error' => 'Σφάλμα PrimePayments: %s',
     'primepayments_payment_error' => 'Άγνωστο σφάλμα κατά τη δημιουργία πληρωμής',
     'primepayments_connection_error' => 'Σφάλμα σύνδεσης',
+    'primepayments_estimated_cost' => 'Εκτιμώμενο κόστος',
 ];

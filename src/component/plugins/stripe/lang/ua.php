@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'stripe' => 'Stripe',
@@ -29,4 +29,11 @@ return [
     'save_settings' => 'Зберегти налаштування',
     'copied_to_clipboard' => 'Скопійовано в буфер обміну',
     'failed_to_copy' => 'Не вдалося скопіювати',
+    'stripe_payment_title' => 'Поповнення через Stripe',
+    'stripe_payment_description' => 'Введіть суму та перейдіть до Stripe Checkout',
+    'stripe_amount_label' => 'Сума',
+    'stripe_minimum' => 'Мінімум',
+    'stripe_maximum' => 'Максимум',
+    'stripe_pay_button' => 'Перейти до оплати',
+    'stripe_estimated_cost' => 'Приблизна вартість',
 ];

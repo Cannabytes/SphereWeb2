@@ -343,9 +343,18 @@
 
                                     <!-- Информация о персонаже -->
                                     <div class="flex-grow-1 min-w-0">
-                                      <h6 class="card-title mb-1 text-truncate">
-                                        <span class="badge bg-dark text-white">{{character.getPlayerName()}}</span>
-                                      </h6>
+                                      <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <h6 class="card-title mb-0 text-truncate">
+                                          <span class="badge bg-dark text-white">{{character.getPlayerName()}}</span>
+                                        </h6>
+                                        {% if config().enabled().isEnableSendBalanceGame() %}
+                                        <span class="donate-to-game text-mutex fw-semibold ms-3" role="button" tabindex="0"
+                                              data-account="{{account.getAccount()|raw}}"
+                                              data-player="{{character.getPlayerName()}}">
+                                          {{ phrase('donate_coin_to_game')|raw }}
+                                        </span>
+                                        {% endif %}
+                                      </div>
                                       <div class="d-flex flex-column" style="line-height: 1.1;">
                                         <small class="text-muted text-truncate mb-0">
                                           <i class="ri-building-line me-1"></i>Lv: {{character.getLevel()}}
@@ -374,6 +383,7 @@
                                         {% endif %}
                                       </div>
                                     </div>
+
                                   </div>
 
                                   <!-- Аккордеон с функциями -->
@@ -741,6 +751,28 @@
     $('.account_new_change_password').text(account);
     $('.account_new_change_password_input').val(account);
 
+  });
+</script>
+
+<script>
+  $(document).on('click', '.donate-to-game', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const account = $(this).data('account');
+    const player = $(this).data('player');
+
+    const escapeAttr = (value) => value ? value.replace(/(["\\])/g, '\\$1') : '';
+    const $character = $('.js-character-selector[data-account="' + escapeAttr(account) + '"][data-player="' + escapeAttr(player) + '"]');
+
+    if ($character.length) {
+      $character.click();
+    }
+
+    const $modal = $('#sendToPlayer');
+    if ($modal.length) {
+      $modal.modal('show');
+    }
   });
 </script>
 

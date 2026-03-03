@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'stripe' => 'Stripe',
@@ -29,4 +29,11 @@ return [
     'save_settings' => 'Αποθήκευση ρυθμίσεων',
     'copied_to_clipboard' => 'Αντιγράφηκε στο πρόχειρο',
     'failed_to_copy' => 'Αpoτυχία αντιγραφής',
+    'stripe_payment_title' => 'Χρηματοδότηση μέσω Stripe',
+    'stripe_payment_description' => 'Εισάγετε το ποσό και μεταβείτε στο Stripe Checkout',
+    'stripe_amount_label' => 'Ποσό',
+    'stripe_minimum' => 'Ελάχιστο',
+    'stripe_maximum' => 'Μέγιστο',
+    'stripe_pay_button' => 'Μεταβείτε στην πληρωμή',
+    'stripe_estimated_cost' => 'Εκτιμώμενο κόστος',
 ];

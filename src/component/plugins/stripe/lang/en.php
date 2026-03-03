@@ -29,4 +29,11 @@ return [
     'save_settings' => 'Save settings',
     'copied_to_clipboard' => 'Copied to clipboard',
     'failed_to_copy' => 'Failed to copy',
+    'stripe_payment_title' => 'Top up via Stripe',
+    'stripe_payment_description' => 'Enter the amount and proceed to Stripe Checkout',
+    'stripe_amount_label' => 'Amount',
+    'stripe_minimum' => 'Minimum',
+    'stripe_maximum' => 'Maximum',
+    'stripe_pay_button' => 'Proceed to payment',
+    'stripe_estimated_cost' => 'Estimated cost',
 ];

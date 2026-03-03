@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'paypal' => 'PayPal',
@@ -48,4 +48,5 @@ return [
     'paypal_payment_error' => 'Error de pago PayPal: %s',
     'paypal_no_order_id' => 'No se pudo obtener el ID de orden de PayPal',
     'paypal_token_error' => 'No se pudo obtener el token de acceso de PayPal',
+    'paypal_estimated_cost' => 'Costo estimado',
 ];

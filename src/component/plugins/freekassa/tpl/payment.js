@@ -126,7 +126,7 @@ function updateTotalCost() {
     
     // Получаем валюту выбранного магазина
     const selectedInstance = getSelectedInstance();
-    let currency = 'RUB';
+    let currency = (document.getElementById('rateCurrency')?.textContent?.trim()) || 'RUB';
     
     if (selectedInstance) {
         currency = selectedInstance.currency || 'RUB';

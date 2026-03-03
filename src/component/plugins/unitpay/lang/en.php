@@ -50,4 +50,5 @@ return [
     'unitpay_max_amount'                => 'Maximum top-up amount: %s',
     'unitpay_api_error'                 => 'UnitPay API error. Please try again later.',
     'unitpay_connection_error'          => 'Connection error. Please try again.',
+    'unitpay_estimated_cost'            => 'Estimated cost',
 ];

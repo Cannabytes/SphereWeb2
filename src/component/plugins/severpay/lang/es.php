@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'severpay' => 'SeverPay',
@@ -52,4 +52,5 @@ return [
     'severpay_no_payment_link' => 'SeverPay no devolvió un enlace de pago',
     'severpay_unknown_error' => 'Error desconocido al crear el pago',
     'severpay_connection_error' => 'Error de conexión',
+    'severpay_estimated_cost' => 'Costo estimado',
 ];

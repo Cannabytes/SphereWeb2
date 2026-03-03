@@ -52,4 +52,5 @@ return [
     'severpay_no_payment_link' => 'SeverPay did not return a payment link',
     'severpay_unknown_error' => 'Unknown error when creating payment',
     'severpay_connection_error' => 'Connection error',
+    'severpay_estimated_cost' => 'Estimated cost',
 ];

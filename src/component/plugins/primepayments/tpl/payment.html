@@ -32,6 +32,11 @@
               <small class="text-muted d-block mt-2">
                 {{ phrase('primepayments_minimum') }}: {{ minAmount }}, {{ phrase('primepayments_maximum') }}: {{ maxAmount }}
               </small>
+              <div class="form-text mt-2">
+                <i class="bi bi-cash me-1 text-muted"></i>
+                <span class="text-muted">{{ phrase('primepayments_estimated_cost') }}</span>:
+                <strong><span id="costValue">0.00</span>&nbsp;<span id="costCurrency">—</span></strong>
+              </div>
             </div>
 
             <div class="d-grid">
@@ -51,6 +56,23 @@
 {% block js %}
 <script>
 $(function() {
+  // ── Estimated cost ────────────────────────────────────────────────────────────────────────────
+  const CurrencyRates = {
+    USD: parseFloat('{{ USD_val|default(0)|number_format(4, ".", "") }}') || 0,
+    EUR: parseFloat('{{ EUR_val|default(0)|number_format(4, ".", "") }}') || 0,
+    RUB: parseFloat('{{ RUB_val|default(0)|number_format(4, ".", "") }}') || 0,
+    UAH: parseFloat('{{ UAH_val|default(0)|number_format(4, ".", "") }}') || 0,
+  };
+  let activeCurrency = '{{ mainCurrency }}';
+  function updateCost() {
+    const n = parseInt($('#amount').val()) || 0;
+    const rate = CurrencyRates[activeCurrency] || 0;
+    $('#costValue').text((n * rate).toFixed(2));
+    $('#costCurrency').text(activeCurrency);
+  }
+  $('#amount').on('input', updateCost);
+  updateCost();
+  // ──────────────────────────────────────────────────────────────────────────────
   $('#primepaymentsPaymentForm').on('submit', function(e) {
     e.preventDefault();
 

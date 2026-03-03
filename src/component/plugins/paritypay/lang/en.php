@@ -50,4 +50,5 @@ return [
     'paritypay_no_payment_link' => 'ParityPay did not return payment link',
     'paritypay_payment_error' => 'Unknown error when creating payment',
     'paritypay_connection_error' => 'Connection error',
+    'paritypay_estimated_cost' => 'Estimated cost',
 ];

@@ -9,11 +9,11 @@
     <form action="/user/change" method="post" class="modal-content">
       <div class="modal-header">
         <h6 class="modal-title" id="settings-ComposeLabel">{{ phrase(54) }}</h6>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body px-4">
-        <div class="row">
+        <!-- Use `send-vertical` when we want stacked form blocks; keep default `.row` behavior for grid columns -->
+        <div class="row send-vertical">
           <div class="col-xl-6 mb-2">
             <label for="change_u_name" class="form-label">{{ phrase(27) }}<sup><i
                   class="ri-star-s-fill text-success fs-8"></i></sup></label>
@@ -24,7 +24,8 @@
                   class="ri-star-s-fill text-success fs-8"></i></sup></label>
             <select name="timezone" class="form-control" id="change_u_timezone">
               {% for timezone in timezone_list() %}
-              <option {% if getUser().getTimezone() == timezone %}selected {% endif %}value="{{timezone}}">{{timezone}}</option>
+              <option {% if getUser().getTimezone()==timezone %}selected {% endif %}value="{{timezone}}">{{timezone}}
+              </option>
               {% endfor %}
             </select>
           </div>
@@ -40,7 +41,8 @@
           {% endif %}
           <div class="col-xl-6 mb-2">
             <label for="new_u_password" class="form-label text-dark fw-semibold">{{ phrase(60) }}</label>
-            <input name="new_password" type="password" class="form-control" id="new_u_password" autocomplete="new-password">
+            <input name="new_password" type="password" class="form-control" id="new_u_password"
+              autocomplete="new-password">
           </div>
 
           {# Двухфакторная аутентификация - только для обычной авторизации #}
@@ -63,11 +65,13 @@
                 {% endif %}
               </div>
             </div>
-            
-            <button type="button" class="btn btn-sm {% if getUser().isTwoFaEnabled() %}btn-outline-danger{% else %}btn-outline-primary{% endif %}" 
-                    id="open2faModalBtn">
+
+            <button type="button"
+              class="btn btn-sm {% if getUser().isTwoFaEnabled() %}btn-outline-danger{% else %}btn-outline-primary{% endif %}"
+              id="open2faModalBtn">
               <i class="ri-settings-3-line me-1"></i>
-              {% if getUser().isTwoFaEnabled() %}{{ phrase('2fa_manage') }}{% else %}{{ phrase('2fa_setup') }}{% endif %}
+              {% if getUser().isTwoFaEnabled() %}{{ phrase('2fa_manage') }}{% else %}{{ phrase('2fa_setup') }}{% endif
+              %}
             </button>
           </div>
           {% endif %}
@@ -111,7 +115,7 @@
           <h5 class="text-success">{{ phrase('2fa_active') }}</h5>
           <p class="text-muted">{{ phrase('2fa_active_description') }}</p>
         </div>
-        
+
         <div class="alert alert-warning border border-warning">
           <div class="d-flex">
             <i class="ri-alert-line fs-5 me-2"></i>
@@ -125,9 +129,9 @@
         <form id="disable2faForm">
           <div class="mb-3">
             <label for="disable2faCode" class="form-label fw-semibold">{{ phrase('2fa_enter_code') }}</label>
-            <input type="text" class="form-control form-control-lg text-center fw-bold letter-spacing-3" 
-                   id="disable2faCode" name="code" maxlength="6" pattern="[0-9]{6}" 
-                   placeholder="000000" autocomplete="off" inputmode="numeric">
+            <input type="text" class="form-control form-control-lg text-center fw-bold letter-spacing-3"
+              id="disable2faCode" name="code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" autocomplete="off"
+              inputmode="numeric">
             <div class="form-text">{{ phrase('2fa_code_hint') }}</div>
           </div>
           <button type="submit" class="btn btn-danger w-100">
@@ -140,23 +144,25 @@
           <div class="text-center mb-4">
             <p class="text-muted">{{ phrase('2fa_setup_intro') }}</p>
           </div>
-          
+
           <div class="mb-4">
-            <h6 class="fw-semibold mb-3"><span class="badge bg-primary me-2">1</span>{{ phrase('2fa_step1_title') }}</h6>
+            <h6 class="fw-semibold mb-3"><span class="badge bg-primary me-2">1</span>{{ phrase('2fa_step1_title') }}
+            </h6>
             <div class="d-flex gap-2 flex-wrap justify-content-center mb-3">
-              <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2" 
-                 target="_blank" class="btn btn-sm btn-outline-secondary">
+              <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"
+                target="_blank" class="btn btn-sm btn-outline-secondary">
                 <i class="ri-google-play-fill me-1"></i> Google Authenticator
               </a>
-              <a href="https://apps.apple.com/app/google-authenticator/id388497605" 
-                 target="_blank" class="btn btn-sm btn-outline-secondary">
+              <a href="https://apps.apple.com/app/google-authenticator/id388497605" target="_blank"
+                class="btn btn-sm btn-outline-secondary">
                 <i class="ri-apple-fill me-1"></i> App Store
               </a>
             </div>
           </div>
 
           <div class="mb-4">
-            <h6 class="fw-semibold mb-3"><span class="badge bg-primary me-2">2</span>{{ phrase('2fa_step2_title') }}</h6>
+            <h6 class="fw-semibold mb-3"><span class="badge bg-primary me-2">2</span>{{ phrase('2fa_step2_title') }}
+            </h6>
             <div class="text-center">
               <div id="twoFaQrCode" class="mb-3 d-flex justify-content-center">
                 <div class="spinner-border text-primary" role="status">
@@ -166,7 +172,8 @@
               <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
                 <span class="text-muted fs-12">{{ phrase('2fa_secret_key') }}:</span>
                 <code id="twoFaSecretDisplay" class="bg-light px-2 py-1 rounded user-select-all fw-bold"></code>
-                <button type="button" class="btn btn-sm btn-icon btn-outline-secondary" onclick="copyTwoFaSecret()" title="{{ phrase('copy') }}">
+                <button type="button" class="btn btn-sm btn-icon btn-outline-secondary" onclick="copyTwoFaSecret()"
+                  title="{{ phrase('copy') }}">
                   <i class="ri-file-copy-line"></i>
                 </button>
               </div>
@@ -174,13 +181,14 @@
           </div>
 
           <div class="mb-3">
-            <h6 class="fw-semibold mb-3"><span class="badge bg-primary me-2">3</span>{{ phrase('2fa_step3_title') }}</h6>
+            <h6 class="fw-semibold mb-3"><span class="badge bg-primary me-2">3</span>{{ phrase('2fa_step3_title') }}
+            </h6>
             <form id="enable2faForm" method="post" action="javascript:void(0);">
               <input type="hidden" id="twoFaSecret" name="secret" value="">
               <div class="mb-3">
-                <input type="text" class="form-control form-control-lg text-center fw-bold letter-spacing-3" 
-                       id="enable2faCode" name="code" maxlength="6" pattern="[0-9]{6}" 
-                       placeholder="000000" autocomplete="off" inputmode="numeric" required>
+                <input type="text" class="form-control form-control-lg text-center fw-bold letter-spacing-3"
+                  id="enable2faCode" name="code" maxlength="6" pattern="[0-9]{6}" placeholder="000000"
+                  autocomplete="off" inputmode="numeric" required>
                 <div class="form-text text-center">{{ phrase('2fa_code_hint') }}</div>
               </div>
               <button type="submit" class="btn btn-primary w-100">
@@ -197,564 +205,617 @@
 {% endif %}
 
 <style>
-.letter-spacing-3 {
-  letter-spacing: 0.5em;
-}
-#twoFaQrCode img {
-  border-radius: 8px;
-  border: 3px solid #e9ecef;
-  padding: 10px;
-  background: #fff;
-}
-
-/* ========== Галерея персонажей для модального окна sendToPlayer ========== */
-.characters-gallery {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.account-section {
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-  padding: 0.6rem 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-}
-
-.account-section:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 215, 0, 0.3);
-}
-
-.account-title {
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 0.8rem;
-  letter-spacing: 0.5px;
-}
-
-.account-title strong {
-  font-weight: 600;
-  margin-left: 0.5rem;
-}
-
-.characters-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: flex-start;
-}
-
-.character-card {
-  position: relative;
-  cursor: pointer;
-  width: 70px;
-  text-align: center;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-}
-
-.character-card:hover {
-  transform: translateY(-2px);
-}
-
-.character-avatar-wrapper {
-  position: relative;
-  width: 100%;
-  border-radius: 6px;
-  overflow: hidden;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
-  border: 1.5px solid rgba(255, 215, 0, 0.2);
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  margin-bottom: 0.35rem;
-  outline: 2px solid transparent;
-  outline-offset: 0;
-}
-
-.character-avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: all 0.3s ease;
-}
-
-.character-card:hover .character-avatar {
-  transform: scale(1.05);
-  filter: brightness(1.15);
-}
-
-.character-card.selected:hover .character-avatar {
-  transform: scale(1.08);
-  filter: brightness(1.35);
-}
-
-/* Индикатор выбора - галочка */
-.character-selection-indicator {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 26px;
-  height: 26px;
-  background: rgba(255, 215, 0, 0);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 215, 0, 0);
-  font-size: 14px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  z-index: 2;
-}
-
-.character-selection-indicator i {
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
-  filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.8));
-}
-
-/* Состояние SELECTED */
-.character-card.selected .character-avatar-wrapper {
-  border-color: rgba(255, 215, 0, 0.95);
-  box-shadow: 
-    0 0 35px rgba(255, 215, 0, 0.9),
-    0 0 60px rgba(255, 215, 0, 0.5),
-    inset 0 0 25px rgba(255, 215, 0, 0.2);
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.4) 0%, rgba(255, 215, 0, 0.2) 100%);
-  animation: characterPulse 0.5s ease-out, glowPulse 2s ease-in-out infinite 0.5s;
-  outline: 2px solid rgba(255, 215, 0, 0.6);
-  outline-offset: 3px;
-}
-
-.character-card.selected .character-avatar {
-  filter: brightness(1.3) drop-shadow(0 0 12px rgba(255, 215, 0, 0.6));
-  animation: characterAvatarPulse 0.4s ease-out;
-}
-
-.character-card.selected .character-selection-indicator {
-  background: rgba(255, 215, 0, 0.95);
-  color: rgba(0, 0, 0, 0.98);
-  box-shadow: 0 0 25px rgba(255, 215, 0, 1);
-  animation: indicatorPulse 0.5s ease-out, indicatorGlow 2s ease-in-out infinite 0.5s;
-}
-
-.character-info {
-  padding: 0.15rem 0.3rem;
-}
-
-.character-name {
-  font-size: 0.75rem;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 0.15rem;
-  line-height: 1;
-}
-
-.character-level {
-  font-size: 0.65rem;
-  font-weight: 600;
-  line-height: 1;
-}
-
-/* Анимация пульса при выборе персонажа */
-@keyframes characterPulse {
-  from {
-    transform: scale(0.95);
-    box-shadow: 
-      0 0 15px rgba(255, 215, 0, 0.4),
-      0 0 30px rgba(255, 215, 0, 0.2),
-      inset 0 0 15px rgba(255, 215, 0, 0.05);
+  .letter-spacing-3 {
+    letter-spacing: 0.5em;
   }
-  to {
-    transform: scale(1);
-    box-shadow: 
-      0 0 35px rgba(255, 215, 0, 0.9),
-      0 0 60px rgba(255, 215, 0, 0.5),
-      inset 0 0 25px rgba(255, 215, 0, 0.2);
-  }
-}
 
-/* Постоянное мерцающее свечение после выбора */
-@keyframes glowPulse {
-  0%, 100% {
-    box-shadow: 
-      0 0 35px rgba(255, 215, 0, 0.9),
-      0 0 60px rgba(255, 215, 0, 0.5),
-      inset 0 0 25px rgba(255, 215, 0, 0.2);
+  #twoFaQrCode img {
+    border-radius: 8px;
+    border: 3px solid #e9ecef;
+    padding: 10px;
+    background: #fff;
   }
-  50% {
-    box-shadow: 
-      0 0 45px rgba(255, 215, 0, 1),
-      0 0 75px rgba(255, 215, 0, 0.7),
-      inset 0 0 30px rgba(255, 215, 0, 0.3);
-  }
-}
 
-@keyframes characterAvatarPulse {
-  from {
-    filter: brightness(1.1) drop-shadow(0 0 6px rgba(255, 215, 0, 0.3));
-  }
-  to {
-    filter: brightness(1.3) drop-shadow(0 0 12px rgba(255, 215, 0, 0.6));
-  }
-}
-
-@keyframes indicatorPulse {
-  from {
-    transform: scale(0.7) rotate(-15deg);
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
-  }
-  to {
-    transform: scale(1) rotate(0);
-    box-shadow: 0 0 25px rgba(255, 215, 0, 1);
-  }
-}
-
-/* Постоянное мерцание галочки */
-@keyframes indicatorGlow {
-  0%, 100% {
-    box-shadow: 0 0 25px rgba(255, 215, 0, 1);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(255, 215, 0, 1.3), inset 0 0 8px rgba(255, 215, 0, 0.5);
-  }
-}
-
-/* Анимация появления */
-@keyframes charCardAppear {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-.character-card {
-  animation: charCardAppear 0.4s ease-out forwards;
-}
-
-.character-card:nth-child(1) { animation-delay: 0.05s; }
-.character-card:nth-child(2) { animation-delay: 0.1s; }
-.character-card:nth-child(3) { animation-delay: 0.15s; }
-.character-card:nth-child(4) { animation-delay: 0.2s; }
-.character-card:nth-child(5) { animation-delay: 0.25s; }
-.character-card:nth-child(n+6) { animation-delay: 0.3s; }
-
-/* Адаптивность */
-@media (max-width: 768px) {
-  .account-section {
+  /* ========== Галерея персонажей для модального окна sendToPlayer ========== */
+  .characters-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     padding: 1rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 215, 0, 0.35);
+    background: rgba(255, 255, 255, 0.015);
+    box-shadow:
+      inset 0 0 35px rgba(255, 215, 0, 0.12),
+      0 0 35px rgba(255, 215, 0, 0.25);
+    position: relative;
+    cursor: grab;
+  }
+
+  .characters-gallery.dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  .account-section {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .account-section:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 215, 0, 0.3);
+  }
+
+  .account-title {
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+  }
+
+  .account-title strong {
+    font-weight: 600;
+    margin-left: 0.5rem;
+  }
+
+  .characters-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: flex-start;
   }
 
   .character-card {
-    width: 68px;
+    position: relative;
+    cursor: pointer;
+    width: 70px;
+    text-align: center;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
   }
 
+  .character-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .character-avatar-wrapper {
+    position: relative;
+    width: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+    border: 1.5px solid rgba(255, 215, 0, 0.2);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    margin-bottom: 0.35rem;
+    outline: 2px solid transparent;
+    outline-offset: 0;
+  }
+
+  .character-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: all 0.3s ease;
+  }
+
+  .character-card:hover .character-avatar {
+    transform: scale(1.05);
+    filter: brightness(1.15);
+  }
+
+  .character-card.selected:hover .character-avatar {
+    transform: scale(1.08);
+    filter: brightness(1.35);
+  }
+
+  /* Индикатор выбора - галочка */
   .character-selection-indicator {
-    width: 28px;
-    height: 28px;
-    font-size: 16px;
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 26px;
+    height: 26px;
+    background: rgba(255, 215, 0, 0);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 215, 0, 0);
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    z-index: 2;
+  }
+
+  .character-selection-indicator i {
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.8));
+  }
+
+  /* Состояние SELECTED */
+  .character-card.selected .character-avatar-wrapper {
+    border-color: rgba(255, 215, 0, 0.95);
+    box-shadow:
+      0 0 35px rgba(255, 215, 0, 0.9),
+      0 0 60px rgba(255, 215, 0, 0.5),
+      inset 0 0 25px rgba(255, 215, 0, 0.2);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.4) 0%, rgba(255, 215, 0, 0.2) 100%);
+    animation: characterPulse 0.5s ease-out, glowPulse 2s ease-in-out infinite 0.5s;
+    outline: 2px solid rgba(255, 215, 0, 0.6);
+    outline-offset: 3px;
+  }
+
+  .character-card.selected .character-avatar {
+    filter: brightness(1.3) drop-shadow(0 0 12px rgba(255, 215, 0, 0.6));
+    animation: characterAvatarPulse 0.4s ease-out;
+  }
+
+  .character-card.selected .character-selection-indicator {
+    background: rgba(255, 215, 0, 0.95);
+    color: rgba(0, 0, 0, 0.98);
+    box-shadow: 0 0 25px rgba(255, 215, 0, 1);
+    animation: indicatorPulse 0.5s ease-out, indicatorGlow 2s ease-in-out infinite 0.5s;
+  }
+
+  .character-info {
+    padding: 0.15rem 0.3rem;
   }
 
   .character-name {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0.15rem;
+    line-height: 1;
   }
 
   .character-level {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    line-height: 1;
   }
-}
 
-@media (max-width: 480px) {
-  .characters-row {
-    gap: 0.75rem;
-    justify-content: space-around;
+  /* Анимация пульса при выборе персонажа */
+  @keyframes characterPulse {
+    from {
+      transform: scale(0.95);
+      box-shadow:
+        0 0 15px rgba(255, 215, 0, 0.4),
+        0 0 30px rgba(255, 215, 0, 0.2),
+        inset 0 0 15px rgba(255, 215, 0, 0.05);
+    }
+
+    to {
+      transform: scale(1);
+      box-shadow:
+        0 0 35px rgba(255, 215, 0, 0.9),
+        0 0 60px rgba(255, 215, 0, 0.5),
+        inset 0 0 25px rgba(255, 215, 0, 0.2);
+    }
+  }
+
+  /* Постоянное мерцающее свечение после выбора */
+  @keyframes glowPulse {
+
+    0%,
+    100% {
+      box-shadow:
+        0 0 35px rgba(255, 215, 0, 0.9),
+        0 0 60px rgba(255, 215, 0, 0.5),
+        inset 0 0 25px rgba(255, 215, 0, 0.2);
+    }
+
+    50% {
+      box-shadow:
+        0 0 45px rgba(255, 215, 0, 1),
+        0 0 75px rgba(255, 215, 0, 0.7),
+        inset 0 0 30px rgba(255, 215, 0, 0.3);
+    }
+  }
+
+  @keyframes characterAvatarPulse {
+    from {
+      filter: brightness(1.1) drop-shadow(0 0 6px rgba(255, 215, 0, 0.3));
+    }
+
+    to {
+      filter: brightness(1.3) drop-shadow(0 0 12px rgba(255, 215, 0, 0.6));
+    }
+  }
+
+  @keyframes indicatorPulse {
+    from {
+      transform: scale(0.7) rotate(-15deg);
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+    }
+
+    to {
+      transform: scale(1) rotate(0);
+      box-shadow: 0 0 25px rgba(255, 215, 0, 1);
+    }
+  }
+
+  /* Постоянное мерцание галочки */
+  @keyframes indicatorGlow {
+
+    0%,
+    100% {
+      box-shadow: 0 0 25px rgba(255, 215, 0, 1);
+    }
+
+    50% {
+      box-shadow: 0 0 40px rgba(255, 215, 0, 1.3), inset 0 0 8px rgba(255, 215, 0, 0.5);
+    }
+  }
+
+  /* Анимация появления */
+  @keyframes charCardAppear {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
   }
 
   .character-card {
-    width: 62px;
+    animation: charCardAppear 0.4s ease-out forwards;
   }
-}
-/* ========== Конец стилей для галереи персонажей ========== */
 
-/* ========== Стили для модального окна sendToPlayer ========== */
-#sendToPlayer .modal-body {
-  max-height: 70vh;
-  overflow-y: auto;
-  padding: 1.5rem;
-}
+  .character-card:nth-child(1) {
+    animation-delay: 0.05s;
+  }
 
-#sendToPlayer .modal-body .row {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+  .character-card:nth-child(2) {
+    animation-delay: 0.1s;
+  }
 
-#sendToPlayer .col-12 {
-  width: 100%;
-}
+  .character-card:nth-child(3) {
+    animation-delay: 0.15s;
+  }
 
-#sendToPlayer .form-label {
-  display: inline-block;
-}
+  .character-card:nth-child(4) {
+    animation-delay: 0.2s;
+  }
 
-/* Галерея: блоки аккаунтов идут в ряд и переносятся по мере заполнения */
-#sendToPlayer .characters-gallery {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 0.5rem;
-  width: 100%;
-  max-height: 38vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 0.3rem;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 215, 0, 0.3) transparent;
-}
+  .character-card:nth-child(5) {
+    animation-delay: 0.25s;
+  }
 
-/* Блок аккаунта: ширина ровно по содержимому (1 персонаж = маленький блок, 5 = широкий) */
-#sendToPlayer .characters-gallery > .card {
-  flex: 0 0 auto;
-  width: fit-content;
-  /* ~5 персонажей на ряд максимум, потом перенось внутри блока */
-  max-width: calc(5 * 70px + 4 * 0.5rem + 2 * 0.85rem + 2px);
-}
+  .character-card:nth-child(n+6) {
+    animation-delay: 0.3s;
+  }
 
-#sendToPlayer .characters-gallery::-webkit-scrollbar {
-  width: 4px;
-}
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .account-section {
+      padding: 1rem;
+    }
 
-#sendToPlayer .characters-gallery::-webkit-scrollbar-track {
-  background: transparent;
-}
+    .character-card {
+      width: 68px;
+    }
 
-#sendToPlayer .characters-gallery::-webkit-scrollbar-thumb {
-  background: rgba(255, 215, 0, 0.3);
-  border-radius: 4px;
-}
+    .character-selection-indicator {
+      width: 28px;
+      height: 28px;
+      font-size: 16px;
+    }
 
-#sendToPlayer .characters-gallery::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 215, 0, 0.55);
-}
+    .character-name {
+      font-size: 0.8rem;
+    }
 
-#sendToPlayer .account-section {
-  display: block;
-}
+    .character-level {
+      font-size: 0.7rem;
+    }
+  }
 
-#sendToPlayer .characters-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  width: fit-content;
-}
+  @media (max-width: 480px) {
+    .characters-row {
+      gap: 0.75rem;
+      justify-content: space-around;
+    }
 
-#sendToPlayer .character-card {
-  flex: 0 0 auto;
-}
-/* ========== Конец стилей для модального окна ========== */
+    .character-card {
+      width: 62px;
+    }
+  }
 
+  /* ========== Конец стилей для галереи персонажей ========== */
+
+  /* ========== Стили для модального окна sendToPlayer ========== */
+  #sendToPlayer .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  /* Use a specific helper class to stack form rows vertically without
+     overriding Bootstrap's `.row` globally. Add `send-vertical` to the
+     rows that should be column-oriented. */
+  #sendToPlayer .modal-body .row.send-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  #sendToPlayer .col-12 {
+    width: 100%;
+  }
+
+  #sendToPlayer .form-label {
+    display: inline-block;
+  }
+
+  /* Галерея: блоки аккаунтов идут в ряд и переносятся по мере заполнения */
+  #sendToPlayer .characters-gallery {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+    max-height: 38vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0.8rem;
+    padding-right: 0.3rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 215, 0, 0.3) transparent;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 215, 0, 0.35);
+    background: rgba(255, 255, 255, 0.02);
+    box-shadow:
+      inset 0 0 35px rgba(255, 215, 0, 0.1),
+      0 0 35px rgba(255, 215, 0, 0.25);
+    position: relative;
+    cursor: grab;
+  }
+
+  /* Блок аккаунта: ширина ровно по содержимому (1 персонаж = маленький блок, 5 = широкий) */
+  #sendToPlayer .characters-gallery>.card {
+    flex: 0 0 auto;
+    width: fit-content;
+    /* ~5 персонажей на ряд максимум, потом перенось внутри блока */
+    max-width: calc(5 * 70px + 4 * 0.5rem + 2 * 0.85rem + 2px);
+  }
+
+  #sendToPlayer .characters-gallery::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  #sendToPlayer .characters-gallery::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  #sendToPlayer .characters-gallery::-webkit-scrollbar-thumb {
+    background: rgba(255, 215, 0, 0.3);
+    border-radius: 4px;
+  }
+
+  #sendToPlayer .characters-gallery::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 215, 0, 0.55);
+  }
+
+  #sendToPlayer .account-section {
+    display: block;
+  }
+
+  #sendToPlayer .characters-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    width: fit-content;
+  }
+
+  #sendToPlayer .character-card {
+    flex: 0 0 auto;
+  }
+
+  /* ========== Конец стилей для модального окна ========== */
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const twoFaModal = document.getElementById('twoFaModal');
-  const settingsModal = document.getElementById('settings');
-  const open2faBtn = document.getElementById('open2faModalBtn');
-  
-  if (!twoFaModal) return;
-  
-  let twoFaModalInstance = null;
-  let skipReturnToSettings = false;
-  
-  // Переключение между модальными окнами settings -> twoFaModal
-  if (open2faBtn && settingsModal) {
-    open2faBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      skipReturnToSettings = false;
-      
-      // Получаем экземпляр модала настроек
-      const settingsModalInstance = bootstrap.Modal.getInstance(settingsModal);
-      
-      // Скрываем модал настроек
-      if (settingsModalInstance) {
-        settingsModal.addEventListener('hidden.bs.modal', function onHidden() {
-          settingsModal.removeEventListener('hidden.bs.modal', onHidden);
-          
-          // Открываем модал 2FA
-          twoFaModalInstance = new bootstrap.Modal(twoFaModal, {
-            backdrop: true,
-            keyboard: true
-          });
-          twoFaModalInstance.show();
-        }, { once: true });
-        
-        settingsModalInstance.hide();
-      }
-    });
-  }
-  
-  // Возврат к модальному окну настроек при закрытии 2FA модала
-  twoFaModal.addEventListener('hidden.bs.modal', function() {
-    if (!skipReturnToSettings) {
-      // Возвращаемся к модалу настроек
-      const settingsModalInstance = new bootstrap.Modal(settingsModal);
-      settingsModalInstance.show();
-    }
-  });
-  
-  // Загрузка QR кода при открытии модального окна
-  twoFaModal.addEventListener('show.bs.modal', function() {
-    {% if not getUser().isTwoFaEnabled() %}
-    fetch('/api/2fa/setup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.ok) {
-        document.getElementById('twoFaQrCode').innerHTML = 
-          '<img src="' + data.qrCode + '" alt="QR Code" width="200" height="200">';
-        document.getElementById('twoFaSecretDisplay').textContent = data.secret;
-        document.getElementById('twoFaSecret').value = data.secret;
-      } else {
-        document.getElementById('twoFaQrCode').innerHTML = 
-          '<div class="alert alert-danger">' + (data.message || 'Error loading QR code') + '</div>';
-      }
-    })
-    .catch(error => {
-      document.getElementById('twoFaQrCode').innerHTML = 
-        '<div class="alert alert-danger">Error loading QR code</div>';
-    });
-    {% endif %}
-  });
+  document.addEventListener('DOMContentLoaded', function () {
+    const twoFaModal = document.getElementById('twoFaModal');
+    const settingsModal = document.getElementById('settings');
+    const open2faBtn = document.getElementById('open2faModalBtn');
 
-  // Функция для отправки 2FA кода
-  function submit2faEnable(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const form = document.getElementById('enable2faForm');
-    if (!form) return false;
-    
-    const formData = new FormData(form);
-    
-    fetch('/api/2fa/enable', {
-      method: 'POST',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      body: formData
-    })
-    .then(response => {
-      return response.text();
-    })
-    .then(text => {
-      try {
-        const data = JSON.parse(text);
-        if (data.ok) {
-          skipReturnToSettings = true;
-          showToast('success', data.message || '{{ phrase("2fa_enabled_success") }}');
-          setTimeout(() => window.location.reload(), 1500);
-        } else {
-          showToast('error', data.message || '{{ phrase("2fa_invalid_code") }}');
+    if (!twoFaModal) return;
+
+    let twoFaModalInstance = null;
+    let skipReturnToSettings = false;
+
+    // Переключение между модальными окнами settings -> twoFaModal
+    if (open2faBtn && settingsModal) {
+      open2faBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        skipReturnToSettings = false;
+
+        // Получаем экземпляр модала настроек
+        const settingsModalInstance = bootstrap.Modal.getInstance(settingsModal);
+
+        // Скрываем модал настроек
+        if (settingsModalInstance) {
+          settingsModal.addEventListener('hidden.bs.modal', function onHidden() {
+            settingsModal.removeEventListener('hidden.bs.modal', onHidden);
+
+            // Открываем модал 2FA
+            twoFaModalInstance = new bootstrap.Modal(twoFaModal, {
+              backdrop: true,
+              keyboard: true
+            });
+            twoFaModalInstance.show();
+          }, { once: true });
+
+          settingsModalInstance.hide();
         }
-      } catch (err) {
-        console.error('JSON parse error:', err);
-        showToast('error', 'Server error');
-      }
-    })
-    .catch(error => {
-      console.error('Fetch error:', error);
-      showToast('error', '{{ phrase("error") }}: ' + error.message);
-    });
-    
-    return false;
-  }
+      });
+    }
 
-  // Привязываем обработчик к форме
-  const enable2faForm = document.getElementById('enable2faForm');
-  if (enable2faForm) {
-    enable2faForm.onsubmit = submit2faEnable;
-  } else {
-    // Привязываем при показе модала
-    twoFaModal.addEventListener('shown.bs.modal', function() {
-      const form = document.getElementById('enable2faForm');
-      if (form && !form.onsubmit) {
-        form.onsubmit = submit2faEnable;
+    // Возврат к модальному окну настроек при закрытии 2FA модала
+    twoFaModal.addEventListener('hidden.bs.modal', function () {
+      if (!skipReturnToSettings) {
+        // Возвращаемся к модалу настроек
+        const settingsModalInstance = new bootstrap.Modal(settingsModal);
+        settingsModalInstance.show();
       }
     });
-  }
 
-  // Отключение 2FA
-  const disable2faForm = document.getElementById('disable2faForm');
-  if (disable2faForm) {
-    disable2faForm.addEventListener('submit', function(e) {
+    // Загрузка QR кода при открытии модального окна
+    twoFaModal.addEventListener('show.bs.modal', function () {
+      {% if not getUser().isTwoFaEnabled() %}
+      fetch('/api/2fa/setup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok) {
+            document.getElementById('twoFaQrCode').innerHTML =
+              '<img src="' + data.qrCode + '" alt="QR Code" width="200" height="200">';
+            document.getElementById('twoFaSecretDisplay').textContent = data.secret;
+            document.getElementById('twoFaSecret').value = data.secret;
+          } else {
+            document.getElementById('twoFaQrCode').innerHTML =
+              '<div class="alert alert-danger">' + (data.message || 'Error loading QR code') + '</div>';
+          }
+        })
+        .catch(error => {
+          document.getElementById('twoFaQrCode').innerHTML =
+            '<div class="alert alert-danger">Error loading QR code</div>';
+        });
+      {% endif %}
+    });
+
+    // Функция для отправки 2FA кода
+    function submit2faEnable(e) {
       e.preventDefault();
-      const formData = new FormData(this);
-      
-      fetch('/api/2fa/disable', {
+      e.stopPropagation();
+
+      const form = document.getElementById('enable2faForm');
+      if (!form) return false;
+
+      const formData = new FormData(form);
+
+      fetch('/api/2fa/enable', {
         method: 'POST',
         headers: {
           'X-Requested-With': 'XMLHttpRequest'
         },
         body: formData
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.ok) {
-          skipReturnToSettings = true;
-          showToast('success', data.message || '{{ phrase("2fa_disabled_success") }}');
-          setTimeout(() => window.location.reload(), 1500);
-        } else {
-          showToast('error', data.message || '{{ phrase("2fa_invalid_code") }}');
+        .then(response => {
+          return response.text();
+        })
+        .then(text => {
+          try {
+            const data = JSON.parse(text);
+            if (data.ok) {
+              skipReturnToSettings = true;
+              showToast('success', data.message || '{{ phrase("2fa_enabled_success") }}');
+              setTimeout(() => window.location.reload(), 1500);
+            } else {
+              showToast('error', data.message || '{{ phrase("2fa_invalid_code") }}');
+            }
+          } catch (err) {
+            console.error('JSON parse error:', err);
+            showToast('error', 'Server error');
+          }
+        })
+        .catch(error => {
+          console.error('Fetch error:', error);
+          showToast('error', '{{ phrase("error") }}: ' + error.message);
+        });
+
+      return false;
+    }
+
+    // Привязываем обработчик к форме
+    const enable2faForm = document.getElementById('enable2faForm');
+    if (enable2faForm) {
+      enable2faForm.onsubmit = submit2faEnable;
+    } else {
+      // Привязываем при показе модала
+      twoFaModal.addEventListener('shown.bs.modal', function () {
+        const form = document.getElementById('enable2faForm');
+        if (form && !form.onsubmit) {
+          form.onsubmit = submit2faEnable;
         }
-      })
-      .catch(error => {
-        showToast('error', '{{ phrase("error") }}');
       });
+    }
+
+    // Отключение 2FA
+    const disable2faForm = document.getElementById('disable2faForm');
+    if (disable2faForm) {
+      disable2faForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        fetch('/api/2fa/disable', {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: formData
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.ok) {
+              skipReturnToSettings = true;
+              showToast('success', data.message || '{{ phrase("2fa_disabled_success") }}');
+              setTimeout(() => window.location.reload(), 1500);
+            } else {
+              showToast('error', data.message || '{{ phrase("2fa_invalid_code") }}');
+            }
+          })
+          .catch(error => {
+            showToast('error', '{{ phrase("error") }}');
+          });
+      });
+    }
+  });
+
+  function copyTwoFaSecret() {
+    const secret = document.getElementById('twoFaSecretDisplay').textContent;
+    navigator.clipboard.writeText(secret).then(() => {
+      showToast('success', '{{ phrase("copied") }}');
     });
   }
-});
 
-function copyTwoFaSecret() {
-  const secret = document.getElementById('twoFaSecretDisplay').textContent;
-  navigator.clipboard.writeText(secret).then(() => {
-    showToast('success', '{{ phrase("copied") }}');
-  });
-}
-
-function showToast(type, message) {
-  if (typeof Toasts !== 'undefined') {
-    Toasts.create(type, message);
-  } else {
-    alert(message);
+  function showToast(type, message) {
+    if (typeof Toasts !== 'undefined') {
+      Toasts.create(type, message);
+    } else {
+      alert(message);
+    }
   }
-}
 </script>
 
 {# Отправка коинов в игру, на персонажа #}
 {% if config().enabled().isEnableSendBalanceGame() %}
 <div class="modal modal-lg fade" id="sendToPlayer" tabindex="-1" aria-labelledby="sendToPlayer-ComposeLabel"
-     aria-hidden="true">
+  aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h6 class="modal-title" id="sendToPlayer-ComposeLabel">{{phrase('transfer_to_game')}}</h6>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body px-4">
         <div class="row">
@@ -771,11 +832,12 @@ function showToast(type, message) {
           {# Если пользователь не установил в настройках какой предмет отправлять пользователю #}
 
           {% if getServer().donate().getItemIdToGameTransfer() == 0 %}
-              {{ phrase('no_item_to_send') }}
+          {{ phrase('no_item_to_send') }}
 
-              {% if getUser().isAdmin() %}
-<label class="text-danger">Укажите в админ-панели->Настройки->Пожертвование какой предмет необходимо пересылать персонажу</label>
-              {% endif %}
+          {% if getUser().isAdmin() %}
+          <label class="text-danger">Укажите в админ-панели->Настройки->Пожертвование какой предмет необходимо
+            пересылать персонажу</label>
+          {% endif %}
 
           {% else %}
 
@@ -799,66 +861,50 @@ function showToast(type, message) {
           <div class="col-12">
             <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
               <label class="form-label mb-0">{{ phrase('player') }}</label>
-              <input type="text" id="searchCharactersInput" class="form-control form-control-sm" placeholder="{{ phrase('Search...') }}" style="max-width: 200px;">
+              <input type="text" id="searchCharactersInput" class="form-control form-control-sm"
+                placeholder="{{ phrase('Search...') }}" style="max-width: 200px;">
             </div>
             {% if getUser().getCountPlayers() == 0 %}
-              <div class="alert alert-info">{{ phrase('no_chars') }}</div>
+            <div class="alert alert-info">{{ phrase('no_chars') }}</div>
             {% else %}
-              <div class="characters-gallery">
-                {% for i, account in getUser().getAccounts() %}
-                  {% if account.getCharactersCount() > 0 %}
-                  <div class="card shadow-sm bg-dark-transparent border-0">
-                    <div class="account-section">
-                      <div class="account-title">
-                        <small class="text-muted">{{ phrase('account') }}:</small>
-                        <strong>{{ account.getAccount() }}</strong>
+            <div class="characters-gallery">
+              {% for i, account in getUser().getAccounts() %}
+              {% if account.getCharactersCount() > 0 %}
+              <div class="card shadow-sm bg-dark-transparent border-0">
+                <div class="account-section">
+                  <div class="account-title">
+                    <small class="text-muted">{{ phrase('account') }}:</small>
+                    <strong>{{ account.getAccount() }}</strong>
+                  </div>
+                  <div class="characters-row">
+                    {% for i, character in account.getCharacters() %}
+                    <div class="character-card js-character-selector" data-account="{{ account.getAccount() }}"
+                      data-player="{{ character.getPlayerName() }}" data-level="{{ character.getLevel() }}"
+                      data-class="{{ character.getClassId() }}" data-sex="{{ character.getSex() }}">
+                      <div class="character-avatar-wrapper">
+                        <img
+                          src="/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
+                          alt="{{ character.getPlayerName() }}" class="character-avatar">
+                        <div class="character-selection-indicator">
+                          <i class="ri-check-fill"></i>
+                        </div>
                       </div>
-                      <div class="characters-row">
-                        {% for i, character in account.getCharacters() %}
-                          <div class="character-card js-character-selector" 
-                               data-account="{{ account.getAccount() }}" 
-                               data-player="{{ character.getPlayerName() }}"
-                               data-level="{{ character.getLevel() }}"
-                               data-class="{{ character.getClassId() }}"
-                               data-sex="{{ character.getSex() }}">
-                            <div class="character-avatar-wrapper">
-                              <img src="/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg" 
-                                   alt="{{ character.getPlayerName() }}"
-                                   class="character-avatar">
-                              <div class="character-selection-indicator">
-                                <i class="ri-check-fill"></i>
-                              </div>
-                            </div>
-                            <div class="character-info">
-                              <div class="character-name">{{ character.getPlayerName() }}</div>
-                              <div class="character-level">[{{ character.getLevel() }}]</div>
-                            </div>
-                          </div>
-                        {% endfor %}
+                      <div class="character-info">
+                        <div class="character-name">{{ character.getPlayerName() }}</div>
+                        <div class="character-level">[{{ character.getLevel() }}]</div>
                       </div>
                     </div>
-                    </div>
-                  {% endif %}
-                {% endfor %}
+                    {% endfor %}
+                  </div>
+                </div>
               </div>
+              {% endif %}
+              {% endfor %}
+            </div>
             {% endif %}
           </div>
-          <div class="col-12 mb-2">
-            <label for="muchSphereCoin" class="form-label text-dark fw-semibold">{{phrase(71)}}</label>
-            <input min="1" max="{{getUser().getDonate()|round(0, 'floor')}}"
-                   data-max-value="{{getUser().getDonate()|round(0, 'floor')}}"
-                   value="{{getUser().getDonate()|round(0, 'floor')}}" name="coin"
-                   type="number" class="form-control" id="muchSphereCoin">
-          </div>
-          <div class="col-12 mb-2">
-            <label class="mb-0 fs-12 text-muted" id="charWillBeSentLabel" data-original-text="{{phrase('char_will_be_sent')}}">{{phrase('char_will_be_sent')}}
-              <img class="avatar avatar-sm rounded" src="{{item.getIcon()}}"> <span class="text-success">{{ item.itemName }}</span>
-              x<span class="text-success" id="itemCountGameTransfer"
-                     data-count-donate-item="{{ getServer().donate().getDonateItemToGameTransfer() }}"
-                     data-count-items="{{ getServer().donate().getCountItemsToGameTransfer() }}"
-                     data-donate-rate="{{ getServer().donate().getDonateItemToGameTransfer() ?? 1 }}">{{ getServer().donate().getCountItemsToGameTransfer() }}</span>
-            </label>
-          </div>
+
+
           {% endif %}
 
           {% endif %}
@@ -870,20 +916,239 @@ function showToast(type, message) {
           {% endif %}
 
         </div>
+
+        <style>
+          /* COIN INPUT COMPONENT STYLES */
+
+          .coin-input-wrapper-send {
+            grid-template-columns: 1fr 1fr !important;
+            gap: 2rem !important;
+            align-items: center !important;
+            justify-items: center !important;
+            width: fit-content !important;
+            margin: 0 auto !important;
+          }
+
+          .coin-input-wrapper {
+            grid-template-columns: 1fr 1fr !important;
+            gap: 2rem !important;
+            align-items: start !important;
+            margin-bottom: 1.5rem !important;
+          }
+
+          .coin-input-section {
+            grid-column: span 1 !important;
+          }
+
+          .coin-input-group {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.75rem !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+          }
+
+          .coin-input-container {
+            flex: 1 !important;
+            position: relative !important;
+            display: flex !important;
+            align-items: center !important;
+            border-radius: 12px !important;
+            overflow: hidden !important;
+            box-shadow: 0 4px 12px rgba(52, 94, 49, 0.11) !important;
+            height: 70px !important;
+            padding: 0 !important;
+          }
+
+          .coin-input-container:hover {
+            border-color: #f5a117 !important;
+            box-shadow: 0 6px 20px rgba(245, 161, 23, 0.25) !important;
+          }
+
+          .coin-input-container:focus-within {
+            border-color: #f5a117 !important;
+            box-shadow: 0 8px 24px rgba(245, 161, 23, 0.35) !important;
+          }
+
+          .coin-icon {
+            position: absolute !important;
+            left: 18px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            pointer-events: none !important;
+            z-index: 10 !important;
+            width: 32px !important;
+            height: 32px !important;
+            object-fit: contain !important;
+          }
+
+          #muchSphereCoin {
+            flex: 1 !important;
+            height: 70px !important;
+            padding: 0 25px 0 60px !important;
+            font-size: 50px !important;
+            color: #f5a117 !important;
+            border: none !important;
+            background: transparent !important;
+            text-align: left !important;
+            line-height: 70px !important;
+            transition: color 0.3s ease !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            margin: 0 !important;
+            background-color: rgba(245, 161, 23, 0) !important;
+          }
+
+          #muchSphereCoin:hover {
+            color: #ffaf3a !important;
+          }
+
+          #muchSphereCoin:focus {
+            color: #ffaf3a !important;
+            box-shadow: none !important;
+            outline: none !important;
+            background: transparent !important;
+            border: none !important;
+          }
+
+          #muchSphereCoin::-webkit-outer-spin-button,
+          #muchSphereCoin::-webkit-inner-spin-button {
+            -webkit-appearance: none !important;
+            margin: 0 !important;
+            display: none !important;
+          }
+
+          #muchSphereCoin[type=number] {
+            -moz-appearance: textfield !important;
+          }
+
+          .coin-btn,
+          #coinBtnMinus,
+          #coinBtnPlus {
+            border-radius: 10px !important;
+            color: #f5a117 !important;
+            font-size: 20px !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.3s ease !important;
+            padding: 0 !important;
+            flex-shrink: 0 !important;
+            position: relative !important;
+            overflow: hidden !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            background-color: rgba(245, 161, 23, 0) !important;
+          }
+
+          .coin-btn:hover,
+          #coinBtnMinus:hover,
+          #coinBtnPlus:hover {
+            border-color: #f5a117 !important;
+            color: #ffaf3a !important;
+            box-shadow: 0 4px 12px rgba(245, 161, 23, 0.3) !important;
+            background-color: rgba(245, 161, 23, 0.08) !important;
+          }
+
+          .coin-btn:active,
+          #coinBtnMinus:active,
+          #coinBtnPlus:active {
+            transform: scale(0.95) !important;
+            box-shadow: 0 2px 6px rgba(245, 161, 23, 0.2) !important;
+          }
+
+          .coin-btn i,
+          #coinBtnMinus i,
+          #coinBtnPlus i {
+            position: relative !important;
+            z-index: 1 !important;
+            pointer-events: none !important;
+          }
+
+          @media (max-width: 991px) {
+            .coin-input-wrapper {
+              grid-template-columns: 1fr !important;
+              gap: 1.5rem !important;
+            }
+          }
+
+          @media (max-width: 576px) {
+            .coin-input-container {
+              height: 50px !important;
+            }
+
+            #muchSphereCoin {
+              height: 50px !important;
+              line-height: 50px !important;
+              font-size: 18px !important;
+              padding: 0 20px 0 50px !important;
+            }
+
+            .coin-btn,
+            #coinBtnMinus,
+            #coinBtnPlus {
+              width: 45px !important;
+              height: 50px !important;
+              font-size: 18px !important;
+            }
+          }
+        </style>
+
+        <div class="coin-input-wrapper-send">
+          <div class="coin-input-section">
+            <div class="coin-input-group mt-2">
+              <button type="button" class="coin-btn coin-btn-minus" id="coinBtnMinus" tabindex="-1">
+                <i class="ri-subtract-line"></i>
+              </button>
+              <div class="coin-input-container">
+                <img class="coin-icon avatar avatar-sm rounded" src="/uploads/images/icon/etc_coins_gold_i00.webp">
+                <input min="1" max="{{getUser().getDonate()|round(0, 'floor')}}"
+                  data-max-value="{{getUser().getDonate()|round(0, 'floor')}}"
+                  value="{{getUser().getDonate()|round(0, 'floor')}}" name="coin" type="number"
+                  class="form-control coin-input" id="muchSphereCoin">
+              </div>
+              <button type="button" class="coin-btn coin-btn-plus" id="coinBtnPlus" tabindex="-1">
+                <i class="ri-add-line"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
       <div class="modal-footer d-flex justify-content-between align-items-center">
-        {% if getUser().isAuth() and getServer().donate().getItemIdToGameTransfer() != 0 %}
-        <p class="mb-0">
-          <span class="fw-semibold text-muted fs-12">{{ phrase('exchange') }} :</span> {{ getServer().donate().getDonateItemToGameTransfer() }} {{ phrase('donate_coin') }} = {{ getServer().donate().getCountItemsToGameTransfer() }} <img class="avatar avatar-xs rounded" src="{{item.getIcon()}}"> {{ item.itemName }}
-        </p>
-        {% endif %}
+
+        <div>
+          <label class="mb-0 fs-12 text-muted" id="charWillBeSentLabel"
+            data-original-text="{{phrase('char_will_be_sent')}}">{{phrase('char_will_be_sent')}}
+            <img class="avatar avatar-sm rounded" src="{{item.getIcon()}}"> <span class="text-success">{{ item.itemName
+              }}</span>
+            x<span class="text-success" id="itemCountGameTransfer"
+              data-count-donate-item="{{ getServer().donate().getDonateItemToGameTransfer() }}"
+              data-count-items="{{ getServer().donate().getCountItemsToGameTransfer() }}"
+              data-donate-rate="{{ getServer().donate().getDonateItemToGameTransfer() ?? 1 }}">{{
+              getServer().donate().getCountItemsToGameTransfer() }}
+            </span>
+          </label>
+
+          {% if getUser().isAuth() and getServer().donate().getItemIdToGameTransfer() != 0 %}
+          <p class="mb-0 text-muted">
+            <span class="fw-semibold text-muted fs-12">{{ phrase('exchange') }} :</span> {{
+            getServer().donate().getDonateItemToGameTransfer() }} {{ phrase('donate_coin') }} = {{
+            getServer().donate().getCountItemsToGameTransfer() }} <img class="avatar avatar-xs rounded"
+              src="{{item.getIcon()}}"> {{ item.itemName }}
+          </p>
+          {% endif %}
+        </div>
 
 
         <div>
           {% if getUser().isAuth() %}
           <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{phrase('close')}}</button>
           {% if getUser().getDonate()|round(0, 'floor') > 0 and item != null %}
-          <button id="sendToPlayerBtn" type="submit" class="btn btn-primary" {% if not canSendItemsNow %}disabled{% endif %}>
+          <button id="sendToPlayerBtn" type="submit" class="btn btn-primary" {% if not canSendItemsNow %}disabled{%
+            endif %}>
             {{phrase(364)}}
           </button>
           {% endif %}
@@ -903,14 +1168,17 @@ function showToast(type, message) {
   $(document).ready(function () {
     const $coinInput = $('#muchSphereCoin');
     const maxValue = parseInt($coinInput.data('max-value'), 10) || 0;
+    const $coinBtnPlus = $('#coinBtnPlus');
+    const $coinBtnMinus = $('#coinBtnMinus');
 
+    // Input validation
     $coinInput.on('keypress keydown input', function (event) {
       const key = event.which || event.keyCode;
       if (
-            (key < 48 || key > 57) &&
-            (key < 96 || key > 105) &&
-            key !== 8 &&
-            (key < 37 || key > 40)
+        (key < 48 || key > 57) &&
+        (key < 96 || key > 105) &&
+        key !== 8 &&
+        (key < 37 || key > 40)
       ) {
         event.preventDefault();
       }
@@ -921,6 +1189,27 @@ function showToast(type, message) {
         $(this).val(currentValue);
       } else {
         $(this).val(Math.floor(currentValue));
+      }
+      recalculateSphereCoinValue();
+    });
+
+    // Plus button handler
+    $coinBtnPlus.on('click', function (e) {
+      e.preventDefault();
+      let currentValue = parseInt($coinInput.val(), 10) || 0;
+      if (currentValue < maxValue) {
+        currentValue++;
+        $coinInput.val(currentValue).trigger('input');
+      }
+    });
+
+    // Minus button handler
+    $coinBtnMinus.on('click', function (e) {
+      e.preventDefault();
+      let currentValue = parseInt($coinInput.val(), 10) || 0;
+      if (currentValue > 1) {
+        currentValue--;
+        $coinInput.val(currentValue).trigger('input');
       }
     });
   });
@@ -937,9 +1226,10 @@ function showToast(type, message) {
     <div class="modal-content">
       <div class="modal-body">
         {{ phrase('server') }}
-        <select class="form-select form-select-sm  bg-success-transparent text-success select_default_server" aria-label="Default select example">
+        <select class="form-select form-select-sm  bg-success-transparent text-success select_default_server"
+          aria-label="Default select example">
           {% for server in getServerAll() %}
-          <option {% if getUser().getServerId()== server.getId() %}selected{% endif %} value="{{server.getId()}}">
+          <option {% if getUser().getServerId()==server.getId() %}selected{% endif %} value="{{server.getId()}}">
             {{server.getName()}}
           </option>
           {% endfor %}
@@ -976,43 +1266,66 @@ function showToast(type, message) {
   $('#muchSphereCoin').on('input', recalculateSphereCoinValue);
   $(document).ready(recalculateSphereCoinValue);
 
+  function scrollCharacterIntoView($character) {
+    const container = document.querySelector('#sendToPlayer .characters-gallery');
+    if (!container || !$character || $character.length === 0) {
+      return;
+    }
+
+    const containerRect = container.getBoundingClientRect();
+    const cardRect = $character[0].getBoundingClientRect();
+    const visibleHeight = container.clientHeight;
+    const deltaTop = cardRect.top - containerRect.top;
+    const target = container.scrollTop + deltaTop - visibleHeight / 2 + cardRect.height / 2;
+    const maxScroll = container.scrollHeight - visibleHeight;
+    const normalizedScroll = Math.max(0, Math.min(maxScroll, target));
+
+    container.scrollTo({ top: normalizedScroll, behavior: 'smooth' });
+  }
+
   // ========== Инициализация галереи персонажей ==========
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Выбираем первого персонажа по умолчанию при загрузке страницы
-    const initCharacterGallery = function() {
+    const initCharacterGallery = function () {
       const $galleryContainer = $('.characters-gallery');
       if ($galleryContainer.length === 0) return;
-      
+
       const $firstCharacter = $('.js-character-selector').first();
       if ($firstCharacter.length > 0 && !$('.js-character-selector.selected').length) {
         $firstCharacter.click();
       }
     };
-    
+
     // Инициализируем при загрузке страницы
     initCharacterGallery();
 
     // При открытии модального окна sendToPlayer убеждаемся что персонаж выбран
-    $('#sendToPlayer').on('show.bs.modal', function() {
+    $('#sendToPlayer').on('show.bs.modal', function () {
       // Очищаем поле поиска и показываем всех персонажей
       $('#searchCharactersInput').val('');
       const $gallery = $('.characters-gallery');
       $gallery.find('> .card').show();
       $gallery.find('.character-card').show();
+    });
 
-      setTimeout(function() {
-        const $selectedCharacter = $('.js-character-selector.selected');
-        if ($selectedCharacter.length === 0) {
-          const $firstChar = $('.js-character-selector').first();
-          if ($firstChar.length > 0) {
-            $firstChar.click();
-          }
+    // Прокручиваем к выбранному персонажу после того как модал полностью открылся
+    $('#sendToPlayer').on('shown.bs.modal', function () {
+      let $selectedCharacter = $('.js-character-selector.selected');
+      if ($selectedCharacter.length === 0) {
+        const $firstChar = $('.js-character-selector').first();
+        if ($firstChar.length > 0) {
+          $firstChar.click();
+          $selectedCharacter = $firstChar;
         }
-      }, 100);
+      }
+
+      if ($selectedCharacter.length > 0) {
+        scrollCharacterIntoView($selectedCharacter);
+      }
     });
 
     // При закрытии модального окна очищаем выбор для следующего раза
-    $('#sendToPlayer').on('hide.bs.modal', function() {
+    $('#sendToPlayer').on('hide.bs.modal', function () {
       // Опционально: можно оставить выбор или очистить
       // По текущей логике в general.js выбор очищается после отправки
       // Очищаем поле поиска при закрытии модала
@@ -1020,7 +1333,7 @@ function showToast(type, message) {
     });
 
     // ========== Поиск/фильтрация персонажей ==========
-    $('#searchCharactersInput').on('input', function() {
+    $('#searchCharactersInput').on('input', function () {
       const query = $(this).val().toLowerCase().trim();
       const $gallery = $('.characters-gallery');
       const $accountCards = $gallery.find('> .card');
@@ -1034,7 +1347,7 @@ function showToast(type, message) {
       }
 
       // Проходим по каждому блоку-аккаунту
-      $accountCards.each(function() {
+      $accountCards.each(function () {
         const $accountSection = $(this).find('.account-section');
         const accountName = $accountSection.find('.account-title strong').text().toLowerCase();
         const $characters = $accountSection.find('.character-card');
@@ -1049,7 +1362,7 @@ function showToast(type, message) {
           hasVisibleCharacters = true;
         } else {
           // Иначе фильтруем персонажей по имени
-          $characters.each(function() {
+          $characters.each(function () {
             const characterName = $(this).data('player').toLowerCase();
             const characterMatches = characterName.includes(query);
 
@@ -1071,13 +1384,71 @@ function showToast(type, message) {
         }
       });
     });
+
+    const enableDragScroll = function ($elements) {
+      $elements.each(function () {
+        const container = this;
+        let isDragging = false;
+        let startY = 0;
+        let startScrollTop = 0;
+
+        const startDrag = (pageY) => {
+          isDragging = true;
+          startY = pageY;
+          startScrollTop = container.scrollTop;
+          container.classList.add('dragging');
+        };
+
+        const stopDrag = () => {
+          if (!isDragging) return;
+          isDragging = false;
+          container.classList.remove('dragging');
+        };
+
+        const handleMove = (pageY) => {
+          if (!isDragging) return;
+          const deltaY = pageY - startY;
+          container.scrollTop = startScrollTop - deltaY;
+        };
+
+        container.addEventListener('mousedown', function (event) {
+          if (event.button !== 0) return;
+          startDrag(event.pageY);
+          event.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function (event) {
+          handleMove(event.pageY);
+        });
+
+        document.addEventListener('mouseup', stopDrag);
+        container.addEventListener('mouseleave', stopDrag);
+
+        container.addEventListener('touchstart', function (event) {
+          startDrag(event.touches[0].pageY);
+        }, { passive: false });
+
+        container.addEventListener('touchmove', function (event) {
+          handleMove(event.touches[0].pageY);
+          if (isDragging) {
+            event.preventDefault();
+          }
+        }, { passive: false });
+
+        container.addEventListener('touchend', stopDrag);
+      });
+    };
+
+    enableDragScroll($('.characters-gallery'));
+    enableDragScroll($('#sendToPlayer .characters-gallery'));
   });
 
 </script>
 
 
 {% if config().enabled().isEnableBonusCode() %}
-<div class="modal modal-lg fade" id="bonusCodeModal" tabindex="-1" aria-labelledby="bonusCodeModalLabel" aria-hidden="true">
+<div class="modal modal-lg fade" id="bonusCodeModal" tabindex="-1" aria-labelledby="bonusCodeModalLabel"
+  aria-hidden="true">
   <div class="modal-dialog ">
     <div class="modal-content">
       <div class="modal-header">
@@ -1088,7 +1459,8 @@ function showToast(type, message) {
         <div class="row">
           {% if getUser().isAuth() %}
           <div class="col-xl-12 mb-3">
-            <label for="form-code" class="form-label text-dark fw-semibold">{{phrase('enter_bonus_code')}}<sup><i class="ri-star-s-fill text-success fs-8"></i></sup></label>
+            <label for="form-code" class="form-label text-dark fw-semibold">{{phrase('enter_bonus_code')}}<sup><i
+                  class="ri-star-s-fill text-success fs-8"></i></sup></label>
             <input type="text" class="form-control" id="form-code" placeholder="{{phrase('code_bonus')}}">
           </div>
           {% else %}
@@ -1110,13 +1482,13 @@ function showToast(type, message) {
   </div>
 </div>
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Очистка поля ввода при открытии модального окна
-    $('#bonusCodeModal').on('show.bs.modal', function() {
+    $('#bonusCodeModal').on('show.bs.modal', function () {
       $('#form-code').val('');
     });
 
-    $('#bonusCode').on('click', function() {
+    $('#bonusCode').on('click', function () {
       let code = $('#form-code').val();
 
       if (!code) {
@@ -1124,7 +1496,7 @@ function showToast(type, message) {
       }
 
       // Отправляем AJAX запрос
-      AjaxSend('/bonus/code', 'POST', {code: code})
+      AjaxSend('/bonus/code', 'POST', { code: code })
       var modal = bootstrap.Modal.getInstance(document.getElementById('bonusCodeModal'));
       modal.hide();
 
@@ -1149,9 +1521,17 @@ function showToast(type, message) {
           {{phrase(556)|raw}}
 
           <div class="alert alert-primary alert-dismissible fade show custom-alert-icon shadow-sm" role="alert">
-            <svg class="svg-primary" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" width="1.5rem" fill="#000000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"></path></svg>
-            Аккаунт будет добавлен для сервера <span class="h5">{{getServer(getUser().getServerId()).getName()}} x{{getServer(getUser().getServerId()).getRateExp()}} - {{getServer(getUser().getServerId()).Chronicle()}}</span>
-           </div>
+            <svg class="svg-primary" xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24"
+              width="1.5rem" fill="#000000">
+              <path d="M0 0h24v24H0z" fill="none"></path>
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z">
+              </path>
+            </svg>
+            Аккаунт будет добавлен для сервера <span class="h5">{{getServer(getUser().getServerId()).getName()}}
+              x{{getServer(getUser().getServerId()).getRateExp()}} -
+              {{getServer(getUser().getServerId()).Chronicle()}}</span>
+          </div>
 
 
           <div class="col-xl-6 mb-2">
@@ -1162,14 +1542,13 @@ function showToast(type, message) {
           <div class="col-xl-6 mb-2">
             <label for="syncPassword" class="form-label text-dark fw-semibold">{{ phrase('password') }}</label>
             <input type="password" name="syncPassword" class="form-control" id="syncPassword"
-                   autocomplete="new-password">
+              autocomplete="new-password">
           </div>
 
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-light"
-                data-bs-dismiss="modal">{{ phrase('close') }}
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ phrase('close') }}
         </button>
         <button id="syncUserAccount" type="button" class="btn btn-primary">{{ phrase(438) }}</button>
       </div>
@@ -1212,7 +1591,8 @@ function showToast(type, message) {
       </div>
       <div class="modal-body">
         <div class="text-center mb-3">
-          <img id="splitItemIcon" src="" alt="Предмет" class="img-fluid border rounded p-2" style="width: 64px; height: 64px; object-fit: contain;">
+          <img id="splitItemIcon" src="" alt="Предмет" class="img-fluid border rounded p-2"
+            style="width: 64px; height: 64px; object-fit: contain;">
           <h5 id="splitItemName" class="mt-2"></h5>
           <span class="badge bg-secondary" id="splitItemCount"></span>
         </div>
@@ -1243,7 +1623,8 @@ function showToast(type, message) {
           <i class="ri-archive-line me-2 text-primary"></i>
           {{phrase('warehouse')}}
           {% if getUser().countWarehouseItems() > 0 %}
-          <span class="badge rounded-pill bg-danger ms-2 js-warehouse-modal-count countWarehouseItems">{{getUser().countWarehouseItems()}}</span>
+          <span
+            class="badge rounded-pill bg-danger ms-2 js-warehouse-modal-count countWarehouseItems">{{getUser().countWarehouseItems()}}</span>
           {% endif %}
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -1253,225 +1634,255 @@ function showToast(type, message) {
       <div class="modal-body">
         {% if not getUser().isAuth() %}
         <!-- Блок для неавторизованных пользователей -->
-          <div class="alert alert-danger d-flex" role="alert">
-            <i class="ri-login-box-line fs-4 me-2"></i>
-            <div>{{phrase('first_reg_then_own_items_wh')}}</div>
-          </div>
+        <div class="alert alert-danger d-flex" role="alert">
+          <i class="ri-login-box-line fs-4 me-2"></i>
+          <div>{{phrase('first_reg_then_own_items_wh')}}</div>
+        </div>
         {% else %}
         <!-- Блок для авторизованных пользователей -->
-          <div class="row">
-            <!-- Левая панель: список предметов -->
-            <div class="col-md-7 pe-md-2">
-              <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-transparent">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <span class="fw-bold">{{ phrase(301) }}</span>
-                    <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" id="selectAllItems" checked >
-                      <label class="form-check-label small" for="selectAllItems">
-                        {{phrase('sel_all_items')}}
-                      </label>
-                    </div>
+        <div class="row">
+          <!-- Левая панель: список предметов -->
+          <div class="col-md-7 pe-md-2">
+            <div class="card-header" style="padding: 1.0rem 1.5rem;border-color: rgba(255, 255, 255, 0)">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fw-bold">{{ phrase(301) }}</span>
+                  <div class="btn-group wh-view-toggle" role="group" aria-label="View mode">
+                    <button type="button" class="btn btn-sm btn-outline-secondary active" data-wh-toggle="list"
+                      title="List view">
+                      <i class="ri-list-check-2"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-wh-toggle="grid"
+                      title="Grid view">
+                      <i class="ri-grid-line"></i>
+                    </button>
                   </div>
                 </div>
 
-                <div class="card-body p-0" style="max-height: 50vh; overflow-y: auto;">
-                  {% if getUser().countWarehouseItems() == 0 %}
-                  <!-- Пустой склад -->
-                    <div class="text-center p-4">
-                      <i class="ri-inbox-line text-muted display-4"></i>
-                      <p class="mt-2 text-muted">{{phrase('no_items_send_char')}}</p>
-                    </div>
-                  {% else %}
-                  <!-- Список предметов -->
-                    <ul class="list-group list-group-flush js-warehouse-items-list">
-        {% set okStackBtn = false %}
-
-{% for warehouse in getUser().getWarehouse() %}
-  <li class="list-group-item list-group-item-action p-1 border-bottom js-warehouse-item" data-item-count="{{warehouse.count}}">
-    <div class="d-flex align-items-center">
-      <div class="form-check me-2">
-        <input data-object-id="{{warehouse.id}}"
-               class="form-check-input warehouseInventory js-warehouse-item-checkbox"
-               type="checkbox" id="item_{{warehouse.id}}" checked>
-      </div>
-      <div class="item-icon me-3">
-        <div class="position-relative">
-          <img src="{{warehouse.item.getIcon()}}"
-               alt="{{warehouse.item.getItemName()}}"
-               class="img-fluid border rounded p-1 js-item-icon"
-               style="width: 40px; height: 40px; object-fit: contain;">
-        </div>
-      </div>
-      <div class="item-details-n flex-grow-1">
-        <div class="fw-medium d-flex justify-content-between align-items-center">
-          <div>
-            {% if warehouse.enchant > 0 %}
-              <span class="badge bg-danger me-1">+{{warehouse.enchant}}</span>
-            {% endif %}
-            <label class="mb-0 cursor-pointer js-item-name" for="item_{{warehouse.id}}">
-              {{warehouse.item.getItemName()}}
-
-              {% if warehouse.count > 1 %}
-              <span class="bottom-0 end-0 badge rounded-pill bg-secondary js-item-count">
-                x{{warehouse.count}}
-              </span>
-            {% endif %}
-            </label>
-          </div>
-          <div>
-
-          {% set unstackOk = false %}
-          {% if getServer().stackableItem().allowAllItemsSplitting() %}
-              {% set unstackOk = true %}
-          {% endif %}
-
-          {% if unstackOk == false %}
-            {% for id in getServer().stackableItem().getSplittableItems() %}
-                {% if id == warehouse.item.getItemId() %}
-                  {% set unstackOk = true %}
+                {% if okStackBtn == true %}
+                <label class="form-check-label small" id="goStackItems">{{phrase('stack_items')}}</label>
                 {% endif %}
-            {% endfor %}
-          {% endif %}
-
-          {% if warehouse.count > 1 and unstackOk %}
-             <span role="button" class="badge bg-blue splitItem js-split-item-btn me-1">{{phrase('unstack')}}</span>
-          {% endif %}
 
 
-
-          </div>
-        </div>
-        <div class="small text-muted">{{phrase(warehouse.phrase)|raw}}</div>
-      </div>
-    </div>
-  </li>
-
-
-        {% if getServer().stackableItem().isAllowAllItemsStacking() %}
-            {% set okStackBtn = true %}
-        {% endif %}
-
-        {% if okStackBtn == false %}
-            {% for id in getServer().stackableItem().getStackableItems() %}
-                {% if id == warehouse.getItemId() %}
-                    {% set okStackBtn = true %}
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-
-{% endfor %}
-                    </ul>
-                  {% endif %}
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="selectAllItems" checked>
+                  <label class="form-check-label small" for="selectAllItems">
+                    {{phrase('Select all')}}
+                  </label>
                 </div>
               </div>
             </div>
 
-            <!-- Правая панель: управление отправкой -->
-            <div class="col-md-5 mt-3 mt-md-0 ps-md-2">
-              <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-transparent">
-                  <span class="fw-bold">{{phrase('send_to_char')}}</span>
-                </div>
-                <div class="card-body">
-                  {% if not canSendItemsNow %}
-                  <div class="d-flex p-3 border border-warning rounded-3 mb-3 items-send-lock">
-                    <div class="d-sm-flex align-items-start flex-grow-1">
-                      <div class="me-3">
-                        <svg class="bg-warning-transparent alt-notify" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="42" height="42">
-                          <path fill="#ffce6d" d="M18,13.18463V10c0-3.31372-2.68628-6-6-6s-6,2.68628-6,6v3.18463C4.83832,13.59863,4.00146,14.69641,4,16v2c0,0.00037,0,0.00073,0,0.00116C4.00031,18.5531,4.44806,19.00031,5,19h14c0.00037,0,0.00073,0,0.00116,0C19.5531,18.99969,20.00031,18.55194,20,18v-2C19.99854,14.69641,19.16168,13.59863,18,13.18463z"></path>
-                          <path fill="#ffae0c" d="M8.14233 19c.4472 1.72119 1.99689 2.99817 3.85767 3 1.86078-.00183 3.41046-1.27881 3.85767-3H8.14233zM12 4c.34149 0 .67413.03516 1 .08997V3c0-.55231-.44769-1-1-1s-1 .44769-1 1v1.08997C11.32587 4.03516 11.65851 4 12 4z"></path>
-                        </svg>
-                      </div>
-                      <div class="mt-0 text-start">
-                        <span class="fs-14 fw-semibold d-flex align-items-center gap-2">
-                          {{ phrase('items_send_title')|default('Отправка на персонажа недоступна') }}
-                        </span>
-                        <p class="fs-13 text-muted mb-0">
-                          {{ itemsSendLockMessage }}
-                        </p>
+            <div class="card-body p-0 wh-items-container" style="max-height: 50vh; overflow-y: auto;">
+              {% if getUser().countWarehouseItems() == 0 %}
+              <!-- Пустой склад -->
+              <div class="text-center p-4">
+                <i class="ri-inbox-line text-muted display-4"></i>
+                <p class="mt-2 text-muted">{{phrase('no_items_send_char')}}</p>
+              </div>
+              {% else %}
+              <!-- Список предметов -->
+              <ul class="list-group list-group-flush js-warehouse-items-list">
+                {% set okStackBtn = false %}
+
+                {% for warehouse in getUser().getWarehouse() %}
+                <li class="list-group-item list-group-item-action p-1 border-bottom js-warehouse-item"
+                  data-item-count="{{warehouse.count}}">
+                  <div class="d-flex align-items-center">
+                    <div class="item-icon me-3">
+                      <div class="position-relative wh-icon-wrap" data-bs-toggle="tooltip" data-bs-html="true"
+                        data-bs-placement="top" data-bs-custom-class="tooltip-wh"
+                        title="<strong>{{warehouse.item.getItemName()}}</strong>{% if warehouse.count > 1 %}<br><span class='wh-tt-count'>x{{warehouse.count}}</span>{% endif %}{% if warehouse.enchant > 0 %}<br><span class='wh-tt-enchant'>+{{warehouse.enchant}} enchant</span>{% endif %}">
+                        <img src="{{warehouse.item.getIcon()}}" alt="{{warehouse.item.getItemName()}}"
+                          class="img-fluid border rounded p-1 js-item-icon"
+                          style="width: 40px; height: 40px; object-fit: contain;">
+                        {% if warehouse.enchant > 0 %}
+                        <span class="badge bg-danger wh-enchant-overlay">+{{warehouse.enchant}}</span>
+                        {% endif %}
+                        <div class="form-check wh-item-check">
+                          <input data-object-id="{{warehouse.id}}"
+                            class="form-check-input warehouseInventory js-warehouse-item-checkbox" type="checkbox"
+                            id="item_{{warehouse.id}}" checked>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  {% endif %}
-                  <!-- Блок выбора персонажа -->
-                  {% if getUser().getCountPlayers() == 0 %}
-                    <div class="alert alert-info d-flex mb-3" role="alert">
-                      <i class="ri-user-3-line fs-5 me-2"></i>
-                      <div>{{phrase('no_chars_send_items_wh')}}</div>
-                    </div>
-                  {% else %}
-                    <div class="mb-3">
-                      <label for="warehousePlayerSend" class="form-label">
-                        {{ phrase(76) }}:
-                      </label>
-                      <select class="form-select form-select-lg"
-                              id="warehousePlayerSend"
-                              name="warehousePlayerSend"
-                              {% if statusSphereServer() is same as(false) %}disabled{% endif %}>
-                        {% set isPlayers = false %}
-                        {% for i, account in getUser().getAccounts() %}
-                          <optgroup label="{{account.getAccount()}}">
-                            {% if account.getCharactersCount() == 0 %}
-                              <option disabled>{{phrase('no_chars')}}</option>
-                            {% else %}
-                              {% for i, character in account.getCharacters() %}
-                                {% set isPlayers = true %}
-                                <option value="{{character.getPlayerId()}}"
-                                        data-account="{{account.getAccount()}}"
-                                        data-character="{{character.getPlayerName()}}">
-                                  {{character.getPlayerName()}} [{{character.getLevel()}}]
-                                </option>
-                              {% endfor %}
+                    <div class="item-details-n flex-grow-1">
+                      <div class="fw-medium d-flex justify-content-between align-items-center">
+                        <div>
+                          {% if warehouse.enchant > 0 %}
+                          <span class="badge bg-danger me-1">+{{warehouse.enchant}}</span>
+                          {% endif %}
+                          <label class="mb-0 cursor-pointer js-item-name" for="item_{{warehouse.id}}">
+                            {{warehouse.item.getItemName()}}
+
+                            {% if warehouse.count > 1 %}
+                            <span class="bottom-0 end-0 badge rounded-pill bg-secondary js-item-count">
+                              x{{warehouse.count}}
+                            </span>
                             {% endif %}
-                          </optgroup>
-                        {% endfor %}
-                      </select>
-                    </div>
-                  {% endif %}
+                          </label>
+                        </div>
+                        <div>
 
-                  <!-- Статус сервера -->
-                  {% if statusSphereServer() is same as(false) %}
-                    <div class="alert alert-danger d-flex mb-3" role="alert">
-                      <i class="ri-server-line fs-5 me-2"></i>
-                      <div>Сервер недоступен</div>
-                    </div>
-                  {% endif %}
+                          {% set unstackOk = false %}
+                          {% if getServer().stackableItem().allowAllItemsSplitting() %}
+                          {% set unstackOk = true %}
+                          {% endif %}
 
-                  <!-- Кнопка отправки -->
-                  <button type="button"
-                          id="warehouseSendItemsToPlayer"
-                          class="btn btn-primary btn-lg w-100 mt-2"
-                          {% if not isPlayers|default(false)
-                                or statusSphereServer() is same as(false)
-                                or getUser().countWarehouseItems() == 0
-                                or not canSendItemsNow %}
-                          disabled
-                          {% endif %}>
-                    <i class="ri-send-plane-line me-2"></i>
-                    {{phrase('send_items')}}
-                  </button>
-                </div>
-              </div>
+                          {% if unstackOk == false %}
+                          {% for id in getServer().stackableItem().getSplittableItems() %}
+                          {% if id == warehouse.item.getItemId() %}
+                          {% set unstackOk = true %}
+                          {% endif %}
+                          {% endfor %}
+                          {% endif %}
+
+                          {% if warehouse.count > 1 and unstackOk %}
+                          <span role="button"
+                            class="badge bg-blue splitItem js-split-item-btn me-1">{{phrase('unstack')}}</span>
+                          {% endif %}
+
+
+
+                        </div>
+                      </div>
+                      <div class="small text-muted">{{phrase(warehouse.phrase)|raw}}</div>
+                    </div>
+                  </div>
+                </li>
+
+
+                {% if getServer().stackableItem().isAllowAllItemsStacking() %}
+                {% set okStackBtn = true %}
+                {% endif %}
+
+                {% if okStackBtn == false %}
+                {% for id in getServer().stackableItem().getStackableItems() %}
+                {% if id == warehouse.getItemId() %}
+                {% set okStackBtn = true %}
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+
+                {% endfor %}
+              </ul>
+              {% endif %}
             </div>
           </div>
+
+          <!-- Правая панель: управление отправкой -->
+          <div class="col-md-5 mt-3 mt-md-0 ps-md-2">
+            <div class="card-header bg-transparent">
+              <span class="fw-bold">{{phrase('send_to_char')}}</span>
+              - <span id="warehouseSelectedPlayerName"></span>
+            </div>
+            <div class="card-body d-flex flex-column">
+              {% if not canSendItemsNow %}
+              <div class="d-flex p-3 border border-warning rounded-3 mb-3 items-send-lock">
+                <div class="d-sm-flex align-items-start flex-grow-1">
+                  <div class="me-3">
+                    <svg class="bg-warning-transparent alt-notify" xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24" width="42" height="42">
+                      <path fill="#ffce6d"
+                        d="M18,13.18463V10c0-3.31372-2.68628-6-6-6s-6,2.68628-6,6v3.18463C4.83832,13.59863,4.00146,14.69641,4,16v2c0,0.00037,0,0.00073,0,0.00116C4.00031,18.5531,4.44806,19.00031,5,19h14c0.00037,0,0.00073,0,0.00116,0C19.5531,18.99969,20.00031,18.55194,20,18v-2C19.99854,14.69641,19.16168,13.59863,18,13.18463z">
+                      </path>
+                      <path fill="#ffae0c"
+                        d="M8.14233 19c.4472 1.72119 1.99689 2.99817 3.85767 3 1.86078-.00183 3.41046-1.27881 3.85767-3H8.14233zM12 4c.34149 0 .67413.03516 1 .08997V3c0-.55231-.44769-1-1-1s-1 .44769-1 1v1.08997C11.32587 4.03516 11.65851 4 12 4z">
+                      </path>
+                    </svg>
+                  </div>
+                  <div class="mt-0 text-start">
+                    <span class="fs-14 fw-semibold d-flex align-items-center gap-2">
+                      {{ phrase('items_send_title')|default('Отправка на персонажа недоступна') }}
+                    </span>
+                    <p class="fs-13 text-muted mb-0">
+                      {{ itemsSendLockMessage }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+
+              <!-- Статус сервера -->
+              {% if statusSphereServer() is same as(false) %}
+              <div class="alert alert-danger d-flex mb-3" role="alert">
+                <i class="ri-server-line fs-5 me-2"></i>
+                <div>Сервер недоступен</div>
+              </div>
+              {% endif %}
+
+              <!-- Блок выбора персонажа -->
+              <div class="wh-char-block d-flex flex-column">
+                {% if getUser().getCountPlayers() == 0 %}
+                <div class="alert alert-info d-flex mt-2 mb-0" role="alert">
+                  <i class="ri-user-3-line fs-5 me-2"></i>
+                  <div>{{phrase('no_chars_send_items_wh')}}</div>
+                </div>
+                {% else %}
+                {% set isPlayers = true %}
+                <div class="d-flex flex-column">
+                  <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+                    <label class="form-label mb-0">{{ phrase(77) }}:</label>
+                    <input type="text" id="warehouseCharactersSearch" class="form-control form-control-sm"
+                      placeholder="{{ phrase('Search...') }}" style="max-width: 230px;" {% if statusSphereServer() is
+                      same as(false) %}disabled{% endif %}>
+                  </div>
+
+                  <input type="hidden" id="warehouseSelectedCharacter" value="">
+                  <input type="hidden" id="warehouseSelectedAccount" value="">
+
+                  <div class="wh-char-selector" {% if statusSphereServer() is same as(false) %}aria-disabled="true" {%
+                    endif %}>
+                    {% for i, account in getUser().getAccounts() %}
+                    {% if account.getCharactersCount() > 0 %}
+                    <div class="wh-char-account card border-0 shadow-sm bg-dark-transparent">
+                      <div class="wh-char-account-head">
+                        <small class="text-muted">{{ phrase('account') }}:</small>
+                        <strong>{{ account.getAccount() }}</strong>
+                      </div>
+
+                      <div class="wh-char-gallery">
+                        {% for i, character in account.getCharacters() %}
+                        <div class="wh-char-card" data-account="{{ account.getAccount() }}"
+                          data-player="{{ character.getPlayerName() }}" data-level="{{ character.getLevel() }}"
+                          data-class="{{ character.getClassId() }}" data-sex="{{ character.getSex() }}" {% if
+                          statusSphereServer() is same as(false) %}tabindex="-1" {% else %}tabindex="0" {% endif %}>
+                          <div class="wh-char-avatar-wrap">
+                            <img
+                              src="/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
+                              alt="{{ character.getPlayerName() }}" class="wh-char-avatar">
+                            <span class="wh-char-check" aria-hidden="true"><i class="ri-check-line"></i></span>
+                          </div>
+                          <div class="wh-char-meta">
+                            <div class="wh-char-name">{{ character.getPlayerName() }}</div>
+                            <div class="wh-char-level">Lv. {{ character.getLevel() }}</div>
+                          </div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+                {% endif %}
+              </div>
+
+              <button type="button" id="warehouseSendItemsToPlayer" class="btn btn-success btn-xs mt-3" {% if not
+                isPlayers|default(false) or statusSphereServer() is same as(false) or getUser().countWarehouseItems()==0
+                or not canSendItemsNow %} disabled {% endif %}>
+                <i class="ri-send-plane-line me-2"></i>
+                {{phrase('send_items')}}
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
         {% endif %}
       </div>
 
-      <div class="modal-footer border-0">
-
-
-
-        {% if okStackBtn == true %}
-            <button type="button" class="btn btn-primary me-auto" id="goStackItems">
-                {{phrase('stack_items')}}
-            </button>
-        {% endif %}
-
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-          {{phrase('close')}}
-        </button>
-      </div>
 
 
     </div>
@@ -1481,144 +1892,144 @@ function showToast(type, message) {
 
 <script>
 
-$(document).ready(function() {
-  $('.slide.warehouse .side-menu__item').on('mousedown', function(e) {
-    if (e.which === 2) {
-      e.preventDefault();
-      $('#warehouseModal').modal('show');
+  $(document).ready(function () {
+    $('.slide.warehouse .side-menu__item').on('mousedown', function (e) {
+      if (e.which === 2) {
+        e.preventDefault();
+        $('#warehouseModal').modal('show');
+        return false;
+      }
+    });
+  });
+
+  /**
+   * Определяет, можно ли разбить данный предмет
+   *
+   * @param {Object} item - объект предмета
+   * @param {boolean} isAllowAllItemsSplitting - разрешено ли разбивать все предметы
+   * @param {Array} splittableItems - массив ID предметов, которые можно разбивать
+   * @returns {boolean} - можно ли разбить предмет
+   */
+  function determineIfItemCanBeSplit(item, isAllowAllItemsSplitting, splittableItems) {
+    // Предмет должен иметь количество больше 1
+    if (!item || item.count <= 1) {
       return false;
     }
-  });
-});
 
-/**
- * Определяет, можно ли разбить данный предмет
- *
- * @param {Object} item - объект предмета
- * @param {boolean} isAllowAllItemsSplitting - разрешено ли разбивать все предметы
- * @param {Array} splittableItems - массив ID предметов, которые можно разбивать
- * @returns {boolean} - можно ли разбить предмет
- */
-function determineIfItemCanBeSplit(item, isAllowAllItemsSplitting, splittableItems) {
-  // Предмет должен иметь количество больше 1
-  if (!item || item.count <= 1) {
-    return false;
-  }
-
-  // Проверяем, stackable ли предмет
-  const isStackable = item.itemInfo && item.itemInfo.isStackable === true;
-  if (!isStackable) {
-    return false;
-  }
-
-  // Проверяем, разрешено ли разбивать все предметы
-  if (isAllowAllItemsSplitting) {
-    return true;
-  }
-
-  // Проверяем, входит ли ID предмета в список разрешенных для разбития
-  return Array.isArray(splittableItems) && splittableItems.includes(item.itemId.toString());
-}
-
-/**
- * Обработчик для кнопки "Разбить" предмет
- */
-$(document).on('click', '.js-split-item-btn', function(e) {
-  e.preventDefault();
-  e.stopPropagation();
-
-  // Находим родительский элемент list-item
-  const $listItem = $(this).closest('.js-warehouse-item');
-  const $checkbox = $listItem.find('.js-warehouse-item-checkbox');
-
-  // Извлекаем данные о предмете
-  const objectId = $checkbox.data('object-id');
-  const itemName = $listItem.find('.js-item-name').text().trim();
-  const itemIcon = $listItem.find('.js-item-icon').attr('src');
-  let itemCount = $listItem.data('item-count') || 1;
-
-  // Заполняем модальное окно данными
-  $('#splitItemIcon').attr('src', itemIcon);
-  $('#splitItemName').text(itemName);
-  $('#splitItemCount').text('Доступно: ' + itemCount);
-
-  // Настраиваем поле ввода
-  const $quantityInput = $('#splitItemQuantity');
-  $quantityInput.attr('max', itemCount - 1);
-  $quantityInput.val(1);
-  $quantityInput.removeClass('is-invalid');
-
-  // Валидация поля ввода при изменении
-  $quantityInput.off('input').on('input', function() {
-    const value = parseInt($(this).val());
-    const max = parseInt($(this).attr('max'));
-
-    if (isNaN(value) || value < 1 || value > max) {
-      $(this).addClass('is-invalid');
-      $('#confirmSplitItem').prop('disabled', true);
-    } else {
-      $(this).removeClass('is-invalid');
-      $('#confirmSplitItem').prop('disabled', false);
+    // Проверяем, stackable ли предмет
+    const isStackable = item.itemInfo && item.itemInfo.isStackable === true;
+    if (!isStackable) {
+      return false;
     }
-  });
 
-  // Сохраняем ID объекта в кнопке подтверждения
-  $('#confirmSplitItem').data('object-id', objectId).prop('disabled', false);
+    // Проверяем, разрешено ли разбивать все предметы
+    if (isAllowAllItemsSplitting) {
+      return true;
+    }
 
-  // Перемещаем модальное окно разбития в конец body, если оно ещё там не находится
-  if (!$('#splitItemModal').parent().is('body')) {
-    $('#splitItemModal').appendTo('body');
+    // Проверяем, входит ли ID предмета в список разрешенных для разбития
+    return Array.isArray(splittableItems) && splittableItems.includes(item.itemId.toString());
   }
 
-  // Сохраняем первое модальное окно, чтобы правильно к нему вернуться
-  $('#splitItemModal').data('parentModal', $('#warehouseModal')[0]);
+  /**
+   * Обработчик для кнопки "Разбить" предмет
+   */
+  $(document).on('click', '.js-split-item-btn', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
 
-  // Важно: скрываем backdrop первого модального окна перед открытием второго
-  $('.modal-backdrop').last().css('opacity', '0');
+    // Находим родительский элемент list-item
+    const $listItem = $(this).closest('.js-warehouse-item');
+    const $checkbox = $listItem.find('.js-warehouse-item-checkbox');
 
-  // Настраиваем z-index для корректного отображения
-  setTimeout(function() {
-    const zIndexBase = 1050;
-    const backdropCount = $('.modal-backdrop').length;
+    // Извлекаем данные о предмете
+    const objectId = $checkbox.data('object-id');
+    const itemName = $listItem.find('.js-item-name').text().trim();
+    const itemIcon = $listItem.find('.js-item-icon').attr('src');
+    let itemCount = $listItem.data('item-count') || 1;
 
-    // Настраиваем z-index для нового модального окна
-    $('#splitItemModal').css('z-index', zIndexBase + (backdropCount * 10) + 10);
+    // Заполняем модальное окно данными
+    $('#splitItemIcon').attr('src', itemIcon);
+    $('#splitItemName').text(itemName);
+    $('#splitItemCount').text('Доступно: ' + itemCount);
 
-    // Находим последний backdrop и настраиваем его z-index и непрозрачность
-    $('.modal-backdrop').last().css({
-      'z-index': zIndexBase + (backdropCount * 10) + 5,
-      'opacity': '0.5'
+    // Настраиваем поле ввода
+    const $quantityInput = $('#splitItemQuantity');
+    $quantityInput.attr('max', itemCount - 1);
+    $quantityInput.val(1);
+    $quantityInput.removeClass('is-invalid');
+
+    // Валидация поля ввода при изменении
+    $quantityInput.off('input').on('input', function () {
+      const value = parseInt($(this).val());
+      const max = parseInt($(this).attr('max'));
+
+      if (isNaN(value) || value < 1 || value > max) {
+        $(this).addClass('is-invalid');
+        $('#confirmSplitItem').prop('disabled', true);
+      } else {
+        $(this).removeClass('is-invalid');
+        $('#confirmSplitItem').prop('disabled', false);
+      }
     });
-  }, 50);
 
-  // Открываем модальное окно
-  const splitModal = new bootstrap.Modal(document.getElementById('splitItemModal'));
-  splitModal.show();
-});
+    // Сохраняем ID объекта в кнопке подтверждения
+    $('#confirmSplitItem').data('object-id', objectId).prop('disabled', false);
 
-$('#splitItemModal').on('hidden.bs.modal', function() {
-  // Восстанавливаем видимость backdrop первого модального окна
-  $('.modal-backdrop').last().css('opacity', '0.5');
-});
+    // Перемещаем модальное окно разбития в конец body, если оно ещё там не находится
+    if (!$('#splitItemModal').parent().is('body')) {
+      $('#splitItemModal').appendTo('body');
+    }
+
+    // Сохраняем первое модальное окно, чтобы правильно к нему вернуться
+    $('#splitItemModal').data('parentModal', $('#warehouseModal')[0]);
+
+    // Важно: скрываем backdrop первого модального окна перед открытием второго
+    $('.modal-backdrop').last().css('opacity', '0');
+
+    // Настраиваем z-index для корректного отображения
+    setTimeout(function () {
+      const zIndexBase = 1050;
+      const backdropCount = $('.modal-backdrop').length;
+
+      // Настраиваем z-index для нового модального окна
+      $('#splitItemModal').css('z-index', zIndexBase + (backdropCount * 10) + 10);
+
+      // Находим последний backdrop и настраиваем его z-index и непрозрачность
+      $('.modal-backdrop').last().css({
+        'z-index': zIndexBase + (backdropCount * 10) + 5,
+        'opacity': '0.5'
+      });
+    }, 50);
+
+    // Открываем модальное окно
+    const splitModal = new bootstrap.Modal(document.getElementById('splitItemModal'));
+    splitModal.show();
+  });
+
+  $('#splitItemModal').on('hidden.bs.modal', function () {
+    // Восстанавливаем видимость backdrop первого модального окна
+    $('.modal-backdrop').last().css('opacity', '0.5');
+  });
 
 
-/**
- * Система управления модальными окнами для правильной работы вложенных модальных окон
- * Этот код заменяет предыдущую реализацию, вызывающую конфликты
- */
-(function() {
-  // Проверяем, существует ли уже этот объект
-  if (window.modalManager) return;
+  /**
+   * Система управления модальными окнами для правильной работы вложенных модальных окон
+   * Этот код заменяет предыдущую реализацию, вызывающую конфликты
+   */
+  (function () {
+    // Проверяем, существует ли уже этот объект
+    if (window.modalManager) return;
 
-  // Создаем менеджер модальных окон
-  window.modalManager = {
-    // Стек открытых модальных окон
-    _openedModals: [],
+    // Создаем менеджер модальных окон
+    window.modalManager = {
+      // Стек открытых модальных окон
+      _openedModals: [],
 
-    // Инициализация менеджера
-    init: function() {
-      // Добавляем базовые стили для модальных окон
-      const styles = `
+      // Инициализация менеджера
+      init: function () {
+        // Добавляем базовые стили для модальных окон
+        const styles = `
         /* Базовый z-index для модальных окон */
         .modal {
           z-index: 1050;
@@ -1658,414 +2069,961 @@ $('#splitItemModal').on('hidden.bs.modal', function() {
         }
       `;
 
-      const styleElem = document.createElement('style');
-      styleElem.innerHTML = styles;
-      document.head.appendChild(styleElem);
+        const styleElem = document.createElement('style');
+        styleElem.innerHTML = styles;
+        document.head.appendChild(styleElem);
 
-      // Обработчики событий для модальных окон
-      this._setupEventListeners();
-    },
+        // Обработчики событий для модальных окон
+        this._setupEventListeners();
+      },
 
-    // Настройка обработчиков событий
-    _setupEventListeners: function() {
-      const self = this;
+      // Настройка обработчиков событий
+      _setupEventListeners: function () {
+        const self = this;
 
-      // Отслеживаем открытие модального окна
-      $(document).on('shown.bs.modal', '.modal', function(e) {
-        const modalId = $(this).attr('id');
+        // Отслеживаем открытие модального окна
+        $(document).on('shown.bs.modal', '.modal', function (e) {
+          const modalId = $(this).attr('id');
 
-        // Если это новое модальное окно (не то, что уже в стеке)
-        if (!self._openedModals.includes(modalId)) {
-          self._openedModals.push(modalId);
+          // Если это новое модальное окно (не то, что уже в стеке)
+          if (!self._openedModals.includes(modalId)) {
+            self._openedModals.push(modalId);
 
-          // Добавляем класс для отслеживания множественных модальных окон
-          if (self._openedModals.length > 1) {
-            $('body').addClass('multiple-modals-open');
+            // Добавляем класс для отслеживания множественных модальных окон
+            if (self._openedModals.length > 1) {
+              $('body').addClass('multiple-modals-open');
+            }
+
+            // Назначаем уровень для модального окна и последнего backdrop
+            const level = self._openedModals.length - 1;
+            $(this).addClass('level-' + level);
+
+            // Находим последний добавленный backdrop и назначаем ему класс уровня
+            $('.modal-backdrop').last().addClass('level-' + level);
+
+            // Исправляем z-index для правильного порядка
+            self._adjustModalLevels();
           }
+        });
 
-          // Назначаем уровень для модального окна и последнего backdrop
-          const level = self._openedModals.length - 1;
-          $(this).addClass('level-' + level);
+        // Отслеживаем закрытие модального окна
+        $(document).on('hidden.bs.modal', '.modal', function (e) {
+          const modalId = $(this).attr('id');
 
-          // Находим последний добавленный backdrop и назначаем ему класс уровня
-          $('.modal-backdrop').last().addClass('level-' + level);
+          // Удаляем модальное окно из стека
+          const index = self._openedModals.indexOf(modalId);
+          if (index > -1) {
+            self._openedModals.splice(index, 1);
 
-          // Исправляем z-index для правильного порядка
-          self._adjustModalLevels();
-        }
-      });
+            // Удаляем класс уровня
+            $(this).removeClass(function (index, className) {
+              return (className.match(/(^|\s)level-\S+/g) || []).join(' ');
+            });
 
-      // Отслеживаем закрытие модального окна
-      $(document).on('hidden.bs.modal', '.modal', function(e) {
-        const modalId = $(this).attr('id');
+            // Если больше нет открытых модальных окон, удаляем класс
+            if (self._openedModals.length <= 1) {
+              $('body').removeClass('multiple-modals-open');
+            }
 
-        // Удаляем модальное окно из стека
-        const index = self._openedModals.indexOf(modalId);
-        if (index > -1) {
-          self._openedModals.splice(index, 1);
+            // Удаляем лишние backdrop элементы
+            self._cleanupBackdrops();
 
-          // Удаляем класс уровня
-          $(this).removeClass(function(index, className) {
+            // Перенастраиваем уровни оставшихся модальных окон
+            self._adjustModalLevels();
+          }
+        });
+
+        // Кнопка для открытия модального окна разбиения предметов
+        $(document).on('click', '.js-split-item-btn', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          // Логика открытия модального окна разбиения предметов
+          const $listItem = $(this).closest('.js-warehouse-item');
+          const $checkbox = $listItem.find('.js-warehouse-item-checkbox');
+
+          // Получаем данные предмета и заполняем модальное окно
+          const objectId = $checkbox.data('object-id');
+          const itemName = $listItem.find('.js-item-name').text().trim();
+          const itemIcon = $listItem.find('.js-item-icon').attr('src');
+          const itemCount = $listItem.data('item-count') || 1;
+
+          $('#splitItemIcon').attr('src', itemIcon);
+          $('#splitItemName').text(itemName);
+          $('#splitItemCount').text('Доступно: ' + itemCount);
+
+          // Настраиваем поле ввода
+          const $quantityInput = $('#splitItemQuantity');
+          $quantityInput.attr('max', itemCount - 1);
+          $quantityInput.val(1);
+          $quantityInput.removeClass('is-invalid');
+
+          // Валидация при изменении значения
+          $quantityInput.off('input').on('input', function () {
+            const value = parseInt($(this).val());
+            const max = parseInt($(this).attr('max'));
+
+            if (isNaN(value) || value < 1 || value > max) {
+              $(this).addClass('is-invalid');
+              $('#confirmSplitItem').prop('disabled', true);
+            } else {
+              $(this).removeClass('is-invalid');
+              $('#confirmSplitItem').prop('disabled', false);
+            }
+          });
+
+          // Сохраняем ID объекта в кнопке подтверждения
+          $('#confirmSplitItem').data('object-id', objectId).prop('disabled', false);
+
+          // Открываем модальное окно разбиения
+          const splitModal = new bootstrap.Modal(document.getElementById('splitItemModal'));
+          splitModal.show();
+        });
+      },
+
+      // Корректировка уровней модальных окон
+      _adjustModalLevels: function () {
+        // Перенастраиваем уровни для всех открытых модальных окон
+        for (let i = 0; i < this._openedModals.length; i++) {
+          const modalId = this._openedModals[i];
+          const modal = $('#' + modalId);
+
+          // Удаляем все предыдущие классы уровней
+          modal.removeClass(function (index, className) {
             return (className.match(/(^|\s)level-\S+/g) || []).join(' ');
           });
 
-          // Если больше нет открытых модальных окон, удаляем класс
-          if (self._openedModals.length <= 1) {
-            $('body').removeClass('multiple-modals-open');
-          }
-
-          // Удаляем лишние backdrop элементы
-          self._cleanupBackdrops();
-
-          // Перенастраиваем уровни оставшихся модальных окон
-          self._adjustModalLevels();
+          // Добавляем новый класс уровня
+          modal.addClass('level-' + i);
         }
-      });
 
-      // Кнопка для открытия модального окна разбиения предметов
-      $(document).on('click', '.js-split-item-btn', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        // Логика открытия модального окна разбиения предметов
-        const $listItem = $(this).closest('.js-warehouse-item');
-        const $checkbox = $listItem.find('.js-warehouse-item-checkbox');
-
-        // Получаем данные предмета и заполняем модальное окно
-        const objectId = $checkbox.data('object-id');
-        const itemName = $listItem.find('.js-item-name').text().trim();
-        const itemIcon = $listItem.find('.js-item-icon').attr('src');
-        const itemCount = $listItem.data('item-count') || 1;
-
-        $('#splitItemIcon').attr('src', itemIcon);
-        $('#splitItemName').text(itemName);
-        $('#splitItemCount').text('Доступно: ' + itemCount);
-
-        // Настраиваем поле ввода
-        const $quantityInput = $('#splitItemQuantity');
-        $quantityInput.attr('max', itemCount - 1);
-        $quantityInput.val(1);
-        $quantityInput.removeClass('is-invalid');
-
-        // Валидация при изменении значения
-        $quantityInput.off('input').on('input', function() {
-          const value = parseInt($(this).val());
-          const max = parseInt($(this).attr('max'));
-
-          if (isNaN(value) || value < 1 || value > max) {
-            $(this).addClass('is-invalid');
-            $('#confirmSplitItem').prop('disabled', true);
-          } else {
-            $(this).removeClass('is-invalid');
-            $('#confirmSplitItem').prop('disabled', false);
-          }
-        });
-
-        // Сохраняем ID объекта в кнопке подтверждения
-        $('#confirmSplitItem').data('object-id', objectId).prop('disabled', false);
-
-        // Открываем модальное окно разбиения
-        const splitModal = new bootstrap.Modal(document.getElementById('splitItemModal'));
-        splitModal.show();
-      });
-    },
-
-    // Корректировка уровней модальных окон
-    _adjustModalLevels: function() {
-      // Перенастраиваем уровни для всех открытых модальных окон
-      for (let i = 0; i < this._openedModals.length; i++) {
-        const modalId = this._openedModals[i];
-        const modal = $('#' + modalId);
-
-        // Удаляем все предыдущие классы уровней
-        modal.removeClass(function(index, className) {
-          return (className.match(/(^|\s)level-\S+/g) || []).join(' ');
-        });
-
-        // Добавляем новый класс уровня
-        modal.addClass('level-' + i);
-      }
-
-      // Находим все backdrop и корректируем их классы
-      $('.modal-backdrop').each(function(index) {
-        $(this).removeClass(function(idx, className) {
-          return (className.match(/(^|\s)level-\S+/g) || []).join(' ');
-        });
-
-        if (index < this._openedModals.length) {
-          $(this).addClass('level-' + index);
-        }
-      }.bind(this));
-    },
-
-    // Удаление лишних backdrop элементов
-    _cleanupBackdrops: function() {
-      // Проверяем количество backdrop элементов
-      const backdropCount = $('.modal-backdrop').length;
-      const modalCount = this._openedModals.length;
-
-      // Если backdrop больше, чем открытых модальных окон, удаляем лишние
-      if (backdropCount > modalCount) {
-        // Оставляем только нужное количество backdrop
-        $('.modal-backdrop').slice(modalCount).remove();
-      }
-    }
-  };
-
-  // Инициализация менеджера модальных окон при загрузке страницы
-  $(document).ready(function() {
-    window.modalManager.init();
-  });
-})();
-
-/**
- * Обработчик подтверждения разбития предмета
- */
-$('#confirmSplitItem').off('click').on('click', function() {
-  const objectId = $(this).data('object-id');
-  const quantity = parseInt($('#splitItemQuantity').val());
-  const $button = $(this);
-  const originalButtonText = $button.text();
-
-  // Валидация
-  if (isNaN(quantity) || quantity < 1) {
-    $('#splitItemQuantity').addClass('is-invalid');
-    return;
-  }
-
-  // Показываем индикатор загрузки
-  $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Выполняется...').prop('disabled', true);
-
-  // Отправляем AJAX запрос
-  AjaxSend('/inventory/warehouse/split-item', 'POST', {
-    objectId: objectId,
-    quantity: quantity
-  }).then(function(response) {
-    // Обрабатываем ответ
-    if (response.ok === true) {
-      noticeSuccess(response.message || '{{phrase("unstack_success")}}');
-
-      // Закрываем модальное окно
-      const splitModal = bootstrap.Modal.getInstance(document.getElementById('splitItemModal'));
-      if (splitModal) {
-        splitModal.hide();
-      }
-
-      // Обновляем список предметов
-      if (response.items && Array.isArray(response.items)) {
-        updateWarehouseItemsList(response);
-      }
-    } else {
-      noticeError(response.message || '{{phrase("error_unstack_success")}}');
-    }
-  }).catch(function(error) {
-    noticeError('Ошибка соединения с сервером');
-    console.error('Ошибка запроса:', error);
-  }).finally(function() {
-    // Восстанавливаем кнопку
-    $button.html(originalButtonText).prop('disabled', false);
-  });
-});
-
-
-
-// Инициализация обработчиков для чекбокса "Выбрать все"
-$(document).ready(function() {
-  // Обработчик для чекбокса "Выбрать все"
-  $('#selectAllItems').off('change').on('change', function() {
-    const isChecked = $(this).prop('checked');
-    $('.js-warehouse-items-list .js-warehouse-item-checkbox').prop('checked', isChecked);
-  });
-
-  // Обработчик для отдельных чекбоксов предметов
-  $(document).on('change', '.js-warehouse-item-checkbox', function() {
-    const totalCheckboxes = $('.js-warehouse-items-list .js-warehouse-item-checkbox').length;
-    const checkedCheckboxes = $('.js-warehouse-items-list .js-warehouse-item-checkbox:checked').length;
-
-    $('#selectAllItems').prop('checked', totalCheckboxes === checkedCheckboxes);
-  });
-
-  // Обработчик для кнопки "Объединить предметы"
-  $("#goStackItems").off('click').on('click', function() {
-    const $button = $(this);
-    $button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Выполняется...');
-
-    AjaxSend('/inventory/warehouse/stack', 'POST', {}, true)
-          .then(function(response) {
-            $button.prop('disabled', false).html('{{phrase("stack_items")}}');
-
-            if (response.success) {
-              noticeSuccess(response.message || '{{phrase("success_stack")}}');
-              updateWarehouseItemsList(response);
-            } else {
-              noticeError(response.message || '{{phrase("error_stack")}}');
-            }
-          })
-          .catch(function(error) {
-            $button.prop('disabled', false).html('{{phrase("stack_items")}}');
-            noticeError('Error');
-            console.error('Ошибка запроса:', error);
+        // Находим все backdrop и корректируем их классы
+        $('.modal-backdrop').each(function (index) {
+          $(this).removeClass(function (idx, className) {
+            return (className.match(/(^|\s)level-\S+/g) || []).join(' ');
           });
+
+          if (index < this._openedModals.length) {
+            $(this).addClass('level-' + index);
+          }
+        }.bind(this));
+      },
+
+      // Удаление лишних backdrop элементов
+      _cleanupBackdrops: function () {
+        // Проверяем количество backdrop элементов
+        const backdropCount = $('.modal-backdrop').length;
+        const modalCount = this._openedModals.length;
+
+        // Если backdrop больше, чем открытых модальных окон, удаляем лишние
+        if (backdropCount > modalCount) {
+          // Оставляем только нужное количество backdrop
+          $('.modal-backdrop').slice(modalCount).remove();
+        }
+      }
+    };
+
+    // Инициализация менеджера модальных окон при загрузке страницы
+    $(document).ready(function () {
+      window.modalManager.init();
+    });
+  })();
+
+  /**
+   * Обработчик подтверждения разбития предмета
+   */
+  $('#confirmSplitItem').off('click').on('click', function () {
+    const objectId = $(this).data('object-id');
+    const quantity = parseInt($('#splitItemQuantity').val());
+    const $button = $(this);
+    const originalButtonText = $button.text();
+
+    // Валидация
+    if (isNaN(quantity) || quantity < 1) {
+      $('#splitItemQuantity').addClass('is-invalid');
+      return;
+    }
+
+    // Показываем индикатор загрузки
+    $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Выполняется...').prop('disabled', true);
+
+    // Отправляем AJAX запрос
+    AjaxSend('/inventory/warehouse/split-item', 'POST', {
+      objectId: objectId,
+      quantity: quantity
+    }).then(function (response) {
+      // Обрабатываем ответ
+      if (response.ok === true) {
+        noticeSuccess(response.message || '{{phrase("unstack_success")}}');
+
+        // Закрываем модальное окно
+        const splitModal = bootstrap.Modal.getInstance(document.getElementById('splitItemModal'));
+        if (splitModal) {
+          splitModal.hide();
+        }
+
+        // Обновляем список предметов
+        if (response.items && Array.isArray(response.items)) {
+          updateWarehouseItemsList(response);
+        }
+      } else {
+        noticeError(response.message || '{{phrase("error_unstack_success")}}');
+      }
+    }).catch(function (error) {
+      noticeError('Ошибка соединения с сервером');
+      console.error('Ошибка запроса:', error);
+    }).finally(function () {
+      // Восстанавливаем кнопку
+      $button.html(originalButtonText).prop('disabled', false);
+    });
   });
-});
+
+
+
+  // Инициализация обработчиков для чекбокса "Выбрать все"
+  $(document).ready(function () {
+    // Обработчик для чекбокса "Выбрать все"
+    $('#selectAllItems').off('change').on('change', function () {
+      const isChecked = $(this).prop('checked');
+      $('.js-warehouse-items-list .js-warehouse-item-checkbox').prop('checked', isChecked);
+    });
+
+    // Обработчик для отдельных чекбоксов предметов
+    $(document).on('change', '.js-warehouse-item-checkbox', function () {
+      const totalCheckboxes = $('.js-warehouse-items-list .js-warehouse-item-checkbox').length;
+      const checkedCheckboxes = $('.js-warehouse-items-list .js-warehouse-item-checkbox:checked').length;
+
+      $('#selectAllItems').prop('checked', totalCheckboxes === checkedCheckboxes);
+    });
+
+    // Обработчик для кнопки "Объединить предметы"
+    $("#goStackItems").off('click').on('click', function () {
+      const $button = $(this);
+      $button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Выполняется...');
+
+      AjaxSend('/inventory/warehouse/stack', 'POST', {}, true)
+        .then(function (response) {
+          $button.prop('disabled', false).html('{{phrase("stack_items")}}');
+
+          if (response.success) {
+            noticeSuccess(response.message || '{{phrase("success_stack")}}');
+            updateWarehouseItemsList(response);
+          } else {
+            noticeError(response.message || '{{phrase("error_stack")}}');
+          }
+        })
+        .catch(function (error) {
+          $button.prop('disabled', false).html('{{phrase("stack_items")}}');
+          noticeError('Error');
+          console.error('Ошибка запроса:', error);
+        });
+    });
+  });
 
 </script>
 
 
 <script>
 
-/**
- * Модуль для обработки действий со складом (warehouse)
- * Обрабатывает отправку предметов персонажу и удаление их из интерфейса после успешной отправки
- * Обновляет счетчик предметов на складе на основе ответа сервера
- */
-$(document).ready(function() {
-  // Переопределение обработчика нажатия на кнопку отправки предметов
-  $(document).off('click', '#warehouseSendItemsToPlayer').on('click', '#warehouseSendItemsToPlayer', function() {
-    const selectedOption = $('#warehousePlayerSend option:selected');
-    const account = selectedOption.data('account');
-    const character = selectedOption.data('character');
+  /**
+   * Модуль для обработки действий со складом (warehouse)
+   * Обрабатывает отправку предметов персонажу и удаление их из интерфейса после успешной отправки
+   * Обновляет счетчик предметов на складе на основе ответа сервера
+   */
+  $(document).ready(function () {
+    const WAREHOUSE_CHARACTER_STORAGE_KEY = 'warehouse-selected-character';
 
-    // Получаем список выбранных предметов
-    const selectedItems = [];
-    $('.warehouseInventory:checked').each(function() {
-      const objectId = $(this).data('object-id');
-      if (objectId) {
-        selectedItems.push(objectId);
+    function setWarehouseCharacterSelection($card) {
+      if (!$card || !$card.length) {
+        return;
       }
-    });
 
-    // Проверяем, есть ли выбранные предметы
-    if (selectedItems.length === 0) {
-      noticeError('{{phrase("min_1_item_for_send")}}');
-      return;
+      $('.wh-char-card').removeClass('selected').attr('aria-checked', 'false');
+      $card.addClass('selected').attr('aria-checked', 'true');
+
+      const account = $card.data('account');
+      const player = $card.data('player');
+
+      $('#warehouseSelectedAccount').val(account || '');
+      $('#warehouseSelectedCharacter').val(player || '');
+
+      // Обновляем отображение выбранного ника персонажа в правой панели
+      $('#warehouseSelectedPlayerName').text(player || '');
+
+      if (account && player) {
+        localStorage.setItem(WAREHOUSE_CHARACTER_STORAGE_KEY, JSON.stringify({
+          account: account,
+          player: player
+        }));
+      }
     }
 
-    // Блокируем кнопку и показываем индикатор загрузки
-    const $sendButton = $(this);
-    $sendButton.prop('disabled', true).html('<i class="ri-loader-2-line me-2"></i> {{phrase("submitting_an_item")}}...');
-
-    // Отправляем запрос на сервер
-    AjaxSend('/inventory/send', 'POST', {
-      items: selectedItems,
-      player: character,
-      account: account
-    }, true, 20).then(function(response) {
-
-      // Обработка ответа
-      if (response.ok === true) {
-        // Если есть предметы для удаления
-        if (response.removeObject && Array.isArray(response.removeObject) && response.removeObject.length > 0) {
-          // Удаляем предметы из DOM
-          handleItemRemoval(response.removeObject);
-        }
-
-        // Обновляем счетчик на основе данных из ответа сервера
-        if (response.hasOwnProperty('countWarehouseItems')) {
-          updateWarehouseCounter(response.countWarehouseItems);
-        }
-
-        // Показываем сообщение об успехе
-        if (response.message) {
-          noticeSuccess(response.message);
-        }
-      } else {
-        // Показываем сообщение об ошибке
-        if (response.message) {
-          noticeError(response.message);
-        } else {
-          noticeError('Произошла ошибка при отправке предметов');
-        }
+    function ensureWarehouseCharacterSelection() {
+      const $cards = $('#warehouseModal .wh-char-card:visible');
+      if (!$cards.length) {
+        $('#warehouseSelectedAccount').val('');
+        $('#warehouseSelectedCharacter').val('');
+        // Очищаем отображение ника если персонажей нет
+        $('#warehouseSelectedPlayerName').text('');
+        return;
       }
 
-      // Восстанавливаем кнопку
-      $sendButton.prop('disabled', false).html('<i class="ri-send-plane-line me-2"></i> {{phrase("send_items")}}');
-    }).catch(function(error) {
-      console.error('Ошибка запроса:', error);
-      noticeError('Ошибка соединения с сервером');
+      let selectedCard = $('#warehouseModal .wh-char-card.selected:visible').first();
+      if (selectedCard.length) {
+        setWarehouseCharacterSelection(selectedCard);
+        return;
+      }
 
-      // Восстанавливаем кнопку
-      $sendButton.prop('disabled', false).html('<i class="ri-send-plane-line me-2"></i> {{phrase("send_items")}}');
+      let savedSelection = null;
+      try {
+        savedSelection = JSON.parse(localStorage.getItem(WAREHOUSE_CHARACTER_STORAGE_KEY) || 'null');
+      } catch (error) {
+        savedSelection = null;
+      }
+
+      if (savedSelection && savedSelection.account && savedSelection.player) {
+        selectedCard = $cards.filter(function () {
+          return $(this).data('account') === savedSelection.account && $(this).data('player') === savedSelection.player;
+        }).first();
+      }
+
+      if (!selectedCard.length) {
+        selectedCard = $cards.first();
+      }
+
+      setWarehouseCharacterSelection(selectedCard);
+    }
+
+    $(document).on('click keydown', '#warehouseModal .wh-char-card', function (event) {
+      if (event.type === 'keydown' && event.key !== 'Enter' && event.key !== ' ') {
+        return;
+      }
+
+      event.preventDefault();
+      setWarehouseCharacterSelection($(this));
     });
-  });
 
-  /**
-   * Обработка удаления предметов из DOM после успешной отправки
-   * @param {Array} items - массив объектов предметов для удаления
-   */
-  function handleItemRemoval(items) {
+    $('#warehouseCharactersSearch').on('input', function () {
+      const query = String($(this).val() || '').toLowerCase().trim();
+      const $accounts = $('#warehouseModal .wh-char-account');
 
-    // Перебираем все предметы для удаления
-    items.forEach(function(item) {
-      // Находим элемент DOM по ObjectId
-      const $itemElement = $('.warehouseInventory[data-object-id="' + item.objectId + '"]').closest('li.list-group-item');
+      if (!query.length) {
+        $accounts.show();
+        $accounts.find('.wh-char-card').show();
+        ensureWarehouseCharacterSelection();
+        return;
+      }
 
-      if ($itemElement.length > 0) {
-        // Плавно скрываем и удаляем элемент
-        $itemElement.fadeOut(300, function() {
-          $(this).remove();
+      $accounts.each(function () {
+        const $account = $(this);
+        const accountName = String($account.find('.wh-char-account-head strong').text() || '').toLowerCase();
+        const accountMatch = accountName.includes(query);
+        let hasVisibleCharacters = false;
 
-          // Если это был последний предмет, показываем сообщение о пустом складе
-          checkIfWarehouseEmpty();
+        $account.find('.wh-char-card').each(function () {
+          const $card = $(this);
+          const playerName = String($card.data('player') || '').toLowerCase();
+          const match = accountMatch || playerName.includes(query);
+          $card.toggle(match);
+          if (match) {
+            hasVisibleCharacters = true;
+          }
         });
+
+        $account.toggle(hasVisibleCharacters);
+      });
+
+      ensureWarehouseCharacterSelection();
+    });
+
+    $('#warehouseModal').on('show.bs.modal', function () {
+      const $searchInput = $('#warehouseCharactersSearch');
+      if ($searchInput.length) {
+        $searchInput.val('');
+      }
+
+      $('#warehouseModal .wh-char-account').show();
+      $('#warehouseModal .wh-char-card').show();
+      ensureWarehouseCharacterSelection();
+    });
+
+    $('#warehouseModal').on('shown.bs.modal', function () {
+      ensureWarehouseCharacterSelection();
+      const selectedCardElement = $('#warehouseModal .wh-char-card.selected').get(0);
+      if (selectedCardElement) {
+        selectedCardElement.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
       }
     });
-  }
 
-  /**
-   * Проверяет, остались ли предметы на складе, и если нет, показывает сообщение о пустом складе
-   */
-  function checkIfWarehouseEmpty() {
-    if ($('.warehouseInventory').length === 0) {
-      // Создаем HTML для пустого склада
-      const emptyWarehouseHTML = `
+    // Переопределение обработчика нажатия на кнопку отправки предметов
+    $(document).off('click', '#warehouseSendItemsToPlayer').on('click', '#warehouseSendItemsToPlayer', function () {
+      const account = $('#warehouseSelectedAccount').val() || $('#warehousePlayerSend option:selected').data('account');
+      const character = $('#warehouseSelectedCharacter').val() || $('#warehousePlayerSend option:selected').data('character');
+
+      if (!account || !character) {
+        noticeError('{{phrase("no_chars_send_items_wh")}}');
+        return;
+      }
+
+      // Получаем список выбранных предметов
+      const selectedItems = [];
+      $('.warehouseInventory:checked').each(function () {
+        const objectId = $(this).data('object-id');
+        if (objectId) {
+          selectedItems.push(objectId);
+        }
+      });
+
+      // Проверяем, есть ли выбранные предметы
+      if (selectedItems.length === 0) {
+        noticeError('{{phrase("min_1_item_for_send")}}');
+        return;
+      }
+
+      // Блокируем кнопку и показываем индикатор загрузки
+      const $sendButton = $(this);
+      $sendButton.prop('disabled', true).html('<i class="ri-loader-2-line me-2"></i> {{phrase("submitting_an_item")}}...');
+
+      // Отправляем запрос на сервер
+      AjaxSend('/inventory/send', 'POST', {
+        items: selectedItems,
+        player: character,
+        account: account
+      }, true, 20).then(function (response) {
+
+        // Обработка ответа
+        if (response.ok === true) {
+          // Если есть предметы для удаления
+          if (response.removeObject && Array.isArray(response.removeObject) && response.removeObject.length > 0) {
+            // Удаляем предметы из DOM
+            handleItemRemoval(response.removeObject);
+          }
+
+          // Обновляем счетчик на основе данных из ответа сервера
+          if (response.hasOwnProperty('countWarehouseItems')) {
+            updateWarehouseCounter(response.countWarehouseItems);
+          }
+
+          // Показываем сообщение об успехе
+          if (response.message) {
+            noticeSuccess(response.message);
+          }
+        } else {
+          // Показываем сообщение об ошибке
+          if (response.message) {
+            noticeError(response.message);
+          } else {
+            noticeError('Произошла ошибка при отправке предметов');
+          }
+        }
+
+        // Восстанавливаем кнопку
+        $sendButton.prop('disabled', false).html('<i class="ri-send-plane-line me-2"></i> {{phrase("send_items")}}');
+      }).catch(function (error) {
+        console.error('Ошибка запроса:', error);
+        noticeError('Ошибка соединения с сервером');
+
+        // Восстанавливаем кнопку
+        $sendButton.prop('disabled', false).html('<i class="ri-send-plane-line me-2"></i> {{phrase("send_items")}}');
+      });
+    });
+
+    /**
+     * Обработка удаления предметов из DOM после успешной отправки
+     * @param {Array} items - массив объектов предметов для удаления
+     */
+    function handleItemRemoval(items) {
+
+      // Перебираем все предметы для удаления
+      items.forEach(function (item) {
+        // Находим элемент DOM по ObjectId
+        const $itemElement = $('.warehouseInventory[data-object-id="' + item.objectId + '"]').closest('li.list-group-item');
+
+        if ($itemElement.length > 0) {
+          // Плавно скрываем и удаляем элемент
+          $itemElement.fadeOut(300, function () {
+            $(this).remove();
+
+            // Если это был последний предмет, показываем сообщение о пустом складе
+            checkIfWarehouseEmpty();
+          });
+        }
+      });
+    }
+
+    /**
+     * Проверяет, остались ли предметы на складе, и если нет, показывает сообщение о пустом складе
+     */
+    function checkIfWarehouseEmpty() {
+      if ($('.warehouseInventory').length === 0) {
+        // Создаем HTML для пустого склада
+        const emptyWarehouseHTML = `
         <div class="text-center p-4">
           <i class="ri-inbox-line text-muted display-4"></i>
           <p class="mt-2 text-muted">{{phrase('warehouse_is_empty')}}</p>
         </div>
       `;
 
-      // Заменяем содержимое списка
-      const $listContainer = $('ul.list-group.list-group-flush', '#warehouseModal');
-      if ($listContainer.length) {
-        $listContainer.replaceWith(emptyWarehouseHTML);
+        // Заменяем содержимое списка
+        const $listContainer = $('ul.list-group.list-group-flush', '#warehouseModal');
+        if ($listContainer.length) {
+          $listContainer.replaceWith(emptyWarehouseHTML);
+        } else {
+          $('#warehouseModal .card-body').first().html(emptyWarehouseHTML);
+        }
+
+        // Блокируем кнопку отправки
+        $('#warehouseSendItemsToPlayer').prop('disabled', true);
+      }
+    }
+
+    /**
+     * Обновляет счетчик предметов на складе
+     * @param {number} count - количество предметов на складе из ответа сервера
+     */
+    function updateWarehouseCounter(count) {
+      const $badgeElement = $('.countWarehouseItems');
+
+      if (count > 0) {
+        // Если есть предметы, обновляем все счетчики на странице
+        $badgeElement.text(count);
+
+        // Обновляем badge в заголовке модального окна, если он есть
+        const $modalBadge = $('#warehouseModalLabel .badge');
+        if ($modalBadge.length > 0) {
+          $modalBadge.text(count);
+        } else if (count > 0) {
+          $('#warehouseModalLabel').append(`<span class="badge rounded-pill bg-danger ms-2 countWarehouseItems">${count}</span>`);
+        }
       } else {
-        $('#warehouseModal .card-body').first().html(emptyWarehouseHTML);
+        // Если предметов нет, удаляем все счетчики
+        $badgeElement.remove();
+        $('#warehouseModalLabel .badge').remove();
       }
+    }
 
-      // Блокируем кнопку отправки
-      $('#warehouseSendItemsToPlayer').prop('disabled', true);
+
+  });
+
+</script>
+
+<style>
+  /* ── Warehouse: View Toggle buttons ─────────────────────────── */
+  .wh-view-toggle {
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .wh-view-toggle .btn {
+    padding: 3px 8px;
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  /* ── Warehouse: Modal height limit ───────────────────────────── */
+  #warehouseModal .col-md-5 .card-body {
+    max-height: 55vh;
+  }
+
+  /* ── Warehouse: Items container with golden styling ────────────── */
+  #warehouseModal .wh-items-container {
+    border: 1px solid rgba(255, 215, 0, 0.35) !important;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    box-shadow:
+      inset 0 0 35px rgba(255, 215, 0, 0.1),
+      0 0 35px rgba(255, 215, 0, 0.25);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 215, 0, 0.3) transparent;
+  }
+
+  #warehouseModal .wh-items-container::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  #warehouseModal .wh-items-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  #warehouseModal .wh-items-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 215, 0, 0.3);
+    border-radius: 4px;
+  }
+
+  #warehouseModal .wh-items-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 215, 0, 0.55);
+  }
+
+  /* ── Warehouse: Character selector ───────────────────────────── */
+  #warehouseModal .wh-char-selector {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0.8rem;
+    padding-right: 0.3rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 215, 0, 0.3) transparent;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 215, 0, 0.35);
+    background: rgba(255, 255, 255, 0.02);
+    box-shadow:
+      inset 0 0 35px rgba(255, 215, 0, 0.1),
+      0 0 35px rgba(255, 215, 0, 0.25);
+  }
+
+  #warehouseModal .wh-char-block,
+  #warehouseModal .wh-char-block>.d-flex {
+    min-height: 0;
+    flex: 1;
+  }
+
+  #warehouseModal .wh-char-selector::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  #warehouseModal .wh-char-selector::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  #warehouseModal .wh-char-selector::-webkit-scrollbar-thumb {
+    background: rgba(255, 215, 0, 0.3);
+    border-radius: 4px;
+  }
+
+  #warehouseModal .wh-char-selector::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 215, 0, 0.55);
+  }
+
+  #warehouseModal .wh-char-account {
+    flex: 0 0 auto;
+    width: fit-content;
+    max-width: calc(5 * 64px + 4 * 0.5rem + 2 * 0.65rem + 2px);
+  }
+
+  #warehouseModal .wh-char-account-head {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.65rem 0.4rem;
+    border-bottom: 1px solid rgba(var(--bs-light-rgb), 0.25);
+    font-size: 0.78rem;
+  }
+
+  #warehouseModal .wh-char-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.55rem 0.65rem 0.65rem;
+    width: fit-content;
+  }
+
+  #warehouseModal .wh-char-card {
+    width: 64px;
+    flex: 0 0 auto;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 0.6rem;
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+
+  #warehouseModal .wh-char-card:focus-visible {
+    outline: 2px solid rgba(var(--bs-primary-rgb), 0.45);
+    outline-offset: 2px;
+  }
+
+  #warehouseModal .wh-char-card:hover {
+    transform: translateY(-2px);
+  }
+
+  #warehouseModal .wh-char-avatar-wrap {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 0.35rem;
+    border-radius: 0.55rem;
+    border: 1.5px solid rgba(var(--bs-primary-rgb), 0.2);
+    overflow: hidden;
+    transition: all 0.2s ease;
+  }
+
+  #warehouseModal .wh-char-card.selected .wh-char-avatar-wrap {
+    border-color: rgba(255, 215, 0, 0.95);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5), inset 0 0 10px rgba(255, 215, 0, 0.2);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%);
+    outline: 2px solid rgba(255, 215, 0, 0.6);
+    outline-offset: 3px;
+    filter: brightness(1.15);
+  }
+
+  #warehouseModal .wh-char-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.25s ease, filter 0.25s ease;
+  }
+
+  #warehouseModal .wh-char-check {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgba(var(--bs-primary-rgb), 0);
+    color: transparent;
+    transition: all 0.25s ease;
+  }
+
+  #warehouseModal .wh-char-meta {
+    padding: 0 0.1rem;
+  }
+
+  #warehouseModal .wh-char-name {
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.05;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #warehouseModal .wh-char-level {
+    font-size: 0.65rem;
+    line-height: 1.05;
+    margin-top: 0.15rem;
+  }
+
+  #warehouseModal .wh-char-card.selected .wh-char-avatar {
+    transform: scale(1.06);
+    filter: brightness(1.12);
+  }
+
+  #warehouseModal .wh-char-card.selected .wh-char-check {
+    background: rgba(var(--bs-primary-rgb), 0.95);
+    color: var(--bs-white);
+    box-shadow: 0 0 10px rgba(var(--bs-primary-rgb), 0.85);
+  }
+
+  #warehouseModal .wh-char-card.selected .wh-char-name {
+    color: rgba(243, 216, 61, 0.9) transparent;
+  }
+
+  @media (max-width: 767.98px) {
+    #warehouseModal .wh-char-selector {
+      flex: 1;
+    }
+
+    #warehouseModal .wh-char-card {
+      width: 58px;
+    }
+
+    #warehouseModal .wh-char-avatar-wrap {
+      width: 50px;
+      height: 50px;
     }
   }
 
-  /**
-   * Обновляет счетчик предметов на складе
-   * @param {number} count - количество предметов на складе из ответа сервера
-   */
-  function updateWarehouseCounter(count) {
-    const $badgeElement = $('.countWarehouseItems');
+  /* ── Warehouse: List mode — checkbox inline with icon ────────── */
+  .js-warehouse-items-list:not(.wh-view-grid) .wh-icon-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-    if (count > 0) {
-      // Если есть предметы, обновляем все счетчики на странице
-      $badgeElement.text(count);
+  .js-warehouse-items-list:not(.wh-view-grid) .wh-item-check {
+    margin: 0;
+    order: -1;
+    /* checkbox before img */
+  }
 
-      // Обновляем badge в заголовке модального окна, если он есть
-      const $modalBadge = $('#warehouseModalLabel .badge');
-      if ($modalBadge.length > 0) {
-        $modalBadge.text(count);
-      } else if (count > 0) {
-        $('#warehouseModalLabel').append(`<span class="badge rounded-pill bg-danger ms-2 countWarehouseItems">${count}</span>`);
-      }
-    } else {
-      // Если предметов нет, удаляем все счетчики
-      $badgeElement.remove();
-      $('#warehouseModalLabel .badge').remove();
-    }
+  .js-warehouse-items-list:not(.wh-view-grid) .wh-item-check .form-check-input {
+    margin: 0;
+  }
+
+  /* Hide the grid-only enchant overlay in list mode */
+  .js-warehouse-items-list:not(.wh-view-grid) .wh-enchant-overlay {
+    display: none;
+  }
+
+  /* ── Warehouse: Grid mode ────────────────────────────────────── */
+  ul.wh-view-grid {
+    display: grid !important;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    padding: 12px !important;
+  }
+
+  /* Remove default list-group bottom border when in grid mode */
+  .js-warehouse-items-list.wh-view-grid>li.list-group-item,
+  ul.wh-view-grid>li.js-warehouse-item {
+    border-bottom: none !important;
+  }
+
+  /* Center the icon in grid mode and hide text */
+  ul.wh-view-grid .item-details-n {
+    display: none !important;
+  }
+
+  ul.wh-view-grid .d-flex.align-items-center {
+    justify-content: center;
+  }
+
+  ul.wh-view-grid .item-icon {
+    margin: 0 !important;
+  }
+
+  ul.wh-view-grid .wh-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 52px;
+    height: 52px;
+    cursor: pointer;
+  }
+
+  ul.wh-view-grid .js-item-icon {
+    width: 52px !important;
+    height: 52px !important;
+  }
+
+  /* Enchant overlay — top-right corner in grid mode */
+  ul.wh-view-grid .wh-enchant-overlay {
+    display: inline-flex;
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    font-size: 0.6rem;
+    padding: 2px 4px;
+    line-height: 1.2;
+    z-index: 3;
+    pointer-events: none;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Checkbox overlay — bottom-left in grid mode */
+  ul.wh-view-grid .wh-item-check {
+    position: absolute;
+    bottom: -4px;
+    left: -4px;
+    margin: 0;
+    z-index: 3;
+  }
+
+  ul.wh-view-grid .wh-item-check .form-check-input {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    margin: 0;
+    opacity: 0.35;
+    transition: opacity 0.15s, box-shadow 0.15s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  ul.wh-view-grid .wh-item-check .form-check-input:checked {
+    opacity: 1;
   }
 
 
-});
+  /* ── Warehouse: Custom tooltip style ─────────────────────────── */
+  .tooltip-wh .tooltip-inner {
+    background: rgba(18, 20, 28, 0.96);
+    padding: 9px 13px;
+    border-radius: 9px;
+    font-size: 0.82rem;
+    text-align: center;
+    max-width: 200px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(6px);
+    line-height: 1.6;
+  }
 
+  .tooltip-wh.bs-tooltip-top .tooltip-arrow::before {
+    border-top-color: rgba(18, 20, 28, 0.96);
+  }
+
+  .tooltip-wh.bs-tooltip-bottom .tooltip-arrow::before {
+    border-bottom-color: rgba(18, 20, 28, 0.96);
+  }
+
+  .tooltip-wh .wh-tt-count {
+    color: #9da8b5;
+    font-size: 0.78rem;
+  }
+
+  .tooltip-wh .wh-tt-enchant {
+    color: #f56565;
+    font-size: 0.78rem;
+  }
+</style>
+
+<script>
+  /* ── Warehouse: View Toggle ──────────────────────────────────── */
+  (function () {
+    var STORAGE_KEY = 'wh-view';
+
+    function applyView(mode) {
+      var $list = $('.js-warehouse-items-list');
+      var $btns = $('.wh-view-toggle [data-wh-toggle]');
+
+      if (mode === 'grid') {
+        $list.addClass('wh-view-grid');
+      } else {
+        $list.removeClass('wh-view-grid');
+      }
+
+      $btns.each(function () {
+        var isActive = $(this).data('wh-toggle') === mode;
+        $(this)
+          .toggleClass('active', isActive)
+      });
+    }
+
+    /* Toggle click */
+    $(document).on('click', '.wh-view-toggle [data-wh-toggle]', function () {
+      var mode = $(this).data('wh-toggle');
+      localStorage.setItem(STORAGE_KEY, mode);
+      applyView(mode);
+      /* Re-init tooltips after view change */
+      setTimeout(initWhTooltips, 50);
+    });
+
+    /* Restore view + init tooltips on modal show */
+    $('#warehouseModal').on('show.bs.modal', function () {
+      var mode = localStorage.getItem(STORAGE_KEY) || 'list';
+      applyView(mode);
+    });
+
+    $('#warehouseModal').on('shown.bs.modal', function () {
+      initWhTooltips();
+    });
+
+    /* Dispose tooltips on close to prevent memory / DOM leaks */
+    $('#warehouseModal').on('hidden.bs.modal', function () {
+      document.querySelectorAll('#warehouseModal .wh-icon-wrap[data-bs-toggle="tooltip"]').forEach(function (el) {
+        var t = bootstrap.Tooltip.getInstance(el);
+        if (t) t.dispose();
+      });
+    });
+
+    function initWhTooltips() {
+      document.querySelectorAll('#warehouseModal .wh-icon-wrap[data-bs-toggle="tooltip"]').forEach(function (el) {
+        bootstrap.Tooltip.getOrCreateInstance(el, {
+          trigger: 'hover',
+          html: true
+        });
+      });
+    }
+  })();
 </script>
 
 {% endif %}

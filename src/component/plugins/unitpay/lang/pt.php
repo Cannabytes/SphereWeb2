@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     // Plugin metadata
@@ -50,4 +50,5 @@ return [
     'unitpay_max_amount'                => 'Valor máximo de recarga: %s',
     'unitpay_api_error'                 => 'Erro na API do UnitPay. Tente novamente mais tarde.',
     'unitpay_connection_error'          => 'Erro de conexão. Tente novamente.',
+    'unitpay_estimated_cost'            => 'Custo estimado',
 ];

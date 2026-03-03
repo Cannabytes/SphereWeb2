@@ -50,4 +50,5 @@ return [
     'paritypay_no_payment_link' => 'ParityPay не вернул ссылку на оплату',
     'paritypay_payment_error' => 'Неизвестная ошибка при создании платежа',
     'paritypay_connection_error' => 'Ошибка соединения',
+    'paritypay_estimated_cost' => 'Примерная стоимость',
 ];

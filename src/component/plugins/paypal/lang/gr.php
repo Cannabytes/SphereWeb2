@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'paypal' => 'PayPal',
@@ -48,4 +48,5 @@ return [
     'paypal_payment_error' => 'Σφάλμα πληρωμής PayPal: %s',
     'paypal_no_order_id' => 'Δεν ήταν δυνατό να ληφθεί το ID παραγγελίας PayPal',
     'paypal_token_error' => 'Δεν ήταν δυνατό να ληφθεί το διακριτικό πρόσβασης PayPal',
+    'paypal_estimated_cost' => 'Εκτιμώμενο κόστος',
 ];

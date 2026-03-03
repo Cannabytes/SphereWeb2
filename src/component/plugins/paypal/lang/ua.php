@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'paypal' => 'PayPal',
@@ -48,4 +48,5 @@ return [
     'paypal_payment_error' => 'Помилка платежу PayPal: %s',
     'paypal_no_order_id' => 'Не вдалося отримати ID замовлення PayPal',
     'paypal_token_error' => 'Не вдалося отримати токен доступу PayPal',
+    'paypal_estimated_cost' => 'Приблизна вартість',
 ];

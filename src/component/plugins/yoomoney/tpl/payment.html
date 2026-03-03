@@ -41,7 +41,6 @@
                                 </span>
                                 <input type="number" class="form-control" id="amount" name="amount" 
                                     value="{{ donateCount }}" 
-                                    min="{{ minAmount }}" 
                                     max="{{ maxAmount }}"
                                     step="1" 
                                     required>
@@ -67,17 +66,11 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="text-muted">{{ phrase('total_cost', 'yoomoney') }}:</span>
                                     <h4 class="fw-bold mb-0 text-primary">
-                                        <span id="totalCostValue">0.00</span> <span>RUB</span>
+                                        <span id="totalCostValue">0.00</span>&nbsp;<span id="costCurrency">{{ mainCurrency }}</span>
                                     </h4>
                                 </div>
                                 <small class="text-muted d-block mt-2">
-                                    {% set sphereCoinCost = getServer().donate().getSphereCoinCost() %}
-                                    {% if sphereCoinCost >= 1 %}
-                                        {% set RUB_rate = getServer().donate().getRatioRUB() / sphereCoinCost %}
-                                    {% else %}
-                                        {% set RUB_rate = getServer().donate().getRatioRUB() * sphereCoinCost %}
-                                    {% endif %}
-                                    {{ phrase('rate', 'yoomoney') }}: 1 Coin = <span id="coinRate">{{ RUB_rate }}</span> RUB
+                                    {{ phrase('rate', 'yoomoney') }}: 1 Coin = <span id="coinRate">{{ (mainCurrency == 'RUB') ? RUB_val|number_format(4, '.', '') : (mainCurrency == 'UAH' ? UAH_val|number_format(4, '.', '') : (mainCurrency == 'EUR' ? EUR_val|number_format(4, '.', '') : USD_val|number_format(4, '.', ''))) }}</span>&nbsp;<span id="rateCurrency">{{ mainCurrency }}</span>
                                 </small>
                             </div>
                         </div>
@@ -125,14 +118,9 @@ const MIN_AMOUNT = {{ minAmount }};
 const MAX_AMOUNT = {{ maxAmount }};
 const DEFAULT_AMOUNT = {{ defaultAmount }};
 const SPHERE_COIN_COST = {{ sphereCoinCost }};
-
-{% set sphereCoinCost = getServer().donate().getSphereCoinCost() %}
-{% if sphereCoinCost >= 1 %}
-    {% set RUB_rate = getServer().donate().getRatioRUB() / sphereCoinCost %}
-{% else %}
-    {% set RUB_rate = getServer().donate().getRatioRUB() * sphereCoinCost %}
-{% endif %}
-const RUB_RATE = {{ RUB_rate }};
+const RUB_RATE = {{ RUB_val|default(0)|number_format(4, '.', '') }};
+const MAIN_CURRENCY_RATE = parseFloat('{{ (mainCurrency == "RUB") ? RUB_val|number_format(4, ".", "") : (mainCurrency == "UAH" ? UAH_val|number_format(4, ".", "") : (mainCurrency == "EUR" ? EUR_val|number_format(4, ".", "") : USD_val|number_format(4, ".", ""))) }}') || 0;
+const MAIN_CURRENCY = '{{ mainCurrency }}';
 
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
@@ -173,9 +161,13 @@ function updateCalculations() {
     }
     
     // Рассчитываем стоимость
-    const totalCost = amount * RUB_RATE;
+    const totalCost = amount * MAIN_CURRENCY_RATE;
     if (totalCostValue) {
         totalCostValue.textContent = totalCost.toFixed(2);
+    }
+    const costCurrencyEl = document.getElementById('costCurrency');
+    if (costCurrencyEl) {
+        costCurrencyEl.textContent = MAIN_CURRENCY;
     }
 }
 

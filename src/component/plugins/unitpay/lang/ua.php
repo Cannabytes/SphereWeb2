@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     // Plugin metadata
@@ -50,4 +50,5 @@ return [
     'unitpay_max_amount'                => 'Максимальна сума поповнення: %s',
     'unitpay_api_error'                 => 'Помилка API UnitPay. Спробуйте пізніше.',
     'unitpay_connection_error'          => 'Помилка з\'єднання. Спробуйте ще раз.',
+    'unitpay_estimated_cost'            => 'Приблизна вартість',
 ];

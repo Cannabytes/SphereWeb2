@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Greek translations for FreeKassa plugin
@@ -261,5 +261,6 @@ return [
     'order' => 'Παραγγελία',
     'no_payment_methods' => 'Δεν βρέθηκαν διαθέσιμες μέθοδοι πληρωμής',
     'no_instances' => 'Δεν βρέθηκαν ενεργά καταστήματα',
-    'freekassa_desc' => 'Σύστημα πληρωμών FreeKassa με υποστήριξη πολλαπλών μεθόδων πληρωμής'
+    'freekassa_desc' => 'Σύστημα πληρωμών FreeKassa με υποστήριξη πολλαπλών μεθόδων πληρωμής',
+    'estimated_cost' => 'Εκτιμώμενο κόστος',
 ];

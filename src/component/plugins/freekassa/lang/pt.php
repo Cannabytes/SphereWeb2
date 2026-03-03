@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Portuguese translations for FreeKassa plugin
@@ -261,5 +261,6 @@ return [
     'order' => 'Ordem',
     'no_payment_methods' => 'Métodos de pagamento disponíveis não encontrados',
     'no_instances' => 'Lojas ativas não encontradas',
-    'freekassa_desc' => 'Sistema de pagamento FreeKassa com suporte para múltiplos métodos de pagamento'
+    'freekassa_desc' => 'Sistema de pagamento FreeKassa com suporte para múltiplos métodos de pagamento',
+    'estimated_cost' => 'Custo estimado',
 ];

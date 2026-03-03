@@ -51,4 +51,5 @@ return [
     'pally_no_payment_link' => 'Pally не вернул ссылку на оплату',
     'pally_payment_error' => 'Неизвестная ошибка при создании платежа',
     'pally_connection_error' => 'Ошибка соединения',
+    'pally_estimated_cost' => 'Примерная стоимость',
 ];

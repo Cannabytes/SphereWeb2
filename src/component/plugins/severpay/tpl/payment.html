@@ -53,6 +53,11 @@
               <small class="text-muted d-block mt-2">
                 {{ phrase('severpay_minimum') }}: {{ minAmount }}, {{ phrase('severpay_maximum') }}: {{ maxAmount }}
               </small>
+              <div class="form-text mt-2">
+                <i class="bi bi-cash me-1 text-muted"></i>
+                <span class="text-muted">{{ phrase('severpay_estimated_cost') }}</span>:
+                <strong><span id="costValue">0.00</span>&nbsp;<span id="costCurrency">—</span></strong>
+              </div>
             </div>
 
             <div class="d-grid">
@@ -72,9 +77,22 @@
 {% block js %}
 <script>
 $(function() {
-  function updateCurrencyLabel() {
-    $('#currencyLabel').text('Donate Coin');
+  // ── Estimated cost ────────────────────────────────────────────────────────────────────────────
+  const CurrencyRates = {
+    USD: parseFloat('{{ USD_val|default(0)|number_format(4, ".", "") }}') || 0,
+    EUR: parseFloat('{{ EUR_val|default(0)|number_format(4, ".", "") }}') || 0,
+    RUB: parseFloat('{{ RUB_val|default(0)|number_format(4, ".", "") }}') || 0,
+    UAH: parseFloat('{{ UAH_val|default(0)|number_format(4, ".", "") }}') || 0,
+  };
+  let activeCurrency = '{{ mainCurrency }}';
+  function updateCost() {
+    const n = parseInt($('#amount').val()) || 0;
+    const rate = CurrencyRates[activeCurrency] || 0;
+    $('#costValue').text((n * rate).toFixed(2));
+    $('#costCurrency').text(activeCurrency);
   }
+  $('#amount').on('input', updateCost);
+  // ──────────────────────────────────────────────────────────────────────────────
 
   // Merchant card selection
   $('#merchantCards').on('click', '.merchant-card', function() {
@@ -82,22 +100,27 @@ $(function() {
     $(this).addClass('selected border-primary').css('box-shadow','0 0 0 0.15rem rgba(13,110,253,.25)');
     const idx = $(this).data('index');
     $('#merchant_index').val(idx);
-    updateCurrencyLabel();
+    const mCurrency = ($(this).data('currency') + '').toUpperCase();
+    activeCurrency = CurrencyRates[mCurrency] !== undefined ? mCurrency : '{{ mainCurrency }}';
+    updateCost();
   });
 
   // select first card by default
   if ($('#merchantCards .merchant-card').length) {
-    $('#merchantCards .merchant-card').first().addClass('selected border-primary').css('box-shadow','0 0 0 0.15rem rgba(13,110,253,.25)');
-    $('#merchant_index').val($('#merchantCards .merchant-card').first().data('index'));
+    const $firstMerchant = $('#merchantCards .merchant-card').first();
+    $firstMerchant.addClass('selected border-primary').css('box-shadow','0 0 0 0.15rem rgba(13,110,253,.25)');
+    $('#merchant_index').val($firstMerchant.data('index'));
+    const mCurrency = ($firstMerchant.data('currency') + '').toUpperCase();
+    activeCurrency = CurrencyRates[mCurrency] !== undefined ? mCurrency : '{{ mainCurrency }}';
   }
-  updateCurrencyLabel();
+  updateCost();
 
   $('#severpayPaymentForm').on('submit', function(e) {
     e.preventDefault();
 
     const $btn = $('#payButton');
     const original = $btn.html();
-    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Создание платежа...');
+    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>{{ phrase("severpay_payment_creating") }}');
 
     AjaxSend('/severpay/payment/create', 'POST', $(this).serialize(), false)
       .then(function(response) {
@@ -108,7 +131,7 @@ $(function() {
         if (response && response.message) {
           showError(response.message);
         } else {
-          showError('Неизвестная ошибка при создании платежа');
+          showError('{{ phrase("severpay_unknown_error") }}');
         }
         $btn.prop('disabled', false).html(original);
       })
@@ -116,7 +139,7 @@ $(function() {
         if (error && error.message) {
           showError(error.message);
         } else {
-          showError('Ошибка соединения');
+          showError('{{ phrase("severpay_connection_error") }}');
         }
         $btn.prop('disabled', false).html(original);
       });

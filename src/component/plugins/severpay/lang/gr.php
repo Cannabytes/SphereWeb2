@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'severpay' => 'SeverPay',
@@ -52,4 +52,5 @@ return [
     'severpay_no_payment_link' => 'Το SeverPay δεν επέστρεψε σύνδεσμο πληρωμής',
     'severpay_unknown_error' => 'Άγνωστο σφάλμα κατά τη δημιουργία πληρωμής',
     'severpay_connection_error' => 'Σφάλμα σύνδεσης',
+    'severpay_estimated_cost' => 'Εκτιμώμενο κόστος',
 ];

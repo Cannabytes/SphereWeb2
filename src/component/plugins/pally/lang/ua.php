@@ -49,5 +49,4 @@ return [
     'pally_api_error' => 'Помилка Pally: %s',
     'pally_no_payment_link' => 'Pally не повернув посилання на оплату',
     'pally_payment_error' => 'Невідома помилка при створенні платежу',
-    'pally_connection_error' => 'Помилка з\'єднання',
-];
+    'pally_connection_error' => 'Помилка з\'єднання',    'pally_estimated_cost' => 'Приблизна вартість',];

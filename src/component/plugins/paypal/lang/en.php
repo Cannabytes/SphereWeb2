@@ -48,4 +48,5 @@ return [
     'paypal_payment_error' => 'PayPal payment error: %s',
     'paypal_no_order_id' => 'Failed to get PayPal order ID',
     'paypal_token_error' => 'Failed to get PayPal access token',
+    'paypal_estimated_cost' => 'Estimated cost',
 ];

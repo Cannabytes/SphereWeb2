@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     // Plugin metadata
@@ -50,4 +50,5 @@ return [
     'unitpay_max_amount'                => 'Μέγιστο ποσό ανανέωσης: %s',
     'unitpay_api_error'                 => 'Σφάλμα API UnitPay. Δοκιμάστε αργότερα.',
     'unitpay_connection_error'          => 'Σφάλμα σύνδεσης. Δοκιμάστε ξανά.',
+    'unitpay_estimated_cost'            => 'Εκτιμώμενο κόστος',
 ];

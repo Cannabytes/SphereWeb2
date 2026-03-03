@@ -41,4 +41,5 @@ return [
     'primepayments_api_error' => 'PrimePayments error: %s',
     'primepayments_payment_error' => 'Неизвестная ошибка при создании платежа',
     'primepayments_connection_error' => 'Ошибка соединения',
+    'primepayments_estimated_cost' => 'Примерная стоимость',
 ];

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Spanish translations for FreeKassa plugin
@@ -261,5 +261,6 @@ return [
     'order' => 'Orden',
     'no_payment_methods' => 'Métodos de pago disponibles no encontrados',
     'no_instances' => 'Tiendas activas no encontradas',
-    'freekassa_desc' => 'Sistema de pago FreeKassa con soporte para múltiples métodos de pago'
+    'freekassa_desc' => 'Sistema de pago FreeKassa con soporte para múltiples métodos de pago',
+    'estimated_cost' => 'Costo estimado',
 ];

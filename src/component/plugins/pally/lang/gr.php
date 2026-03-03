@@ -50,4 +50,5 @@ return [
     'pally_no_payment_link' => 'Το Pally δεν επέστρεψε σύνδεσμο πληρωμής',
     'pally_payment_error' => 'Άγνωστο σφάλμα κατά τη δημιουργία πληρωμής',
     'pally_connection_error' => 'Σφάλμα σύνδεσης',
+    'pally_estimated_cost' => 'Εκτιμώμενο κόστος',
 ];

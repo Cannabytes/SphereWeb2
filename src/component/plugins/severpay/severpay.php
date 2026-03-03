@@ -153,12 +153,30 @@ class severpay extends BasePaymentPlugin
 
         $donateConfig = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
 
+        $sphereCoinCost = $donateConfig->getSphereCoinCost();
+        $rateCalc = static fn($r) => round($sphereCoinCost >= 1 ? $r / $sphereCoinCost : $r * $sphereCoinCost, 4);
+        $USD_val = $rateCalc($donateConfig->getRatioUSD());
+        $EUR_val = $rateCalc($donateConfig->getRatioEUR());
+        $RUB_val = $rateCalc($donateConfig->getRatioRUB());
+        $UAH_val = $rateCalc($donateConfig->getRatioUAH());
+        $userCountry = strtoupper(user::self()->getCountry() ?? '');
+        $mainCurrency = match(true) {
+            $userCountry === 'UA' => 'UAH',
+            $userCountry === 'RU' => 'RUB',
+            default               => 'USD',
+        };
+
         tpl::addVar([
-            'title' => 'SeverPay',
-            'merchants' => $merchants,
-            'minAmount' => $donateConfig->getMinSummaPaySphereCoin(),
-            'maxAmount' => $donateConfig->getMaxSummaPaySphereCoin(),
+            'title'        => 'SeverPay',
+            'merchants'    => $merchants,
+            'minAmount'    => $donateConfig->getMinSummaPaySphereCoin(),
+            'maxAmount'    => $donateConfig->getMaxSummaPaySphereCoin(),
             'defaultAmount' => is_null($count) ? $donateConfig->getDefaultSummaPaySphereCoin() : (int)$count,
+            'USD_val'      => $USD_val,
+            'EUR_val'      => $EUR_val,
+            'RUB_val'      => $RUB_val,
+            'UAH_val'      => $UAH_val,
+            'mainCurrency' => $mainCurrency,
         ]);
 
         tpl::displayPlugin('/severpay/tpl/payment.html');

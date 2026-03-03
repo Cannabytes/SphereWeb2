@@ -50,4 +50,5 @@ return [
     'pally_no_payment_link' => 'Pally não retornou um link de pagamento',
     'pally_payment_error' => 'Erro desconhecido ao criar pagamento',
     'pally_connection_error' => 'Erro de conexão',
+    'pally_estimated_cost' => 'Custo estimado',
 ];

@@ -39,4 +39,5 @@ return [
     'primepayments_api_error' => 'PrimePayments error: %s',
     'primepayments_payment_error' => 'Unknown error when creating payment',
     'primepayments_connection_error' => 'Connection error',
+    'primepayments_estimated_cost' => 'Estimated cost',
 ];

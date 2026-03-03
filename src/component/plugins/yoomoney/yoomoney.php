@@ -246,14 +246,32 @@ class yoomoney extends BasePaymentPlugin
         $server = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId());
         $donate = $server->donate();
 
+        $sphereCoinCost = $donate->getSphereCoinCost();
+        $rateCalc = static fn($r) => round($sphereCoinCost >= 1 ? $r / $sphereCoinCost : $r * $sphereCoinCost, 4);
+        $USD_val = $rateCalc($donate->getRatioUSD());
+        $EUR_val = $rateCalc($donate->getRatioEUR());
+        $RUB_val = $rateCalc($donate->getRatioRUB());
+        $UAH_val = $rateCalc($donate->getRatioUAH());
+        $userCountry = strtoupper(user::self()->getCountry() ?? '');
+        $mainCurrency = match(true) {
+            $userCountry === 'UA' => 'UAH',
+            $userCountry === 'RU' => 'RUB',
+            default               => 'USD',
+        };
+
         tpl::addVar([
-            'title' => lang::get_phrase('payment_title', 'yoomoney'),
-            'instances' => $shop ? [$shop] : [],
-            'minAmount' => $donate->getMinSummaPaySphereCoin(),
-            'maxAmount' => $donate->getMaxSummaPaySphereCoin(),
+            'title'         => lang::get_phrase('payment_title', 'yoomoney'),
+            'instances'     => $shop ? [$shop] : [],
+            'minAmount'     => $donate->getMinSummaPaySphereCoin(),
+            'maxAmount'     => $donate->getMaxSummaPaySphereCoin(),
             'defaultAmount' => is_null($count) ? $donate->getDefaultSummaPaySphereCoin() : (int)$count,
-            'sphereCoinCost' => $donate->getSphereCoinCost(),
-            'donateCount' => is_null($count) ? null : (int)$count,
+            'sphereCoinCost' => $sphereCoinCost,
+            'donateCount'   => is_null($count) ? null : (int)$count,
+            'USD_val'       => $USD_val,
+            'EUR_val'       => $EUR_val,
+            'RUB_val'       => $RUB_val,
+            'UAH_val'       => $UAH_val,
+            'mainCurrency'  => $mainCurrency,
         ]);
 
         tpl::displayPlugin('/yoomoney/tpl/payment.html');

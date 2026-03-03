@@ -231,7 +231,7 @@
                                             data-coin="{{bonus.coin}}">
                                             <div class="fs-2 fw-black text-primary">+{{bonus.percent}}%</div>
                                             <div class="fs-11 text-muted fw-bold text-uppercase mt-2">от {{bonus.coin}}
-                                                монет</div>
+                                                {{ phrase('donate_coin') }}</div>
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -259,7 +259,7 @@
                                             {% for bonus in getServer().donate().getTableCumulativeDiscountSystem() %}
                                             <tr class="align-middle cumulative-row" data-percent="{{bonus.percent}}">
                                                 <td class="ps-4 py-3 fw-bold">{{bonus.coin}} <span
-                                                        class="text-muted small fw-normal">монет</span></td>
+                                                        class="text-muted small fw-normal">{{ phrase('donate_coin') }}</span></td>
                                                 <td class="text-end pe-4 py-3"><span
                                                         class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">+{{bonus.percent}}%</span>
                                                 </td>

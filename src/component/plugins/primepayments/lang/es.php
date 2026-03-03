@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'primepayments' => 'PrimePayments',
@@ -39,4 +39,5 @@ return [
     'primepayments_api_error' => 'Error de PrimePayments: %s',
     'primepayments_payment_error' => 'Error desconocido al crear el pago',
     'primepayments_connection_error' => 'Error de conexión',
+    'primepayments_estimated_cost' => 'Costo estimado',
 ];

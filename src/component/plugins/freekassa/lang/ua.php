@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Ukrainian translations for FreeKassa plugin
@@ -261,5 +261,6 @@ return [
     'order' => 'Порядок',
     'no_payment_methods' => 'Доступні методи оплати не знайдені',
     'no_instances' => 'Активні магазини не знайдені',
-    'freekassa_desc' => 'Платіжна система FreeKassa з підтримкою кількох способів оплати'
+    'freekassa_desc' => 'Платіжна система FreeKassa з підтримкою кількох способів оплати',
+    'estimated_cost' => 'Приблизна вартість',
 ];

@@ -43,7 +43,7 @@ class cryptocloud extends BasePaymentPlugin
         $baseUrl = $this->getBaseUrl();
 
         tpl::addVar([
-            'title' => 'CryptoCloud',
+            'title' => lang::get_phrase('cryptocloud', 'cryptocloud'),
             'pluginName' => $this->getNameClass(),
             'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
             'shopId' => (string)$this->getPluginSetting('shop_id', ''),
@@ -72,7 +72,7 @@ class cryptocloud extends BasePaymentPlugin
         $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? ''));
 
         if ($shopId === '' || $apiKey === '' || $secretKey === '') {
-            board::error('Заполните shop_id, api_key и secret_key');
+            board::error(lang::get_phrase('cryptocloud_missing_credentials', 'cryptocloud'));
         }
 
         $this->setPluginSetting('shop_id', $shopId);
@@ -82,14 +82,14 @@ class cryptocloud extends BasePaymentPlugin
         $this->setPluginSetting('supported_countries', $supportedCountries);
         $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
 
-        board::success('Настройки CryptoCloud сохранены');
+        board::success(lang::get_phrase('cryptocloud_settings_saved', 'cryptocloud'));
     }
 
     public function payment(?int $count = null): void
     {
         if (!$this->isPluginActive()) {
             if ($this->isAjax()) {
-                board::error('Плагин CryptoCloud выключен');
+                board::error(lang::get_phrase('cryptocloud_plugin_disabled_error', 'cryptocloud'));
             }
             redirect::location('/main');
             return;
@@ -104,17 +104,35 @@ class cryptocloud extends BasePaymentPlugin
         }
 
         if (!$this->isConfigured()) {
-            board::error('CryptoCloud не настроен. Обратитесь к администратору.');
+            board::error(lang::get_phrase('cryptocloud_not_configured', 'cryptocloud'));
         }
 
         $donateConfig = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
 
+        $sphereCoinCost = $donateConfig->getSphereCoinCost();
+        $rateCalc = static fn($r) => round($sphereCoinCost >= 1 ? $r / $sphereCoinCost : $r * $sphereCoinCost, 4);
+        $USD_val = $rateCalc($donateConfig->getRatioUSD());
+        $EUR_val = $rateCalc($donateConfig->getRatioEUR());
+        $RUB_val = $rateCalc($donateConfig->getRatioRUB());
+        $UAH_val = $rateCalc($donateConfig->getRatioUAH());
+        $userCountry = strtoupper(user::self()->getCountry() ?? '');
+        $mainCurrency = match(true) {
+            $userCountry === 'UA' => 'UAH',
+            $userCountry === 'RU' => 'RUB',
+            default               => 'USD',
+        };
+
         tpl::addVar([
-            'title' => 'CryptoCloud',
-            'currency' => $this->getCurrency(),
-            'minAmount' => $donateConfig->getMinSummaPaySphereCoin(),
-            'maxAmount' => $donateConfig->getMaxSummaPaySphereCoin(),
+            'title'        => lang::get_phrase('cryptocloud', 'cryptocloud'),
+            'currency'     => $this->getCurrency(),
+            'minAmount'    => $donateConfig->getMinSummaPaySphereCoin(),
+            'maxAmount'    => $donateConfig->getMaxSummaPaySphereCoin(),
             'defaultAmount' => is_null($count) ? $donateConfig->getDefaultSummaPaySphereCoin() : (int)$count,
+            'USD_val'      => $USD_val,
+            'EUR_val'      => $EUR_val,
+            'RUB_val'      => $RUB_val,
+            'UAH_val'      => $UAH_val,
+            'mainCurrency' => $mainCurrency,
         ]);
 
         tpl::displayPlugin('/cryptocloud/tpl/payment.html');
@@ -123,7 +141,7 @@ class cryptocloud extends BasePaymentPlugin
     public function createPayment(): void
     {
         if (!$this->isPluginActive()) {
-            board::error('Плагин CryptoCloud выключен');
+            board::error(lang::get_phrase('cryptocloud_plugin_disabled_error', 'cryptocloud'));
         }
 
         if (!user::self()->isAuth()) {
@@ -131,23 +149,29 @@ class cryptocloud extends BasePaymentPlugin
         }
 
         if (!$this->isConfigured()) {
-            board::error('CryptoCloud не настроен');
+            board::error(lang::get_phrase('cryptocloud_not_configured', 'cryptocloud'));
         }
 
         $count = filter_input(INPUT_POST, 'amount', FILTER_VALIDATE_FLOAT);
         if ($count === false || $count === null || $count <= 0) {
-            board::error('Введите сумму цифрой');
+            board::error(lang::get_phrase('cryptocloud_enter_amount_numeric', 'cryptocloud'));
         }
 
         $currency = $this->getCurrency();
         $donateConfig = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->donate();
 
         if ($count < $donateConfig->getMinSummaPaySphereCoin()) {
-            board::error('Минимальное пополнение: ' . $donateConfig->getMinSummaPaySphereCoin());
+            board::error(sprintf(
+                lang::get_phrase('cryptocloud_min_replenishment', 'cryptocloud'),
+                $donateConfig->getMinSummaPaySphereCoin()
+            ));
         }
 
         if ($count > $donateConfig->getMaxSummaPaySphereCoin()) {
-            board::error('Максимальное пополнение: ' . $donateConfig->getMaxSummaPaySphereCoin());
+            board::error(sprintf(
+                lang::get_phrase('cryptocloud_max_replenishment', 'cryptocloud'),
+                $donateConfig->getMaxSummaPaySphereCoin()
+            ));
         }
 
         $amount = donate::sphereCoinSmartCalc(
@@ -170,7 +194,7 @@ class cryptocloud extends BasePaymentPlugin
 
         $url = $response['result']['link'] ?? null;
         if (!is_string($url) || trim($url) === '') {
-            board::error('CryptoCloud не вернул ссылку на оплату');
+            board::error(lang::get_phrase('cryptocloud_missing_payment_link', 'cryptocloud'));
         }
 
         board::response('success', ['url' => $url]);
@@ -283,10 +307,10 @@ class cryptocloud extends BasePaymentPlugin
     public function paymentReturn(): void
     {
         tpl::addVar([
-            'title' => 'CryptoCloud',
+            'title' => lang::get_phrase('cryptocloud', 'cryptocloud'),
             'statusType' => 'info',
-            'statusTitle' => 'Платеж обрабатывается',
-            'statusText' => 'Мы ожидаем подтверждение от платежной системы. Баланс будет пополнен после webhook.',
+            'statusTitle' => lang::get_phrase('cryptocloud_processing_title', 'cryptocloud'),
+            'statusText' => lang::get_phrase('cryptocloud_processing_text', 'cryptocloud'),
         ]);
 
         tpl::displayPlugin('/cryptocloud/tpl/payment_result.html');
@@ -295,10 +319,10 @@ class cryptocloud extends BasePaymentPlugin
     public function paymentSuccess(): void
     {
         tpl::addVar([
-            'title' => 'CryptoCloud',
+            'title' => lang::get_phrase('cryptocloud', 'cryptocloud'),
             'statusType' => 'success',
-            'statusTitle' => 'Оплата принята',
-            'statusText' => 'Платеж успешно создан. Если баланс еще не изменился, дождитесь webhook-подтверждения.',
+            'statusTitle' => lang::get_phrase('cryptocloud_success_title', 'cryptocloud'),
+            'statusText' => lang::get_phrase('cryptocloud_success_text', 'cryptocloud'),
         ]);
 
         tpl::displayPlugin('/cryptocloud/tpl/payment_result.html');
@@ -307,10 +331,10 @@ class cryptocloud extends BasePaymentPlugin
     public function paymentFail(): void
     {
         tpl::addVar([
-            'title' => 'CryptoCloud',
+            'title' => lang::get_phrase('cryptocloud', 'cryptocloud'),
             'statusType' => 'danger',
-            'statusTitle' => 'Оплата не завершена',
-            'statusText' => 'Платеж отменен или не был завершен. Попробуйте создать платеж снова.',
+            'statusTitle' => lang::get_phrase('cryptocloud_fail_title', 'cryptocloud'),
+            'statusText' => lang::get_phrase('cryptocloud_fail_text', 'cryptocloud'),
         ]);
 
         tpl::displayPlugin('/cryptocloud/tpl/payment_result.html');

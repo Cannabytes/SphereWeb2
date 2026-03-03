@@ -11,44 +11,44 @@
           </svg>
         </a>
         <div>
-          <div class="h5 mb-0">CryptoCloud</div>
-          <div class="text-muted small">Управление платежной системой CryptoCloud</div>
+          <div class="h5 mb-0">{{ phrase('cryptocloud') }}</div>
+            <div class="text-muted small">{{ phrase('manage_cryptocloud') }}</div>
         </div>
       </div>
 
       <div class="custom-toggle-switch d-flex align-items-center">
         <input class="pluginActivating" id="enablePlugin" name="{{ pluginName }}" type="checkbox" {% if getPluginActive(pluginName) %}checked{% endif %}>
         <label for="enablePlugin" class="label-success ms-2"></label>
-        <span class="ms-3 text-muted small">Активировать plugin</span>
+        <span class="ms-3 text-muted small">{{ phrase('activate_plugin') }}</span>
       </div>
     </div>
 
     <div class="card-body">
       {% if not getPluginActive(pluginName) %}
-      <div class="alert alert-warning" role="alert">
-        Plugin выключен. Включите toggle выше.
+        <div class="alert alert-warning" role="alert">
+        {{ phrase('plugin_disabled') }}
       </div>
       {% endif %}
 
       <div id="cryptocloudSettings">
         <div class="row g-3 mb-3">
           <div class="col-md-4">
-            <label for="shop_id" class="form-label">Shop ID</label>
+            <label for="shop_id" class="form-label">{{ phrase('shop_id') }}</label>
             <input id="shop_id" type="text" class="form-control" name="shop_id" value="{{ shopId }}" required>
           </div>
 
           <div class="col-md-4">
-            <label for="api_key" class="form-label">API Key</label>
+            <label for="api_key" class="form-label">{{ phrase('api_key') }}</label>
             <input id="api_key" type="text" class="form-control" name="api_key" value="{{ apiKey }}" required>
           </div>
 
           <div class="col-md-4">
-            <label for="secret_key" class="form-label">Secret Key</label>
+            <label for="secret_key" class="form-label">{{ phrase('secret_key') }}</label>
             <input id="secret_key" type="text" class="form-control" name="secret_key" value="{{ secretKey }}" required>
           </div>
 
           <div class="col-md-3">
-            <label for="currency" class="form-label">Валюта</label>
+            <label for="currency" class="form-label">{{ phrase('currency') }}</label>
             <input id="currency" type="text" class="form-control" name="currency" value="{{ currency }}" placeholder="USD" required>
           </div>
 
@@ -60,38 +60,38 @@
 
         <div class="card mb-3 shadow-sm">
           <div class="card-header bg-light">
-            <strong><i class="bi bi-link-45deg me-2"></i>Ссылки для кабинета CryptoCloud</strong>
+            <strong><i class="bi bi-link-45deg me-2"></i>{{ phrase('cryptocloud_cabinet_links') }}</strong>
           </div>
           <div class="card-body">
             <div class="mb-3">
-              <label class="form-label">Webhook URL</label>
+              <label class="form-label">{{ phrase('webhook_url') }}</label>
               <div class="input-group">
                 <div id="webhookUrlText" class="form-control">{{ webhookUrl }}</div>
-                <button class="btn btn-outline-secondary copy-url" type="button" data-target="#webhookUrlText">Копировать</button>
+                <button class="btn btn-outline-secondary copy-url" type="button" data-target="#webhookUrlText">{{ phrase('copy') }}</button>
               </div>
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Return URL</label>
+              <label class="form-label">{{ phrase('return_url') }}</label>
               <div class="input-group">
                 <div id="returnUrlText" class="form-control">{{ returnUrl }}</div>
-                <button class="btn btn-outline-secondary copy-url" type="button" data-target="#returnUrlText">Копировать</button>
+                <button class="btn btn-outline-secondary copy-url" type="button" data-target="#returnUrlText">{{ phrase('copy') }}</button>
               </div>
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Success URL</label>
+              <label class="form-label">{{ phrase('success_url') }}</label>
               <div class="input-group">
                 <div id="successUrlText" class="form-control">{{ successUrl }}</div>
-                <button class="btn btn-outline-secondary copy-url" type="button" data-target="#successUrlText">Копировать</button>
+                <button class="btn btn-outline-secondary copy-url" type="button" data-target="#successUrlText">{{ phrase('copy') }}</button>
               </div>
             </div>
 
             <div>
-              <label class="form-label">Fail URL</label>
+              <label class="form-label">{{ phrase('fail_url') }}</label>
               <div class="input-group">
                 <div id="failUrlText" class="form-control">{{ failUrl }}</div>
-                <button class="btn btn-outline-secondary copy-url" type="button" data-target="#failUrlText">Копировать</button>
+                <button class="btn btn-outline-secondary copy-url" type="button" data-target="#failUrlText">{{ phrase('copy') }}</button>
               </div>
             </div>
           </div>
@@ -101,7 +101,7 @@
         {% set countryList = {'en': 'English'}|merge(getCountryList()) %}
         <div class="card mb-3 shadow-sm">
           <div class="card-header bg-light">
-            <strong><i class="bi bi-globe2 me-2"></i>Поддерживаемые страны</strong>
+            <strong><i class="bi bi-globe2 me-2"></i>{{ phrase('supported_countries') }}</strong>
           </div>
           <div class="card-body" style="max-height: 300px; overflow-y: auto;">
             <div class="row">
@@ -127,7 +127,7 @@
 
         <div class="text-end">
           <button type="button" id="cryptocloudSaveBtn" class="btn btn-primary">
-            <i class="bi bi-save"></i> Сохранить настройки
+            <i class="bi bi-save"></i> {{ phrase('save_settings') }}
           </button>
         </div>
       </div>
@@ -192,15 +192,15 @@
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(url).then(function() {
-        board.success('Скопировано в буфер обмена');
+        board.success('{{ phrase('copied_to_clipboard')|e('js') }}');
       }).catch(function() {
-        board.error('Не удалось скопировать');
+        board.error('{{ phrase('failed_to_copy')|e('js') }}');
       });
     } else {
       const $temp = $('<input>');
       $('body').append($temp);
       $temp.val(url).select();
-      try { document.execCommand('copy'); board.success('Скопировано в буфер обмена'); } catch (e) { board.error('Не удалось скопировать'); }
+      try { document.execCommand('copy'); board.success('{{ phrase('copied_to_clipboard')|e('js') }}'); } catch (e) { board.error('{{ phrase('failed_to_copy')|e('js') }}'); }
       $temp.remove();
     }
   });

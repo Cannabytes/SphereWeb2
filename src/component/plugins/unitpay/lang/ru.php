@@ -50,4 +50,5 @@ return [
     'unitpay_max_amount'                => 'Максимальная сумма пополнения: %s',
     'unitpay_api_error'                 => 'Ошибка API UnitPay. Попробуйте позже.',
     'unitpay_connection_error'          => 'Ошибка соединения. Попробуйте ещё раз.',
+    'unitpay_estimated_cost'            => 'Примерная стоимость',
 ];

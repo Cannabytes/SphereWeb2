@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'stripe' => 'Stripe',
@@ -29,4 +29,11 @@ return [
     'save_settings' => 'Salvar configurações',
     'copied_to_clipboard' => 'Copiado para a área de transferência',
     'failed_to_copy' => 'Falha ao copiar',
+    'stripe_payment_title' => 'Recarga via Stripe',
+    'stripe_payment_description' => 'Digite o valor e vá para o Stripe Checkout',
+    'stripe_amount_label' => 'Valor',
+    'stripe_minimum' => 'Mínimo',
+    'stripe_maximum' => 'Máximo',
+    'stripe_pay_button' => 'Ir para pagamento',
+    'stripe_estimated_cost' => 'Custo estimado',
 ];

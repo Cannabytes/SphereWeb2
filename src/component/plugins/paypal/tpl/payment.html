@@ -48,11 +48,16 @@
               <label class="form-label fw-semibold">{{ phrase('paypal_amount_label') }}</label>
               <div class="input-group input-group-lg">
                 <input type="number" class="form-control" id="amount" name="amount" value="{{ defaultAmount }}" step="1" required>
-                <span class="input-group-text">{{ phrase('paypal_amount_label') }}</span>
+                <span class="input-group-text">{{ phrase('donate_coin') }}</span>
               </div>
               <small class="text-muted d-block mt-2">
                 {{ phrase('paypal_minimum') }}: {{ minAmount }}, {{ phrase('paypal_maximum') }}: {{ maxAmount }}
               </small>
+              <div class="form-text mt-2">
+                <i class="bi bi-cash me-1 text-muted"></i>
+                <span class="text-muted">{{ phrase('paypal_estimated_cost') }}</span>:
+                <strong><span id="costValue">0.00</span>&nbsp;<span id="costCurrency">—</span></strong>
+              </div>
             </div>
 
             <div class="d-grid">
@@ -72,11 +77,31 @@
 {% block js %}
 <script>
 $(function() {
+  // ── Estimated cost ────────────────────────────────────────────────────────────────────────────
+  const CurrencyRates = {
+    USD: parseFloat('{{ USD_val|default(0)|number_format(4, ".", "") }}') || 0,
+    EUR: parseFloat('{{ EUR_val|default(0)|number_format(4, ".", "") }}') || 0,
+    RUB: parseFloat('{{ RUB_val|default(0)|number_format(4, ".", "") }}') || 0,
+    UAH: parseFloat('{{ UAH_val|default(0)|number_format(4, ".", "") }}') || 0,
+  };
+  let activeCurrency = '{{ mainCurrency }}';
+  function updateCost() {
+    const n = parseInt($('#amount').val()) || 0;
+    const rate = CurrencyRates[activeCurrency] || 0;
+    $('#costValue').text((n * rate).toFixed(2));
+    $('#costCurrency').text(activeCurrency);
+  }
+  $('#amount').on('input', updateCost);
+  // ──────────────────────────────────────────────────────────────────────────────
+
   // Account selection
   $(document).on('click', '.account-card', function() {
     $('.account-card').removeClass('border-primary');
     $(this).addClass('border-primary');
     $('#account_index').val($(this).attr('data-index'));
+    const acCurrency = ($(this).data('currency') + '').toUpperCase();
+    activeCurrency = CurrencyRates[acCurrency] !== undefined ? acCurrency : '{{ mainCurrency }}';
+    updateCost();
   });
 
   // Set first account as active
@@ -84,7 +109,10 @@ $(function() {
   if (firstCard.length) {
     firstCard.addClass('border-primary');
     $('#account_index').val(firstCard.attr('data-index'));
+    const acCurrency = (firstCard.data('currency') + '').toUpperCase();
+    activeCurrency = CurrencyRates[acCurrency] !== undefined ? acCurrency : '{{ mainCurrency }}';
   }
+  updateCost();
 
   // Form submission
   $('#paypalPaymentForm').on('submit', function(e) {

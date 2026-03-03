@@ -2626,6 +2626,22 @@ Password: %%password%%',
 	'order_saved' => 'Order saved',
 	'saving' => 'Saving…',
 	'payment_systems_order_saved' => 'Payment systems order saved ✓',
-	'save_error_retry' => 'Save error. Please try again.',
+		'save_error_retry' => 'Save error. Please try again.',
+
+		// Payment plugin estimated cost helpers
+		'estimated_cost' => 'Estimated cost',
+		'pally_estimated_cost' => 'Estimated cost',
+		'paritypay_estimated_cost' => 'Estimated cost',
+		'paypal_estimated_cost' => 'Estimated cost',
+		'primepayments_estimated_cost' => 'Estimated cost',
+		'severpay_estimated_cost' => 'Estimated cost',
+		'unitpay_estimated_cost' => 'Estimated cost',
+		'stripe_payment_title' => 'Top up via Stripe',
+		'stripe_payment_description' => 'Enter the amount and proceed to Stripe Checkout',
+		'stripe_amount_label' => 'Amount',
+		'stripe_minimum' => 'Minimum',
+		'stripe_maximum' => 'Maximum',
+		'stripe_pay_button' => 'Proceed to payment',
+		'stripe_estimated_cost' => 'Estimated cost',
 
 ];

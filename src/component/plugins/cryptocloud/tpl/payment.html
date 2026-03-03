@@ -13,8 +13,8 @@
               </span>
             </div>
             <div>
-              <h4 class="fw-semibold mb-1">Пополнение через CryptoCloud</h4>
-              <p class="text-muted mb-0 fs-12">Введите сумму и перейдите к оплате</p>
+              <h4 class="fw-semibold mb-1">{{ phrase('replenishment_via_cryptocloud') }}</h4>
+              <p class="text-muted mb-0 fs-12">{{ phrase('enter_amount_checkout') }}</p>
             </div>
           </div>
         </div>
@@ -24,20 +24,25 @@
         <div class="card-body">
           <form id="cryptocloudPaymentForm">
             <div class="mb-3">
-              <label class="form-label fw-semibold">Сумма</label>
+              <label class="form-label fw-semibold">{{ phrase('amount') }}</label>
               <div class="input-group input-group-lg">
                 <input type="number" class="form-control" id="amount" name="amount" value="{{ defaultAmount }}" step="1" required>
-                <span class="input-group-text">Donate Coin</span>
+                <span class="input-group-text">{{ phrase('cryptocloud_donate_coin') }}</span>
               </div>
-              <small class="text-muted d-block mt-2">
-                Минимум: {{ minAmount }}, максимум: {{ maxAmount }}
+                <small class="text-muted d-block mt-2">
+                {{ phrase('minimum') }}: {{ minAmount }}, {{ phrase('maximum') }}: {{ maxAmount }}
               </small>
+              <div class="form-text mt-2">
+                <i class="bi bi-cash me-1 text-muted"></i>
+                <span class="text-muted">{{ phrase('cryptocloud_estimated_cost') }}</span>:
+                <strong><span id="costValue">0.00</span>&nbsp;<span id="costCurrency">—</span></strong>
+              </div>
             </div>
 
             <div class="d-grid">
               <button type="submit" class="btn btn-primary btn-lg" id="payButton">
                 <i class="bi bi-arrow-right-circle me-2"></i>
-                Перейти к оплате
+                {{ phrase('go_to_payment') }}
               </button>
             </div>
           </form>
@@ -51,12 +56,32 @@
 {% block js %}
 <script>
 $(function() {
+  const creatingPaymentLabel = '{{ phrase('creating_payment')|e('js') }}';
+  const unknownPaymentError = '{{ phrase('unknown_payment_error')|e('js') }}';
+  const connectionErrorText = '{{ phrase('connection_error')|e('js') }}';
+  // ── Estimated cost ────────────────────────────────────────────────────────────────────────────
+  const CurrencyRates = {
+    USD: parseFloat('{{ USD_val|default(0)|number_format(4, ".", "") }}') || 0,
+    EUR: parseFloat('{{ EUR_val|default(0)|number_format(4, ".", "") }}') || 0,
+    RUB: parseFloat('{{ RUB_val|default(0)|number_format(4, ".", "") }}') || 0,
+    UAH: parseFloat('{{ UAH_val|default(0)|number_format(4, ".", "") }}') || 0,
+  };
+  let activeCurrency = '{{ mainCurrency }}';
+  function updateCost() {
+    const n = parseInt($('#amount').val()) || 0;
+    const rate = CurrencyRates[activeCurrency] || 0;
+    $('#costValue').text((n * rate).toFixed(2));
+    $('#costCurrency').text(activeCurrency);
+  }
+  $('#amount').on('input', updateCost);
+  updateCost();
+  // ──────────────────────────────────────────────────────────────────────────────
   $('#cryptocloudPaymentForm').on('submit', function(e) {
     e.preventDefault();
 
     const $btn = $('#payButton');
     const original = $btn.html();
-    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Создание платежа...');
+    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>' + creatingPaymentLabel + '...');
 
     AjaxSend('/cryptocloud/payment/create', 'POST', $(this).serialize(), false)
       .then(function(response) {
@@ -68,7 +93,7 @@ $(function() {
         if (response && response.message) {
           showError(response.message);
         } else {
-          showError('Неизвестная ошибка при создании платежа');
+          showError(unknownPaymentError);
         }
 
         $btn.prop('disabled', false).html(original);
@@ -77,7 +102,7 @@ $(function() {
         if (error && error.message) {
           showError(error.message);
         } else {
-          showError('Ошибка соединения');
+          showError(connectionErrorText);
         }
         $btn.prop('disabled', false).html(original);
       });

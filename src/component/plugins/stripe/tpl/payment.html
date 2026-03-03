@@ -13,8 +13,8 @@
               </span>
             </div>
             <div>
-              <h4 class="fw-semibold mb-1">Пополнение через Stripe</h4>
-              <p class="text-muted mb-0 fs-12">Введите сумму и перейдите в Stripe Checkout</p>
+              <h4 class="fw-semibold mb-1">{{ phrase('stripe_payment_title') }}</h4>
+              <p class="text-muted mb-0 fs-12">{{ phrase('stripe_payment_description') }}</p>
             </div>
           </div>
         </div>
@@ -24,20 +24,25 @@
         <div class="card-body">
           <form id="stripePaymentForm">
             <div class="mb-3">
-              <label class="form-label fw-semibold">Сумма</label>
+              <label class="form-label fw-semibold">{{ phrase('stripe_amount_label') }}</label>
               <div class="input-group input-group-lg">
                 <input type="number" class="form-control" id="amount" name="amount" value="{{ defaultAmount }}" step="1" required>
                 <span class="input-group-text">Donate Coin</span>
               </div>
               <small class="text-muted d-block mt-2">
-                Минимум: {{ minAmount }}, максимум: {{ maxAmount }}
+                {{ phrase('stripe_minimum') }}: {{ minAmount }}, {{ phrase('stripe_maximum') }}: {{ maxAmount }}
               </small>
+              <div class="form-text mt-2">
+                <i class="bi bi-cash me-1 text-muted"></i>
+                <span class="text-muted">{{ phrase('stripe_estimated_cost') }}</span>:
+                <strong><span id="costValue">0.00</span>&nbsp;<span id="costCurrency">—</span></strong>
+              </div>
             </div>
 
             <div class="d-grid">
               <button type="submit" class="btn btn-primary btn-lg" id="payButton">
                 <i class="bi bi-arrow-right-circle me-2"></i>
-                Перейти к оплате
+                {{ phrase('stripe_pay_button') }}
               </button>
             </div>
           </form>
@@ -51,6 +56,23 @@
 {% block js %}
 <script>
 $(function() {
+  // ── Estimated cost ────────────────────────────────────────────────────────────────────────────
+  const CurrencyRates = {
+    USD: parseFloat('{{ USD_val|default(0)|number_format(4, ".", "") }}') || 0,
+    EUR: parseFloat('{{ EUR_val|default(0)|number_format(4, ".", "") }}') || 0,
+    RUB: parseFloat('{{ RUB_val|default(0)|number_format(4, ".", "") }}') || 0,
+    UAH: parseFloat('{{ UAH_val|default(0)|number_format(4, ".", "") }}') || 0,
+  };
+  let activeCurrency = '{{ mainCurrency }}';
+  function updateCost() {
+    const n = parseInt($('#amount').val()) || 0;
+    const rate = CurrencyRates[activeCurrency] || 0;
+    $('#costValue').text((n * rate).toFixed(2));
+    $('#costCurrency').text(activeCurrency);
+  }
+  $('#amount').on('input', updateCost);
+  updateCost();
+  // ──────────────────────────────────────────────────────────────────────────────
   $('#stripePaymentForm').on('submit', function(e) {
     e.preventDefault();
 

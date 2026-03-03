@@ -56,6 +56,11 @@
               <small class="text-muted d-block mt-2">
                 {{ phrase('pally_minimum') }}: {{ minAmount }}, {{ phrase('pally_maximum') }}: {{ maxAmount }}
               </small>
+              <div class="form-text mt-2">
+                <i class="bi bi-cash me-1 text-muted"></i>
+                <span class="text-muted">{{ phrase('pally_estimated_cost') }}</span>:
+                <strong><span id="costValue">0.00</span>&nbsp;<span id="costCurrency">—</span></strong>
+              </div>
             </div>
 
             <div class="d-grid">
@@ -75,20 +80,42 @@
 {% block js %}
 <script>
 $(function() {
+  // ── Estimated cost ────────────────────────────────────────────────────────────────────────────
+  const CurrencyRates = {
+    USD: parseFloat('{{ USD_val|default(0)|number_format(4, ".", "") }}') || 0,
+    EUR: parseFloat('{{ EUR_val|default(0)|number_format(4, ".", "") }}') || 0,
+    RUB: parseFloat('{{ RUB_val|default(0)|number_format(4, ".", "") }}') || 0,
+    UAH: parseFloat('{{ UAH_val|default(0)|number_format(4, ".", "") }}') || 0,
+  };
+  let activeCurrency = '{{ mainCurrency }}';
+  function updateCost() {
+    const n = parseInt($('#amount').val()) || 0;
+    const rate = CurrencyRates[activeCurrency] || 0;
+    $('#costValue').text((n * rate).toFixed(2));
+    $('#costCurrency').text(activeCurrency);
+  }
+  $('#amount').on('input', updateCost);
+  // ──────────────────────────────────────────────────────────────────────────────
+
   // Gateway card selection (only rendered when gateways >= 2)
   $('#gatewayCards').on('click', '.gateway-card', function() {
     $('#gatewayCards .gateway-card').removeClass('selected border-primary').css('box-shadow', '');
     $(this).addClass('selected border-primary').css('box-shadow', '0 0 0 0.15rem rgba(13,110,253,.25)');
     $('#gateway_index').val($(this).data('index'));
+    const gwCurrency = ($(this).data('currency') + '').toUpperCase();
+    activeCurrency = CurrencyRates[gwCurrency] !== undefined ? gwCurrency : '{{ mainCurrency }}';
+    updateCost();
   });
 
   // Select the first gateway card by default
   if ($('#gatewayCards .gateway-card').length) {
-    $('#gatewayCards .gateway-card').first()
-      .addClass('selected border-primary')
-      .css('box-shadow', '0 0 0 0.15rem rgba(13,110,253,.25)');
-    $('#gateway_index').val($('#gatewayCards .gateway-card').first().data('index'));
+    const $firstCard = $('#gatewayCards .gateway-card').first();
+    $firstCard.addClass('selected border-primary').css('box-shadow', '0 0 0 0.15rem rgba(13,110,253,.25)');
+    $('#gateway_index').val($firstCard.data('index'));
+    const gwCurrency = ($firstCard.data('currency') + '').toUpperCase();
+    activeCurrency = CurrencyRates[gwCurrency] !== undefined ? gwCurrency : '{{ mainCurrency }}';
   }
+  updateCost();
 
   $('#pallyPaymentForm').on('submit', function(e) {
     e.preventDefault();

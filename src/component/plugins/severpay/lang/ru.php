@@ -52,4 +52,5 @@ return [
     'severpay_no_payment_link' => 'SeverPay не вернул ссылку на оплату',
     'severpay_unknown_error' => 'Неизвестная ошибка при создании платежа',
     'severpay_connection_error' => 'Ошибка соединения',
+    'severpay_estimated_cost' => 'Примерная стоимость',
 ];

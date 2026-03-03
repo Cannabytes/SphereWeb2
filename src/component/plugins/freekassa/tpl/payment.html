@@ -130,17 +130,11 @@
                         <div class="card custom-card shadow-sm border-primary mb-4">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="text-muted">Итоговая стоимость:</span>
-                                    <h4 class="fw-bold mb-0 text-primary" id="totalCost"><span id="totalCostValue">0.00</span> <span id="costCurrency">RUB</span></h4>
+                                    <span class="text-muted">{{ phrase('estimated_cost', 'freekassa') }}</span>
+                                    <h4 class="fw-bold mb-0 text-primary" id="totalCost"><span id="totalCostValue">0.00</span>&nbsp;<span id="costCurrency">{{ mainCurrency }}</span></h4>
                                 </div>
                                 <small class="text-muted d-block mt-2">
-                                    {% set sphereCoinCost = getServer().donate().getSphereCoinCost() %}
-                                    {% if sphereCoinCost >= 1 %}
-                                        {% set RUB_rate = getServer().donate().getRatioRUB() / sphereCoinCost %}
-                                    {% else %}
-                                        {% set RUB_rate = getServer().donate().getRatioRUB() * sphereCoinCost %}
-                                    {% endif %}
-                                    Курс: 1 Coin = <span id="coinRate">{{ RUB_rate }}</span> <span id="rateCurrency">RUB</span>
+                                    {{ phrase('rate', 'freekassa') }}: 1 Coin = <span id="coinRate">{{ (mainCurrency == 'RUB') ? RUB_val|number_format(4, '.', '') : (mainCurrency == 'UAH' ? UAH_val|number_format(4, '.', '') : (mainCurrency == 'EUR' ? EUR_val|number_format(4, '.', '') : USD_val|number_format(4, '.', ''))) }}</span>&nbsp;<span id="rateCurrency">{{ mainCurrency }}</span>
                                 </small>
                             </div>
                         </div>
