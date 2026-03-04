@@ -1175,7 +1175,7 @@ class tpl
         }));
 
         $twig->addFunction(new TwigFunction('strip_html_tags', function ($text) {
-            return strip_tags($text);
+            return strip_tags((string)$text);
         }));
 
         //Удаление сообщения тегов форума из текста

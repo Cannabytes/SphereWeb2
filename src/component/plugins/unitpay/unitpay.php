@@ -219,6 +219,7 @@ class unitpay extends BasePaymentPlugin
                 'count' => 1,
                 'price' => $amount,
             ]])),
+            'secretKey' => $secretKey,
             'projectId'         => $publicKey,
             'resultUrl'         => \Ofey\Logan22\component\request\url::host(self::RESULT_URL),
             'hideMenu'          => true,
@@ -229,7 +230,6 @@ class unitpay extends BasePaymentPlugin
 
         $requestUrl = self::API_URL . '?' . http_build_query([
             'method' => 'initPayment',
-            'secretKey' => $secretKey,
             'params' => $params,
         ], '', '&', PHP_QUERY_RFC3986);
 
