@@ -33,21 +33,7 @@
           <div class="col-sm-6 col-lg-4">
             <div class="payment-method-card" data-method="{{ methodKey }}">
               <div class="card-inner">
-                <div class="method-icon">
-                  {# Prefer csv field for SVG/icon/class, fallback to stored icon #}
-                  {% if method.csv is defined and method.csv %}
-                      {% if method.csv starts with '<svg' %}
-                        <div class="svg-border">
-                          {{ method.csv|raw }}
-                        </div>
-                      {% else %}
-                        <i class="{{ method.csv|raw }} text-primary"></i>
-                      {% endif %}
-                  {% else %}
-                    <i class="{{ method.icon|raw }} text-primary"></i>
-                  {% endif %}
-                </div>
-                <h6 class="h3">{{ method.name }}</h6>
+                <h6 class="h3">{{ method.name|raw }}</h6>
                 <div class="method-details">
                   <span class="badge bg-light text-dark">{{ method.currency }}</span>
                   <div class="limits mt-2">
@@ -78,7 +64,7 @@
                   <div class="mb-4">
                     <label for="amount" class="form-label fw-semibold">
                       <i class="bi bi-cash-stack me-1"></i>
-                      {{ phrase('betatransfer_enter_amount') }}
+                      {{phrase('how_many_donate_coin_buy')|raw}}
                     </label>
                     <div class="input-group input-group-lg">
                       <input type="number" 
