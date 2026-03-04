@@ -196,7 +196,6 @@ class unitpay extends BasePaymentPlugin
         $publicKey = $this->getPublicKey();
         $secretKey = $this->getSecretKey();
 
-
         $amount  = donate::sphereCoinSmartCalc(
             $userInputAmount,
             $donateConfig->getRatio($currency),

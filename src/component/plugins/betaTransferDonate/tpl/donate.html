@@ -34,11 +34,17 @@
             <div class="payment-method-card" data-method="{{ methodKey }}">
               <div class="card-inner">
                 <div class="method-icon">
-                  {# Prefer csv field for icon/class, fallback to stored icon #}
+                  {# Prefer csv field for SVG/icon/class, fallback to stored icon #}
                   {% if method.csv is defined and method.csv %}
-                    <i class="{{ method.csv }} text-primary"></i>
+                      {% if method.csv starts with '<svg' %}
+                        <div class="svg-border">
+                          {{ method.csv|raw }}
+                        </div>
+                      {% else %}
+                        <i class="{{ method.csv|raw }} text-primary"></i>
+                      {% endif %}
                   {% else %}
-                    <i class="bi {{ method.icon|default('bi-credit-card') }} text-primary"></i>
+                    <i class="{{ method.icon|raw }} text-primary"></i>
                   {% endif %}
                 </div>
                 <h6 class="h3">{{ method.name }}</h6>
@@ -328,9 +334,29 @@ const noticeError = (msg, type = 'info') => {
   }
   
   .payment-method-card .method-icon {
-    font-size: 3rem;
     margin-bottom: 1rem;
     transition: transform 0.3s ease;
+  }
+
+  .svg-border {
+      border: 2px solid rgba(0,0,0,0.08);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.12);
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1rem auto;
+      padding: 4px;
+    }
+
+    .svg-border svg {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+    }
   }
   
   .payment-method-card .method-title {
