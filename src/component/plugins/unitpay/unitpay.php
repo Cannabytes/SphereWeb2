@@ -192,10 +192,10 @@ class unitpay extends BasePaymentPlugin
         if ($userInputAmount > $donateConfig->getMaxSummaPaySphereCoin()) {
             board::error(sprintf(lang::get_phrase('unitpay_max_amount'), $donateConfig->getMaxSummaPaySphereCoin()));
         }
-
         $currency  = $this->getCurrency();
         $publicKey = $this->getPublicKey();
         $secretKey = $this->getSecretKey();
+
 
         $amount  = donate::sphereCoinSmartCalc(
             $userInputAmount,
@@ -206,7 +206,6 @@ class unitpay extends BasePaymentPlugin
         $account = (string)user::self()->getId();
         $desc    = $this->desc;
 
-        // UnitPay signature: sha256(account{up}currency{up}desc{up}sum{up}secretKey)
         $signature = hash('sha256', $account . '{up}' . $currency . '{up}' . $desc . '{up}' . $amount . '{up}' . $secretKey);
 
         $params = [
@@ -231,11 +230,11 @@ class unitpay extends BasePaymentPlugin
 
         $requestUrl = self::API_URL . '?' . http_build_query([
             'method' => 'initPayment',
+            'secretKey' => $secretKey,
             'params' => $params,
         ], '', '&', PHP_QUERY_RFC3986);
 
         $response = json_decode((string)file_get_contents($requestUrl), true);
-
         if (!is_array($response)) {
             board::error(lang::get_phrase('unitpay_api_error'));
         }
