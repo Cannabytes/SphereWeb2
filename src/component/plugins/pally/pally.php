@@ -235,6 +235,11 @@ class pally extends BasePaymentPlugin
 
         $response = $this->request(self::API_CREATE_URL, $payload, $apiKey);
 
+        $httpCode = (int)($response['httpCode'] ?? 0);
+        if ($httpCode !== 0 && ($httpCode < 200 || $httpCode >= 300)) {
+            board::error($this->resolveApiErrorMessage($httpCode, (string)($response['body'] ?? '')));
+        }
+
         if (($response['error'] ?? '') !== '') {
             board::error(sprintf(lang::get_phrase('pally_curl_error'), $response['error']));
         }
@@ -314,6 +319,59 @@ class pally extends BasePaymentPlugin
         }
 
         echo 'YES';
+    }
+
+    /**
+     * Map Pally API HTTP error code + response body to a human-readable message.
+     * Error codes sourced from https://pally.info/reference/api (POST /api/v1/bill/create).
+     */
+    private function resolveApiErrorMessage(int $httpCode, string $body): string
+    {
+        static $errorMap = [
+            'Unauthenticated'              => 'Неверный API Токен (401)',
+            'api:error.invalid_amount'     => 'Неверная сумма',
+            'api:error.merchant_banned'    => 'Доступ для мерчанта запрещен',
+            'api:error.merchant_not_found' => 'Мерчант не найден',
+            'api:error.shop_not_found'     => 'Магазин не найден',
+            'api:error.shop_not_enabled'   => 'Магазин имеет не активный статус',
+            'api:error.access_denied'      => 'Мерчант не имеет доступ до магазина',
+            'api:error.rate-not-found'     => 'Направление недоступно',
+            'api:error.general_error'      => 'Внутренняя ошибка сервиса (500)',
+        ];
+
+        $json = json_decode($body, true);
+
+        // 422 — validation errors (Laravel-style {errors: {field: [msg]}}).
+        if ($httpCode === 422) {
+            if (is_array($json) && isset($json['errors']) && is_array($json['errors'])) {
+                $parts = [];
+                foreach ($json['errors'] as $fieldErrors) {
+                    foreach ((array)$fieldErrors as $msg) {
+                        $parts[] = (string)$msg;
+                    }
+                }
+                if (!empty($parts)) {
+                    return 'Pally: Ошибка валидации: ' . implode('; ', $parts);
+                }
+            }
+            return 'Pally: Ошибка валидации входных данных';
+        }
+
+        if (is_array($json)) {
+            $key = (string)($json['message'] ?? '');
+            if (isset($errorMap[$key])) {
+                return 'Pally: ' . $errorMap[$key];
+            }
+            if ($key !== '') {
+                return 'Pally API error: ' . $key;
+            }
+        }
+
+        if ($body !== '') {
+            return 'Pally API error (HTTP ' . $httpCode . '): ' . $body;
+        }
+
+        return 'Pally API error (HTTP ' . $httpCode . ')';
     }
 
     /**

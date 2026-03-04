@@ -6,6 +6,7 @@ use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\controller\config\config;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\user\user;
+use Ofey\Logan22\model\plugin\plugin;
 
 class cryptocloud extends \Ofey\Logan22\model\donate\pay_abstract
 {
@@ -118,6 +119,12 @@ class cryptocloud extends \Ofey\Logan22\model\donate\pay_abstract
 
     function webhook()
     {
+        if (plugin::getPluginActive('cryptocloud')) {
+            $pl = new \cryptocloud\cryptocloud();
+            $pl->webhook();
+            return;
+        }
+
         if (!(config::load()->donate()->getDonateSystems('cryptocloud')?->isEnable() ?? false)) {
             echo 'disabled';
             exit;
