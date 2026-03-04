@@ -179,8 +179,6 @@ const noticeError = (msg, type = 'info') => {
     $('#minAmount').text(method.min);
     $('#maxAmount').text(method.max);
     $('#amount').attr({
-      min: method.min,
-      max: method.max,
       placeholder: ("{{ phrase('betatransfer_amount_range')|e('js') }}").replace('{min}', method.min).replace('{max}', method.max)
     });    CurrencyManager.updateCost($('#amount').val());  };
 
@@ -245,16 +243,6 @@ const noticeError = (msg, type = 'info') => {
     
     if (isNaN(amount) || amount <= 0) {
   noticeError("{{ phrase('betatransfer_enter_amount')|e('js') }}");
-      return false;
-    }
-    
-    if (amount < selectedMethod.min) {
-  noticeError(`{{ phrase('betatransfer_min_amount')|e('js') }}: ${selectedMethod.min} ${selectedMethod.currency}`);
-      return false;
-    }
-
-    if (amount > selectedMethod.max) {
-  noticeError(`{{ phrase('betatransfer_max_amount')|e('js') }}: ${selectedMethod.max} ${selectedMethod.currency}`);
       return false;
     }
 
