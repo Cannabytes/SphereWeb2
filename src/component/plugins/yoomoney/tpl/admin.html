@@ -97,6 +97,12 @@
                         <i class="bi bi-info-circle me-1"></i>
                         {{ phrase('webhook_hint', 'yoomoney') }}
                     </small>
+
+                    ВНИМАНИЕ: Убедитесь что вы включили <a class="text-danger" href="https://yoomoney.ru/transfer/myservices/http-notification?lang=ru">Отправку HTTP-уведомлений</a> в настройках магазина в ЮMoney и указали именно этот URL, иначе платежи не будут обрабатываться!
+                    На этой же странице и создайте <strong class="text-danger">секретный ключ</strong> вебхука, который нужно указать при добавлении магазина.
+                    
+                    <img src="/src/component/plugins/yoomoney/tpl/webhook_example.png" alt="Webhook Settings Example" class="img-fluid mt-3 border rounded">
+               
                 </div>
             </div>
         </div>
@@ -189,7 +195,7 @@
                         </div>
 
                         <div class="col-xl-12 mb-3">
-                            <label for="instance_secret_key" class="form-label">{{ phrase('secret_key', 'yoomoney') }} <span class="text-danger">*</span></label>
+                            <label for="instance_secret_key" class="form-label">{{ phrase('secret_key', 'yoomoney')|raw }} <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="instance_secret_key" name="secret_key" required placeholder="{{ phrase('secret_key_placeholder', 'yoomoney') }}">
                             <small class="text-muted">{{ phrase('secret_key_hint', 'yoomoney') }}</small>
                         </div>

@@ -36,7 +36,7 @@ return [
     'shop_id' => 'Номер кошелька',
     'shop_id_placeholder' => 'Введите номер кошелька ЮMoney',
     'shop_id_hint' => 'Ваш номер кошелька из личного кабинета ЮMoney',
-    'secret_key' => 'Секретный ключ',
+    'secret_key' => '<a target="_blank" href="https://yoomoney.ru/transfer/myservices/http-notification?lang=ru">Секретный ключ уведомлений</a>',
     'secret_key_placeholder' => 'Введите секретный ключ',
     'secret_key_hint' => 'Секретный ключ для проверки подписи уведомлений',
     
