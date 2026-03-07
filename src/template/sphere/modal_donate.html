@@ -1,4 +1,3 @@
-
 {% if getServer() %}
 {% set item = get_item_info(getServer().donate().getItemIdToGameTransfer()) %}
 {% set sphereCoinCost = getServer().donate().getSphereCoinCost() %}
@@ -349,9 +348,11 @@
                                     <div class="payment-plugin-flags mt-2">
                                         {% for countryCode in pluginCountries %}
                                         {% set cc = countryCode|lower %}
+                                        {% if cc != 'true' %}
                                         <span class="payment-plugin-flag" title="{{ cc|upper }}">
                                             <img src="/uploads/images/svg/flags/{{ cc }}.svg" alt="{{ cc|upper }}">
                                         </span>
+                                        {% endif %}
                                         {% endfor %}
                                     </div>
                                 </div>
