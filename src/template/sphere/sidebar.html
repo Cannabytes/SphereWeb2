@@ -47,8 +47,8 @@
           </a>
         </li>
 
-        {% if getUser().isAuth() %}
 
+        {% if getUser().isAuth() and getServer() %}
         <li class="slide warehouse {{classColorMenu()}}">
           <a href="javascript:void(0);" class="side-menu__item" data-bs-toggle="modal" data-bs-target="#warehouseModal">
             <i class="las la-warehouse side-menu__icon"></i>

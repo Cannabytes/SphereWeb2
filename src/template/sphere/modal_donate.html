@@ -1,3 +1,5 @@
+
+{% if getServer() %}
 {% set item = get_item_info(getServer().donate().getItemIdToGameTransfer()) %}
 {% set sphereCoinCost = getServer().donate().getSphereCoinCost() %}
 {% set sphereCoinCost = (sphereCoinCost > 0) ? sphereCoinCost : 1 %}
@@ -1476,3 +1478,4 @@
 
     })(jQuery);
 </script>
+{% endif %}
