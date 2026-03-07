@@ -1599,7 +1599,7 @@ class userModel
 
         $result = sql::run(
             'INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)',
-            [$server, $this->getId(), $name, $data]
+            [$server, $this->getId(), $name, mb_substr((string)$data, 0, 255)]
         );
 
         // Очищаем кэш при добавлении новых данных
