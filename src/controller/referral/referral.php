@@ -45,7 +45,7 @@ class referral
         $countBonus = 0;
         $playerNames = [];
         $items = []; // Массив для хранения информации о предметах
-        $rejectedCharacters = []; // Track rejected characters
+        $rejectedCharacters = [];
 
         if (!empty($hasRequirements)) {
             $bonusDonateCoin = config::load()->referral()->getBonusAmount();
@@ -53,32 +53,30 @@ class referral
             foreach ($hasRequirements as $referral) {
                 $slaveUser = user::getUserId($referral['id']);
                 $leaderUser = user::self();
-                
-                // Get character info for duplicate checking
-                $characterName = $referral['qualifying_character']->getName();
-                $serverId = $referral['qualifying_account']->getServerId();
+                $accountName = $referral['qualifying_account']->getAccount();
+                $characterName = $referral['qualifying_character']->getPlayerName();
+                $serverId = $leaderUser->getServerId();
 
-                // Check if this character has already earned a bonus
-                if (ReferralModel::hasCharacterEarnedBonus($characterName, $serverId)) {
-                    // Log rejection for audit trail
+                if (ReferralModel::hasAccountEarnedBonus($accountName)) {
                     ReferralModel::logCharacterBonusRejected(
                         $leaderUser,
                         $slaveUser,
+                        $accountName,
                         $characterName,
                         $serverId,
                         $referral['referral_id']
                     );
-                    $rejectedCharacters[] = $characterName;
-                    continue; // Skip this character, don't award bonus
+                    $rejectedCharacters[] = $referral['name'];
+                    continue; 
                 }
 
                 //Отметим что данный реферальный квест был выполнен
                 ReferralModel::done($slaveUser->getId(), $leaderUser->getId());
                 
-                // Log successful bonus award for character
                 ReferralModel::logCharacterBonusAwarded(
                     $leaderUser,
                     $slaveUser,
+                    $accountName,
                     $characterName,
                     $serverId,
                     $bonusDonateCoin,

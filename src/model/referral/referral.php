@@ -78,6 +78,11 @@ class referral
                  }
             }
 
+            // Пропускаем игровые аккаунты, которые уже получили бонус
+            if ($qualifying_account && self::hasAccountEarnedBonus($qualifying_account->getAccount())) {
+                continue;
+            }
+
             $data = [
                 //Выполнены ли реферальные требования
                 'is_requirements' => $is_requirements,
@@ -115,6 +120,25 @@ class referral
     }
 
     /**
+     * Check if a game account has already earned a referral bonus
+     * Identifies account by account name - prevents same game account from earning bonus multiple times
+     * 
+     * @param string $accountName - Name of the game account
+     * @return bool - True if account has already earned bonus, false otherwise
+     */
+    public static function hasAccountEarnedBonus(string $accountName): bool
+    {
+        $query = "SELECT `id` FROM `logs_all` 
+                  WHERE `type` = ? AND `variables` LIKE ?
+                  LIMIT 1";
+        
+        $searchPattern = '%"game_account_name":"' . $accountName . '"%';
+        $result = sql::getRow($query, [logTypes::LOG_REFERRAL_CHARACTER_BONUS_AWARDED->value, $searchPattern]);
+        
+        return !empty($result);
+    }
+
+    /**
      * Check if a character has already earned a referral bonus
      * Identifies character by name and server_id combination
      * 
@@ -139,17 +163,19 @@ class referral
      * 
      * @param userModel $leader - The referrer (leader) user object
      * @param userModel $slave - The referred (slave) user object  
+     * @param string $gameAccountName - Name of the game account that earned the bonus
      * @param string $characterName - Name of the character that earned the bonus
      * @param int $serverId - Server ID where character exists
      * @param float $bonusAmount - Amount of donate coins awarded
      * @param int $referralId - ID of the referral record
      */
-    public static function logCharacterBonusAwarded(userModel $leader, userModel $slave, string $characterName, int $serverId, float $bonusAmount, int $referralId): void
+    public static function logCharacterBonusAwarded(userModel $leader, userModel $slave, string $gameAccountName, string $characterName, int $serverId, float $bonusAmount, int $referralId): void
     {
         $variables = [
+            'game_account_name' => $gameAccountName,
             'character_name' => $characterName,
             'server_id' => $serverId,
-            'account_name' => $slave->getName(),
+            'profile_username' => $slave->getName(),
             'slave_user_id' => $slave->getId(),
             'leader_user_id' => $leader->getId(),
             'leader_name' => $leader->getName(),
@@ -165,16 +191,18 @@ class referral
      * 
      * @param userModel $leader - The referrer (leader) user object
      * @param userModel $slave - The referred (slave) user object
+     * @param string $gameAccountName - Name of the game account attempting bonus
      * @param string $characterName - Name of the character attempting bonus
      * @param int $serverId - Server ID where character exists
      * @param int $referralId - ID of the referral record
      */
-    public static function logCharacterBonusRejected(userModel $leader, userModel $slave, string $characterName, int $serverId, int $referralId): void
+    public static function logCharacterBonusRejected(userModel $leader, userModel $slave, string $gameAccountName, string $characterName, int $serverId, int $referralId): void
     {
         $variables = [
+            'game_account_name' => $gameAccountName,
             'character_name' => $characterName,
             'server_id' => $serverId,
-            'account_name' => $slave->getName(),
+            'profile_username' => $slave->getName(),
             'slave_user_id' => $slave->getId(),
             'leader_user_id' => $leader->getId(),
             'leader_name' => $leader->getName(),
