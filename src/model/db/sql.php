@@ -185,7 +185,6 @@ class sql
 
             return $stmt;
         } catch (PDOException $e) {
-            file_put_contents("sql_error_log.txt", $e->getMessage() . ": {$query}\n", FILE_APPEND);
             if($e->getCode() == "42S02"){
                 error::error404($e->getMessage());
             }
