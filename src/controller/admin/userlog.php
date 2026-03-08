@@ -45,8 +45,7 @@ class userlog {
         }
 
         foreach ($serverLog as &$log) {
-            $s = json_decode($log['variables']);
-            $values = is_array($s) ? array_values($s) : [$s];
+            $values = \Ofey\Logan22\model\log\log::getPhraseValues($log['variables']);
             $log['message'] = lang::get_phrase($log['phrase'], ...$values);
         }
 
@@ -83,8 +82,7 @@ class userlog {
 		ORDER BY logs_all.id DESC LIMIT 50", [strtolower($sort)]);
         }
         foreach($allLog AS &$log){
-            $s = json_decode($log['variables']);
-            $values = is_array($s) ? array_values($s) : [$s];
+            $values = \Ofey\Logan22\model\log\log::getPhraseValues($log['variables']);
             $log['message'] = lang::get_phrase($log['phrase'], ...$values);
         }
         $logs_type = sql::getRows('SELECT DISTINCT type FROM logs_all;');
@@ -138,8 +136,7 @@ class userlog {
                 $avatar = "thumb_" . $avatar;
             }
             $log['avatar'] = fileSys::localdir(sprintf("/uploads/avatar/%s", $avatar));
-            $s = json_decode($log['variables']);
-            $values = is_array($s) ? array_values($s) : [$s];
+            $values = \Ofey\Logan22\model\log\log::getPhraseValues($log['variables']);
             $log['message'] = lang::get_phrase($log['phrase'], ...$values);
             $log['time'] = statistic_model::timeHasPassed(time() - strtotime($log['time']), true);
         }
@@ -187,8 +184,7 @@ class userlog {
                 $avatar = "thumb_" . $avatar;
             }
             $log['avatar'] = fileSys::localdir(sprintf("/uploads/avatar/%s", $avatar));
-            $s = json_decode($log['variables']);
-            $values = is_array($s) ? array_values($s) : [$s];
+            $values = \Ofey\Logan22\model\log\log::getPhraseValues($log['variables']);
             $log['message'] = lang::get_phrase($log['phrase'], ...$values);
             $log['time'] = statistic_model::timeHasPassed(time() - strtotime($log['time']), true);
         }

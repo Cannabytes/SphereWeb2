@@ -28,5 +28,6 @@ enum logTypes: int
     case LOG_BUY_START_PACK = 22;
     case LOG_REFERRAL_CHARACTER_BONUS_AWARDED = 23;
     case LOG_REFERRAL_CHARACTER_BONUS_REJECTED = 24;
+    
 }
 

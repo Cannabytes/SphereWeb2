@@ -289,6 +289,7 @@ class paritypay extends BasePaymentPlugin
         http_response_code(200);
 
         if (!$this->isConfigured()) {
+            $this->logWebhook('NOT_CONFIGURED', ['reason' => 'Plugin not configured']);
             echo 'ok';
             return;
         }
@@ -297,12 +298,14 @@ class paritypay extends BasePaymentPlugin
 
         $payload = json_decode((string)$payloadRaw, true);
         if (!is_array($payload)) {
+            $this->logWebhook('INPUT_INVALID', ['reason' => 'Invalid JSON payload']);
             echo 'ok';
             return;
         }
 
         $signature = trim((string)($_SERVER['HTTP_X_SIGNATURE'] ?? ''));
         if ($signature === '') {
+            $this->logWebhook('SIGNATURE_MISSING', ['reason' => 'X-SIGNATURE is missing']);
             echo 'ok';
             return;
         }
@@ -311,18 +314,21 @@ class paritypay extends BasePaymentPlugin
 
         $gateway = $this->findGatewayByShopId($shopId);
         if ($gateway === null) {
+            $this->logWebhook('GATEWAY_NOT_FOUND', ['shop_id' => $shopId]);
             echo 'ok';
             return;
         }
 
         $verify = $this->verifyWebhookSignature($payload, $signature, $gateway['secret_key_2']);
         if (!$verify) {
+            $this->logWebhook('SIGN_INVALID', ['shop_id' => $shopId]);
             echo 'ok';
             return;
         }
 
         $status = strtoupper(trim((string)($payload['status'] ?? '')));
         if ($status !== 'PAID') {
+            $this->logWebhook('PAYMENT_NOT_CONFIRMED', ['status' => $status, 'shop_id' => $shopId]);
             echo 'ok';
             return;
         }
@@ -334,6 +340,11 @@ class paritypay extends BasePaymentPlugin
         $userId = $this->resolveUserId($payload, $orderId);
 
         if ($invoiceId === '' || $orderId === '' || $userId <= 0) {
+            $this->logWebhook('INPUT_INVALID', [
+                'invoice_id' => $invoiceId,
+                'order_id' => $orderId,
+                'user_id' => $userId,
+            ]);
             echo 'ok';
             return;
         }
@@ -347,9 +358,21 @@ class paritypay extends BasePaymentPlugin
             $userObject->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system: $this->getNameClass());
             donate::addUserBonus($userId, $amount);
         } catch (\Throwable $ex) {
+            $this->logWebhook('PROCESS_ERROR', [
+                'error' => $ex->getMessage(),
+                'invoice_id' => $invoiceId,
+                'order_id' => $orderId,
+            ], $userId);
             echo 'ok';
             return;
         }
+
+        $this->logWebhook('PAYMENT_SUCCESS', [
+            'invoice_id' => $invoiceId,
+            'order_id' => $orderId,
+            'amount' => $amount,
+            'currency' => $gateway['currency'],
+        ], $userId);
 
         echo 'ok';
     }
@@ -442,4 +465,5 @@ class paritypay extends BasePaymentPlugin
             'error' => $error,
         ];
     }
+
 }

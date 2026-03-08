@@ -277,12 +277,20 @@ class stripe extends BasePaymentPlugin
 
     public function webhook(): void
     {
-        if (!$this->isPluginActive() || !$this->isConfigured()) {
+        if (!$this->isPluginActive()) {
+            $this->logWebhook('DISABLED', ['reason' => 'Plugin disabled']);
+            echo 'disabled';
+            return;
+        }
+
+        if (!$this->isConfigured()) {
+            $this->logWebhook('NOT_CONFIGURED', ['reason' => 'Plugin is not configured']);
             echo 'disabled';
             return;
         }
 
         if (strtoupper((string)($_SERVER['REQUEST_METHOD'] ?? 'GET')) !== 'POST') {
+            $this->logWebhook('INVALID_METHOD', ['method' => $_SERVER['REQUEST_METHOD'] ?? 'GET']);
             header('HTTP/1.1 405 Method Not Allowed', true, 405);
             echo 'Method not allowed';
             return;
@@ -290,6 +298,7 @@ class stripe extends BasePaymentPlugin
 
         $rawPayload = (string)file_get_contents('php://input');
         if ($rawPayload === '') {
+            $this->logWebhook('INPUT_INVALID', ['reason' => 'Empty payload']);
             header('HTTP/1.1 400 Bad Request', true, 400);
             echo 'Empty payload';
             return;
@@ -297,6 +306,7 @@ class stripe extends BasePaymentPlugin
 
         $signature = (string)($_SERVER['HTTP_STRIPE_SIGNATURE'] ?? '');
         if ($signature === '') {
+            $this->logWebhook('SIGNATURE_MISSING', ['reason' => 'Missing Stripe signature']);
             header('HTTP/1.1 400 Bad Request', true, 400);
             echo 'Missing signature';
             return;
@@ -309,34 +319,40 @@ class stripe extends BasePaymentPlugin
                 (string)$this->getPluginSetting('webhook_secret_key', '')
             );
         } catch (\Stripe\Exception\SignatureVerificationException $e) {
+            $this->logWebhook('SIGN_INVALID', ['error' => $e->getMessage()]);
             header('HTTP/1.1 400 Bad Request', true, 400);
             echo 'Invalid signature';
             return;
         } catch (\UnexpectedValueException $e) {
+            $this->logWebhook('INPUT_INVALID', ['error' => $e->getMessage()]);
             header('HTTP/1.1 400 Bad Request', true, 400);
             echo 'Invalid payload';
             return;
         }
 
         if ((string)$event->type !== 'checkout.session.completed') {
+            $this->logWebhook('EVENT_IGNORED', ['event_type' => (string)$event->type]);
             echo 'ignored';
             return;
         }
 
         $session = $event->data->object ?? null;
         if ($session === null) {
+            $this->logWebhook('INPUT_INVALID', ['reason' => 'Session object missing']);
             header('HTTP/1.1 400 Bad Request', true, 400);
             echo 'Invalid session';
             return;
         }
 
         if ((string)($session->payment_status ?? '') !== 'paid') {
+            $this->logWebhook('PAYMENT_NOT_CONFIRMED', ['payment_status' => (string)($session->payment_status ?? '')]);
             echo 'not_paid';
             return;
         }
 
         $userId = (int)($session->metadata->user_id ?? 0);
         if ($userId <= 0) {
+            $this->logWebhook('INVALID_USER_ID', ['user_id' => $userId]);
             header('HTTP/1.1 400 Bad Request', true, 400);
             echo 'Invalid user_id';
             return;
@@ -345,16 +361,34 @@ class stripe extends BasePaymentPlugin
         $amountInput = ((float)($session->amount_total ?? 0)) / 100;
         $currency = strtoupper((string)($session->currency ?? $this->getCurrency()));
         if ($amountInput <= 0) {
+            $this->logWebhook('INPUT_INVALID', ['reason' => 'Invalid amount', 'amount' => $amountInput], $userId);
             header('HTTP/1.1 400 Bad Request', true, 400);
             echo 'Invalid amount';
             return;
         }
 
-        donate::control_uuid((string)($session->id ?? null), $this->getNameClass(), $rawPayload);
+        $invoiceId = (string)($session->id ?? null);
+
+        try {
+            donate::control_uuid($invoiceId, $this->getNameClass(), $rawPayload);
+        } catch (\Throwable $e) {
+            $this->logWebhook('UUID_CONTROL_FAILED', [
+                'error' => $e->getMessage(),
+                'invoice_id' => $invoiceId,
+            ], $userId);
+            header('HTTP/1.1 400 Bad Request', true, 400);
+            echo 'UUID control failed';
+            return;
+        }
 
         try {
             $amount = donate::currency($amountInput, $currency);
         } catch (\Throwable $e) {
+            $this->logWebhook('CURRENCY_ERROR', [
+                'error' => $e->getMessage(),
+                'amount' => $amountInput,
+                'currency' => $currency,
+            ], $userId);
             header('HTTP/1.1 400 Bad Request', true, 400);
             echo 'Currency conversion failed';
             return;
@@ -371,11 +405,23 @@ class stripe extends BasePaymentPlugin
                 ->AddHistoryDonate(amount: $amount, pay_system: $this->getNameClass(), input: $rawPayload);
             donate::addUserBonus($userId, $amount);
         } catch (\Throwable $e) {
+            $this->logWebhook('PROCESS_ERROR', [
+                'error' => $e->getMessage(),
+                'invoice_id' => $invoiceId,
+                'amount' => $amount,
+            ], $userId);
             header('HTTP/1.1 500 Internal Server Error', true, 500);
             echo 'Failed to add funds';
             return;
         }
 
+        $this->logWebhook('PAYMENT_SUCCESS', [
+            'invoice_id' => $invoiceId,
+            'amount' => $amount,
+            'currency' => $currency,
+        ], $userId);
+
         echo 'OK';
     }
+
 }

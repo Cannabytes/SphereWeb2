@@ -203,16 +203,19 @@ class cryptocloud extends BasePaymentPlugin
     public function webhook(): void
     {
         if (!$this->isPluginActive()) {
+            $this->logWebhook('DISABLED', ['reason' => 'Plugin is disabled']);
             echo 'disabled';
             return;
         }
 
         if (!$this->isConfigured()) {
+            $this->logWebhook('NOT_CONFIGURED', ['reason' => 'Plugin is not configured']);
             echo 'disabled';
             return;
         }
 
         if (strtoupper((string)($_SERVER['REQUEST_METHOD'] ?? 'GET')) !== 'POST') {
+            $this->logWebhook('INVALID_METHOD', ['method' => $_SERVER['REQUEST_METHOD'] ?? 'GET']);
             header('HTTP/1.1 405 Method Not Allowed', true, 405);
             echo 'Method not allowed';
             return;
@@ -226,6 +229,7 @@ class cryptocloud extends BasePaymentPlugin
 
         $token = (string)($_REQUEST['token'] ?? $jsonInput['token'] ?? '');
         if ($token === '' || !$this->verifyWebhookToken($token)) {
+            $this->logWebhook('TOKEN_INVALID', ['reason' => 'Invalid or missing token']);
             header('HTTP/1.1 400 Bad Request', true, 400);
             echo 'Bad sign';
             return;
@@ -234,6 +238,7 @@ class cryptocloud extends BasePaymentPlugin
         $jwtPayload = $this->decodeJwtPayload($token);
         $invoiceId = (string)($_REQUEST['invoice_id'] ?? $jsonInput['invoice_id'] ?? $jwtPayload['invoice_id'] ?? $jwtPayload['uuid'] ?? '');
         if ($invoiceId === '') {
+            $this->logWebhook('INVOICE_ID_MISSING', ['reason' => 'Missing invoice_id']);
             header('HTTP/1.1 400 Bad Request', true, 400);
             echo 'No invoice id';
             return;
@@ -244,6 +249,7 @@ class cryptocloud extends BasePaymentPlugin
         ]);
 
         if (isset($response['detail'])) {
+            $this->logWebhook('API_ERROR', ['error' => $response['detail']]);
             header('HTTP/1.1 400 Bad Request', true, 400);
             echo (string)$response['detail'];
             return;
@@ -251,6 +257,10 @@ class cryptocloud extends BasePaymentPlugin
 
         $invoice = $response['result'][0] ?? null;
         if (!is_array($invoice) || ($response['status'] ?? 'fail') !== 'success' || ($invoice['status'] ?? '') !== 'paid') {
+            $this->logWebhook('PAYMENT_NOT_CONFIRMED', [
+                'status' => $invoice['status'] ?? 'unknown',
+                'response_status' => $response['status'] ?? 'fail',
+            ]);
             header('HTTP/1.1 400 Bad Request', true, 400);
             echo 'Not paid';
             return;
@@ -259,6 +269,10 @@ class cryptocloud extends BasePaymentPlugin
         try {
             donate::control_uuid($invoiceId, $this->getNameClass());
         } catch (\Throwable $e) {
+            $this->logWebhook('UUID_CONTROL_FAILED', [
+                'error' => $e->getMessage(),
+                'invoice_id' => $invoiceId,
+            ]);
             header('HTTP/1.1 400 Bad Request', true, 400);
             echo 'UUID control failed';
             return;
@@ -268,10 +282,13 @@ class cryptocloud extends BasePaymentPlugin
         $orderIdParts = explode('@', $orderIdRaw);
         $userId = (int)($orderIdParts[0] ?? 0);
         if ($userId <= 0) {
+            $this->logWebhook('INVALID_USER_ID', ['order_id' => $orderIdRaw, 'user_id' => $userId]);
             header('HTTP/1.1 400 Bad Request', true, 400);
             echo 'Invalid user';
             return;
         }
+
+        $userModel = user::getUserId($userId);
 
         $amountInput = (float)($invoice['amount_usd'] ?? $invoice['amount'] ?? 0);
         $currency = $this->sanitizeCurrency((string)($invoice['currency'] ?? 'USD'));
@@ -286,16 +303,29 @@ class cryptocloud extends BasePaymentPlugin
         // }
 
         try {
-            telegram::telegramNotice(user::getUserId($userId), $amountInput, $currency, $amount, $this->getNameClass());
+            telegram::telegramNotice($userModel, $amountInput, $currency, $amount, $this->getNameClass());
         } catch (\Throwable $e) {
         }
 
         try {
-            user::getUserId($userId)
+            $userModel
                 ->donateAdd($amount)
                 ->AddHistoryDonate(amount: $amount, pay_system: $this->getNameClass(), input: $rawBody !== '' ? $rawBody : json_encode($_REQUEST, JSON_UNESCAPED_UNICODE));
             donate::addUserBonus($userId, $amount);
+            
+            // Логируем успешное добавление средств
+            $this->logWebhook('PAYMENT_SUCCESS', [
+                'invoice_id' => $invoiceId,
+                'user_id' => $userId,
+                'amount' => $amount,
+                'currency' => $currency,
+            ], $userId, $userModel->getServerId() ?? 0);
         } catch (\Throwable $e) {
+            $this->logWebhook('PROCESS_ERROR', [
+                'error' => $e->getMessage(),
+                'amount' => $amount,
+                'invoice_id' => $invoiceId,
+            ], $userId);
             header('HTTP/1.1 500 Internal Server Error', true, 500);
             echo 'Failed to add funds';
             return;

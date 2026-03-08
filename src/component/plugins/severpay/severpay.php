@@ -273,12 +273,14 @@ class severpay extends BasePaymentPlugin
     public function webhook(): void
     {
         if (!$this->isPluginActive()) {
+            $this->logWebhook('DISABLED', ['reason' => 'Plugin disabled']);
             echo json_encode(['status' => false, 'msg' => 'Plugin disabled']);
             return;
         }
 
         $merchants = $this->getMerchants();
         if (empty($merchants)) {
+            $this->logWebhook('NOT_CONFIGURED', ['reason' => 'No merchant configured']);
             echo json_encode(['status' => false, 'msg' => 'No merchant configured']);
             return;
         }
@@ -289,6 +291,7 @@ class severpay extends BasePaymentPlugin
         $input = json_decode($inputJSON, true);
 
         if (!$input || !isset($input['sign'])) {
+            $this->logWebhook('INPUT_INVALID', ['reason' => 'Invalid input or missing sign']);
             echo json_encode(['status' => false, 'msg' => 'Invalid input']);
             return;
         }
@@ -306,6 +309,7 @@ class severpay extends BasePaymentPlugin
         }
 
         if ($verifiedMerchant === null) {
+            $this->logWebhook('SIGN_INVALID', ['reason' => 'No merchant matched signature']);
             http_response_code(400);
             echo json_encode([
                 'status' => false,
@@ -315,6 +319,7 @@ class severpay extends BasePaymentPlugin
         }
 
         if (($input['type'] ?? '') !== 'payin') {
+            $this->logWebhook('INPUT_INVALID', ['reason' => 'Invalid type', 'type' => (string)($input['type'] ?? '')]);
             http_response_code(400);
             echo json_encode([
                 'status' => false,
@@ -325,6 +330,7 @@ class severpay extends BasePaymentPlugin
 
         $data = $input['data'] ?? [];
         if (($data['status'] ?? '') !== 'success') {
+            $this->logWebhook('PAYMENT_NOT_CONFIRMED', ['status' => (string)($data['status'] ?? '')]);
             http_response_code(400);
             echo json_encode(['status' => false, 'msg' => 'Payment not successful']);
             exit;
@@ -334,6 +340,7 @@ class severpay extends BasePaymentPlugin
         $orderParts = explode('_', $orderId);
         $userId = (int)($orderParts[0] ?? 0);
         if ($userId <= 0) {
+            $this->logWebhook('INVALID_USER_ID', ['order_id' => $orderId, 'user_id' => $userId]);
             http_response_code(400);
             echo json_encode(['status' => false, 'msg' => 'Invalid order_id']);
             return;
@@ -346,6 +353,10 @@ class severpay extends BasePaymentPlugin
         try {
             donate::control_uuid(uuid: $uuid, pay_system_name: get_called_class(), request: $data);
         } catch (\Throwable $e) {
+            $this->logWebhook('UUID_CONTROL_FAILED', [
+                'error' => $e->getMessage(),
+                'uuid' => $uuid,
+            ], $userId);
             http_response_code(400);
             echo json_encode(['status' => false, 'msg' => 'UUID control failed']);
             return;
@@ -354,6 +365,11 @@ class severpay extends BasePaymentPlugin
         try {
             $amount = donate::currency($amountInput, $currency);
         } catch (\Throwable $e) {
+            $this->logWebhook('CURRENCY_ERROR', [
+                'error' => $e->getMessage(),
+                'amount' => $amountInput,
+                'currency' => $currency,
+            ], $userId);
             http_response_code(400);
             echo json_encode(['status' => false, 'msg' => 'Currency conversion failed']);
             return;
@@ -369,6 +385,11 @@ class severpay extends BasePaymentPlugin
                 ->donateAdd($amount)
                 ->AddHistoryDonate(amount: $amount, pay_system: $this->getNameClass(), input: $inputJSON);
         } catch (\Throwable $e) {
+            $this->logWebhook('PROCESS_ERROR', [
+                'error' => $e->getMessage(),
+                'uuid' => $uuid,
+                'amount' => $amount,
+            ], $userId);
             http_response_code(400);
             echo json_encode(['status' => false, 'msg' => 'Failed to add funds']);
             return;
@@ -378,6 +399,13 @@ class severpay extends BasePaymentPlugin
             donate::addUserBonus($userId, $amount);
         } catch (\Throwable $e) {
         }
+
+        $this->logWebhook('PAYMENT_SUCCESS', [
+            'uuid' => $uuid,
+            'order_id' => $orderId,
+            'amount' => $amount,
+            'currency' => $currency,
+        ], $userId);
 
         echo json_encode(['status' => true]);
     }
@@ -406,4 +434,5 @@ class severpay extends BasePaymentPlugin
             'body' => $body,
         ];
     }
+
 }

@@ -80,6 +80,39 @@ class log
         echo json_encode(self::getLog($logs, true), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 
+    public static function getPhraseValues(?string $variables): array
+    {
+        if ($variables === null || $variables === '') {
+            return [];
+        }
+
+        $decoded = json_decode($variables, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return [$variables];
+        }
+
+        if (is_array($decoded)) {
+            return array_map(static fn($value) => self::normalizePhraseValue($value), array_values($decoded));
+        }
+
+        return [self::normalizePhraseValue($decoded)];
+    }
+
+    private static function normalizePhraseValue(mixed $value): mixed
+    {
+        if (is_string($value) || is_int($value) || is_float($value) || is_bool($value)) {
+            return $value;
+        }
+
+        if ($value === null) {
+            return '';
+        }
+
+        $encoded = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        return $encoded === false ? '' : $encoded;
+    }
+
     /**
      * @param   array  $logs
      *
@@ -97,8 +130,7 @@ class log
                 $user = $user->toArray();
             }
             $log['user']    = $user;
-            $s              = json_decode($log['variables']);
-            $values         = is_array($s) ? array_values($s) : [$s];
+            $values         = self::getPhraseValues($log['variables']);
             $log['message'] = lang::get_phrase($log['phrase'], ...$values);
         }
 

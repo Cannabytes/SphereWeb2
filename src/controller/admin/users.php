@@ -26,8 +26,7 @@ class users
         $logs = sql::getRows("SELECT `id`, `time`, phrase, `variables` FROM logs_all WHERE user_id = ? ORDER BY id DESC LIMIT 1000", [$id]);
 
         foreach ($logs as &$log) {
-            $s = json_decode($log['variables']);
-            $values = is_array($s) ? array_values($s) : [$s];
+            $values = \Ofey\Logan22\model\log\log::getPhraseValues($log['variables']);
             $log['message'] = lang::get_phrase($log['phrase'], ...$values);
         }
 

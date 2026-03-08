@@ -334,6 +334,7 @@ class yoomoney extends BasePaymentPlugin
     public function webhook(): void
     {
         if (!$this->isPluginActive()) {
+            $this->logWebhook('DISABLED', ['reason' => 'Plugin disabled']);
             echo 'disabled';
             exit;
         }
@@ -341,20 +342,24 @@ class yoomoney extends BasePaymentPlugin
         // Проверка IP
         $clientIp = $clientIp ?? ($_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR']);
         if (!$this->isIpAllowed($clientIp)) {
+            $this->logWebhook('IP_NOT_ALLOWED', ['ip' => $clientIp]);
             die('Access denied: IP not allowed');
         }
 
         $shop = $this->getShop();
         if (!$shop) {
+            $this->logWebhook('NOT_CONFIGURED', ['reason' => 'Shop not configured']);
             die('Shop not configured');
         }
 
         if (empty($shop['secret_key'])) {
+            $this->logWebhook('NOT_CONFIGURED', ['reason' => 'Secret key not configured']);
             die('Secret key not configured');
         }
 
         $notification_type = $_POST['notification_type'] ?? '';
         if ($notification_type != 'card-incoming') {
+            $this->logWebhook('EVENT_IGNORED', ['notification_type' => $notification_type]);
             exit();
         }
 
@@ -372,37 +377,69 @@ class yoomoney extends BasePaymentPlugin
         $hash = sha1("{$notification_type}&{$operation_id}&{$amount}&{$currency}&{$datetime}&{$sender}&{$codepro}&{$notification_secret}&{$user_id}");
 
         if ($hash !== $request_hash) {
+            $this->logWebhook('SIGN_INVALID', ['operation_id' => $operation_id, 'user_id' => $user_id]);
             exit("sha1_hash mismatch");
         }
 
+        if (!ctype_digit($user_id) || (int)$user_id <= 0) {
+            $this->logWebhook('INVALID_USER_ID', ['user_id' => $user_id, 'operation_id' => $operation_id]);
+            exit('invalid user_id');
+        }
+
+        $userId = (int)$user_id;
+
         $currency = 'RUB';
-        donate::control_uuid($operation_id, $this->getNameClass());
+        try {
+            donate::control_uuid($operation_id, $this->getNameClass());
+        } catch (\Throwable $e) {
+            $this->logWebhook('UUID_CONTROL_FAILED', [
+                'error' => $e->getMessage(),
+                'operation_id' => $operation_id,
+            ], $userId);
+            exit('duplicate');
+        }
 
         try {
             $donateAmount = donate::currency($withdraw_amount, $currency);
         } catch (\Throwable $e) {
+            $this->logWebhook('CURRENCY_ERROR', [
+                'error' => $e->getMessage(),
+                'amount' => $withdraw_amount,
+                'currency' => $currency,
+            ], $userId);
             echo json_encode(['status' => false, 'msg' => 'Currency conversion failed']);
             return;
         }
 
         try {
-            telegram::telegramNotice(user::getUserId($user_id), $withdraw_amount, $currency, $donateAmount, $this->getNameClass());
+            telegram::telegramNotice(user::getUserId($userId), $withdraw_amount, $currency, $donateAmount, $this->getNameClass());
         } catch (\Throwable $e) {
         }
 
         try {
-            user::getUserId($user_id)
+            user::getUserId($userId)
                 ->donateAdd($donateAmount)
                 ->AddHistoryDonate(amount: $donateAmount, pay_system: $this->getNameClass());
         } catch (\Throwable $e) {
+            $this->logWebhook('PROCESS_ERROR', [
+                'error' => $e->getMessage(),
+                'operation_id' => $operation_id,
+                'amount' => $donateAmount,
+            ], $userId);
             echo json_encode(['status' => false, 'msg' => 'Failed to add funds']);
             return;
         }
 
         try {
-            donate::addUserBonus($user_id, $donateAmount);
+            donate::addUserBonus($userId, $donateAmount);
         } catch (\Throwable $e) {
         }
+
+        $this->logWebhook('PAYMENT_SUCCESS', [
+            'operation_id' => $operation_id,
+            'amount' => $donateAmount,
+            'currency' => $currency,
+        ], $userId);
 
         exit("YES");
     }

@@ -307,6 +307,7 @@ class paypal extends BasePaymentPlugin
     public function webhook(): void
     {
         if (!$this->isPluginActive()) {
+            $this->logWebhook('DISABLED', ['reason' => 'Plugin disabled']);
             echo json_encode(['status' => false, 'message' => 'Plugin disabled']);
             return;
         }
@@ -315,6 +316,7 @@ class paypal extends BasePaymentPlugin
         $input = json_decode($inputJSON, true);
 
         if (!$input || !isset($input['resource'])) {
+            $this->logWebhook('INPUT_INVALID', ['reason' => 'Invalid payload or missing resource']);
             echo json_encode(['status' => false, 'message' => 'Invalid input']);
             return;
         }
@@ -323,6 +325,7 @@ class paypal extends BasePaymentPlugin
         $eventType = (string)($input['event_type'] ?? '');
 
         if (!in_array($eventType, ['CHECKOUT.ORDER.APPROVED', 'CHECKOUT.ORDER.COMPLETED', 'PAYMENT.CAPTURE.COMPLETED'], true)) {
+            $this->logWebhook('EVENT_IGNORED', ['event_type' => $eventType]);
             echo json_encode(['status' => true, 'message' => 'Event type not processed']);
             return;
         }
@@ -335,12 +338,14 @@ class paypal extends BasePaymentPlugin
         }
 
         if (!$orderId) {
+            $this->logWebhook('ORDER_ID_MISSING', ['event_type' => $eventType]);
             echo json_encode(['status' => false, 'message' => 'Missing order ID']);
             return;
         }
 
         $accounts = $this->getAccounts();
         if (empty($accounts)) {
+            $this->logWebhook('NOT_CONFIGURED', ['reason' => 'No configured accounts']);
             echo json_encode(['status' => false, 'message' => 'No configured accounts']);
             return;
         }
@@ -371,6 +376,7 @@ class paypal extends BasePaymentPlugin
         }
 
         if (!$orderData || !$selectedAccount) {
+            $this->logWebhook('ORDER_NOT_FOUND', ['order_id' => $orderId]);
             echo json_encode(['status' => false, 'message' => 'Order not found in configured accounts']);
             return;
         }
@@ -379,6 +385,7 @@ class paypal extends BasePaymentPlugin
         if ($orderStatus === 'APPROVED') {
             $accessToken = $this->getAccessToken($selectedAccount['client_id'], $selectedAccount['client_secret'], $selectedAccount['mode']);
             if (!$accessToken) {
+                $this->logWebhook('PROCESS_ERROR', ['reason' => 'Access token error on capture', 'order_id' => $orderId]);
                 echo json_encode(['status' => false, 'message' => 'Access token error']);
                 return;
             }
@@ -387,12 +394,14 @@ class paypal extends BasePaymentPlugin
             $captureResponse = $this->request($apiUrl . '/v2/checkout/orders/' . $orderId . '/capture', new \stdClass(), $accessToken, 'POST');
 
             if (($captureResponse['httpCode'] ?? 0) !== 201) {
+                $this->logWebhook('PROCESS_ERROR', ['reason' => 'Capture failed', 'order_id' => $orderId]);
                 echo json_encode(['status' => false, 'message' => 'Capture failed']);
                 return;
             }
 
             $capturedOrder = json_decode((string)($captureResponse['body'] ?? ''), true);
             if (!is_array($capturedOrder)) {
+                $this->logWebhook('INPUT_INVALID', ['reason' => 'Invalid capture response', 'order_id' => $orderId]);
                 echo json_encode(['status' => false, 'message' => 'Invalid capture response']);
                 return;
             }
@@ -402,6 +411,7 @@ class paypal extends BasePaymentPlugin
         }
 
         if ($orderStatus !== 'COMPLETED') {
+            $this->logWebhook('PAYMENT_NOT_CONFIRMED', ['order_id' => $orderId, 'status' => $orderStatus]);
             echo json_encode(['status' => false, 'message' => 'Order status is not completed']);
             return;
         }
@@ -416,16 +426,28 @@ class paypal extends BasePaymentPlugin
         $captureId = $capture['id'] ?? null;
 
         if (!$customId || !$amount || !$currency || $captureStatus !== 'COMPLETED') {
+            $this->logWebhook('INPUT_INVALID', ['reason' => 'Invalid payment data', 'order_id' => $orderId]);
             echo json_encode(['status' => false, 'message' => 'Invalid payment data']);
             return;
         }
 
         $userId = (int)$customId;
+        if ($userId <= 0) {
+            $this->logWebhook('INVALID_USER_ID', ['user_id' => $customId, 'order_id' => $orderId]);
+            echo json_encode(['status' => false, 'message' => 'Invalid user ID']);
+            return;
+        }
+
         $uuid = $captureId ?: $orderId;
 
         try {
             donate::control_uuid($uuid, $this->getNameClass());
         } catch (\Throwable $e) {
+            $this->logWebhook('UUID_CONTROL_FAILED', [
+                'error' => $e->getMessage(),
+                'order_id' => $orderId,
+                'uuid' => $uuid,
+            ], $userId);
             echo json_encode(['status' => false, 'message' => 'UUID control failed']);
             return;
         }
@@ -433,6 +455,11 @@ class paypal extends BasePaymentPlugin
         try {
             $convertedAmount = donate::currency($amount, $currency);
         } catch (\Throwable $e) {
+            $this->logWebhook('CURRENCY_ERROR', [
+                'error' => $e->getMessage(),
+                'amount' => $amount,
+                'currency' => $currency,
+            ], $userId);
             echo json_encode(['status' => false, 'message' => 'Currency conversion failed']);
             return;
         }
@@ -447,6 +474,11 @@ class paypal extends BasePaymentPlugin
                 ->donateAdd($convertedAmount)
                 ->AddHistoryDonate(amount: $convertedAmount, pay_system: $this->getNameClass(), input: $inputJSON);
         } catch (\Throwable $e) {
+            $this->logWebhook('PROCESS_ERROR', [
+                'error' => $e->getMessage(),
+                'order_id' => $orderId,
+                'amount' => $convertedAmount,
+            ], $userId);
             echo json_encode(['status' => false, 'message' => 'Failed to add funds']);
             return;
         }
@@ -455,6 +487,13 @@ class paypal extends BasePaymentPlugin
             donate::addUserBonus($userId, $convertedAmount);
         } catch (\Throwable $e) {
         }
+
+        $this->logWebhook('PAYMENT_SUCCESS', [
+            'order_id' => $orderId,
+            'uuid' => $uuid,
+            'amount' => $convertedAmount,
+            'currency' => (string)$currency,
+        ], $userId);
 
         echo json_encode(['status' => true]);
     }

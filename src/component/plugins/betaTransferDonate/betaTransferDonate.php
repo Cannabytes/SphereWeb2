@@ -390,10 +390,12 @@ class betaTransferDonate extends BasePaymentPlugin
     public function webhook(): void
     {
         if (!$this->isPluginActive()) {
+            $this->logWebhook('DISABLED', ['reason' => 'Plugin disabled']);
             die('Plugin disabled');
         }
 
         if (!$this->isConfigured()) {
+            $this->logWebhook('NOT_CONFIGURED', ['reason' => 'API keys are not configured']);
             die('FAIL: API keys not configured');
         }
 
@@ -404,26 +406,71 @@ class betaTransferDonate extends BasePaymentPlugin
         $orderId = $_POST['orderId'] ?? null;
         $currency = $_POST['currency'] ?? "UAH";
 
-        if ($sign && $amount && $orderId && $this->callbackSignIsValid($sign, $amount, $orderId, $settings['secret_api_key'])) {
-            $data = explode("_", $orderId);
-            $userId = (int)$data[0];
+        if (!$sign || !$amount || !$orderId) {
+            $this->logWebhook('INPUT_INVALID', ['reason' => 'Missing required callback fields']);
+            die('FAIL');
+        }
 
-            donate::control_uuid($sign, $this->getNameClass());
-            $sphereCoins = donate::currency($amount, $currency);
+        if (!$this->callbackSignIsValid($sign, $amount, $orderId, $settings['secret_api_key'])) {
+            $this->logWebhook('SIGN_INVALID', ['order_id' => $orderId]);
+            die('FAIL');
+        }
 
-            // Добавляем донат пользователю
-            user::getUserId($userId)->donateAdd($sphereCoins)->AddHistoryDonate(
+        $data = explode("_", (string)$orderId);
+        $userId = (int)($data[0] ?? 0);
+
+        if ($userId <= 0) {
+            $this->logWebhook('INVALID_USER_ID', ['order_id' => $orderId, 'user_id' => $userId]);
+            die('FAIL');
+        }
+
+        try {
+            donate::control_uuid((string)$sign, $this->getNameClass());
+        } catch (\Throwable $e) {
+            $this->logWebhook('UUID_CONTROL_FAILED', [
+                'error' => $e->getMessage(),
+                'order_id' => $orderId,
+            ], $userId);
+            die('FAIL');
+        }
+
+        try {
+            $sphereCoins = donate::currency($amount, (string)$currency);
+        } catch (\Throwable $e) {
+            $this->logWebhook('CURRENCY_ERROR', [
+                'error' => $e->getMessage(),
+                'amount' => $amount,
+                'currency' => (string)$currency,
+            ], $userId);
+            die('FAIL');
+        }
+
+        try {
+            $userModel = user::getUserId($userId);
+            $userModel->donateAdd($sphereCoins)->AddHistoryDonate(
                 amount: $sphereCoins,
                 pay_system: $this->getNameClass()
             );
 
             donate::addUserBonus($userId, $sphereCoins);
-            self::telegramNotice(user::getUserId($userId), (float)($amount ?? 0), $currency, $sphereCoins, get_called_class());
-
-            die('OK');
+            self::telegramNotice($userModel, (float)$amount, (string)$currency, $sphereCoins, get_called_class());
+        } catch (\Throwable $e) {
+            $this->logWebhook('PROCESS_ERROR', [
+                'error' => $e->getMessage(),
+                'order_id' => $orderId,
+                'amount' => $sphereCoins,
+            ], $userId);
+            die('FAIL');
         }
 
-        die('FAIL');
+        $this->logWebhook('PAYMENT_SUCCESS', [
+            'order_id' => $orderId,
+            'amount' => $sphereCoins,
+            'currency' => (string)$currency,
+        ], $userId);
+
+        die('OK');
+
     }
 
     /**

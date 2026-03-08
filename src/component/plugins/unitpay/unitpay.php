@@ -257,11 +257,13 @@ class unitpay extends BasePaymentPlugin
     public function webhook(): void
     {
         if (!$this->isPluginActive()) {
+            $this->logWebhook('DISABLED', ['reason' => 'Plugin disabled']);
             $this->sendJsonResponse(['error' => ['message' => 'Service disabled']]);
             return;
         }
 
         if (!$this->isConfigured()) {
+            $this->logWebhook('NOT_CONFIGURED', ['reason' => 'Plugin not configured']);
             $this->sendJsonResponse(['error' => ['message' => 'Plugin not configured']]);
             return;
         }
@@ -272,6 +274,7 @@ class unitpay extends BasePaymentPlugin
         $params = $_REQUEST['params'] ?? [];
 
         if (empty($method) || !is_array($params)) {
+            $this->logWebhook('INPUT_INVALID', ['reason' => 'Missing method or params']);
             $this->sendJsonResponse(['error' => ['message' => 'Missing required parameters']]);
             return;
         }
@@ -281,6 +284,7 @@ class unitpay extends BasePaymentPlugin
         $crc    = $params['signature'] ?? '';
 
         if (empty($userId) || empty($amount) || empty($crc)) {
+            $this->logWebhook('INPUT_INVALID', ['reason' => 'Missing required payment params', 'method' => $method]);
             $this->sendJsonResponse(['error' => ['message' => 'Missing required parameters']]);
             return;
         }
@@ -292,23 +296,27 @@ class unitpay extends BasePaymentPlugin
         $sign = hash('sha256', $method . '{up}' . implode('{up}', $verifyParams) . '{up}' . $secretKey);
 
         if (!hash_equals($sign, $crc)) {
+            $this->logWebhook('SIGN_INVALID', ['method' => $method, 'user_id' => $userId]);
             $this->sendJsonResponse(['error' => ['message' => 'Wrong signature!']]);
             return;
         }
 
         // Non-pay methods (check, error, refund) — acknowledge and stop
         if ($method !== 'pay') {
+            $this->logWebhook('EVENT_IGNORED', ['method' => $method, 'user_id' => $userId]);
             $this->sendJsonResponse(['result' => ['message' => 'Запрос успешно обработан']]);
             return;
         }
 
         // Validate user ID and amount
         if (!is_numeric($userId) || (int)$userId <= 0) {
+            $this->logWebhook('INVALID_USER_ID', ['user_id' => $userId]);
             $this->sendJsonResponse(['error' => ['message' => 'Invalid user ID']]);
             return;
         }
 
         if (!is_numeric($amount) || (float)$amount <= 0) {
+            $this->logWebhook('INPUT_INVALID', ['reason' => 'Invalid amount', 'amount' => $amount, 'user_id' => $userId]);
             $this->sendJsonResponse(['error' => ['message' => 'Invalid amount']]);
             return;
         }
@@ -320,6 +328,10 @@ class unitpay extends BasePaymentPlugin
         try {
             donate::control_uuid(substr($crc, 0, 12), $this->getNameClass());
         } catch (\Throwable $e) {
+            $this->logWebhook('UUID_CONTROL_FAILED', [
+                'error' => $e->getMessage(),
+                'uuid' => substr($crc, 0, 12),
+            ], $userId);
             $this->sendJsonResponse(['error' => ['message' => 'Duplicate transaction']]);
             return;
         }
@@ -329,6 +341,11 @@ class unitpay extends BasePaymentPlugin
         try {
             $convertedAmount = donate::currency($amountFloat, $currency);
         } catch (\Throwable $e) {
+            $this->logWebhook('CURRENCY_ERROR', [
+                'error' => $e->getMessage(),
+                'amount' => $amountFloat,
+                'currency' => $currency,
+            ], $userId);
             $this->sendJsonResponse(['error' => ['message' => 'Currency conversion failed']]);
             return;
         }
@@ -341,6 +358,7 @@ class unitpay extends BasePaymentPlugin
 
         $user = user::getUserId($userId);
         if (!$user) {
+            $this->logWebhook('INVALID_USER_ID', ['user_id' => $userId, 'reason' => 'User not found']);
             $this->sendJsonResponse(['error' => ['message' => 'User not found']]);
             return;
         }
@@ -351,6 +369,10 @@ class unitpay extends BasePaymentPlugin
                 pay_system: $this->getNameClass()
             );
         } catch (\Throwable $e) {
+            $this->logWebhook('PROCESS_ERROR', [
+                'error' => $e->getMessage(),
+                'amount' => $convertedAmount,
+            ], $userId);
             $this->sendJsonResponse(['error' => ['message' => 'Failed to add funds']]);
             return;
         }
@@ -360,6 +382,12 @@ class unitpay extends BasePaymentPlugin
         } catch (\Throwable $e) {
             // Bonus is non-critical
         }
+
+        $this->logWebhook('PAYMENT_SUCCESS', [
+            'amount' => $convertedAmount,
+            'currency' => $currency,
+            'method' => $method,
+        ], $userId);
 
         $this->sendJsonResponse(['result' => ['message' => 'Запрос успешно обработан']]);
     }

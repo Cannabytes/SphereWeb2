@@ -3,7 +3,10 @@
 namespace Ofey\Logan22\model\plugin;
 
 use Ofey\Logan22\component\alert\board;
+use Ofey\Logan22\component\fileSys\fileSys;
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\model\admin\userlog;
+use Ofey\Logan22\model\user\user;
 use ReflectionClass;
 
 /**
@@ -12,6 +15,8 @@ use ReflectionClass;
  */
 abstract class BasePaymentPlugin
 {
+    protected const WEBHOOK_ERROR_LOG_THROTTLE_SECONDS = 10;
+
     protected ?string $nameClass = null;
 
     /**
@@ -126,6 +131,104 @@ abstract class BasePaymentPlugin
         }
 
         return $currency;
+    }
+
+    /**
+     * Centralized webhook logger for payment plugins.
+     */
+    protected function logWebhook(string $phrase, array $context = [], int $userId = 0, ?int $serverId = null): void
+    {
+        if ($serverId === null && $userId > 0) {
+            try {
+                $serverId = user::getUserId($userId)->getServerId() ?? 0;
+            } catch (\Throwable $e) {
+                $serverId = 0;
+            }
+        }
+
+        if ($this->shouldSkipWebhookLog($phrase)) {
+            return;
+        }
+
+        userlog::logWebhookRequest(
+            $userId,
+            (int)($serverId ?? 0),
+            $phrase,
+            ['plugin' => $this->getNameClass()] + $context
+        );
+    }
+
+    protected function shouldSkipWebhookLog(string $phrase): bool
+    {
+        if (!$this->shouldThrottleWebhookPhrase($phrase)) {
+            return false;
+        }
+
+        $cooldownSeconds = $this->getWebhookErrorThrottleSeconds();
+        if ($cooldownSeconds <= 0) {
+            return false;
+        }
+
+        return $this->isWebhookLogCooldownActive($cooldownSeconds);
+    }
+
+    protected function shouldThrottleWebhookPhrase(string $phrase): bool
+    {
+        return strtoupper($phrase) !== 'PAYMENT_SUCCESS';
+    }
+
+    protected function getWebhookErrorThrottleSeconds(): int
+    {
+        return static::WEBHOOK_ERROR_LOG_THROTTLE_SECONDS;
+    }
+
+    private function isWebhookLogCooldownActive(int $cooldownSeconds): bool
+    {
+        $lockFile = $this->getWebhookLogThrottleFilePath();
+        $directory = dirname($lockFile);
+
+        if (!is_dir($directory) && !mkdir($directory, 0777, true) && !is_dir($directory)) {
+            return false;
+        }
+
+        $handle = fopen($lockFile, 'c+');
+        if ($handle === false) {
+            return false;
+        }
+
+        try {
+            if (!flock($handle, LOCK_EX)) {
+                return false;
+            }
+
+            rewind($handle);
+            $lastLoggedAtRaw = trim(stream_get_contents($handle) ?: '');
+            $lastLoggedAt = ctype_digit($lastLoggedAtRaw) ? (int)$lastLoggedAtRaw : 0;
+            $now = time();
+
+            if ($lastLoggedAt > 0 && ($now - $lastLoggedAt) < $cooldownSeconds) {
+                return true;
+            }
+
+            rewind($handle);
+            ftruncate($handle, 0);
+            fwrite($handle, (string)$now);
+            fflush($handle);
+
+            return false;
+        } finally {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+        }
+    }
+
+    private function getWebhookLogThrottleFilePath(): string
+    {
+        $pluginName = strtolower(preg_replace('/[^a-z0-9_-]+/i', '-', $this->getNameClass()));
+        $requestUri = (string)($_SERVER['REQUEST_URI'] ?? 'unknown');
+        $hash = sha1($pluginName . '|' . $requestUri);
+
+        return fileSys::get_dir("uploads/cache/webhook_throttle/{$pluginName}/{$hash}.lock");
     }
 
     /**

@@ -385,39 +385,94 @@ class freekassa extends BasePaymentPlugin
     public function webhook(): void
     {
         if (!$this->isPluginActive()) {
+            $this->logWebhook('DISABLED', ['reason' => 'Plugin disabled']);
             board::error(lang::get_phrase("plugin_disabled", "freekassa"));
         }
 
         $ip = $_SERVER["HTTP_X_REAL_IP"] ?? $_SERVER["REMOTE_ADDR"];
-        if (!in_array($ip, self::ALLOWED_IPS)) {
+        if (!in_array($ip, self::ALLOWED_IPS, true)) {
+            $this->logWebhook('IP_NOT_ALLOWED', ['ip' => $ip]);
             die("Access denied");
         }
         
         $shop = $this->getShop();
         if (!$shop) {
+            $this->logWebhook('NOT_CONFIGURED', ['reason' => 'Shop is not configured']);
             die("Shop not configured");
         }
         
         if (empty($shop['secret_word_2'])) {
+            $this->logWebhook('NOT_CONFIGURED', ['reason' => 'secret_word_2 is not configured']);
             die("Secret word 2 not configured");
         }
 
-        $user_id = $_REQUEST['us_userid'];
-        $MERCHANT_ID = $_REQUEST['MERCHANT_ID'];
-        $MERCHANT_ORDER_ID = $_REQUEST['MERCHANT_ORDER_ID'];
-        $intid = $_REQUEST['intid'] ?? $MERCHANT_ORDER_ID;
+        $required = ['us_userid', 'MERCHANT_ID', 'MERCHANT_ORDER_ID', 'AMOUNT', 'SIGN'];
+        foreach ($required as $key) {
+            if (!isset($_REQUEST[$key])) {
+                $this->logWebhook('INPUT_INVALID', ['reason' => 'Missing required parameter', 'field' => $key]);
+                die('wrong input');
+            }
+        }
+
+        $user_id = (int)$_REQUEST['us_userid'];
+        $MERCHANT_ID = (string)$_REQUEST['MERCHANT_ID'];
+        $MERCHANT_ORDER_ID = (string)$_REQUEST['MERCHANT_ORDER_ID'];
+        $intid = (string)($_REQUEST['intid'] ?? $MERCHANT_ORDER_ID);
+
+        if ($user_id <= 0) {
+            $this->logWebhook('INVALID_USER_ID', ['user_id' => $user_id, 'order_id' => $MERCHANT_ORDER_ID]);
+            die('wrong user');
+        }
 
         $sign = md5($MERCHANT_ID . ':' . $_REQUEST['AMOUNT'] . ':' . $shop['secret_word_2'] . ':' . $MERCHANT_ORDER_ID);
 
-        if ($sign != $_REQUEST['SIGN']) {
+        if (!hash_equals(strtoupper($sign), strtoupper((string)$_REQUEST['SIGN']))) {
+            $this->logWebhook('SIGN_INVALID', ['order_id' => $MERCHANT_ORDER_ID]);
             die('wrong sign');
         }
-        
-        donate::control_uuid($intid, get_called_class());
-        $amount = donate::currency($_REQUEST['AMOUNT'], "RUB");
-        telegram::telegramNotice(user::getUserId($user_id), $_REQUEST['AMOUNT'], "RUB", $amount, get_called_class());
-        user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system: get_called_class());
-        donate::addUserBonus($user_id, $amount);
+
+        try {
+            donate::control_uuid($intid, get_called_class());
+        } catch (\Throwable $e) {
+            $this->logWebhook('UUID_CONTROL_FAILED', [
+                'error' => $e->getMessage(),
+                'invoice_id' => $intid,
+            ], $user_id);
+            die('wrong uuid');
+        }
+
+        try {
+            $amount = donate::currency((float)$_REQUEST['AMOUNT'], "RUB");
+        } catch (\Throwable $e) {
+            $this->logWebhook('CURRENCY_ERROR', [
+                'error' => $e->getMessage(),
+                'amount_input' => (string)$_REQUEST['AMOUNT'],
+            ], $user_id);
+            die('wrong amount');
+        }
+
+        try {
+            telegram::telegramNotice(user::getUserId($user_id), (float)$_REQUEST['AMOUNT'], "RUB", $amount, get_called_class());
+        } catch (\Throwable $e) {
+        }
+
+        try {
+            user::getUserId($user_id)->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system: get_called_class());
+            donate::addUserBonus($user_id, $amount);
+        } catch (\Throwable $e) {
+            $this->logWebhook('PROCESS_ERROR', [
+                'error' => $e->getMessage(),
+                'invoice_id' => $intid,
+                'amount' => $amount,
+            ], $user_id);
+            die('failed');
+        }
+
+        $this->logWebhook('PAYMENT_SUCCESS', [
+            'invoice_id' => $intid,
+            'amount' => $amount,
+            'currency' => 'RUB',
+        ], $user_id);
 
         echo 'YES';
     }

@@ -201,11 +201,13 @@ class primepayments extends BasePaymentPlugin
     public function webhook(): void
     {
         if (!$this->isPluginActive()) {
+            $this->logWebhook('DISABLED', ['reason' => 'Plugin disabled']);
             echo 'disabled';
             return;
         }
 
         if (!$this->isConfigured()) {
+            $this->logWebhook('NOT_CONFIGURED', ['reason' => 'Plugin not configured']);
             echo 'disabled';
             return;
         }
@@ -213,6 +215,7 @@ class primepayments extends BasePaymentPlugin
         $required = ['orderID', 'payWay', 'innerID', 'sum', 'webmaster_profit', 'sign', 'currency'];
         foreach ($required as $key) {
             if (!isset($_POST[$key])) {
+                $this->logWebhook('INPUT_INVALID', ['reason' => 'Missing required field', 'field' => $key]);
                 echo 'wrong input';
                 return;
             }
@@ -228,12 +231,14 @@ class primepayments extends BasePaymentPlugin
         );
 
         if (!hash_equals($hash, (string)$_POST['sign'])) {
+            $this->logWebhook('SIGN_INVALID', ['order_id' => (string)$_POST['orderID']]);
             echo 'wrong sign';
             return;
         }
 
         $userId = (int)$_POST['innerID'];
         if ($userId <= 0) {
+            $this->logWebhook('INVALID_USER_ID', ['user_id' => $userId, 'order_id' => (string)$_POST['orderID']]);
             echo 'wrong user';
             return;
         }
@@ -242,6 +247,10 @@ class primepayments extends BasePaymentPlugin
             donate::control_uuid((string)$_POST['orderID'], $this->getNameClass());
             $amount = donate::currency((float)$_POST['sum'], (string)$_POST['currency']);
         } catch (\Throwable $e) {
+            $this->logWebhook('PROCESS_ERROR', [
+                'error' => $e->getMessage(),
+                'order_id' => (string)$_POST['orderID'],
+            ], $userId);
             echo 'wrong data';
             return;
         }
@@ -263,9 +272,20 @@ class primepayments extends BasePaymentPlugin
                 ->AddHistoryDonate(amount: $amount, pay_system: $this->getNameClass(), input: json_encode($_POST, JSON_UNESCAPED_UNICODE));
             donate::addUserBonus($userId, $amount);
         } catch (\Throwable $e) {
+            $this->logWebhook('PROCESS_ERROR', [
+                'error' => $e->getMessage(),
+                'order_id' => (string)$_POST['orderID'],
+                'amount' => $amount,
+            ], $userId);
             echo 'failed';
             return;
         }
+
+        $this->logWebhook('PAYMENT_SUCCESS', [
+            'order_id' => (string)$_POST['orderID'],
+            'amount' => $amount,
+            'currency' => (string)$_POST['currency'],
+        ], $userId);
 
         echo 'YES';
     }

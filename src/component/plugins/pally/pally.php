@@ -267,11 +267,13 @@ class pally extends BasePaymentPlugin
     {
 
         if (!$this->isConfigured()) {
+            $this->logWebhook('NOT_CONFIGURED', ['reason' => 'Plugin not configured']);
             echo 'disabled';
             return;
         }
 
         if (strcasecmp((string)($_POST['Status'] ?? ''), 'SUCCESS') !== 0) {
+            $this->logWebhook('PAYMENT_NOT_CONFIRMED', ['status' => (string)($_POST['Status'] ?? '')]);
             echo 'Status no success';
             return;
         }
@@ -283,6 +285,7 @@ class pally extends BasePaymentPlugin
         $signatureValue = (string)($_POST['SignatureValue'] ?? '');
 
         if ($invId === '' || $outSumRaw === '' || $signatureValue === '' || $userIdRaw === '') {
+            $this->logWebhook('INPUT_INVALID', ['reason' => 'Missing required fields']);
             echo 'wrong input';
             return;
         }
@@ -290,17 +293,20 @@ class pally extends BasePaymentPlugin
         // Resolve api_key by gateway index encoded in order_id prefix
         $apiKey = $this->resolveApiKeyFromInvId($invId);
         if ($apiKey === null) {
+            $this->logWebhook('GATEWAY_NOT_FOUND', ['invoice_id' => $invId]);
             echo 'checksum error';
             return;
         }
 
         if (!$this->checkSignature($signatureValue, $outSumRaw, $invId, $apiKey)) {
+            $this->logWebhook('SIGN_INVALID', ['invoice_id' => $invId]);
             echo 'checksum error';
             return;
         }
 
         $userId = (int)$userIdRaw;
         if ($userId <= 0) {
+            $this->logWebhook('INVALID_USER_ID', ['user_id' => $userId, 'invoice_id' => $invId]);
             echo 'wrong user';
             return;
         }
@@ -314,9 +320,19 @@ class pally extends BasePaymentPlugin
             $userObject->donateAdd($amount)->AddHistoryDonate(amount: $amount, pay_system: $this->getNameClass());
             donate::addUserBonus($userId, $amount);
         } catch (\Throwable $e) {
+            $this->logWebhook('PROCESS_ERROR', [
+                'error' => $e->getMessage(),
+                'invoice_id' => $invId,
+            ], $userId);
             echo 'error';
             return;
         }
+
+        $this->logWebhook('PAYMENT_SUCCESS', [
+            'invoice_id' => $invId,
+            'amount' => $amount,
+            'currency' => $currencyIn,
+        ], $userId);
 
         echo 'YES';
     }
