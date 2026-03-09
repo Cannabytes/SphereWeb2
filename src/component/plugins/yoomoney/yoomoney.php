@@ -351,7 +351,7 @@ class yoomoney extends BasePaymentPlugin
         }
 
         $notification_type = $_POST['notification_type'] ?? '';
-        if ($notification_type != 'card-incoming') {
+        if ($notification_type != 'card-incoming' && $notification_type != 'p2p-incoming') {
             $this->logWebhook('EVENT_IGNORED', ['notification_type' => $notification_type]);
             exit();
         }
