@@ -25,13 +25,6 @@ class yoomoney extends BasePaymentPlugin
 
     // Список разрешенных IP адресов YooMoney для webhook
     private const ALLOWED_IPS = [
-        '185.71.76.0/27',
-        '185.71.77.0/27',
-        '77.75.153.0/25',
-        '77.75.156.11',
-        '77.75.156.35',
-        '77.75.154.128/25',
-        '2a02:5180::/32'
     ];
 
     public function __construct()
@@ -449,6 +442,10 @@ class yoomoney extends BasePaymentPlugin
      */
     private function isIpAllowed(string $ip): bool
     {
+        // Если массив пуст - разрешаем все IP (на свой страх и риск)
+        if (empty(self::ALLOWED_IPS)) {
+            return true;
+        }
         foreach (self::ALLOWED_IPS as $allowedIp) {
             if (strpos($allowedIp, '/') !== false) {
                 // Это подсеть
