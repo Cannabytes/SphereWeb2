@@ -72,7 +72,7 @@ class unitpay extends BasePaymentPlugin
             'showMainPage'      => $this->getPluginSetting('showMainPage', false),
             'addToMenu'         => $this->getPluginSetting('addToMenu', false),
             'shop'              => $this->getPluginSetting('shop', []),
-            'webhookUrl'        => ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/unitpay/webhook',
+            'webhookUrl'        => $this->getBaseUrl() . '/unitpay/webhook',
         ]);
 
         tpl::displayPlugin('/unitpay/tpl/admin.html');

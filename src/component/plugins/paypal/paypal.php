@@ -99,7 +99,7 @@ class paypal extends BasePaymentPlugin
             'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
             'accounts' => $this->getAccounts(),
             'selectedCountries' => $selectedCountries,
-            'webhookUrl' => ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/paypal/webhook',
+            'webhookUrl' => $this->getBaseUrl() . '/paypal/webhook',
         ]);
 
         tpl::displayPlugin('/paypal/tpl/admin.html');

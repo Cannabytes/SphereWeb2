@@ -115,9 +115,7 @@ abstract class BasePaymentPlugin
      */
     protected function getBaseUrl(): string
     {
-        $scheme = $_SERVER['REQUEST_SCHEME'] ?? 'https';
-        $host = $_SERVER['HTTP_HOST'] ?? '';
-        return $scheme . '://' . $host;
+        return \Ofey\Logan22\component\request\url::host();
     }
 
     /**

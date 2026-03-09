@@ -96,7 +96,7 @@ class severpay extends BasePaymentPlugin
             'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
             'merchants' => $this->getMerchants(),
             'selectedCountries' => $selectedCountries,
-            'webhookUrl' => ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/severpay/webhook',
+            'webhookUrl' => $this->getBaseUrl() . '/severpay/webhook',
         ]);
 
         tpl::displayPlugin('/severpay/tpl/admin.html');

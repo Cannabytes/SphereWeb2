@@ -44,7 +44,7 @@ class primepayments extends BasePaymentPlugin
             'secret1' => (string)$this->getPluginSetting('secret_1', ''),
             'secret2' => (string)$this->getPluginSetting('secret_2', ''),
             'selectedCountries' => $selectedCountries,
-            'webhookUrl' => ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/primepayments/webhook',
+            'webhookUrl' => $this->getBaseUrl() . '/primepayments/webhook',
         ]);
 
         tpl::displayPlugin('/primepayments/tpl/admin.html');

@@ -76,7 +76,7 @@ class freekassa extends BasePaymentPlugin
             "pluginDescription" => (string)$this->getPluginSetting("PLUGIN_DESCRIPTION", (string)($shop['description'] ?? '')),
             "enabled" => $this->getPluginSetting("enabled", false),
             "selectedCountries" => $this->sanitizeSupportedCountries($this->getPluginSetting("supported_countries", ["world"])),
-            "webhookUrl" => $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["HTTP_HOST"] . "/plugin/freekassa/webhook",
+            "webhookUrl" => $this->getBaseUrl() . "/plugin/freekassa/webhook",
         ]);
 
         tpl::displayPlugin("/freekassa/tpl/admin.html");

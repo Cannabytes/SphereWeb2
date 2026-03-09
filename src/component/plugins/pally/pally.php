@@ -83,7 +83,7 @@ class pally extends BasePaymentPlugin
             'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
             'gateways'         => $this->getGateways(),
             'selectedCountries' => $selectedCountries,
-            'webhookUrl'       => ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/pally/webhook',
+            'webhookUrl'       => $this->getBaseUrl() . '/pally/webhook',
         ]);
 
         tpl::displayPlugin('/pally/tpl/admin.html');
