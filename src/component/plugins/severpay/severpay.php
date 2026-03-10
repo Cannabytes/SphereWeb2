@@ -93,7 +93,7 @@ class severpay extends BasePaymentPlugin
         tpl::addVar([
             'title' => 'SeverPay',
             'pluginName' => $this->getNameClass(),
-            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
+            'pluginDescription' => $this->resolvePluginDescription('severpay_gateway_description'),
             'merchants' => $this->getMerchants(),
             'selectedCountries' => $selectedCountries,
             'webhookUrl' => $this->getBaseUrl() . '/severpay/webhook',

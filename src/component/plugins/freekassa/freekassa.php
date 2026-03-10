@@ -3,6 +3,7 @@
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
+use Ofey\Logan22\component\time\time;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\model\db\sql;
@@ -44,10 +45,100 @@ class freekassa extends BasePaymentPlugin
      */
     private function initializePlugin(): void
     {
-        $shop = $this->getPluginSetting("shop");
-        if ($shop === null) {
-            $this->setPluginSetting("shop", []);
+        $settings = $this->getStoredSettings();
+        if (!array_key_exists('shop', $settings)) {
+            $settings['shop'] = [];
+            $this->saveStoredSettings($settings);
         }
+    }
+
+    private function getStoredSettings(): array
+    {
+        $query = sql::run(
+            "SELECT `setting` FROM `settings` WHERE `key` = ? AND `serverId` = ? LIMIT 1",
+            ["__PLUGIN__{$this->getNameClass()}", 0]
+        );
+
+        if (!$query) {
+            return [];
+        }
+
+        $row = $query->fetch(\PDO::FETCH_ASSOC);
+        if (!$row || empty($row['setting'])) {
+            return [];
+        }
+
+        $settings = json_decode((string)$row['setting'], true);
+        return is_array($settings) ? $settings : [];
+    }
+
+    private function saveStoredSettings(array $settings): void
+    {
+        $settingsData = array_merge([
+            'showMainPage' => false,
+            'addToMenu' => false,
+        ], $settings);
+
+        sql::run(
+            "DELETE FROM `settings` WHERE `key` = ? AND `serverId` = ?",
+            ["__PLUGIN__{$this->getNameClass()}", 0]
+        );
+
+        sql::run(
+            "INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES (?, ?, ?, ?)",
+            [
+                "__PLUGIN__{$this->getNameClass()}",
+                json_encode($settingsData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                0,
+                time::mysql(),
+            ]
+        );
+    }
+
+    private function syncPluginRegistry(bool $enabled): void
+    {
+        $query = sql::run(
+            "SELECT `setting` FROM `settings` WHERE `key` = ? AND `serverId` = ? LIMIT 1",
+            ['__PLUGIN__', 0]
+        );
+
+        $activePlugins = [];
+        if ($query) {
+            $row = $query->fetch(\PDO::FETCH_ASSOC);
+            if ($row && !empty($row['setting'])) {
+                $decoded = json_decode((string)$row['setting'], true);
+                if (is_array($decoded)) {
+                    $activePlugins = $decoded;
+                }
+            }
+        }
+
+        $pluginName = $this->getNameClass();
+
+        if ($enabled) {
+            if (!in_array($pluginName, $activePlugins, true)) {
+                $activePlugins[] = $pluginName;
+            }
+        } else {
+            $activePlugins = array_values(array_filter($activePlugins, static function($plugin) use ($pluginName) {
+                return $plugin !== $pluginName;
+            }));
+        }
+
+        sql::run(
+            "DELETE FROM `settings` WHERE `key` = ? AND `serverId` = ?",
+            ['__PLUGIN__', 0]
+        );
+
+        sql::run(
+            "INSERT INTO `settings` (`key`, `setting`, `serverId`, `dateUpdate`) VALUES (?, ?, ?, ?)",
+            [
+                '__PLUGIN__',
+                json_encode(array_values($activePlugins), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                0,
+                time::mysql(),
+            ]
+        );
     }
 
     /**
@@ -55,7 +146,8 @@ class freekassa extends BasePaymentPlugin
      */
     private function getShop(): ?array
     {
-        $shop = $this->getPluginSetting("shop");
+        $settings = $this->getStoredSettings();
+        $shop = $settings['shop'] ?? null;
         return is_array($shop) && !empty($shop) ? $shop : null;
     }
 
@@ -66,16 +158,22 @@ class freekassa extends BasePaymentPlugin
     {
         \Ofey\Logan22\model\admin\validation::user_protection("admin");
 
-        $shop = $this->getShop();
+        $settings = $this->getStoredSettings();
+        $shop = $settings['shop'] ?? null;
+        $shop = is_array($shop) && !empty($shop) ? $shop : null;
         $instances = $shop ? [$shop] : [];
+        $pluginDescription = trim((string)($settings['PLUGIN_DESCRIPTION'] ?? ''));
+        if ($pluginDescription === '' || $pluginDescription === 'freekassa_desc') {
+            $pluginDescription = (string)($shop['description'] ?? lang::get_phrase('freekassa_description', 'freekassa'));
+        }
 
         tpl::addVar([
             "title" => lang::get_phrase("admin_panel", "freekassa"),
             "pluginName" => $this->getNameClass(),
             "instances" => $instances,
-            "pluginDescription" => (string)$this->getPluginSetting("PLUGIN_DESCRIPTION", (string)($shop['description'] ?? '')),
-            "enabled" => $this->getPluginSetting("enabled", false),
-            "selectedCountries" => $this->sanitizeSupportedCountries($this->getPluginSetting("supported_countries", ["world"])),
+            "pluginDescription" => $pluginDescription,
+            "enabled" => (bool)($settings['enabled'] ?? false),
+            "selectedCountries" => $this->sanitizeSupportedCountries($settings['supported_countries'] ?? ["world"]),
             "webhookUrl" => $this->getBaseUrl() . "/plugin/freekassa/webhook",
         ]);
 
@@ -88,30 +186,33 @@ class freekassa extends BasePaymentPlugin
     public function saveGlobalSettings(): void
     {
         \Ofey\Logan22\model\admin\validation::user_protection("admin");
+        $settings = $this->getStoredSettings();
+        $saveContext = (string)($_POST['save_context'] ?? 'global');
+
         $enabledRaw = $_POST["enabled"] ?? null;
         $enabled = $enabledRaw === null
-            ? (bool)$this->getPluginSetting("enabled", false)
+            ? (bool)($settings['enabled'] ?? false)
             : filter_var($enabledRaw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
         if ($enabled === null) {
-            $enabled = (bool)$this->getPluginSetting("enabled", false);
+            $enabled = (bool)($settings['enabled'] ?? false);
         }
 
-        $supportedCountries = array_key_exists('supported_countries', $_POST)
-            ? $this->sanitizeSupportedCountries($_POST['supported_countries'])
-            : $this->sanitizeSupportedCountries($this->getPluginSetting("supported_countries", ["world"]));
-        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? $this->getPluginSetting('PLUGIN_DESCRIPTION', '')));
+        if ($saveContext === 'toggle') {
+            $supportedCountries = $this->sanitizeSupportedCountries($settings['supported_countries'] ?? ['world']);
+            $pluginDescription = trim((string)($settings['PLUGIN_DESCRIPTION'] ?? ''));
+        } else {
+            $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? []);
+            $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? ''));
+        }
 
-        // Сохраняем статус в собственных настройках плагина
-        $this->setPluginSetting("enabled", $enabled);
-        $this->setPluginSetting("supported_countries", $supportedCountries);
-        $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
+        $settings['enabled'] = $enabled;
+        $settings['supported_countries'] = $supportedCountries;
+        $settings['PLUGIN_DESCRIPTION'] = $pluginDescription;
 
-        // Используем системный метод для синхронизации в реестре '__PLUGIN__'
-        $_POST['pluginName'] = $this->getNameClass();
-        $_POST['setting'] = 'enablePlugin';
-        $_POST['value'] = $enabled;
-        $_POST['serverId'] = 0;
-        \Ofey\Logan22\model\plugin\plugin::__save_activator_plugin();
+        $this->saveStoredSettings($settings);
+        $this->syncPluginRegistry($enabled);
+
+        board::success(lang::get_phrase('settings_saved', 'freekassa'));
     }
 
     /**
@@ -120,17 +221,14 @@ class freekassa extends BasePaymentPlugin
     public function createInstance(): void
     {
         \Ofey\Logan22\model\admin\validation::user_protection("admin");
+        $settings = $this->getStoredSettings();
 
         $name = $_POST["name"] ?? "";
         $shop_id = $_POST["shop_id"] ?? "";
         $api_key = $_POST["api_key"] ?? "";
         $secret_word = $_POST["secret_word"] ?? "";
         $secret_word_2 = $_POST["secret_word_2"] ?? "";
-        $description = $_POST["description"] ?? "";
-        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? $description));
-        $supportedCountries = array_key_exists('supported_countries', $_POST)
-            ? $this->sanitizeSupportedCountries($_POST['supported_countries'])
-            : $this->sanitizeSupportedCountries($this->getPluginSetting("supported_countries", ["world"]));
+        $description = trim((string)($_POST["description"] ?? ""));
 
         if (empty($name) || empty($shop_id) || empty($api_key)) {
             board::error(lang::get_phrase("error_invalid_data", "freekassa"));
@@ -143,14 +241,13 @@ class freekassa extends BasePaymentPlugin
             "api_key" => $api_key,
             "secret_word" => $secret_word,
             "secret_word_2" => $secret_word_2,
-            "description" => $pluginDescription,
+            "description" => $description,
             "created_at" => date("Y-m-d H:i:s"),
             "updated_at" => date("Y-m-d H:i:s"),
         ];
 
-        $this->setPluginSetting("shop", $shop);
-        $this->setPluginSetting("PLUGIN_DESCRIPTION", $pluginDescription);
-        $this->setPluginSetting("supported_countries", $supportedCountries);
+        $settings['shop'] = $shop;
+        $this->saveStoredSettings($settings);
         board::success(lang::get_phrase("instance_created", "freekassa"));
     }
 
@@ -160,17 +257,14 @@ class freekassa extends BasePaymentPlugin
     public function updateInstance(): void
     {
         \Ofey\Logan22\model\admin\validation::user_protection("admin");
+        $settings = $this->getStoredSettings();
 
         $name = $_POST["name"] ?? "";
         $shop_id = $_POST["shop_id"] ?? "";
         $api_key = $_POST["api_key"] ?? "";
         $secret_word = $_POST["secret_word"] ?? "";
         $secret_word_2 = $_POST["secret_word_2"] ?? "";
-        $description = $_POST["description"] ?? "";
-        $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? $description));
-        $supportedCountries = array_key_exists('supported_countries', $_POST)
-            ? $this->sanitizeSupportedCountries($_POST['supported_countries'])
-            : $this->sanitizeSupportedCountries($this->getPluginSetting("supported_countries", ["world"]));
+        $description = trim((string)($_POST["description"] ?? ""));
 
         if (empty($name) || empty($shop_id) || empty($api_key)) {
             board::error(lang::get_phrase("error_invalid_data", "freekassa"));
@@ -186,12 +280,11 @@ class freekassa extends BasePaymentPlugin
         $shop["api_key"] = $api_key;
         $shop["secret_word"] = $secret_word;
         $shop["secret_word_2"] = $secret_word_2;
-        $shop["description"] = $pluginDescription;
+        $shop["description"] = $description;
         $shop["updated_at"] = date("Y-m-d H:i:s");
 
-        $this->setPluginSetting("shop", $shop);
-        $this->setPluginSetting("PLUGIN_DESCRIPTION", $pluginDescription);
-        $this->setPluginSetting("supported_countries", $supportedCountries);
+        $settings['shop'] = $shop;
+        $this->saveStoredSettings($settings);
         board::success(lang::get_phrase("instance_updated", "freekassa"));
     }
 
@@ -202,7 +295,9 @@ class freekassa extends BasePaymentPlugin
     {
         \Ofey\Logan22\model\admin\validation::user_protection("admin");
 
-        $this->setPluginSetting("shop", []);
+        $settings = $this->getStoredSettings();
+        $settings['shop'] = [];
+        $this->saveStoredSettings($settings);
         board::success(lang::get_phrase("instance_deleted", "freekassa"));
     }
 

@@ -28,16 +28,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    document.querySelectorAll('input[name="supported_countries[]"]').forEach(function(checkbox) {
-        checkbox.addEventListener('change', function() {
-            saveSupportedCountriesInstant();
-        });
-    });
-
-    const descriptionField = document.getElementById('plugin_description');
-    if (descriptionField) {
-        descriptionField.addEventListener('change', function() {
-            saveSupportedCountriesInstant();
+    const saveButton = document.getElementById('saveSettings');
+    if (saveButton) {
+        saveButton.addEventListener('click', function() {
+            saveGlobalSettings();
         });
     }
 
@@ -185,62 +179,90 @@ function deleteInstance() {
  * Включить/выключить плагин
  */
 function togglePluginEnabled(isEnabled) {
-    const formData = new FormData();
-    formData.append('enabled', isEnabled);
+    const pluginToggle = document.getElementById('plugin_enabled');
+    const params = new URLSearchParams();
+    params.append('enabled', isEnabled ? 'true' : 'false');
+    params.append('save_context', 'toggle');
+
+    showLoader();
+
+    AjaxSend('/admin/plugin/freekassa/settings/save', 'POST', params.toString(), true)
+    .then(function(response) {
+        hideLoader();
+
+        if (response && response.ok) {
+            window.location.reload();
+            return;
+        }
+
+        if (pluginToggle) {
+            pluginToggle.checked = !isEnabled;
+        }
+
+        showNotification('Ошибка', response?.message || 'Ошибка при сохранении', 'error');
+    })
+    .catch(function(error) {
+        if (pluginToggle) {
+            pluginToggle.checked = !isEnabled;
+        }
+
+        console.error('Error:', error);
+        hideLoader();
+        showNotification('Ошибка', error?.message || 'Произошла сетевая ошибка', 'error');
+    });
+}
+
+function saveGlobalSettings() {
+    const saveButton = document.getElementById('saveSettings');
+    if (saveButton && saveButton.dataset.submitting === 'true') {
+        return;
+    }
+
+    const pluginToggle = document.getElementById('plugin_enabled');
+    const params = new URLSearchParams();
+    params.append('enabled', pluginToggle && pluginToggle.checked ? 'true' : 'false');
+    params.append('save_context', 'global');
+
     const descriptionField = document.getElementById('plugin_description');
-    if (descriptionField) {
-        formData.append('PLUGIN_DESCRIPTION', descriptionField.value || '');
+    params.append('PLUGIN_DESCRIPTION', descriptionField ? (descriptionField.value || '') : '');
+
+    document.querySelectorAll('input[name="supported_countries[]"]:checked').forEach(function(checkbox) {
+        params.append('supported_countries[]', checkbox.value);
+    });
+
+    if (saveButton) {
+        saveButton.dataset.submitting = 'true';
+        saveButton.disabled = true;
     }
 
     showLoader();
 
-    fetch('/admin/plugin/freekassa/settings/save', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
+    AjaxSend('/admin/plugin/freekassa/settings/save', 'POST', params.toString(), true)
+    .then(function(response) {
         hideLoader();
-        // В системе Logan22 обычно возвращается JSON с типом 'notice'
-        if (data.type === 'notice') {
-            if (data.ok) {
-                if (data.redirect) {
-                    window.location.href = data.redirect;
-                } else {
-                    window.location.reload();
-                }
-            } else {
-                showNotification('Ошибка', data.message || 'Ошибка при сохранении', 'error');
-            }
+
+        if (saveButton) {
+            saveButton.dataset.submitting = 'false';
+            saveButton.disabled = false;
         }
+
+        if (response && (response.ok || response.success || (response.type === 'notice' && response.ok))) {
+            showNotification('Успешно', response.message || 'Настройки успешно сохранены', 'success');
+            return;
+        }
+
+        showNotification('Ошибка', response?.message || 'Не удалось сохранить настройки', 'error');
     })
-    .catch(error => {
+    .catch(function(error) {
+        hideLoader();
+
+        if (saveButton) {
+            saveButton.dataset.submitting = 'false';
+            saveButton.disabled = false;
+        }
+
         console.error('Error:', error);
-        hideLoader();
-        showNotification('Ошибка', 'Произошла сетевая ошибка', 'error');
-    });
-}
-
-function saveSupportedCountriesInstant() {
-    const formData = new FormData();
-    const pluginToggle = document.getElementById('plugin_enabled');
-    formData.append('enabled', pluginToggle && pluginToggle.checked ? 'true' : 'false');
-    const descriptionField = document.getElementById('plugin_description');
-    if (descriptionField) {
-        formData.append('PLUGIN_DESCRIPTION', descriptionField.value || '');
-    }
-
-    document.querySelectorAll('input[name="supported_countries[]"]:checked').forEach(function(checkbox) {
-        formData.append('supported_countries[]', checkbox.value);
-    });
-
-    sendRequest('/admin/plugin/freekassa/settings/save', formData, function(response) {
-        if (!(response && (response.ok || response.success || response.type === 'notice'))) {
-            showNotification('Ошибка', response?.message || 'Не удалось сохранить страны', 'error');
-        }
+        showNotification('Ошибка', error?.message || 'Не удалось сохранить настройки', 'error');
     });
 }
 

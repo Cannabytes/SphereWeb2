@@ -30,7 +30,7 @@
       </div>
       {% endif %}
 
-      <form id="primepaymentsSettingsForm" method="post" action="/admin/plugin/primepayments/save">
+      <div id="primepaymentsSettingsPanel">
         <div class="row g-3 mb-3">
           <div class="col-12">
             <label class="form-label">{{ phrase('primepayments_webhook_url') }}</label>
@@ -58,7 +58,7 @@
 
           <div class="col-12">
             <label for="primepayments_plugin_description" class="form-label">{{ phrase('payment_system_description') }}</label>
-            <textarea id="primepayments_plugin_description" class="form-control" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ phrase('primepayments_gateway_description') }}</textarea>
+            <textarea id="primepayments_plugin_description" class="form-control" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ pluginDescription|default('') }}</textarea>
           </div>
         </div>
 
@@ -91,11 +91,11 @@
         </div>
 
         <div class="text-end">
-          <button type="submit" class="btn btn-primary">
+          <button id="primepaymentsSaveBtn" type="button" class="btn btn-primary">
             <i class="bi bi-save"></i> {{ phrase('primepayments_save_settings') }}
           </button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>
@@ -106,7 +106,7 @@
 $(function() {
   const pluginActive = '{{ getPluginActive(pluginName) ? "1" : "0" }}' === '1';
   if (!pluginActive) {
-    $('#primepaymentsSettingsForm :input').prop('disabled', true);
+    $('#primepaymentsSettingsPanel :input').prop('disabled', true);
     $('#enablePlugin').prop('disabled', false);
   }
 
@@ -122,9 +122,28 @@ $(function() {
     });
   });
 
-  $('#primepaymentsSettingsForm').on('submit', function(e) {
-    e.preventDefault();
-    AjaxSend('/admin/plugin/primepayments/save', 'POST', $(this).serialize());
+  $('#primepaymentsSaveBtn').on('click', function() {
+    const $btn = $(this);
+    if ($btn.data('submitting')) {
+      return;
+    }
+
+    const invalidField = $('#primepaymentsSettingsPanel :input[required]').filter(function() {
+      return !this.checkValidity();
+    }).get(0);
+    if (invalidField) {
+      invalidField.reportValidity();
+      return;
+    }
+
+    $btn.data('submitting', true);
+    $btn.prop('disabled', true);
+
+    AjaxSend('/admin/plugin/primepayments/save', 'POST', $('#primepaymentsSettingsPanel :input').serialize())
+      .finally(function() {
+        $btn.data('submitting', false);
+        $btn.prop('disabled', false);
+      });
   });
 
   $('#copyWebhookBtn').on('click', function() {

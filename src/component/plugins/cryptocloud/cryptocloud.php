@@ -45,7 +45,7 @@ class cryptocloud extends BasePaymentPlugin
         tpl::addVar([
             'title' => lang::get_phrase('cryptocloud', 'cryptocloud'),
             'pluginName' => $this->getNameClass(),
-            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
+            'pluginDescription' => $this->resolvePluginDescription('cryptocloud_desc'),
             'shopId' => (string)$this->getPluginSetting('shop_id', ''),
             'apiKey' => (string)$this->getPluginSetting('api_key', ''),
             'secretKey' => (string)$this->getPluginSetting('secret_key', ''),

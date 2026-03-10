@@ -72,10 +72,19 @@
                     <h5 class="fw-semibold mb-0"><i class="bi bi-card-text me-2"></i>{{ phrase('payment_system_description') }}</h5>
                 </div>
                 <div class="card-body">
-                    <textarea class="form-control" id="plugin_description" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ phrase('freekassa_description') }}</textarea>
+                    <textarea class="form-control" id="plugin_description" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ pluginDescription|default('') }}</textarea>
                     <small class="text-muted d-block mt-2">{{ phrase('payment_system_description') }}</small>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-xl-12 text-end">
+            <button id="saveSettings" type="button" class="btn btn-primary">
+                <i class="bi bi-save me-1"></i>
+                {{ phrase('save', 'freekassa') }}
+            </button>
         </div>
     </div>
 
@@ -162,7 +171,7 @@
                         <div class="col-xl-6 mb-3">
                             <label for="instance_shop_id" class="form-label">{{ phrase('shop_id', 'freekassa') }} <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="instance_shop_id" name="shop_id" required placeholder="{{ phrase('shop_id_placeholder', 'freekassa') }}">
-                            <small class="text-muted">{{ phrase('shop_id_hint', 'freekassa') }}</small>
+                            <small class="text-muted">{{ phrase('shop_id_hint_freekassa', 'freekassa') }}</small>
                         </div>
 
                         <div class="col-xl-12 mb-3">
@@ -185,7 +194,7 @@
 
                         <div class="col-xl-12 mb-3">
                             <label for="instance_description" class="form-label">{{ phrase('instance_description', 'freekassa') }}</label>
-                            <textarea class="form-control" id="instance_description" name="PLUGIN_DESCRIPTION" rows="2" placeholder="{{ phrase('instance_description', 'freekassa') }}"></textarea>
+                            <textarea class="form-control" id="instance_description" name="description" rows="2" placeholder="{{ phrase('instance_description', 'freekassa') }}"></textarea>
                         </div>
                     </div>
                 </form>

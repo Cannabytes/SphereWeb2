@@ -107,13 +107,26 @@ function editInstance() {
  */
 function saveInstance() {
     const form = document.getElementById('instanceForm');
-    
-    if (!form.checkValidity()) {
-        form.reportValidity();
+    const requiredFields = form ? form.querySelectorAll('[required]') : [];
+
+    for (const field of requiredFields) {
+        if (!field.checkValidity()) {
+            field.reportValidity();
+            return;
+        }
+    }
+
+    if (!form) {
         return;
     }
 
-    const formData = new FormData(form);
+    const formData = new FormData();
+    form.querySelectorAll('[name]').forEach(function(field) {
+        if ((field.type === 'checkbox' || field.type === 'radio') && !field.checked) {
+            return;
+        }
+        formData.append(field.name, field.value || '');
+    });
 
     document.querySelectorAll('input[name="supported_countries[]"]:checked').forEach(function(checkbox) {
         formData.append('supported_countries[]', checkbox.value);
@@ -238,7 +251,9 @@ function saveSupportedCountriesInstant() {
 function resetInstanceForm() {
     const form = document.getElementById('instanceForm');
     if (form) {
-        form.reset();
+        form.querySelectorAll('input, textarea').forEach(function(field) {
+            field.value = '';
+        });
     }
 }
 

@@ -259,6 +259,8 @@ $(function() {
       formData.append('accounts[' + i + '][mode]', mode);
       formData.append('accounts[' + i + '][currency]', currency);
     });
+
+    formData.append('PLUGIN_DESCRIPTION', $('textarea[name="PLUGIN_DESCRIPTION"]').val() || '');
     
     // Collect supported countries
     $('input[name="supported_countries[]"]:checked').each(function() {

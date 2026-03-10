@@ -4,6 +4,7 @@ namespace Ofey\Logan22\model\plugin;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\fileSys\fileSys;
+use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\model\admin\userlog;
 use Ofey\Logan22\model\user\user;
@@ -38,6 +39,21 @@ abstract class BasePaymentPlugin
     {
         $settings = plugin::getSetting($this->getNameClass());
         return $settings[$key] ?? $default;
+    }
+
+    protected function resolvePluginDescription(string $defaultPhraseKey, ?string $fallback = null): string
+    {
+        $pluginDescription = trim((string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''));
+        if ($pluginDescription !== '' && $pluginDescription !== $defaultPhraseKey) {
+            return $pluginDescription;
+        }
+
+        $fallback = $fallback === null ? null : trim($fallback);
+        if ($fallback !== null && $fallback !== '') {
+            return $fallback;
+        }
+
+        return lang::get_phrase($defaultPhraseKey);
     }
 
     /**

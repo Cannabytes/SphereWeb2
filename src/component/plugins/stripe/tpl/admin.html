@@ -30,7 +30,7 @@
       </div>
       {% endif %}
 
-      <form id="stripeSettingsForm" method="post" action="/admin/plugin/stripe/save">
+      <div id="stripeSettingsPanel">
         <div class="row g-3 mb-3">
           <div class="col-12">
             <label class="form-label">Webhook URL</label>
@@ -78,7 +78,7 @@
             <strong><i class="bi bi-card-text me-2"></i>{{ phrase('payment_system_description') }}</strong>
           </div>
           <div class="card-body">
-            <textarea class="form-control" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ phrase('stripe_desc') }}</textarea>
+            <textarea class="form-control" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ pluginDescription|default('') }}</textarea>
           </div>
         </div>
 
@@ -111,11 +111,11 @@
         </div>
 
         <div class="text-end">
-          <button type="submit" class="btn btn-primary">
+          <button id="stripeSaveBtn" type="button" class="btn btn-primary">
             <i class="bi bi-save"></i> Сохранить настройки
           </button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>
@@ -126,7 +126,7 @@
 $(function() {
   const pluginActive = '{{ getPluginActive(pluginName) ? "1" : "0" }}' === '1';
   if (!pluginActive) {
-    $('#stripeSettingsForm :input').prop('disabled', true);
+    $('#stripeSettingsPanel :input').prop('disabled', true);
     $('#enablePlugin').prop('disabled', false);
   }
 
@@ -142,9 +142,28 @@ $(function() {
     });
   });
 
-  $('#stripeSettingsForm').on('submit', function(e) {
-    e.preventDefault();
-    AjaxSend('/admin/plugin/stripe/save', 'POST', $(this).serialize());
+  $('#stripeSaveBtn').on('click', function() {
+    const $btn = $(this);
+    if ($btn.data('submitting')) {
+      return;
+    }
+
+    const invalidField = $('#stripeSettingsPanel :input[required]').filter(function() {
+      return !this.checkValidity();
+    }).get(0);
+    if (invalidField) {
+      invalidField.reportValidity();
+      return;
+    }
+
+    $btn.data('submitting', true);
+    $btn.prop('disabled', true);
+
+    AjaxSend('/admin/plugin/stripe/save', 'POST', $('#stripeSettingsPanel :input').serialize())
+      .finally(function() {
+        $btn.data('submitting', false);
+        $btn.prop('disabled', false);
+      });
   });
 
   $('#copyWebhookBtn').on('click', function() {

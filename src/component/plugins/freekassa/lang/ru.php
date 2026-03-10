@@ -37,7 +37,7 @@ return [
     // Настройки магазина
     'shop_id' => 'ID магазина',
     'shop_id_placeholder' => 'Введите ID магазина FreeKassa',
-    'shop_id_hint' => 'ID вашего магазина из личного кабинета FreeKassa',
+    'shop_id_hint_freekassa' => 'ID вашего магазина из личного кабинета FreeKassa',
     'api_key' => 'API ключ',
     'api_key_placeholder' => 'Введите API ключ',
     'api_key_hint' => 'API ключ из настроек магазина FreeKassa',

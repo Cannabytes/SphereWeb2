@@ -43,10 +43,12 @@ class DynamicPluginSetting
         $this->pluginData[$name] = $value;
     }
 
-    // Получение всех данных без плагиновых параметров
+    // Возвращаем только явно сохраненные пользовательские настройки.
+    // Метаданные плагина живут в pluginData отдельно и не должны вырезать
+    // пользовательские ключи с теми же именами, например PLUGIN_DESCRIPTION.
     public function getFilteredData(): array
     {
-        return array_diff_key($this->data, $this->pluginData);
+        return $this->data;
     }
 
     public function save($data = null)
@@ -80,7 +82,7 @@ class DynamicPluginSetting
         };
         $this->__set($setting, $value);
 
-        // Получаем данные без плагиновых параметров
+        // Сохраняем только пользовательские настройки текущего плагина.
         $arr = $this->getFilteredData();
 
         sql::sql("DELETE FROM `settings` WHERE `key` = ? AND `serverId` = ?", [

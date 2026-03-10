@@ -72,7 +72,7 @@
                     <h5 class="fw-semibold mb-0"><i class="bi bi-card-text me-2"></i>{{ phrase('payment_system_description') }}</h5>
                 </div>
                 <div class="card-body">
-                    <textarea class="form-control" id="plugin_description" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ phrase('yoomoney_desc') }}</textarea>
+                    <textarea class="form-control" id="plugin_description" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ pluginDescription|default('') }}</textarea>
                     <small class="text-muted d-block mt-2">{{ phrase('payment_system_description') }}</small>
                 </div>
             </div>
@@ -181,7 +181,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="instanceForm">
+                <div id="instanceForm">
                     <div class="row">
                         <div class="col-xl-12 mb-3">
                             <label for="instance_name" class="form-label">{{ phrase('instance_name', 'yoomoney') }} <span class="text-danger">*</span></label>
@@ -202,10 +202,10 @@
 
                         <div class="col-xl-12 mb-3">
                             <label for="instance_description" class="form-label">{{ phrase('instance_description', 'yoomoney') }}</label>
-                            <textarea class="form-control" id="instance_description" name="PLUGIN_DESCRIPTION" rows="2" placeholder="{{ phrase('instance_description', 'yoomoney') }}"></textarea>
+                            <textarea class="form-control" id="instance_description" name="description" rows="2" placeholder="{{ phrase('instance_description', 'yoomoney') }}"></textarea>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ phrase('cancel', 'yoomoney') }}</button>

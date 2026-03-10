@@ -63,7 +63,7 @@ class unitpay extends BasePaymentPlugin
         tpl::addVar([
             'title'             => 'UnitPay',
             'pluginName'        => $this->getNameClass(),
-            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
+            'pluginDescription' => $this->resolvePluginDescription('unitpay_desc'),
             'publicKey'         => $this->getPublicKey(),
             'secretKey'         => $this->getSecretKey(),
             'currency'          => $this->getCurrency(),

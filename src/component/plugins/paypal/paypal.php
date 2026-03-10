@@ -96,7 +96,7 @@ class paypal extends BasePaymentPlugin
         tpl::addVar([
             'title' => 'PayPal',
             'pluginName' => $this->getNameClass(),
-            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
+            'pluginDescription' => $this->resolvePluginDescription('paypal_desc'),
             'accounts' => $this->getAccounts(),
             'selectedCountries' => $selectedCountries,
             'webhookUrl' => $this->getBaseUrl() . '/paypal/webhook',

@@ -39,7 +39,7 @@ class primepayments extends BasePaymentPlugin
         tpl::addVar([
             'title' => 'PrimePayments',
             'pluginName' => $this->getNameClass(),
-            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
+            'pluginDescription' => $this->resolvePluginDescription('primepayments_gateway_description'),
             'projectId' => (string)$this->getPluginSetting('project_id', ''),
             'secret1' => (string)$this->getPluginSetting('secret_1', ''),
             'secret2' => (string)$this->getPluginSetting('secret_2', ''),

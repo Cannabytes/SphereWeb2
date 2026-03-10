@@ -91,7 +91,7 @@ class stripe extends BasePaymentPlugin
         tpl::addVar([
             'title' => 'Stripe',
             'pluginName' => $this->getNameClass(),
-            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
+            'pluginDescription' => $this->resolvePluginDescription('stripe_desc'),
             'secretKey' => (string)$this->getPluginSetting('secret_key', ''),
             'publishableKey' => (string)$this->getPluginSetting('publishable_key', ''),
             'webhookSecretKey' => (string)$this->getPluginSetting('webhook_secret_key', ''),

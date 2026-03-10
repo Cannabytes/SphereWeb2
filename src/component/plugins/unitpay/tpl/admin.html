@@ -90,7 +90,7 @@
           <strong><i class="bi bi-card-text me-2"></i>{{ phrase('payment_system_description') }}</strong>
         </div>
         <div class="card-body">
-          <textarea class="form-control" id="pluginDescription" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ phrase('unitpay_desc') }}</textarea>
+          <textarea class="form-control" id="pluginDescription" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ pluginDescription|default('') }}</textarea>
         </div>
       </div>
 
@@ -173,6 +173,7 @@ $(function() {
     formData.append('publicKey', $('#publicKey').val());
     formData.append('secretKey', $('#secretKey').val());
     formData.append('currency', $('#currency').val());
+    formData.append('PLUGIN_DESCRIPTION', $('#pluginDescription').val());
     
     // Collect supported countries
     $('input[name="supported_countries[]"]:checked').each(function() {

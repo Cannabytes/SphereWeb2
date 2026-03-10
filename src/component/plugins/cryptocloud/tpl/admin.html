@@ -54,7 +54,7 @@
 
           <div class="col-12">
             <label for="cryptocloud_plugin_description" class="form-label">{{ phrase('payment_system_description') }}</label>
-            <textarea id="cryptocloud_plugin_description" class="form-control" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ phrase('cryptocloud_desc') }}</textarea>
+            <textarea id="cryptocloud_plugin_description" class="form-control" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ pluginDescription|default('') }}</textarea>
           </div>
         </div>
 

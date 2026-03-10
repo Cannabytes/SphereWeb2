@@ -80,7 +80,7 @@ class pally extends BasePaymentPlugin
         tpl::addVar([
             'title'            => 'Pally',
             'pluginName'       => $this->getNameClass(),
-            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
+            'pluginDescription' => $this->resolvePluginDescription('pally_description'),
             'gateways'         => $this->getGateways(),
             'selectedCountries' => $selectedCountries,
             'webhookUrl'       => $this->getBaseUrl() . '/pally/webhook',

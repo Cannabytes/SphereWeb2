@@ -30,7 +30,7 @@
       </div>
       {% endif %}
 
-      <form id="paritypaySettingsForm" method="post" action="/admin/plugin/paritypay/save">
+      <div id="paritypaySettingsPanel">
         <div class="row g-3 mb-3">
           <div class="col-12">
             <label class="form-label">{{ phrase('paritypay_webhook_url') }}</label>
@@ -132,11 +132,11 @@
         </div>
 
         <div class="text-end">
-          <button type="submit" class="btn btn-primary">
+          <button id="paritypaySaveBtn" type="button" class="btn btn-primary">
             <i class="bi bi-save"></i> {{ phrase('paritypay_save_settings') }}
           </button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>
@@ -147,7 +147,7 @@
 $(function() {
   const pluginActive = {{ getPluginActive(pluginName) ? 'true' : 'false' }};
   if (!pluginActive) {
-    $('#paritypaySettingsForm :input').prop('disabled', true);
+    $('#paritypaySettingsPanel :input').prop('disabled', true);
     $('#enablePlugin').prop('disabled', false);
   }
 
@@ -197,10 +197,30 @@ $(function() {
     reindexRows();
   });
 
-  $('#paritypaySettingsForm').on('submit', function(e) {
-    e.preventDefault();
+  $('#paritypaySaveBtn').on('click', function() {
+    const $btn = $(this);
+    if ($btn.data('submitting')) {
+      return;
+    }
+
     reindexRows();
-    AjaxSend('/admin/plugin/paritypay/save', 'POST', $(this).serialize());
+
+    const invalidField = $('#paritypaySettingsPanel :input[required]').filter(function() {
+      return !this.checkValidity();
+    }).get(0);
+    if (invalidField) {
+      invalidField.reportValidity();
+      return;
+    }
+
+    $btn.data('submitting', true);
+    $btn.prop('disabled', true);
+
+    AjaxSend('/admin/plugin/paritypay/save', 'POST', $('#paritypaySettingsPanel :input').serialize())
+      .finally(function() {
+        $btn.data('submitting', false);
+        $btn.prop('disabled', false);
+      });
   });
 
   $('#copyWebhookBtn').on('click', function() {

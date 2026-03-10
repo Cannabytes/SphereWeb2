@@ -103,7 +103,7 @@ class paritypay extends BasePaymentPlugin
         tpl::addVar([
             'title' => 'ParityPay',
             'pluginName' => $this->getNameClass(),
-            'pluginDescription' => (string)$this->getPluginSetting('PLUGIN_DESCRIPTION', ''),
+            'pluginDescription' => $this->resolvePluginDescription('paritypay_description'),
             'gateways' => $this->getGateways(),
             'selectedCountries' => $selectedCountries,
             'webhookUrl' => $this->getBaseUrl() . '/paritypay/webhook',

@@ -30,7 +30,7 @@
       </div>
       {% endif %}
 
-      <form id="pallySettingsForm" method="post" action="/admin/plugin/pally/save">
+      <div id="pallySettingsPanel">
         <div class="row g-3 mb-3">
           <div class="col-12">
             <label class="form-label">{{ phrase('pally_webhook_url') }}</label>
@@ -98,7 +98,7 @@
             <strong><i class="bi bi-card-text me-2"></i>{{ phrase('payment_system_description') }}</strong>
           </div>
           <div class="card-body">
-            <textarea class="form-control" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ phrase(pluginDescription) }}</textarea>
+            <textarea class="form-control" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ pluginDescription|default('') }}</textarea>
           </div>
         </div>
 
@@ -132,11 +132,11 @@
         </div>
 
         <div class="text-end">
-          <button type="submit" class="btn btn-primary">
+          <button id="pallySaveBtn" type="button" class="btn btn-primary">
             <i class="bi bi-save"></i> {{ phrase('pally_save_settings') }}
           </button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>
@@ -147,7 +147,7 @@
 $(function() {
   const pluginActive = {{ getPluginActive(pluginName) ? 'true' : 'false' }};
   if (!pluginActive) {
-    $('#pallySettingsForm :input').prop('disabled', true);
+    $('#pallySettingsPanel :input').prop('disabled', true);
     $('#enablePlugin').prop('disabled', false);
   }
 
@@ -196,10 +196,30 @@ $(function() {
     reindexRows();
   });
 
-  $('#pallySettingsForm').on('submit', function(e) {
-    e.preventDefault();
+  $('#pallySaveBtn').on('click', function() {
+    const $btn = $(this);
+    if ($btn.data('submitting')) {
+      return;
+    }
+
     reindexRows();
-    AjaxSend('/admin/plugin/pally/save', 'POST', $(this).serialize());
+
+    const invalidField = $('#pallySettingsPanel :input[required]').filter(function() {
+      return !this.checkValidity();
+    }).get(0);
+    if (invalidField) {
+      invalidField.reportValidity();
+      return;
+    }
+
+    $btn.data('submitting', true);
+    $btn.prop('disabled', true);
+
+    AjaxSend('/admin/plugin/pally/save', 'POST', $('#pallySettingsPanel :input').serialize())
+      .finally(function() {
+        $btn.data('submitting', false);
+        $btn.prop('disabled', false);
+      });
   });
 
   $('#copyWebhookBtn').on('click', function() {
