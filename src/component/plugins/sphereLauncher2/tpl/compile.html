@@ -756,12 +756,12 @@
             const customLangFile = document.getElementById('customLangFile').files[0];
             const customLogoFile = document.getElementById('customLogoFile').files[0];
 
-            const MAX_SIZE = 100 * 1024; // 100 КБ
+            const MAX_SIZE = 300 * 1024; // 300 КБ
             const MAX_LOGO_SIZE = 250 * 1024; // 250 КБ для лого
 
             // Проверки размеров файлов
             if (iconFile && iconFile.size > MAX_SIZE) {
-                alert('Ошибка: Размер иконки не должен превышать 100 КБ.');
+                alert('Ошибка: Размер иконки не должен превышать 300 КБ.');
                 compileBtn.disabled = false;
                 return;
             }
@@ -773,17 +773,17 @@
                     return;
                 }
                 if (customHtmlFile.size > MAX_SIZE) {
-                    alert('Ошибка: Размер HTML файла не должен превышать 100 КБ.');
+                    alert('Ошибка: Размер HTML файла не должен превышать 300 КБ.');
                     compileBtn.disabled = false;
                     return;
                 }
                 if (customCssFile && customCssFile.size > MAX_SIZE) {
-                    alert('Ошибка: Размер CSS файла не должен превышать 100 КБ.');
+                    alert('Ошибка: Размер CSS файла не должен превышать 300 КБ.');
                     compileBtn.disabled = false;
                     return;
                 }
                 if (customLangFile && customLangFile.size > MAX_SIZE) {
-                    alert('Ошибка: Размер lang.json файла не должен превышать 100 КБ.');
+                    alert('Ошибка: Размер lang.json файла не должен превышать 300 КБ.');
                     compileBtn.disabled = false;
                     return;
                 }
