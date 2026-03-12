@@ -444,6 +444,8 @@
 
     #modal_donate .value-bubble {
         position: absolute;
+        top: 0;
+        left: 0;
         min-width: 60px;
         height: auto;
         padding: 3px 10px;
@@ -455,14 +457,15 @@
         align-items: center;
         justify-content: center;
         opacity: 0;
-        transform: translateY(-40px);
+        transform: translate3d(0, -40px, 0);
         pointer-events: none;
-        transition: opacity 0.3s ease, left 0.2s ease;
+        transition: opacity 0.2s ease;
         box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
         z-index: 22;
         white-space: nowrap;
         font-size: 12px;
         line-height: 1.2;
+        will-change: transform, opacity;
     }
 
     #modal_donate .one-time-highlight {
@@ -835,10 +838,17 @@
 
             // store original order on first run
             let _originalOrderSet = false;
+            let _lastAppliedMaxCost = null;
             const ensureOriginalOrder = () => {
                 if (_originalOrderSet) return;
                 const $panels = $('.modal_bonus_items');
-                $panels.each(function (i) { $(this).attr('data-orig-order', i); });
+                $panels.each(function (i) {
+                    const $panel = $(this);
+                    const rawCost = $panel.attr('data-cost');
+                    const normalizedCost = Number(String(rawCost).replace(/[^0-9.-]+/g, '')) || 0;
+                    $panel.attr('data-orig-order', i);
+                    $panel.attr('data-cost-num', normalizedCost);
+                });
                 _originalOrderSet = true;
             };
 
@@ -847,21 +857,27 @@
                 let visibleCount = 0;
                 const count = Number(String(coinCount).replace(/[^0-9.-]+/g, '')) || 0;
 
+                // Ensure cached numeric costs/original order are available before calculations.
+                ensureOriginalOrder();
+
                 // Find highest tier cost <= count
                 let maxCost = -1;
                 $panels.each(function () {
-                    const raw = $(this).attr('data-cost');
-                    const cost = Number(String(raw).replace(/[^0-9.-]+/g, '')) || 0;
+                    const cost = Number($(this).attr('data-cost-num')) || 0;
                     if (count >= cost && cost > maxCost) maxCost = cost;
                 });
 
-                // ensure we have original order recorded
-                ensureOriginalOrder();
+                // Skip expensive reclassification/reordering if tier has not changed.
+                if (_lastAppliedMaxCost === maxCost) {
+                    highlightOneTimeBonusRow(count);
+                    return;
+                }
+
+                _lastAppliedMaxCost = maxCost;
 
                 // Mark only panels that exactly match the highest qualifying tier
                 $panels.each(function () {
-                    const raw = $(this).attr('data-cost');
-                    const cost = Number(String(raw).replace(/[^0-9.-]+/g, '')) || 0;
+                    const cost = Number($(this).attr('data-cost-num')) || 0;
                     const $el = $(this);
                     const wasEligible = $el.hasClass('eligible');
 
@@ -880,19 +896,27 @@
                 // Move eligible panels to the top (sorted by cost desc) and restore order when none
                 const $container = $('.bonus-scroll-container').first();
                 if ($container && $container.length) {
-                    const $eligible = $panels.filter('.eligible').toArray().sort((a, b) => {
-                        return Number($(b).attr('data-cost')) - Number($(a).attr('data-cost'));
+                    const eligible = $panels.filter('.eligible').toArray().sort((a, b) => {
+                        return Number($(b).attr('data-cost-num')) - Number($(a).attr('data-cost-num'));
                     });
+                    const ordered = [];
 
-                    if ($eligible.length > 0) {
-                        // prepend in order so highest-cost eligible is first
-                        $eligible.forEach(el => $container.prepend(el));
-                    } else {
-                        // restore original order
-                        const $all = $panels.toArray().sort((a, b) => {
+                    if (eligible.length > 0) {
+                        const eligibleSet = new Set(eligible);
+                        const rest = $panels.toArray().filter((panel) => !eligibleSet.has(panel)).sort((a, b) => {
                             return Number($(a).attr('data-orig-order')) - Number($(b).attr('data-orig-order'));
                         });
-                        $all.forEach(el => $container.append(el));
+                        ordered.push(...eligible, ...rest);
+                    } else {
+                        ordered.push(...$panels.toArray().sort((a, b) => {
+                            return Number($(a).attr('data-orig-order')) - Number($(b).attr('data-orig-order'));
+                        }));
+                    }
+
+                    if (ordered.length > 0) {
+                        const fragment = document.createDocumentFragment();
+                        ordered.forEach((el) => fragment.appendChild(el));
+                        $container[0].appendChild(fragment);
                     }
                 }
 
@@ -913,26 +937,43 @@
                 uah: parseFloat('{{UAH_val|default(0)|number_format(4, ".", "")}}') || 0
             };
             const mainCurrency = '{{ mainCurrency|lower }}';
+            const $currencyValues = $('.modal_currency-value');
+            const $mainCost = $('.modal_cost-summary-main');
+            let flashTimeoutId = null;
 
-            const updateCurrencyValues = (coinCount) => {
+            const updateCurrencyValues = (coinCount, options = {}) => {
                 const count = parseInt(coinCount) || 0;
+                const withFlash = Boolean(options.withFlash);
 
                 // Обновляем все значения в сетке
-                $('.modal_currency-value').each(function () {
+                $currencyValues.each(function () {
                     const code = $(this).data('count');
                     if (currencies[code] !== undefined) {
-                        $(this).text((count * currencies[code]).toFixed(2));
+                        const nextValue = (count * currencies[code]).toFixed(2);
+                        if ($(this).text() !== nextValue) {
+                            $(this).text(nextValue);
+                        }
                     }
                 });
 
                 // Обновляем главную стоимость
-                if (currencies[mainCurrency] !== undefined) {
-                    const $mainCost = $('.modal_cost-summary-main');
-                    $mainCost.text((count * currencies[mainCurrency]).toFixed(2));
+                if (currencies[mainCurrency] !== undefined && $mainCost.length) {
+                    const mainValue = (count * currencies[mainCurrency]).toFixed(2);
+                    if ($mainCost.text() !== mainValue) {
+                        $mainCost.text(mainValue);
+                    }
 
-                    // Эффект вспышки
-                    $mainCost.addClass('flash');
-                    setTimeout(() => $mainCost.removeClass('flash'), 500);
+                    // Эффект вспышки только для финального обновления, не при каждом кадре drag.
+                    if (withFlash) {
+                        $mainCost.addClass('flash');
+                        if (flashTimeoutId) {
+                            clearTimeout(flashTimeoutId);
+                        }
+                        flashTimeoutId = setTimeout(() => {
+                            $mainCost.removeClass('flash');
+                            flashTimeoutId = null;
+                        }, 500);
+                    }
                 }
             };
             return { updateCurrencyValues };
@@ -940,9 +981,13 @@
 
         const PaymentLinkManager = (function () {
             const $items = () => $('.payment-plugin-item');
+            let lastCount = null;
 
             const update = (count) => {
                 const c = parseInt(count) || 0;
+                if (c === lastCount) return;
+                lastCount = c;
+
                 $items().each(function () {
                     const $el = $(this);
                     const base = $el.data('base-href') || $el.attr('href') || '';
@@ -950,7 +995,9 @@
                     // normalize: remove trailing slash then append count
                     const normalized = base.replace(/\/+$/, '');
                     const newHref = normalized + '/' + c;
-                    $el.attr('href', newHref);
+                    if ($el.attr('href') !== newHref) {
+                        $el.attr('href', newHref);
+                    }
                 });
             };
 
@@ -960,32 +1007,52 @@
         const ModalCoinsInputManager = (function () {
             let slider = null;
             let sliderElement = null;
+            let sliderIsActive = false;
+            let sliderUpdateRafId = null;
+            let pendingSliderValue = null;
+            let isSyncingFromSlider = false;
             const $inputField = $('#modal_numberOfCoinsPurchased');
             const $bubble = $('#modal_rangeValueBubble');
             const min = parseInt($inputField.attr('min')) || 1;
             const max = parseInt($inputField.attr('max')) || 10000;
 
+            const clampValue = (rawValue) => {
+                let value = parseInt(String(rawValue).replace(/[^0-9]/g, ''), 10);
+                if (isNaN(value)) value = min;
+                if (value < min) value = min;
+                if (value > max) value = max;
+                return value;
+            };
+
+            const scheduleSliderLiveUpdate = (value) => {
+                pendingSliderValue = value;
+                if (sliderUpdateRafId !== null) return;
+
+                const scheduleFrame = window.requestAnimationFrame || function (callback) {
+                    return setTimeout(callback, 16);
+                };
+
+                sliderUpdateRafId = scheduleFrame(function () {
+                    const nextValue = pendingSliderValue;
+                    pendingSliderValue = null;
+                    sliderUpdateRafId = null;
+                    updateAll(nextValue, { heavy: false, withFlash: false });
+                });
+            };
+
             const updateRangeValueBubble = (value) => {
                 if (!$bubble.length || !sliderElement || !sliderElement.noUiSlider) return;
-                const normalizedValue = parseInt(value) || 0;
+                const normalizedValue = parseInt(value, 10) || 0;
                 const handle = sliderElement.querySelector('.noUi-handle');
                 if (!handle) return;
 
+                const bubbleParent = $bubble.parent()[0];
+                if (!bubbleParent) return;
+
                 const sliderRect = sliderElement.getBoundingClientRect();
                 const handleRect = handle.getBoundingClientRect();
-                if (!sliderRect.width || !handleRect.width) return;
-
-                let bubbleWidth = $bubble.outerWidth();
-                if (!bubbleWidth) {
-                    bubbleWidth = 60;
-                }
-
-                let leftPos = handleRect.left + handleRect.width / 2 - sliderRect.left - bubbleWidth / 2;
-                if (!isFinite(leftPos)) {
-                    leftPos = 0;
-                }
-                const maxLeft = Math.max(0, sliderRect.width - bubbleWidth);
-                const finalLeft = Math.max(0, Math.min(maxLeft, leftPos));
+                const parentRect = bubbleParent.getBoundingClientRect();
+                if (!sliderRect.width || !handleRect.width || !parentRect.width) return;
 
                 const bonusCoins = typeof ModalBonusManager.calculateBonusCoins === 'function'
                     ? ModalBonusManager.calculateBonusCoins(normalizedValue)
@@ -995,14 +1062,25 @@
                     ? `${normalizedValue} | Bonus: +${bonusCoins}`
                     : normalizedValue.toString();
 
+                const bubbleMinWidth = bonusCoins > 0 ? '80px' : '40px';
+                $bubble.css('min-width', bubbleMinWidth);
+                if ($bubble.text() !== bubbleText) {
+                    $bubble.text(bubbleText);
+                }
+
+                const bubbleWidth = $bubble.outerWidth() || 60;
+                const sliderOffsetX = sliderRect.left - parentRect.left;
+                const handleCenterX = sliderOffsetX + (handleRect.left - sliderRect.left) + (handleRect.width / 2);
+
+                const minTranslateX = sliderOffsetX;
+                const maxTranslateX = sliderOffsetX + sliderRect.width - bubbleWidth;
+                const unclampedX = handleCenterX - (bubbleWidth / 2);
+                const translateX = Math.max(minTranslateX, Math.min(maxTranslateX, unclampedX));
+
                 $bubble.css({
                     opacity: 1,
-                    left: `${finalLeft}px`,
-                    transform: 'translateY(-45px)'
+                    transform: `translate3d(${translateX}px, -45px, 0)`
                 });
-
-                $bubble.css('min-width', bonusCoins > 0 ? '80px' : '40px');
-                $bubble.text(bubbleText);
             };
 
             const initialize = () => {
@@ -1011,37 +1089,47 @@
                 setupQuantityButtons();
                 initializeSlider();
 
-                $inputField.on('input change', function () {
-                    let val = $(this).val().replace(/[^0-9]/g, '');
-                    let value = parseInt(val);
-                    if (isNaN(value)) return;
-                    if (value < min) value = min;
-                    if (value > max) value = max;
-                    if (slider && slider.noUiSlider) {
-                        slider.noUiSlider.set(value);
-                    }
-                    updateAll(value);
-                });
+                $inputField.off('input change').on('input change', function () {
+                    if (isSyncingFromSlider) return;
 
-                $inputField.on('blur', function () {
-                    let value = parseInt($(this).val()) || min;
-                    if (value < min) value = min;
+                    const value = clampValue($(this).val());
                     $(this).val(value);
+
                     if (slider && slider.noUiSlider) {
                         slider.noUiSlider.set(value);
                     }
-                    updateAll(value);
+
+                    updateAll(value, { heavy: true, withFlash: true });
                 });
 
-                const startVal = parseInt($inputField.val()) || min;
-                updateAll(startVal);
+                $inputField.off('blur').on('blur', function () {
+                    const value = clampValue($(this).val());
+                    $(this).val(value);
+
+                    if (slider && slider.noUiSlider) {
+                        slider.noUiSlider.set(value);
+                    }
+
+                    updateAll(value, { heavy: true, withFlash: true });
+                });
+
+                const startVal = clampValue($inputField.val());
+                $inputField.val(startVal);
+                updateAll(startVal, { heavy: true, withFlash: false });
             };
 
-            const updateAll = (value) => {
-                ModalCurrencyManager.updateCurrencyValues(value);
-                ModalBonusManager.selectBonusPanel(value);
-                // Update payment links to include selected count
-                if (typeof PaymentLinkManager !== 'undefined') PaymentLinkManager.update(value);
+            const updateAll = (value, options = {}) => {
+                const heavy = options.heavy !== false;
+                const withFlash = Boolean(options.withFlash);
+
+                ModalCurrencyManager.updateCurrencyValues(value, { withFlash: withFlash });
+
+                if (heavy) {
+                    ModalBonusManager.selectBonusPanel(value);
+                    // Update payment links to include selected count
+                    if (typeof PaymentLinkManager !== 'undefined') PaymentLinkManager.update(value);
+                }
+
                 updateRangeValueBubble(value);
             };
 
@@ -1082,8 +1170,6 @@
                     $btn.off('pointerdown').on('pointerdown', onPointerDown);
                     // stop repeating on pointerup/pointercancel/leave
                     $btn.off('pointerup pointercancel pointerleave').on('pointerup pointercancel pointerleave', clearRepeat);
-                    // also clear if pointer leaves the whole document (safety)
-                    $(document).off('pointerup.repeatingControl').on('pointerup.repeatingControl', clearRepeat);
                 };
 
                 makeRepeatingControl($('#modal_product-quantity-minus'), -1);
@@ -1112,27 +1198,37 @@
 
                     slider = sliderElement;
 
-                    sliderElement.noUiSlider.on('update', function (values, handle) {
-                        const value = Math.round(values[handle]);
-                        if ($inputField.val() != value) {
-                            $inputField.val(value).trigger('change');
-                            updateAll(value);
-                        } else {
-                            updateRangeValueBubble(value);
-                        }
-                    });
-
                     sliderElement.noUiSlider.on('start', function () {
-                        const currentValue = parseInt(sliderElement.noUiSlider.get()) || 0;
+                        sliderIsActive = true;
+                        const currentValue = parseInt(sliderElement.noUiSlider.get(), 10) || min;
                         updateRangeValueBubble(currentValue);
                     });
 
-                    sliderElement.noUiSlider.on('end', function () {
+                    sliderElement.noUiSlider.on('update', function (values, handle) {
+                        const value = Math.round(values[handle]);
+                        if (String($inputField.val()) !== String(value)) {
+                            isSyncingFromSlider = true;
+                            $inputField.val(value);
+                            isSyncingFromSlider = false;
+                        }
+
+                        if (sliderIsActive) {
+                            scheduleSliderLiveUpdate(value);
+                        } else {
+                            updateAll(value, { heavy: false, withFlash: false });
+                        }
+                    });
+
+                    sliderElement.noUiSlider.on('end', function (values, handle) {
+                        sliderIsActive = false;
+                        const value = Math.round(values[handle]);
+                        updateAll(value, { heavy: true, withFlash: true });
+
                         setTimeout(() => {
                             if ($bubble.length) {
                                 $bubble.css('opacity', '0');
                             }
-                        }, 1000);
+                        }, 600);
                     });
                 } catch (e) {
                     console.error("noUiSlider initialization failed:", e);
