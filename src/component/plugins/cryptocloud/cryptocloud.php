@@ -292,15 +292,11 @@ class cryptocloud extends BasePaymentPlugin
 
         $amountInput = (float)($invoice['amount_usd'] ?? $invoice['amount'] ?? 0);
         $currency = $this->sanitizeCurrency((string)($invoice['currency'] ?? 'USD'));
-
+        if ($currency === 'USDT') {
+            $currency = 'USD';
+        }
         $amount = $amountInput;
-        // try {
-        //     $amount = donate::currency($amountInput, $currency);
-        // } catch (\Throwable $e) {
-        //     header('HTTP/1.1 400 Bad Request', true, 400);
-        //     echo 'Currency conversion failed';
-        //     return;
-        // }
+        $amount = donate::currency($amountInput, $currency);
 
         try {
             telegram::telegramNotice($userModel, $amountInput, $currency, $amount, $this->getNameClass());
