@@ -333,7 +333,7 @@
                             {% if pluginCountries is not iterable or pluginCountries|length == 0 %}
                             {% set pluginCountries = ['world'] %}
                             {% endif %}
-                            <a href="{{ pluginSettings }}" data-base-href="{{ pluginSettings }}"
+                            <div data-href="{{ pluginSettings }}" data-base-href="{{ pluginSettings }}"
                                 data-description="{{ resolvedDescription|striptags|e('html_attr') }}"
                                 class="border rounded-3 p-3 d-flex align-items-center text-start payment-plugin-item text-decoration-none text-dark w-100"
                                 style="cursor: pointer; transition: all 0.2s;">
@@ -344,7 +344,7 @@
                                 {% endif %}
                                 <div>
                                     <div class="fw-bold small">{{ plugin.PLUGIN_NAME }}</div>
-                                    <div class="fs-10 text-muted">{{ resolvedDescription }}</div>
+                                    <div class="fs-10 text-muted">{{ resolvedDescription|raw }}</div>
                                     <div class="payment-plugin-flags mt-2">
                                         {% for countryCode in pluginCountries %}
                                         {% set cc = countryCode|lower %}
@@ -356,7 +356,7 @@
                                         {% endfor %}
                                     </div>
                                 </div>
-                            </a>
+                            </div>
                         </div>
                         {% endfor %}
                         {% else %}
@@ -990,13 +990,13 @@
 
                 $items().each(function () {
                     const $el = $(this);
-                    const base = $el.data('base-href') || $el.attr('href') || '';
+                    const base = $el.data('base-href') || $el.data('href') || '';
                     if (!base) return;
                     // normalize: remove trailing slash then append count
                     const normalized = base.replace(/\/+$/, '');
                     const newHref = normalized + '/' + c;
-                    if ($el.attr('href') !== newHref) {
-                        $el.attr('href', newHref);
+                    if ($el.attr('data-href') !== newHref) {
+                        $el.attr('data-href', newHref);
                     }
                 });
             };
@@ -1527,6 +1527,14 @@
 
             // Back button: close payment modal and return to donate modal underneath
             $('#payment_header_back_btn').on('click', returnToDonate);
+
+            // Navigate on click for .payment-plugin-item (div, to allow HTML in description)
+            $(document).on('click', '.payment-plugin-item', function (e) {
+                // If the click was on a link inside the description, let it propagate naturally
+                if ($(e.target).closest('a').length) return;
+                const href = $(this).attr('data-href') || $(this).data('href');
+                if (href) window.location.href = href;
+            });
 
             // Auto-open donate modal when URL contains #donate (e.g. /main#donate)
             try {
