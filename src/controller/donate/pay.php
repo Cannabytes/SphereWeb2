@@ -9,8 +9,10 @@ namespace Ofey\Logan22\controller\donate;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
+use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\controller\page\error;
 use Ofey\Logan22\model\admin\validation;
+use Ofey\Logan22\model\config\config;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\donate\donate;
 use Ofey\Logan22\model\plugin\plugin;
@@ -27,6 +29,12 @@ class pay
             error::error404("Ошибка: Необходимо подключить хотя бы один сервер и настроить его платежную систему.");
             return;
         }
+
+        if ( \Ofey\Logan22\controller\config\config::load()->hasGlobalDonateConfig() ) {
+            redirect::location("/main#donate");
+            return;
+        }
+
         $donateSysNames    = [];
         $paymentSystemsLinks = [];
         $donate = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId())->getDonateConfig();

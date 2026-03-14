@@ -60,7 +60,7 @@
           </a>
         </li>
 
-        {% if config().hasGlobalDonateConfig() %}
+        {% if getUser().isAuth() and config().hasGlobalDonateConfig() %}
         <li class="slide {{classColorMenu()}}">
           <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#modal_donate" class="side-menu__item">
             <i class="fe fe-dollar-sign side-menu__icon"></i>
@@ -70,7 +70,7 @@
         </li>
         {% endif %}
 
-        {% if not config().hasGlobalDonateConfig() %}
+        {% if not getUser().isAuth() and config().hasGlobalDonateConfig() %}
         <li class="slide enable_balance {{classColorMenu()}}" {% if config().enabled().isEnableBalance()==false
           %}style="display: none;" {% endif %}>
           <a href="/balance" class="side-menu__item">
