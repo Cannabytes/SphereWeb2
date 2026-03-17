@@ -1013,15 +1013,65 @@
             let isSyncingFromSlider = false;
             const $inputField = $('#modal_numberOfCoinsPurchased');
             const $bubble = $('#modal_rangeValueBubble');
-            const min = parseInt($inputField.attr('min')) || 1;
-            const max = parseInt($inputField.attr('max')) || 10000;
+            const baseMin = parseInt($inputField.attr('min'), 10) || 1;
+            const baseMax = parseInt($inputField.attr('max'), 10) || 10000;
+            let sliderMin = baseMin;
+            let sliderMax = baseMax;
 
-            const clampValue = (rawValue) => {
-                let value = parseInt(String(rawValue).replace(/[^0-9]/g, ''), 10);
-                if (isNaN(value)) value = min;
-                if (value < min) value = min;
-                if (value > max) value = max;
+            const parseInputValue = (rawValue) => {
+                const normalized = String(rawValue === undefined || rawValue === null ? '' : rawValue).trim();
+                if (!normalized) return null;
+                const value = parseInt(normalized.replace(/[^0-9]/g, ''), 10);
+                if (isNaN(value)) return null;
                 return value;
+            };
+
+            const clampSliderValue = (rawValue) => {
+                let value = parseInt(rawValue, 10);
+                if (isNaN(value)) value = sliderMin;
+                if (value < sliderMin) value = sliderMin;
+                if (value > sliderMax) value = sliderMax;
+                return value;
+            };
+
+            const roundSliderMax = (value) => {
+                if (value <= 1000) return 1000;
+                if (value <= 5000) return Math.ceil(value / 500) * 500;
+                return Math.ceil(value / 1000) * 1000;
+            };
+
+            const buildSliderRange = (rangeMin, rangeMax) => {
+                const range = { min: rangeMin, max: rangeMax };
+                if (rangeMax > 5000) {
+                    if (500 > rangeMin && 500 < rangeMax) range['20%'] = 500;
+                    if (1000 > rangeMin && 1000 < rangeMax) range['40%'] = 1000;
+                    if (5000 > rangeMin && 5000 < rangeMax) range['70%'] = 5000;
+                }
+                return range;
+            };
+
+            const ensureSliderRange = (value) => {
+                if (!sliderElement || !sliderElement.noUiSlider) return;
+
+                let nextMin = sliderMin;
+                let nextMax = sliderMax;
+
+                if (value < sliderMin) {
+                    nextMin = Math.max(0, value);
+                }
+
+                if (value > sliderMax) {
+                    nextMax = Math.max(baseMax, roundSliderMax(value));
+                }
+
+                if (nextMin === sliderMin && nextMax === sliderMax) return;
+
+                sliderMin = nextMin;
+                sliderMax = nextMax;
+                sliderElement.noUiSlider.updateOptions({
+                    range: buildSliderRange(sliderMin, sliderMax),
+                    step: 1
+                }, false);
             };
 
             const scheduleSliderLiveUpdate = (value) => {
@@ -1092,30 +1142,46 @@
                 $inputField.off('input change').on('input change', function () {
                     if (isSyncingFromSlider) return;
 
-                    const value = clampValue($(this).val());
-                    $(this).val(value);
+                    const value = parseInputValue($(this).val());
+                    if (value === null) return;
 
                     if (slider && slider.noUiSlider) {
-                        slider.noUiSlider.set(value);
+                        ensureSliderRange(value);
+                        slider.noUiSlider.set(clampSliderValue(value));
                     }
 
                     updateAll(value, { heavy: true, withFlash: true });
                 });
 
                 $inputField.off('blur').on('blur', function () {
-                    const value = clampValue($(this).val());
-                    $(this).val(value);
+                    const value = parseInputValue($(this).val());
+                    if (value === null) {
+                        const fallbackValue = slider && slider.noUiSlider
+                            ? Math.round(slider.noUiSlider.get()) || baseMin
+                            : baseMin;
+                        $(this).val(fallbackValue);
+                        updateAll(fallbackValue, { heavy: true, withFlash: false });
+                        return;
+                    }
 
                     if (slider && slider.noUiSlider) {
-                        slider.noUiSlider.set(value);
+                        ensureSliderRange(value);
+                        slider.noUiSlider.set(clampSliderValue(value));
                     }
 
                     updateAll(value, { heavy: true, withFlash: true });
                 });
 
-                const startVal = clampValue($inputField.val());
-                $inputField.val(startVal);
-                updateAll(startVal, { heavy: true, withFlash: false });
+                const startVal = parseInputValue($inputField.val());
+                const initialValue = startVal === null ? baseMin : startVal;
+                $inputField.val(initialValue);
+
+                if (slider && slider.noUiSlider) {
+                    ensureSliderRange(initialValue);
+                    slider.noUiSlider.set(clampSliderValue(initialValue));
+                }
+
+                updateAll(initialValue, { heavy: true, withFlash: false });
             };
 
             const updateAll = (value, options = {}) => {
@@ -1142,10 +1208,10 @@
                     const repeatRate = 200; // ms between repeated steps (not fast)
 
                     const step = () => {
-                        let current = parseInt($inputField.val()) || min;
+                        let current = parseInputValue($inputField.val());
+                        if (current === null) current = baseMin;
                         let next = current + delta;
-                        if (next < min) next = min;
-                        if (next > max) next = max;
+                        if (next < 0) next = 0;
                         if (next !== current) {
                             $inputField.val(next).trigger('change');
                         }
@@ -1181,18 +1247,21 @@
                 if (!sliderElement || typeof noUiSlider === 'undefined' || sliderElement.noUiSlider) return;
 
                 try {
-                    const range = { 'min': min, 'max': max };
-                    // Динамически настраиваем нелинейность, если макс. значение большое
-                    if (max > 5000) {
-                        range['20%'] = 500;
-                        range['40%'] = 1000;
-                        range['70%'] = 5000;
+                    const initialInputValue = parseInputValue($inputField.val());
+                    const startValue = initialInputValue === null ? baseMin : initialInputValue;
+
+                    if (startValue < sliderMin) {
+                        sliderMin = Math.max(0, startValue);
+                    }
+
+                    if (startValue > sliderMax) {
+                        sliderMax = Math.max(baseMax, roundSliderMax(startValue));
                     }
 
                     noUiSlider.create(sliderElement, {
-                        start: [parseInt($inputField.val()) || min],
+                        start: [clampSliderValue(startValue)],
                         connect: [true, false],
-                        range: range,
+                        range: buildSliderRange(sliderMin, sliderMax),
                         step: 1
                     });
 
@@ -1200,7 +1269,7 @@
 
                     sliderElement.noUiSlider.on('start', function () {
                         sliderIsActive = true;
-                        const currentValue = parseInt(sliderElement.noUiSlider.get(), 10) || min;
+                        const currentValue = parseInt(sliderElement.noUiSlider.get(), 10) || sliderMin;
                         updateRangeValueBubble(currentValue);
                     });
 
