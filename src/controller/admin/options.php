@@ -96,6 +96,8 @@ class options
         $maxOnline = $_POST['max_online'] ?? 200;
         $timezone = $_POST['timezone_server'] ?? "Africa/Abidjan";
         $resetHWID = $_POST['resetHWID'] ?? false;
+        $resetItemsToWarehouse = (bool)filter_var($_POST['resetItemsToWarehouse'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $resetPlayerToVillage = (bool)filter_var($_POST['resetPlayerToVillage'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $showStatusBar = filter_var($_POST['showStatusBar'] ?? false, FILTER_VALIDATE_BOOL);
         $enableStatusServer = filter_var($_POST['enableStatusServer'] ?? false, FILTER_VALIDATE_BOOL);
         $statusLoginServerIP = $_POST['statusLoginServerIP'] ?? "";
@@ -205,6 +207,8 @@ class options
                 "maxOnline" => $maxOnline,
                 "timezone" => $timezone,
                 "resetHWID" => $resetHWID,
+                "resetItemsToWarehouse" => $resetItemsToWarehouse,
+                "resetPlayerToVillage" => $resetPlayerToVillage,
                 "platform" => $platform,
                 "showOnlineInStatusServer" => $showOnlineInStatusServer,
             ];
@@ -422,6 +426,11 @@ class options
         ];
 
         $server = \Ofey\Logan22\model\server\server::getServer($serverId);
+        if (array_key_exists('resetPlayerToVillage', $_POST)) {
+            $resetPlayerToVillage = (bool)filter_var($_POST['resetPlayerToVillage'], FILTER_VALIDATE_BOOLEAN);
+        } else {
+            $resetPlayerToVillage = $server->isResetPlayerToVillage();
+        }
 
         $data = [
             "id" => $serverId,
@@ -446,6 +455,7 @@ class options
             'platform' => $platform,
             'showOnlineInStatusServer' => $showOnlineInStatusServer,
             'resetItemsToWarehouse' => $resetItemsToWarehouse,
+            'resetPlayerToVillage' => $resetPlayerToVillage,
         ];
 
         $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);

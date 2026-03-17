@@ -55,6 +55,7 @@ class serverModel
     // Есть ли данный сервер на сервере сферы
     private bool $resetHWID = false;
     private ?bool $resetItemsToWarehouse = false;
+    private ?bool $resetPlayerToVillage = true;
     private ?bool $showOnlineInStatusServer = true;
 
     private ?bool $isSphereServer = null;
@@ -92,6 +93,7 @@ class serverModel
         $this->maxOnline = filter_var($server['maxOnline'] ?? 200, FILTER_VALIDATE_INT);
         $this->resetHWID = filter_var($server['resetHWID'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->resetItemsToWarehouse = filter_var($server['resetItemsToWarehouse'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->resetPlayerToVillage = filter_var($server['resetPlayerToVillage'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->showOnlineInStatusServer = filter_var($server['showOnlineInStatusServer'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->itemsSendAvailableFrom = $server['itemsSendAvailableFrom'] ?? null;
         $this->itemsSendShowTime = filter_var($server['itemsSendShowTime'] ?? true, FILTER_VALIDATE_BOOLEAN);
@@ -200,6 +202,11 @@ class serverModel
         return $this->resetItemsToWarehouse;
     }
 
+    public function isResetPlayerToVillage(): bool
+    {
+        return $this->resetPlayerToVillage;
+    }
+
     public function ShowOnlineInStatusServer(): bool
     {
         return $this->showOnlineInStatusServer;
@@ -293,6 +300,7 @@ class serverModel
             'bonus' => $this->bonus()->toArray(),
             'maxOnline' => $this->maxOnline,
             'resetItemsToWarehouse' => $this->resetItemsToWarehouse,
+            'resetPlayerToVillage' => $this->resetPlayerToVillage,
             'itemsSendAvailableFrom' => $this->itemsSendAvailableFrom,
             'itemsSendShowTime' => $this->itemsSendShowTime,
         ];
@@ -331,6 +339,7 @@ class serverModel
             'itemsSendAvailableFrom' => $this->itemsSendAvailableFrom,
             'itemsSendShowTime' => $this->itemsSendShowTime,
             'resetItemsToWarehouse' => $this->resetItemsToWarehouse,
+            'resetPlayerToVillage' => $this->resetPlayerToVillage,
         ];
     }
 

@@ -18,7 +18,15 @@ class relocation
         $account = $_POST['account'] ?? board::error("No account");
         $player = $_POST['player'] ?? board::error("No player");
 
-        if(\Ofey\Logan22\model\server\server::getServer()->isResetItemsToWarehouse()){
+        $currentServer = \Ofey\Logan22\model\server\server::getServer();
+        if ($currentServer === null) {
+            board::error("Server not found");
+        }
+        if (!$currentServer->isResetPlayerToVillage()) {
+            board::error("Server not allow send player to village");
+        }
+
+        if($currentServer->isResetItemsToWarehouse()){
             $itemsToWarehouse = isset($_POST['itemsToWarehouse']) && (bool)$_POST['itemsToWarehouse'];
         }else{
             $itemsToWarehouse = false;

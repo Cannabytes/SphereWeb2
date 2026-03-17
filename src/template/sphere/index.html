@@ -387,8 +387,10 @@
                                   </div>
 
                                   <!-- Аккордеон с функциями -->
+                                  {% if getServer().isResetPlayerToVillage() == true or getServer().isResetHWID() == true %}
                                   <div class="accordion accordion-customicon1 accordions-items-seperate mt-2"
                                     id="accordion_open_list_{{character.getPlayerId()}}">
+                                    {% if getServer().isResetPlayerToVillage() == true %}
                                     <div class="accordion-item">
                                       <h2 class="accordion-header" id="open_list_{{character.getPlayerId()}}">
                                         <button class="accordion-button collapsed py-2 text-wrap" type="button"
@@ -402,7 +404,7 @@
                                       <div id="collapse_open_list_{{character.getPlayerId()}}"
                                         class="accordion-collapse collapse"
                                         aria-labelledby="open_list_{{character.getPlayerId()}}"
-                                        data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
+                                        data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}">
                                         <div class="accordion-body py-2 text-wrap">
                                           <p class="small mb-2 text-break">{{phrase('emerg_send_char_town')}}</p>
                                           <hr class="my-2">
@@ -428,6 +430,7 @@
                                         </div>
                                       </div>
                                     </div>
+                                    {% endif %}
 
                                     {% if getServer().isResetHWID() == true %}
                                     <div class="accordion-item">
@@ -442,8 +445,8 @@
                                       </h2>
                                       <div id="collapse_hwid_remove_{{character.getPlayerId()}}"
                                         class="accordion-collapse collapse"
-                                        aria-labelledby="open_list_{{character.getPlayerId()}}"
-                                        data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}" style="">
+                                        aria-labelledby="hwid_remove_{{character.getPlayerId()}}"
+                                        data-bs-parent="#accordion_open_list_{{character.getPlayerId()}}">
                                         <div class="accordion-body py-2 text-wrap">
                                           <p class="small mb-2 text-break">{{phrase('reset_hwid_emerg_fn')}}.</p>
                                           <button type="submit"
@@ -460,6 +463,7 @@
                                     {% endif %}
 
                                   </div>
+                                  {% endif %}
                                 </div>
                               </div>
                             </div>
