@@ -269,15 +269,6 @@ class betaTransferDonate extends BasePaymentPlugin
         $donate = $server->donate();
         $amount = donate::sphereCoinSmartCalc($userAmount, $donate->getRatio($currency), $donate->getSphereCoinCost());
 
-        // Проверка лимитов на итоговую сумму
-        if ($amount < $method['min']) {
-            board::error("Минимальная сумма пополнения: {$method['min']} {$currency}");
-        }
-
-        if ($amount > $method['max']) {
-            board::error("Максимальная сумма пополнения: {$method['max']} {$currency}");
-        }
-
         $orderId = user::self()->getId() . '_' . time() . '_' . mt_rand(1000, 9999);
 
         $options = [
