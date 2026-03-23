@@ -263,7 +263,7 @@ class betaTransferDonate extends BasePaymentPlugin
         }
 
         $method = $paymentMethods[$paymentMethod];
-        $currency = $method['currency'];
+        $currency = trim($method['currency']);
 
         $server = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId());
         $donate = $server->donate();
