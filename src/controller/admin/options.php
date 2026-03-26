@@ -215,7 +215,7 @@ class options
 
             sql::run("INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)", [$id, json_encode($data)]);
 
-            board::redirect("/admin/server/set/donate/{$id}");
+            board::redirect("/admin");
             board::success(lang::get_phrase(243));
         }
 
