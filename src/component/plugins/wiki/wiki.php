@@ -787,7 +787,7 @@ class wiki
 
         $currentDb = isset($setting['dbFile']) && is_string($setting['dbFile']) && $setting['dbFile'] !== ''
             ? $setting['dbFile']
-            : 'highfive.db';
+            : 'lucera.db';
 
         if (server::get_count_servers() === 0) {
             tpl::addVar('noServers', true);

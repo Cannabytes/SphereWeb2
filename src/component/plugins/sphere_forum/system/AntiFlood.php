@@ -60,6 +60,17 @@ class AntiFlood {
             );
         }
 
+        if (!is_array($activity)) {
+            $activity = [
+                'id' => null,
+                'user_id' => $this->userId,
+                'activity_type' => $this->activityType,
+                'last_action_time' => time(),
+                'actions_count' => 0,
+                'cooldown_until' => null,
+            ];
+        }
+
         $this->activity = $activity;
     }
 

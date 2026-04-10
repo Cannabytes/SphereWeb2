@@ -18,7 +18,7 @@ final class WikiDb
     {
         if (self::$path !== null) return self::$path;
         $setting = plugin::getSetting('wiki');
-        $file = is_array($setting) && !empty($setting['dbFile']) ? basename((string)$setting['dbFile']) : 'highfive.db';
+        $file = is_array($setting) && !empty($setting['dbFile']) ? basename((string)$setting['dbFile']) : 'lucera.db';
         $path = __DIR__ . '/db/' . $file;
         self::$path = $path;
         return self::$path;
