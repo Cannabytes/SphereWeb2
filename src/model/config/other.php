@@ -55,6 +55,7 @@ class other
 
     private string $contactAdmin = "";
     private string $balanceNotice = "";
+    private bool $isDisableSupportFlood = false;
 
     private string $analyticsHead = "";
     private string $analyticsBody = "";
@@ -90,6 +91,7 @@ class other
         $this->reuseCodeAfterSeconds = (int)(is_array($setting) ? ($setting['reuseCodeAfterSeconds'] ?? $this->reuseCodeAfterSeconds) : $this->reuseCodeAfterSeconds);
         $this->contactAdmin = $setting['contactAdmin'] ?? $this->contactAdmin;
         $this->balanceNotice = $setting['balanceNotice'] ?? $this->balanceNotice;
+        $this->isDisableSupportFlood = filter_var($setting['isDisableSupportFlood'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $this->autoUpdate = filter_var($setting['autoUpdate'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->oauth = filter_var($setting['oauth'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->isShow404error = filter_var($setting['isShow404error'] ?? false, FILTER_VALIDATE_BOOLEAN);
@@ -250,6 +252,11 @@ class other
         return trim($this->balanceNotice);
     }
 
+    public function isDisableSupportFlood(): bool
+    {
+        return $this->isDisableSupportFlood;
+    }
+
     public function save(): void
     {
         $data = json_encode([
@@ -271,6 +278,7 @@ class other
             'reuseCodeAfterSeconds' => $this->reuseCodeAfterSeconds,
             'contactAdmin' => trim($this->contactAdmin),
             'balanceNotice' => trim($this->balanceNotice),
+            'isDisableSupportFlood' => $this->isDisableSupportFlood,
             'autoUpdate' => $this->autoUpdate,
             'oauth' => $this->oauth,
             'isShow404error' => $this->isShow404error,

@@ -414,7 +414,7 @@ class support
     public static function requestReply(): void
     {
         self::isEnable();
-        if (self::lastTimeMessage() <= 10) {
+        if (!config::load()->other()->isDisableSupportFlood() && self::lastTimeMessage() <= 10) {
             board::error("Отправка сообщений не чаще чем раз в 10 сек.");
         }
         $message = self::postMessage();

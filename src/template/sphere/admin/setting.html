@@ -1258,6 +1258,18 @@
 
                                 <li class="list-group-item">
                                     <div class="col-xl-12">
+                                        <div class="custom-toggle-switch d-flex align-items-center mt-3 mb-2">
+                                            <input {% if config().other().isDisableSupportFlood() %}checked="" {% endif %}
+                                                id="isDisableSupportFlood" name="isDisableSupportFlood"
+                                                type="checkbox">
+                                            <label for="isDisableSupportFlood" class="label-success"></label><span
+                                                class="ms-3">Отключить антифлуд в техподдержке</span>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="list-group-item">
+                                    <div class="col-xl-12">
                                         <p class="fs-14 mb-1 fw-semibold">Скрипты аналитики / Custom scripts</p>
                                         <p class="fs-12 mb-0 text-muted">Добавьте сюда JS-код для вставки в &lt;head&gt; и перед закрывающим &lt;/body&gt;.</p>
                                         <p class="fs-12 text-muted mt-2">
@@ -2070,7 +2082,6 @@
                                                     }}</span>]
                                             </div>
                                         </div>
-
 
                                     </div>
 
