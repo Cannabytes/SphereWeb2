@@ -57,7 +57,7 @@ const ForumModeration = (function () {
         try {
             const response = await AjaxSend("/forum/thread/move", "POST", {
                 threadId: config.threadId,
-                categoryId: newCategoryId
+                newCategoryId: newCategoryId
             }, true);
 
             if (response.ok) {

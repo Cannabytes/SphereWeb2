@@ -122,7 +122,7 @@ class server
             if(!user::self()->isAdmin()){
                 foreach(self::$server_info AS $id=>$server){
                     if($server->isDisabled()){
-                       unset(self::$server_info[$id]);
+                        unset(self::$server_info[$id]);
                     }
                 }
             }
@@ -229,16 +229,14 @@ class server
                 if (!empty($files)) {
                     rsort($files);
                     $latestFile = $files[0];
-                    $unixTimeRaw = (int)basename($latestFile, '.json');
+					
+					$basename = basename($latestFile, '.json');
+					$parts = explode('_', $basename);
+					$unixTimeRaw = (int)$parts[0];
                     $currentTime = time();
-                    if ($unixTimeRaw > 100000000000000) {
-                        $unixTime = (int)floor($unixTimeRaw / 1000000);
-                    } elseif ($unixTimeRaw > 100000000000) {
-                        $unixTime = (int)floor($unixTimeRaw / 1000);
-                    } else {
-                        $unixTime = $unixTimeRaw;
-                    }
+					$unixTime = self::normalizeTimestamp($unixTimeRaw);
                     $totalSeconds = $currentTime - $unixTime;
+					
                     if ($totalSeconds < 60) {
                         $cacheData = json_decode(file_get_contents($latestFile), true);
                         if ($cacheData) {
@@ -366,6 +364,15 @@ class server
         }
         return count($server);
     }
+	
+	
+	public static function normalizeTimestamp($ts): int {
+		$ts = preg_replace('/\D/', '', (string)$ts);
+		if (strlen($ts) > 10) {
+			$ts = substr($ts, 0, 10);
+		}
+		return (int)$ts;
+	}
 
 
 }

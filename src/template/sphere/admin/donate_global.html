@@ -837,23 +837,25 @@
 
         var tabID = 'list_' + tabSlug;
         var tabIndex = 2;
-        while (document.getElementById(tabID + '-tab')) {
+        while (document.getElementById(tabID) || document.getElementById(tabID + '-tab') || document.getElementById(tabID + '-pane')) {
             tabID = 'list_' + tabSlug + '-' + tabIndex;
             tabIndex++;
         }
 
-        var isActive = $('#myTab li').length === 0; // First tab should be active
+        var isActive = $('#myTab li').length === 0; 
+        var tabButtonId = tabID + '-tab';
+        var tabPaneId = tabID + '-pane';
         var newTab = `
 <li class="nav-item ${isActive ? 'active' : ''}" role="presentation">
-    <button class="nav-link ${isActive ? 'active' : ''}" id="${tabID}-tab" data-bs-toggle="tab"
-            data-bs-target="#${tabID}-pane" type="button" role="tab"
-            aria-controls="${tabID}-pane" aria-selected="${isActive ? 'true' : 'false'}">${costItemName}</button>
+    <button class="nav-link ${isActive ? 'active' : ''}" id="${tabButtonId}" data-bs-toggle="tab"
+            data-bs-target="#${tabPaneId}" type="button" role="tab"
+            aria-controls="${tabPaneId}" aria-selected="${isActive ? 'true' : 'false'}">${costItemName}</button>
 </li>
 `;
         $('#myTab').append(newTab);
         var newTabPane = `
-<div class="tab-pane fade ${isActive ? 'show active' : ''}" id="${tabID}-pane" role="tabpanel"
-     aria-labelledby="${tabID}-tab" tabindex="0">
+<div class="tab-pane fade ${isActive ? 'show active' : ''}" id="${tabPaneId}" role="tabpanel"
+     aria-labelledby="${tabButtonId}" tabindex="0">
     <div class="table-responsive">
         <table class="table mb-0">
             <thead>

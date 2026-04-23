@@ -35,7 +35,7 @@ class serverStatus
     {
         $serverId = $this->getServerId();
         $cacheDir = fileSys::get_dir('uploads/cache/server/' . $serverId);
-        
+
         // Удаляем старые файлы кэша (больше 60 сек)
         if (is_dir($cacheDir)) {
             $files = glob($cacheDir . '/*.json');
@@ -47,7 +47,7 @@ class serverStatus
         } else {
             mkdir($cacheDir, 0755, true);
         }
-        
+
         $data = [
             'online' => $this->online,
             'isEnable' => $this->isEnable(),
@@ -61,8 +61,8 @@ class serverStatus
             'loginServerIP' => $this->getLoginIPStatusServer(),
             'loginServerPort' => $this->getLoginPortStatusServer(),
         ];
-        
-        $unixTime = (time() - mt_rand(24192,124928) ) . mt_rand(1, 999999);
+
+        $unixTime = time() . '_' . mt_rand(1000, 9999);
         $jsonFile = $cacheDir . '/' . $unixTime . '.json';
         file_put_contents($jsonFile, json_encode($data));
     }
@@ -79,7 +79,7 @@ class serverStatus
 
     public function getGameServer(): bool
     {
-        if ($this->getOnline() > 0 ){
+        if ($this->getOnline() > 0) {
             $this->gameServer = true;
         }
         return $this->gameServer;
@@ -110,7 +110,7 @@ class serverStatus
         return (int)(config::load()->other()->getOnlineMul() * $this->online);
     }
 
-    public function setOnline(int $online, bool $isCache = false ): void
+    public function setOnline(int $online, bool $isCache = false): void
     {
         $onlineCheating = config::load()->onlineCheating()->isEnabled();
         $minOnline = (int)config::load()->onlineCheating()->getMinOnlineShow();
@@ -145,7 +145,7 @@ class serverStatus
                                 continue;
                             }
                             $startTime->setDate($currentTime->format('Y'), $currentTime->format('m'), $currentTime->format('d'));
-                            
+
                             $nextIndex = $index + 1;
                             if ($nextIndex < count($details)) {
                                 $endTime = DateTime::createFromFormat('H:i', $details[$nextIndex]->getTime());
@@ -253,6 +253,4 @@ class serverStatus
     {
         return $this->gameServerRealConnection;
     }
-
-
 }

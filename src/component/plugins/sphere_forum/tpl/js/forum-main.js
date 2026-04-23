@@ -99,7 +99,6 @@ const ForumMain = (function () {
 
         // Модерация
         $("#confirmDelete")?.on('click', handleDeleteTopic);
-        $("#confirmMove")?.on('click', handleMoveTopic);
 
         // Ответы и лайки
         $(document).on('click', '.reply-button', handleReply);
@@ -191,15 +190,6 @@ const ForumMain = (function () {
             }, true);
 
     }
-
-    async function handleMoveTopic() {
-        const newCategoryId = $('#moveThreadSelect').val();
-            const response = await AjaxSend("/forum/thread/move", "POST", {
-                threadId: forumConfig.threadId,
-                categoryId: newCategoryId
-            }, false);
-    }
-
 
     async function handleToggleThreadStatus(e) {
         e.preventDefault();

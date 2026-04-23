@@ -845,7 +845,11 @@ class support
     {
         self::isEnable();
         if (isset($_FILES['filepond'])) {
-            $manager = ImageManager::gd();
+            $imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg'];
+            $allowedAttachmentExtensions = array_merge($imageExtensions, [
+                'pdf', 'zip', '7z', 'rar', 'dll', 'ini', 'dat', 'u', 'xdat', 'log', 'txt',
+                'int', 'exe', 'vxd', 'bat', 'cmd', 'sys', 'bin', 'des', 'gly', 'ffe'
+            ]);
 
             if (!user::self()->isAdmin()) {
                 $time = time() - 600;
@@ -884,48 +888,93 @@ class support
                 // Подготовка данных для обработки одного файла
                 $tmpName = is_array($files['tmp_name']) ? $files['tmp_name'][$i] : $files['tmp_name'];
                 $error = is_array($files['error']) ? $files['error'][$i] : $files['error'];
+                $originalName = is_array($files['name']) ? $files['name'][$i] : $files['name'];
 
                 if ($error == 0) {
-                    $image = $manager->read($tmpName);
+                    $finfo = new \finfo(FILEINFO_MIME_TYPE);
+                    $mimeType = $finfo->file($tmpName) ?: ($files['type'][$i] ?? $files['type'] ?? '');
+                    $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+                    $isPdf = $mimeType === 'application/pdf' || $extension === 'pdf';
+                    $isImage = is_string($mimeType) && str_starts_with($mimeType, 'image/');
 
-                    // Получаем исходные размеры изображения
-                    $originalWidth = $image->width();
-                    $originalHeight = $image->height();
+                    if (!in_array($extension, $allowedAttachmentExtensions, true)) {
+                        echo json_encode([
+                            'status' => 'error',
+                            'message' => 'Разрешены только изображения, PDF, архивы и текстовые/системные файлы',
+                        ]);
+                        exit;
+                    }
 
-                    // Генерация уникального имени для основного файла
-                    $screen = mt_rand(1, PHP_INT_MAX) . '.png';
-
-                    // Проверка существования папки
                     if (!file_exists('uploads/support')) {
                         mkdir('uploads/support', 0777, true);
                     }
 
-                    // Сохранение основного изображения
-                    $success = $image->save('uploads/support/' . $screen);
-                    if ($success) {
-                        $thumbImage = $image;
+                    if ($isImage) {
+                        $manager = ImageManager::gd();
+                        $image = $manager->read($tmpName);
 
-                        // Создание миниатюры
-                        if ($originalHeight > 300) {
-                            $thumbImage = $image->scale(height: 300);
-                        }
-                        if ($originalWidth > 300) {
-                            $thumbImage = $image->scale(width: 300);
-                        }
-                        $thumb = pathinfo($screen, PATHINFO_FILENAME) . '_thumb.png'; // Имя миниатюры с суффиксом _thumb
+                        // Получаем исходные размеры изображения
+                        $originalWidth = $image->width();
+                        $originalHeight = $image->height();
 
-                        // Сохранение миниатюры
-                        $thumbSuccess = $thumbImage->save('uploads/support/' . $thumb);
+                        // Генерация уникального имени для основного файла
+                        $screen = mt_rand(1, PHP_INT_MAX) . '.png';
 
-                        if (!$thumbSuccess) {
+                        // Сохранение основного изображения
+                        $success = $image->save('uploads/support/' . $screen);
+                        if ($success) {
+                            $thumbImage = $image;
+
+                            // Создание миниатюры
+                            if ($originalHeight > 300) {
+                                $thumbImage = $image->scale(height: 300);
+                            }
+                            if ($originalWidth > 300) {
+                                $thumbImage = $image->scale(width: 300);
+                            }
+                            $thumb = pathinfo($screen, PATHINFO_FILENAME) . '_thumb.png';
+
+                            // Сохранение миниатюры
+                            $thumbSuccess = $thumbImage->save('uploads/support/' . $thumb);
+
+                            if (!$thumbSuccess) {
+                                echo json_encode([
+                                    'status' => 'error',
+                                    'message' => 'Error saving thumbnail: ' . $thumb,
+                                ]);
+                                exit;
+                            }
+
+                            // Вставка записи в базу данных
+                            sql::run("INSERT INTO `support_message_screen` (`filename`, `user_id`, `date_create`) VALUES (?, ?, ?)", [
+                                $screen,
+                                user::self()->getId(),
+                                time::mysql(),
+                            ]);
+
+                            $screenUploaded = [
+                                'screen' => "/uploads/support/" . $screen,
+                                'thumbnail' => "/uploads/support/" . $thumb,
+                                'type' => 'image',
+                                'name' => $screen,
+                            ];
+                        } else {
                             echo json_encode([
                                 'status' => 'error',
-                                'message' => 'Error saving thumbnail: ' . $thumb,
+                                'message' => 'Error saving image: ' . $screen,
+                            ]);
+                            exit;
+                        }
+                    } else {
+                        $screen = mt_rand(1, PHP_INT_MAX) . '.' . $extension;
+                        if (!move_uploaded_file($tmpName, 'uploads/support/' . $screen)) {
+                            echo json_encode([
+                                'status' => 'error',
+                                'message' => 'Error saving file: ' . $screen,
                             ]);
                             exit;
                         }
 
-                        // Вставка записи в базу данных
                         sql::run("INSERT INTO `support_message_screen` (`filename`, `user_id`, `date_create`) VALUES (?, ?, ?)", [
                             $screen,
                             user::self()->getId(),
@@ -934,14 +983,10 @@ class support
 
                         $screenUploaded = [
                             'screen' => "/uploads/support/" . $screen,
-                            'thumbnail' => "/uploads/support/" . $thumb,
+                            'thumbnail' => null,
+                            'type' => $isPdf ? 'pdf' : 'file',
+                            'name' => $screen,
                         ];
-                    } else {
-                        echo json_encode([
-                            'status' => 'error',
-                            'message' => 'Error saving image: ' . $screen,
-                        ]);
-                        exit;
                     }
                 } else {
                     echo json_encode([

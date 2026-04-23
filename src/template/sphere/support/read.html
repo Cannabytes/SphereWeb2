@@ -159,12 +159,43 @@
                         <div class="row g-2">
                             {% for screen in post.screens|json_decode %}
                             {% set imgPath = screen|split('.') %}
+                            {% set ext = imgPath|last|lower %}
+                            {% if ext == 'pdf' %}
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                                <a href="{{screen}}" target="_blank" download class="text-decoration-none">
+                                    <div class="border rounded p-3 d-flex align-items-center gap-3 bg-body">
+                                        <div class="avatar avatar-md bg-danger-transparent rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="ri-file-pdf-line fs-4 text-danger"></i>
+                                        </div>
+                                        <div class="flex-fill text-truncate">
+                                            <div class="fw-semibold text-body text-truncate">PDF</div>
+                                            <div class="text-muted small text-truncate">{{ screen|split('/')|last }}</div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            {% elseif ext in ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg'] %}
                             <div class="col-lg-2 col-md-3 col-sm-4 col-6">
                                 <a href="{{screen}}" class="glightbox" data-gallery="gallery_{{screen.id}}">
                                     <img src="{{imgPath[0]}}_thumb.{{imgPath[1]}}" class="img-fluid rounded"
                                          alt="image">
                                 </a>
                             </div>
+                            {% else %}
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                                <a href="{{screen}}" target="_blank" download class="text-decoration-none">
+                                    <div class="border rounded p-3 d-flex align-items-center gap-3 bg-body">
+                                        <div class="avatar avatar-md bg-primary-transparent rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="ri-file-line fs-4 text-primary"></i>
+                                        </div>
+                                        <div class="flex-fill text-truncate">
+                                            <div class="fw-semibold text-body text-truncate">{{ ext|upper }}</div>
+                                            <div class="text-muted small text-truncate">{{ screen|split('/')|last }}</div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            {% endif %}
                             {% endfor %}
                         </div>
                     </div>
@@ -203,12 +234,11 @@
 
                                 <div class="modal-body">
                                     <input type="file" class="multiple-filepond" name="filepond" multiple
-                                           data-allow-reorder="true" data-max-file-size="3MB" data-max-files="6">
+                                           data-allow-reorder="true" data-max-file-size="10MB" data-max-files="6">
                                 </div>
                             </div>
                         </div>
                     </div>
-
 
                 </div>
 
@@ -262,8 +292,134 @@
 <script src="{{template}}/assets/libs/quill/quill.min.js"></script>
 
 <script>
+    function getAttachmentExtension(screen) {
+        const cleanedPath = (screen || '').split('?')[0];
+        const parts = cleanedPath.split('.');
+        return parts.length > 1 ? parts.pop().toLowerCase() : '';
+    }
+
+    function isImageAttachment(screen) {
+        const extension = getAttachmentExtension(screen);
+        return ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg'].includes(extension);
+    }
+
+    function createAttachmentCard(screen, thumbnail) {
+        const fileName = (screen || '').split('/').pop();
+        const extension = getAttachmentExtension(screen);
+
+        if (extension === 'pdf') {
+            return `
+                <div class="p-2" style="flex: 0 0 320px; max-width: 100%;">
+                    <a href="${screen}" target="_blank" download="${fileName}" class="text-decoration-none d-block">
+                        <div class="border rounded p-3 d-flex align-items-center gap-3 bg-body" style="min-width: 0;">
+                            <div class="avatar avatar-md bg-danger-transparent rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="ri-file-pdf-line fs-4 text-danger"></i>
+                            </div>
+                            <div class="flex-fill text-truncate" style="min-width: 0;">
+                                <div class="fw-semibold text-body text-truncate">PDF</div>
+                                <div class="text-muted small text-truncate">${fileName}</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            `;
+        }
+
+        if (isImageAttachment(screen)) {
+            const previewSrc = thumbnail || screen;
+            return `
+                <div class="p-2" style="flex: 0 0 auto;">
+                    <a href="${screen}" class="glightbox d-block" data-gallery="gallery_${screen.replace(/[^a-zA-Z0-9]/g, '_')}">
+                        <img src="${previewSrc}" alt="image" class="img-fluid rounded">
+                    </a>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="p-2" style="flex: 0 0 320px; max-width: 100%;">
+                <a href="${screen}" target="_blank" download="${fileName}" class="text-decoration-none d-block">
+                    <div class="border rounded p-3 d-flex align-items-center gap-3 bg-body" style="min-width: 0;">
+                        <div class="avatar avatar-md bg-primary-transparent rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="ri-file-line fs-4 text-primary"></i>
+                        </div>
+                        <div class="flex-fill text-truncate" style="min-width: 0;">
+                            <div class="fw-semibold text-body text-truncate">${extension ? extension.toUpperCase() : 'FILE'}</div>
+                            <div class="text-muted small text-truncate">${fileName}</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        `;
+    }
+
+    function detectSupportAttachmentType(file) {
+        const fileName = (file && file.name) ? file.name : '';
+        const extension = getAttachmentExtension(fileName);
+
+        switch (extension) {
+            case 'png':
+                return 'image/png';
+            case 'jpg':
+            case 'jpeg':
+                return 'image/jpeg';
+            case 'gif':
+                return 'image/gif';
+            case 'webp':
+                return 'image/webp';
+            case 'bmp':
+                return 'image/bmp';
+            case 'svg':
+                return 'image/svg+xml';
+            case 'pdf':
+                return 'application/pdf';
+            case 'zip':
+                return 'application/zip';
+            case '7z':
+                return 'application/x-7z-compressed';
+            case 'rar':
+                return 'application/vnd.rar';
+            case 'txt':
+            case 'log':
+            case 'ini':
+                return 'text/plain';
+            case 'dll':
+            case 'exe':
+                return 'application/x-msdownload';
+            case 'dat':
+            case 'u':
+            case 'xdat':
+            case 'int':
+            case 'vxd':
+            case 'bat':
+            case 'cmd':
+            case 'sys':
+            case 'bin':
+            case 'des':
+            case 'gly':
+            case 'ffe':
+                return 'application/octet-stream';
+            default:
+                return file && file.type ? file.type : 'application/octet-stream';
+        }
+    }
+</script>
+
+<script>
     (function () {
         "use strict";
+
+        FilePond.registerPlugin(
+            FilePondPluginImagePreview,
+            FilePondPluginImageExifOrientation,
+            FilePondPluginFileValidateSize,
+            FilePondPluginFileEncode,
+            FilePondPluginImageEdit,
+            FilePondPluginFileValidateType,
+            FilePondPluginImageCrop,
+            FilePondPluginImageResize,
+            FilePondPluginImageTransform
+        );
 
 
         var myElement13 = document.getElementById('mail-info-body');
@@ -360,7 +516,7 @@
         let pond;
         let controllers = [];
 
-        function addImageToScreens(response) {
+        function addAttachmentToScreens(response) {
             // Проверяем, существует ли элемент #screens
             const screensElement = document.querySelector('#screens');
             if (!screensElement) {
@@ -374,12 +530,8 @@
                 return;
             }
 
-            // Добавляем изображение
-            $(screensElement).append(` <div class="p-2">
-                            <a href="${response.screen}" class="glightbox" data-gallery="gallery1">
-                                <img src="${response.thumbnail}" alt="image">
-                            </a>
-                        </div>`);
+            // Добавляем вложение
+            $(screensElement).append(createAttachmentCard(response.screen, response.thumbnail));
 
             // Инициализация Glightbox для новых элементов
             const lightbox = GLightbox({
@@ -413,20 +565,25 @@
                                 return;
                             }
 
-                            addImageToScreens(parsedResponse);
+                            addAttachmentToScreens(parsedResponse);
                             return parsedResponse;
                         } catch (e) {
                             console.error('Ошибка при обработке ответа сервера:', e);
                             return null;
                         }
                     }
-                }
+                },
+                allowFileTypeValidation: false
             }
         });
 
         const MultipleElement = document.querySelector('.multiple-filepond');
         if (MultipleElement) {
-            pond = FilePond.create(MultipleElement);
+            pond = FilePond.create(MultipleElement, {
+                allowFileTypeValidation: false,
+                maxFileSize: '10MB',
+                fileValidateTypeDetectType: detectSupportAttachmentType
+            });
             pond.on('processfile', (error, file) => {
                 $('#exampleModalScrollable2').modal('hide');
                 if (error) {
@@ -593,15 +750,9 @@
             
             let html = '<div class="row g-2">';
             screens.forEach(screen => {
-                const imgPath = screen.split('.');
-                const thumbPath = imgPath.length > 1 ? `${imgPath[0]}_thumb.${imgPath[1]}` : screen;
-                html += `
-                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-                        <a href="${screen}" class="glightbox" data-gallery="gallery_${screen.replace(/[^a-zA-Z0-9]/g, '_')}">
-                            <img src="${thumbPath}" class="img-fluid rounded" alt="image">
-                        </a>
-                    </div>
-                `;
+                const extension = getAttachmentExtension(screen);
+                const thumbPath = extension === 'pdf' ? null : `${screen.split('.').slice(0, -1).join('.')}_thumb.${extension}`;
+                html += createAttachmentCard(screen, thumbPath);
             });
             html += '</div>';
             return html;
@@ -911,7 +1062,7 @@
                 let screens = [];
                 let editorContent = quillEditor.root.innerHTML;
 
-                $('#screens .glightbox').each(function () {
+                $('#screens a').each(function () {
                     let href = $(this).attr('href');
                     if (href) {
                         let filename = href.split('/').pop();
