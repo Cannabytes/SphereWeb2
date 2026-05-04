@@ -285,7 +285,8 @@ class forum
     {
         $approveFilter = '';
         if ($this->isFirstPostModerationEnabled() && !user::self()->isAdmin() && !ForumModerator::isUserModerator(user::self()->getId(), $categoryId)) {
-            $approveFilter = " AND is_approved = 1";
+            $userId = (int)user::self()->getId();
+            $approveFilter = " AND (is_approved = 1 OR user_id = {$userId})";
         }
 
         $threads = sql::getRows(
@@ -315,6 +316,11 @@ class forum
             $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
             $totalPages = $this->getTotalPages($topicId);
+
+            // Если страниц нет (нет одобренных постов), показываем первую страницу без редиректа
+            if ($totalPages <= 0) {
+                $totalPages = 1;
+            }
 
             if ($currentPage <= 0 || $currentPage > $totalPages) {
                 $custom_twig = new custom_twig();
@@ -521,7 +527,8 @@ class forum
     {
         $approveFilter = '';
         if ($this->isFirstPostModerationEnabled() && !user::self()->isAdmin()) {
-            $approveFilter = " AND is_approved = 1";
+            $userId = (int)user::self()->getId();
+            $approveFilter = " AND (is_approved = 1 OR user_id = {$userId})";
         }
         $totalPosts = sql::getValue(
             "SELECT COUNT(*) FROM `forum_posts` WHERE `thread_id` = ? {$approveFilter}",
@@ -958,6 +965,8 @@ class forum
 
                 if ($needsModeration) {
                     sql::commit();
+                    $custom_twig = new custom_twig();
+                    $translit = $custom_twig->transliterateToEn($thread->getTitle());
                     board::redirect("/forum/topic/{$translit}.{$topicId}");
                     board::success("Ваше сообщение отправлено на проверку модератору и будет опубликовано после одобрения");
                     return;
@@ -1523,15 +1532,12 @@ class forum
         $translit = $custom_twig->transliterateToEn($title);
         board::redirect("/forum/topic/{$translit}.{$topicId}");
 
-        // Если требуется модерация и это не админ
         if (!$isApproved) {
             $settings = $this->getForumSettings();
-            if ($settings['enable_first_post_moderation'] ?? false) {
-                board::success("Тема создана. Ваше первое сообщение будет опубликовано после проверки модератором");
-            } else {
-                board::success("Тема создана и будет опубликована после проверки модератором");
-            }
-            redirect::location("/forum");
+            $msg = ($settings['enable_first_post_moderation'] ?? false)
+                ? "Тема создана. Ваше первое сообщение будет опубликовано после проверки модератором"
+                : "Тема создана и будет опубликована после проверки модератором";
+            board::success($msg);
             return;
         }
         board::success("Тема создана");

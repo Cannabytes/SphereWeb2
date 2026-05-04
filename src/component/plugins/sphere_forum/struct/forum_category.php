@@ -198,6 +198,23 @@ class forum_category
             return $this->thread = false;
         }
         
+        // Если тема не одобрена и включена предмодерация — не показываем её чужим пользователям
+        if (!$thread['is_approved']) {
+            $settings = \Ofey\Logan22\model\db\sql::getRow(
+                "SELECT setting FROM settings WHERE `key` = '__FORUM_SETTINGS__' LIMIT 1"
+            );
+            $forumSettings = $settings ? json_decode($settings['setting'], true) : [];
+            if ($forumSettings['enable_first_post_moderation'] ?? false) {
+                $userId = (int)\Ofey\Logan22\model\user\user::self()->getId();
+                $isAdmin = \Ofey\Logan22\model\user\user::self()->isAdmin();
+                $isModerator = \Ofey\Logan22\component\plugins\sphere_forum\struct\ForumModerator::isUserModerator($userId, $this->getId());
+                $isAuthor = (int)$thread['user_id'] === $userId;
+                if (!$isAdmin && !$isModerator && !$isAuthor) {
+                    return $this->thread = false;
+                }
+            }
+        }
+        
         $threadObject = new forum_thread($thread);
         
         // Проверяем права на просмотр темы
