@@ -319,6 +319,24 @@
                     {% endif %}
                 </div>
 
+                <hr class="my-4">
+
+                <!-- Инструменты -->
+                <div class="mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="bi bi-tools me-2"></i>{{phrase('tools')}}
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <p class="text-muted mb-2">{{phrase('recalculate_post_counts_help')}}</p>
+                            <button type="button" class="btn btn-warning" id="recalculatePostCountsBtn">
+                                <i class="bi bi-arrow-repeat me-1"></i>{{phrase('recalculate_post_counts')}}
+                            </button>
+                            <div id="recalculateResult" class="mt-2"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card-footer text-end">
                     <a href="/admin/sphere/forum" class="btn btn-secondary me-2">
                         <i class="bi bi-arrow-left me-1"></i>{{phrase('back')}}
@@ -350,6 +368,37 @@
                 },
                 error: function(xhr, status, error) {
                     show_message('error', '{{phrase("error_saving_settings")}}');
+                }
+            });
+        });
+
+        $('#recalculatePostCountsBtn').on('click', function() {
+            const btn = $(this);
+            const resultDiv = $('#recalculateResult');
+            
+            btn.prop('disabled', true);
+            btn.html('<span class="spinner-border spinner-border-sm me-1"></span>{{phrase("recalculating")}}');
+            resultDiv.html('').removeClass('text-danger text-success');
+            
+            $.ajax({
+                url: '/admin/sphere/forum/recalculate-post-counts',
+                type: 'POST',
+                success: function(response) {
+                    if (response.ok) {
+                        resultDiv.html('<i class="bi bi-check-circle me-1"></i>' + response.message)
+                            .addClass('text-success');
+                    } else {
+                        resultDiv.html('<i class="bi bi-exclamation-circle me-1"></i>' + response.message)
+                            .addClass('text-danger');
+                    }
+                },
+                error: function() {
+                    resultDiv.html('<i class="bi bi-exclamation-circle me-1"></i>{{phrase("error_recalculating")}}')
+                        .addClass('text-danger');
+                },
+                complete: function() {
+                    btn.prop('disabled', false);
+                    btn.html('<i class="bi bi-arrow-repeat me-1"></i>{{phrase("recalculate_post_counts")}}');
                 }
             });
         });

@@ -441,5 +441,11 @@ return [
     'back' => 'Voltar',
     'display_settings' => 'Configurações de exibição',
     'user_blocks' => 'Bloqueios de usuários',
-
+    
+    // Ferramentas
+    'tools' => 'Ferramentas',
+    'recalculate_post_counts' => 'Recalcular contagem de mensagens',
+    'recalculate_post_counts_help' => 'Recalcula o número de mensagens aprovadas para todos os usuários do fórum.',
+    'recalculating' => 'Recalculando...',
+    'error_recalculating' => 'Erro ao recalcular mensagens',
 ];

@@ -468,4 +468,11 @@ return [
     'content_rejected' => 'Контент отклонён и удалён',
     'content_rejected_and_banned' => 'Контент удалён, пользователь забанен',
     'spam_default_reason' => 'Спам',
+    
+    // Инструменты
+    'tools' => 'Инструменты',
+    'recalculate_post_counts' => 'Пересчитать количество сообщений',
+    'recalculate_post_counts_help' => 'Пересчитывает количество одобренных сообщений для всех пользователей форума.',
+    'recalculating' => 'Пересчёт...',
+    'error_recalculating' => 'Ошибка при пересчёте сообщений',
 ];

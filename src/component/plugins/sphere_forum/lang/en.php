@@ -468,4 +468,11 @@ return [
     'content_rejected' => 'Content rejected and deleted',
     'content_rejected_and_banned' => 'Content deleted, user banned',
     'spam_default_reason' => 'Spam',
+    
+    // Tools
+    'tools' => 'Tools',
+    'recalculate_post_counts' => 'Recalculate post counts',
+    'recalculate_post_counts_help' => 'Recalculates the number of approved posts for all forum users.',
+    'recalculating' => 'Recalculating...',
+    'error_recalculating' => 'Error recalculating post counts',
 ];

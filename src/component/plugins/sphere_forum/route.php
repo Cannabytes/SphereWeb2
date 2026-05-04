@@ -285,6 +285,15 @@ $routes = [
 
     [
         "method" => "POST",
+        "pattern" => "/admin/sphere/forum/recalculate-post-counts",
+        "file" => "sphere_forum.php",
+        "call" => function () {
+            (new sphere_forum\sphere_forum())->recalculatePostCounts();
+        }
+    ],
+
+    [
+        "method" => "POST",
         "pattern" => "/forum/thread/toggle-pin",
         "file" => "forum.php",
         "call" => function () {

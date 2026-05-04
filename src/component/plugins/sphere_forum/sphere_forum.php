@@ -5,6 +5,7 @@ namespace Ofey\Logan22\component\plugins\sphere_forum;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\plugin\plugin;
+use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 use ReflectionClass;
 
@@ -177,6 +178,35 @@ class sphere_forum
             // Настройки модерации первого сообщения (антиспам)
             'enable_first_post_moderation' => false,
         ];
+    }
+
+    /**
+     * Пересчитывает количество сообщений для всех пользователей на форуме
+     */
+    public function recalculatePostCounts(): void
+    {
+        validation::user_protection("admin");
+
+        try {
+            $users = sql::getRows(
+                "SELECT user_id, COUNT(*) as cnt FROM forum_posts WHERE is_approved = 1 GROUP BY user_id"
+            );
+
+            $updated = 0;
+            foreach ($users as $row) {
+                $userId = (int)$row['user_id'];
+                $count = (int)$row['cnt'];
+                $userObj = user::getUserId($userId);
+                if ($userObj) {
+                    $userObj->addVar('forum_post_count', (string)$count);
+                    $updated++;
+                }
+            }
+
+            \Ofey\Logan22\component\alert\board::success("Пересчитано сообщений у {$updated} пользователей");
+        } catch (\Exception $e) {
+            \Ofey\Logan22\component\alert\board::error("Ошибка: " . $e->getMessage());
+        }
     }
 
 }
