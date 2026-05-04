@@ -15,6 +15,7 @@ class forum_post
     private string $content;
     private string $createdAt;
     private string $updatedAt;
+    private bool $isApproved = true;
 
     private string $thread_title = '';
     private ?int $replyToId = null;
@@ -31,6 +32,7 @@ class forum_post
         $this->content = $message['content'];
         $this->createdAt = $message['created_at'];
         $this->updatedAt = $message['updated_at'];
+        $this->isApproved = isset($message['is_approved']) ? (bool)$message['is_approved'] : true;
         $this->thread_title = $message['thread_title'] ?? '';
         $this->replyToId = $message['reply_to_id'] ?? null;
 
@@ -98,6 +100,11 @@ class forum_post
     public function getUpdatedAt(): string
     {
         return $this->updatedAt;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->isApproved;
     }
 
     public function getThreadId(): int

@@ -446,6 +446,25 @@
 
                                 <div class="post mb-3" >{{post.getContent()|raw}}</div>
 
+                                {% if not post.isApproved() %}
+                                <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-clock-history"></i> {{phrase('pending_moderation')}}
+                                    </span>
+                                    {% if getUser().isAdmin() %}
+                                    <button type="button" class="btn btn-sm btn-success btn-approve-post" data-post-id="{{ post.getId() }}">
+                                        <i class="bi bi-check-lg"></i> {{phrase('approve')}}
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-reject-post" data-post-id="{{ post.getId() }}">
+                                        <i class="bi bi-x-lg"></i> {{phrase('reject')}}
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger btn-reject-ban-post" data-post-id="{{ post.getId() }}">
+                                        <i class="bi bi-ban"></i> {{phrase('reject_and_ban')}}
+                                    </button>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+
                                 {% if arePollsEnabled() and thread.getPoll() and post.getId() == firstPostId %}
                                 <div class="card border ">
                                     <div class="card-header">
@@ -1148,6 +1167,63 @@
 <script src="{{template_plugin}}/tpl/js/forum-posts.js?v=0.0.0.5"></script>
 <script src="{{template_plugin}}/tpl/js/forum-moderation.js?v=0.0.0.5"></script>
 <script src="{{template_plugin}}/tpl/js/forum-main.js?v=0.0.0.5"></script>
+
+<script>
+    $(document).ready(function() {
+        function postAction(postId, action, btn, successMsg) {
+            const urls = {
+                approve: '/forum/pending-moderation/approve',
+                reject: '/forum/pending-moderation/reject',
+                'reject-ban': '/forum/pending-moderation/reject-ban'
+            };
+            const data = { type: 'post', content_id: postId };
+            if (action === 'reject-ban') {
+                data.reason = '{{phrase("spam_default_reason")}}';
+                if (!confirm('{{phrase("confirm_reject")}}')) return;
+            } else if (action === 'reject') {
+                if (!confirm('{{phrase("confirm_reject")}}')) return;
+            }
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+            $.ajax({
+                url: urls[action],
+                type: 'POST',
+                data: data,
+                success: function(response) {
+                    // responseAnalysis handles notice display + reload via ResponseNotice()
+                    if (typeof responseAnalysis === 'function') {
+                        responseAnalysis(response);
+                    }
+                    if (action === 'reject-ban') {
+                        // Server deletes ALL user content, always reload
+                        setTimeout(function() { window.location.reload(true); }, 600);
+                    } else {
+                        btn.closest('.d-flex').fadeOut(300, function() { $(this).remove(); });
+                    }
+                },
+                error: function(xhr) {
+                    btn.prop('disabled', false);
+                    const icons = { approve: '<i class="bi bi-check-lg"></i>', reject: '<i class="bi bi-x-lg"></i>', 'reject-ban': '<i class="bi bi-ban"></i>' };
+                    const labels = { approve: '{{phrase("approve")}}', reject: '{{phrase("reject")}}', 'reject-ban': '{{phrase("reject_and_ban")}}' };
+                    btn.html(icons[action] + ' ' + labels[action]);
+                    const msg = xhr.responseJSON?.message || '{{phrase("error_occurred")}}';
+                    if (typeof noticeError === 'function') {
+                        noticeError(msg);
+                    }
+                }
+            });
+        }
+
+        $('.btn-approve-post').on('click', function() {
+            postAction($(this).data('post-id'), 'approve', $(this), '{{phrase("content_approved")}}');
+        });
+        $('.btn-reject-post').on('click', function() {
+            postAction($(this).data('post-id'), 'reject', $(this), '{{phrase("content_rejected")}}');
+        });
+        $('.btn-reject-ban-post').on('click', function() {
+            postAction($(this).data('post-id'), 'reject-ban', $(this), '{{phrase("content_rejected_and_banned")}}');
+        });
+    });
+</script>
 
 <script>
     // Инициализация тултипов Bootstrap для элементов с data-bs-toggle="tooltip"

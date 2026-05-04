@@ -108,6 +108,7 @@ class forum
             'allow_guest_view' => true,
             'require_approval_new_topics' => false,
             'require_approval_new_posts' => false,
+            'enable_first_post_moderation' => false,
         ];
     }
 
@@ -170,6 +171,7 @@ class forum
             'allow_guest_view' => true,
             'require_approval_new_topics' => false,
             'require_approval_new_posts' => false,
+            'enable_first_post_moderation' => false,
         ];
     }
 
@@ -178,6 +180,22 @@ class forum
      */
     public function show(): void
     {
+        // Для админа — считаем ожидающие модерации элементы
+        $pendingCount = 0;
+        if (user::self()->isAdmin()) {
+            try {
+                $pendingCount += (int)sql::getValue(
+                    "SELECT COUNT(*) FROM forum_threads WHERE is_approved = 0"
+                );
+                $pendingCount += (int)sql::getValue(
+                    "SELECT COUNT(*) FROM forum_posts WHERE is_approved = 0"
+                );
+            } catch (\Exception $e) {
+
+                // Таблицы могут ещё не существовать
+            }
+        }
+        tpl::addVar('pendingModerationCount', $pendingCount);
         tpl::displayPlugin("sphere_forum/tpl/main.html");
     }
 
@@ -265,9 +283,14 @@ class forum
 
     private function getThreadsByCategory(int $categoryId): array
     {
+        $approveFilter = '';
+        if ($this->isFirstPostModerationEnabled() && !user::self()->isAdmin() && !ForumModerator::isUserModerator(user::self()->getId(), $categoryId)) {
+            $approveFilter = " AND is_approved = 1";
+        }
+
         $threads = sql::getRows(
             "SELECT * FROM `forum_threads` 
-        WHERE `category_id` = ? 
+        WHERE `category_id` = ? {$approveFilter}
         ORDER BY `is_pinned` DESC, `updated_at` DESC",
             [$categoryId]
         );
@@ -341,7 +364,9 @@ class forum
             $categoryParents = $this->getCategoryParents($thread->getCategoryId());
 
             // Сначала проверяем статус модерации
-            if ($category->isModerated() && !$thread->isApproved()) {
+            if ((!$thread->isApproved()) && (
+                $category->isModerated() || $this->isFirstPostModerationEnabled()
+            )) {
                 // Тема на модерации может быть доступна только:
                 // 1. Администраторам
                 // 2. Модераторам этой категории
@@ -463,11 +488,21 @@ class forum
     {
         $offset = ($page - 1) * $this->getPostsPerPage();
 
+        // Если включена модерация первого сообщения:
+        // - админ видит все посты
+        // - автор видит свои посты (включая неодобренные)
+        // - остальные видят только одобренные
+        $approveFilter = '';
+        if ($this->isFirstPostModerationEnabled() && !user::self()->isAdmin()) {
+            $userId = (int)user::self()->getId();
+            $approveFilter = " AND (p.is_approved = 1 OR p.user_id = {$userId})";
+        }
+
         // Получаем посты с учетом пагинации
         $posts = sql::getRows(
-            "SELECT * FROM `forum_posts` 
-        WHERE `thread_id` = ? 
-        ORDER BY `id` ASC 
+            "SELECT * FROM `forum_posts` p
+        WHERE p.`thread_id` = ? {$approveFilter}
+        ORDER BY p.`id` ASC
         LIMIT ? OFFSET ?",
             [$threadId, $this->getPostsPerPage(), $offset]
         );
@@ -484,12 +519,354 @@ class forum
 
     private function getTotalPages(int $threadId): int
     {
+        $approveFilter = '';
+        if ($this->isFirstPostModerationEnabled() && !user::self()->isAdmin()) {
+            $approveFilter = " AND is_approved = 1";
+        }
         $totalPosts = sql::getValue(
-            "SELECT COUNT(*) FROM `forum_posts` WHERE `thread_id` = ?",
+            "SELECT COUNT(*) FROM `forum_posts` WHERE `thread_id` = ? {$approveFilter}",
             [$threadId]
         );
 
         return ceil($totalPosts / $this->getPostsPerPage());
+    }
+
+    /**
+     * Проверяет, не забанен ли пользователь на форуме.
+     * Администраторы пропускаются без проверки.
+     *
+     * @param string $actionDescription Описание действия для сообщения об ошибке (напр. "писать сообщения", "ставить лайки")
+     * @throws Exception Если пользователь забанен
+     */
+    private function checkUserNotBanned(string $actionDescription): void
+    {
+        if (!user::self()->isAdmin()) {
+            $ban = ForumBan::isUserBanned(user::self()->getId());
+            if ($ban) {
+                $banMessage = "Вам запрещено {$actionDescription}";
+                if ($ban['banned_until']) {
+                    $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
+                } else {
+                    $banMessage .= " (перманентный бан)";
+                }
+                if ($ban['reason']) {
+                    $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
+                }
+                throw new Exception($banMessage);
+            }
+        }
+    }
+
+    /**
+     * Проверяет, включена ли модерация первого сообщения
+     */
+    private function isFirstPostModerationEnabled(): bool
+    {
+        $settings = $this->getForumSettings();
+        return $settings['enable_first_post_moderation'] ?? false;
+    }
+
+    /**
+     * Создаёт таблицы для модерации первого сообщения, если их нет
+     */
+    private function ensureFirstPostTables(): void
+    {
+        try {
+            $exists = sql::getRow("SHOW TABLES LIKE 'forum_trusted_users'");
+            if (!$exists) {
+                sql::run("
+                    CREATE TABLE IF NOT EXISTS `forum_trusted_users` (
+                      `user_id` int(11) NOT NULL PRIMARY KEY,
+                      `approved_by` int(11) NOT NULL,
+                      `approved_at` datetime NOT NULL DEFAULT current_timestamp()
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+                ");
+            }
+
+            // Добавляем колонку is_approved в forum_posts если её нет
+            $colExists = sql::getRow("SHOW COLUMNS FROM `forum_posts` LIKE 'is_approved'");
+            if (!$colExists) {
+                sql::run("ALTER TABLE `forum_posts` 
+                    ADD COLUMN `is_approved` tinyint(1) NOT NULL DEFAULT 1 AFTER `content`,
+                    ADD COLUMN `approved_by` int(11) DEFAULT NULL AFTER `is_approved`,
+                    ADD COLUMN `approved_at` datetime DEFAULT NULL AFTER `approved_by`");
+            }
+        } catch (\Exception $e) {
+            // Игнорируем ошибки — таблицы могли уже существовать
+        }
+    }
+
+    /**
+     * Проверяет, является ли пользователь "доверенным" (уже есть одобренный контент)
+     */
+    private function isUserTrusted(int $userId): bool
+    {
+        if (!user::getUserId($userId)->isAuth()) {
+            return false;
+        }
+        // Администраторы всегда доверенные
+        if (user::getUserId($userId)->isAdmin()) {
+            return true;
+        }
+        try {
+            $trusted = sql::getRow(
+                "SELECT user_id FROM forum_trusted_users WHERE user_id = ? LIMIT 1",
+                [$userId]
+            );
+            return (bool)$trusted;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Помечает пользователя как доверенного после одобрения первого контента
+     */
+    private function markUserAsTrusted(int $userId, int $approvedBy): void
+    {
+        $this->ensureFirstPostTables();
+        sql::run(
+            "INSERT IGNORE INTO forum_trusted_users (user_id, approved_by, approved_at) VALUES (?, ?, NOW())",
+            [$userId, $approvedBy]
+        );
+    }
+
+    /**
+     * Отображает страницу очереди на модерацию первого сообщения
+     */
+    public function pendingModeration(): void
+    {
+        if (!user::self()->isAdmin()) {
+            redirect::location("/forum");
+            return;
+        }
+
+        $this->ensureFirstPostTables();
+
+        // Получаем темы, ожидающие модерации (первый пост пользователя)
+        $pendingThreads = sql::getRows("
+            SELECT t.*, u.name as author_name, c.name as category_name
+            FROM forum_threads t
+            LEFT JOIN users u ON t.user_id = u.id
+            LEFT JOIN forum_categories c ON t.category_id = c.id
+            WHERE t.is_approved = 0
+            ORDER BY t.created_at DESC
+        ");
+
+        // Получаем посты, ожидающие модерации
+        $pendingPosts = sql::getRows("
+            SELECT p.*, u.name as author_name, t.title as thread_title, t.id as thread_id
+            FROM forum_posts p
+            LEFT JOIN users u ON p.user_id = u.id
+            LEFT JOIN forum_threads t ON p.thread_id = t.id
+            WHERE p.is_approved = 0
+            ORDER BY p.created_at DESC
+        ");
+
+        tpl::addVar([
+            'pendingThreads' => $pendingThreads,
+            'pendingPosts' => $pendingPosts,
+        ]);
+
+        tpl::displayPlugin("sphere_forum/tpl/pending_moderation.html");
+    }
+
+    /**
+     * Одобряет контент (тему или пост) и помечает пользователя как доверенного
+     */
+    public function approvePendingContent(): void
+    {
+        try {
+            if (!user::self()->isAdmin()) {
+                throw new Exception("Недостаточно прав");
+            }
+
+            $type = $_POST['type'] ?? ''; // 'thread' или 'post'
+            $contentId = (int)($_POST['content_id'] ?? 0);
+
+            if (!$contentId || !in_array($type, ['thread', 'post'])) {
+                throw new Exception("Неверные параметры");
+            }
+
+            $adminId = user::self()->getId();
+
+            sql::beginTransaction();
+            try {
+                if ($type === 'thread') {
+                    $thread = sql::getRow("SELECT user_id FROM forum_threads WHERE id = ?", [$contentId]);
+                    if (!$thread) throw new Exception("Тема не найдена");
+
+                    sql::run(
+                        "UPDATE forum_threads SET is_approved = 1, approved_by = ?, approved_at = NOW() WHERE id = ?",
+                        [$adminId, $contentId]
+                    );
+                    // Также одобряем первый пост темы
+                    sql::run(
+                        "UPDATE forum_posts SET is_approved = 1, approved_by = ?, approved_at = NOW() 
+                         WHERE thread_id = ? ORDER BY id ASC LIMIT 1",
+                        [$adminId, $contentId]
+                    );
+                    // Обновляем счётчики категории
+                    $threadInfo = sql::getRow("SELECT category_id FROM forum_threads WHERE id = ?", [$contentId]);
+                    if ($threadInfo) {
+                        $this->incrementCategoryCounters((int)$threadInfo['category_id']);
+                    }
+                    $this->markUserAsTrusted((int)$thread['user_id'], $adminId);
+                } else {
+                    $post = sql::getRow("SELECT user_id, thread_id FROM forum_posts WHERE id = ?", [$contentId]);
+                    if (!$post) throw new Exception("Пост не найден");
+
+                    sql::run(
+                        "UPDATE forum_posts SET is_approved = 1, approved_by = ?, approved_at = NOW() WHERE id = ?",
+                        [$adminId, $contentId]
+                    );
+                    $this->markUserAsTrusted((int)$post['user_id'], $adminId);
+                }
+
+                sql::commit();
+                board::success("Контент одобрен, пользователь теперь может писать без модерации");
+
+            } catch (Exception $e) {
+                sql::rollback();
+                throw $e;
+            }
+
+        } catch (Exception $e) {
+            board::error($e->getMessage());
+        }
+    }
+
+    /**
+     * Отклоняет контент (удаляет его)
+     */
+    public function rejectPendingContent(): void
+    {
+        try {
+            if (!user::self()->isAdmin()) {
+                throw new Exception("Недостаточно прав");
+            }
+
+            $type = $_POST['type'] ?? '';
+            $contentId = (int)($_POST['content_id'] ?? 0);
+
+            if (!$contentId || !in_array($type, ['thread', 'post'])) {
+                throw new Exception("Неверные параметры");
+            }
+
+            sql::beginTransaction();
+            try {
+                if ($type === 'thread') {
+                    $thread = $this->getThreadById($contentId);
+                    if ($thread) {
+                        $this->deleteThreadAndRelated($thread);
+                    }
+                } else {
+                    $post = sql::getRow("SELECT id, thread_id FROM forum_posts WHERE id = ?", [$contentId]);
+                    if ($post) {
+                        sql::run("DELETE FROM forum_post_likes WHERE post_id = ?", [$contentId]);
+                        sql::run("DELETE FROM forum_posts WHERE id = ?", [$contentId]);
+                    }
+                }
+
+                sql::commit();
+                board::success("Контент отклонён и удалён");
+
+            } catch (Exception $e) {
+                sql::rollback();
+                throw $e;
+            }
+
+        } catch (Exception $e) {
+            board::error($e->getMessage());
+        }
+    }
+
+    /**
+     * Отклоняет контент и банит пользователя
+     */
+    public function rejectAndBanPendingContent(): void
+    {
+        try {
+            if (!user::self()->isAdmin()) {
+                throw new Exception("Недостаточно прав");
+            }
+
+            $type = $_POST['type'] ?? '';
+            $contentId = (int)($_POST['content_id'] ?? 0);
+            $reason = XssSecurity::clean($_POST['reason'] ?? 'Спам');
+
+            if (!$contentId || !in_array($type, ['thread', 'post'])) {
+                throw new Exception("Неверные параметры");
+            }
+
+            // Получаем ID пользователя до удаления контента
+            $userId = null;
+            if ($type === 'thread') {
+                $thread = sql::getRow("SELECT user_id FROM forum_threads WHERE id = ?", [$contentId]);
+                if ($thread) $userId = (int)$thread['user_id'];
+            } else {
+                $post = sql::getRow("SELECT user_id FROM forum_posts WHERE id = ?", [$contentId]);
+                if ($post) $userId = (int)$post['user_id'];
+            }
+
+            if (!$userId) {
+                throw new Exception("Пользователь не найден");
+            }
+
+            // Нельзя забанить админа
+            $targetUser = user::getUserId($userId);
+            if ($targetUser->isAdmin()) {
+                throw new Exception("Нельзя забанить администратора");
+            }
+
+            sql::beginTransaction();
+            try {
+                // Удаляем ВСЕ ожидающие модерации сообщения пользователя
+                $pendingPosts = sql::getRows(
+                    "SELECT id, thread_id FROM forum_posts WHERE user_id = ? AND is_approved = 0",
+                    [$userId]
+                );
+                foreach ($pendingPosts as $pp) {
+                    sql::run("DELETE FROM forum_post_likes WHERE post_id = ?", [(int)$pp['id']]);
+                    sql::run("DELETE FROM forum_posts WHERE id = ?", [(int)$pp['id']]);
+                }
+
+                // Удаляем ВСЕ ожидающие модерации темы пользователя
+                $pendingThreads = sql::getRows(
+                    "SELECT id FROM forum_threads WHERE user_id = ? AND is_approved = 0",
+                    [$userId]
+                );
+                foreach ($pendingThreads as $pt) {
+                    $thread = $this->getThreadById((int)$pt['id']);
+                    if ($thread) {
+                        $this->deleteThreadAndRelated($thread);
+                    }
+                }
+
+                // Баним пользователя
+                ForumBan::createBan($userId, user::self()->getId(), $reason, null);
+
+                // Логируем
+                ForumModerator::logAction(
+                    user::self()->getId(),
+                    'ban_user',
+                    'user',
+                    $userId,
+                    'Спам: ' . $reason
+                );
+
+                sql::commit();
+                board::reload();
+                board::success("Все сообщения пользователя удалены, пользователь забанен");
+
+            } catch (Exception $e) {
+                sql::rollback();
+                throw $e;
+            }
+
+        } catch (Exception $e) {
+            board::error($e->getMessage());
+        }
     }
 
     /**
@@ -505,19 +882,26 @@ class forum
             $this->validateMessageInput();
 
             // Проверяем, не забанен ли пользователь (администраторы не блокируются)
-            if (!user::self()->isAdmin()) {
-                $ban = ForumBan::isUserBanned(user::self()->getId());
-                if ($ban) {
-                    $banMessage = "Вам запрещено писать сообщения";
-                    if ($ban['banned_until']) {
-                        $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
-                    } else {
-                        $banMessage .= " (перманентный бан)";
+            $this->checkUserNotBanned("писать сообщения");
+
+            // Проверка модерации первого сообщения
+            $needsModeration = false;
+            if ($this->isFirstPostModerationEnabled() && !user::self()->isAdmin()) {
+                $this->ensureFirstPostTables();
+                if (!$this->isUserTrusted(user::self()->getId())) {
+                    // Если у пользователя уже есть ожидающие модерации сообщения — запрещаем новые
+                    $pendingCount = (int)sql::getValue(
+                        "SELECT COUNT(*) FROM forum_posts WHERE user_id = ? AND is_approved = 0",
+                        [user::self()->getId()]
+                    );
+                    $pendingCount += (int)sql::getValue(
+                        "SELECT COUNT(*) FROM forum_threads WHERE user_id = ? AND is_approved = 0",
+                        [user::self()->getId()]
+                    );
+                    if ($pendingCount > 0) {
+                        throw new Exception("Вы не можете написать новое сообщение, пока ваше предыдущее не будет проверено модератором.");
                     }
-                    if ($ban['reason']) {
-                        $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
-                    }
-                    throw new Exception($banMessage);
+                    $needsModeration = true;
                 }
             }
 
@@ -562,13 +946,21 @@ class forum
                 throw new Exception($response['message']);
             }
             try {
-                $lastPostId = $this->createPost($topicId, $message, $replyToId);
+                $lastPostId = $this->createPost($topicId, $message, $replyToId, !$needsModeration);
                 $this->updateThreadAfterPost($topicId, $lastPostId);
                 $this->updateCategoriesAfterPost($thread->getCategoryId(), $lastPostId, $topicId);
                 $antiFlood->updateActivity();
                 $this->incrementThreadReplies($topicId);
                 $this->incrementCategoryPostCount($thread->getCategoryId());
                 ForumTracker::notifyAboutNewPost($topicId, $lastPostId, $replyToId);
+
+                if ($needsModeration) {
+                    sql::commit();
+                    board::redirect("/forum/topic/{$translit}.{$topicId}");
+                    board::success("Ваше сообщение отправлено на проверку модератору и будет опубликовано после одобрения");
+                    return;
+                }
+
                 $totalPosts = sql::getValue(
                     "SELECT COUNT(*) FROM forum_posts WHERE thread_id = ?",
                     [$topicId]
@@ -640,11 +1032,11 @@ class forum
         }
     }
 
-    private function createPost(int $threadId, string $message, ?int $replyToId): int
+    private function createPost(int $threadId, string $message, ?int $replyToId, bool $isApproved = true): int
     {
         sql::run(
-            "INSERT INTO `forum_posts` SET `thread_id` = ?, `user_id` = ?, `content` = ?, `reply_to_id` = ?, `created_at` = ?, `updated_at` = ?",
-            [$threadId, user::self()->getId(), $message, $replyToId, time::mysql(), time::mysql()]
+            "INSERT INTO `forum_posts` SET `thread_id` = ?, `user_id` = ?, `content` = ?, `reply_to_id` = ?, `is_approved` = ?, `created_at` = ?, `updated_at` = ?",
+            [$threadId, user::self()->getId(), $message, $replyToId, (int)$isApproved, time::mysql(), time::mysql()]
         );
         return sql::lastInsertId();
     }
@@ -782,21 +1174,7 @@ class forum
             }
 
             // Проверяем, не забанен ли пользователь (администраторы не блокируются)
-            if (!user::self()->isAdmin()) {
-                $ban = ForumBan::isUserBanned(user::self()->getId());
-                if ($ban) {
-                    $banMessage = "Вам запрещено создавать темы";
-                    if ($ban['banned_until']) {
-                        $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
-                    } else {
-                        $banMessage .= " (перманентный бан)";
-                    }
-                    if ($ban['reason']) {
-                        $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
-                    }
-                    throw new Exception($banMessage);
-                }
-            }
+            $this->checkUserNotBanned("создавать темы");
 
             tpl::addVar([
                 "categoryTitle" => $sectionName,
@@ -817,19 +1195,26 @@ class forum
             $this->validateTopicInput();
 
             // Проверяем, не забанен ли пользователь (администраторы не блокируются)
-            if (!user::self()->isAdmin()) {
-                $ban = ForumBan::isUserBanned(user::self()->getId());
-                if ($ban) {
-                    $banMessage = "Вам запрещено создавать темы";
-                    if ($ban['banned_until']) {
-                        $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
-                    } else {
-                        $banMessage .= " (перманентный бан)";
+            $this->checkUserNotBanned("создавать темы");
+
+            // Проверка модерации первого сообщения
+            $needsFirstPostModeration = false;
+            if ($this->isFirstPostModerationEnabled() && !user::self()->isAdmin()) {
+                $this->ensureFirstPostTables();
+                if (!$this->isUserTrusted(user::self()->getId())) {
+                    // Если у пользователя уже есть ожидающие модерации — запрещаем новые
+                    $pendingCount = (int)sql::getValue(
+                        "SELECT COUNT(*) FROM forum_posts WHERE user_id = ? AND is_approved = 0",
+                        [user::self()->getId()]
+                    );
+                    $pendingCount += (int)sql::getValue(
+                        "SELECT COUNT(*) FROM forum_threads WHERE user_id = ? AND is_approved = 0",
+                        [user::self()->getId()]
+                    );
+                    if ($pendingCount > 0) {
+                        throw new Exception("Вы не можете создать новую тему, пока ваша предыдущая не будет проверена модератором.");
                     }
-                    if ($ban['reason']) {
-                        $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
-                    }
-                    throw new Exception($banMessage);
+                    $needsFirstPostModeration = true;
                 }
             }
 
@@ -855,13 +1240,13 @@ class forum
 
 
             // Проверяем требуется ли модерация
-            $isApproved = !$category->isModerated() || user::self()->isAdmin();
+            $isApproved = (!$category->isModerated() || user::self()->isAdmin()) && !$needsFirstPostModeration;
 
             sql::beginTransaction();
 
             try {
                 $topicId = $this->insertNewThread($categoryId, $title, $isClose, $isApproved);
-                $lastPostId = $this->createInitialPost($topicId, $message);
+                $lastPostId = $this->createInitialPost($topicId, $message, $isApproved);
 
                 if (!empty($attachments)) {
                     $this->linkAttachmentsToPost($lastPostId, $attachments);
@@ -983,9 +1368,9 @@ class forum
         return sql::lastInsertId();
     }
 
-    private function createInitialPost(int $topicId, string $message): int
+    private function createInitialPost(int $topicId, string $message, bool $isApproved = true): int
     {
-        return $this->createPost($topicId, $message, null);
+        return $this->createPost($topicId, $message, null, $isApproved);
     }
 
     /**
@@ -1135,7 +1520,12 @@ class forum
 
         // Если требуется модерация и это не админ
         if (!$isApproved) {
-            board::success("Тема создана и будет опубликована после проверки модератором");
+            $settings = $this->getForumSettings();
+            if ($settings['enable_first_post_moderation'] ?? false) {
+                board::success("Тема создана. Ваше первое сообщение будет опубликовано после проверки модератором");
+            } else {
+                board::success("Тема создана и будет опубликована после проверки модератором");
+            }
             redirect::location("/forum");
             return;
         }
@@ -1468,7 +1858,10 @@ class forum
             
             // XSS защита: очищаем сообщение от потенциально опасного содержимого
             $message = XssSecurity::clean($message);
-            
+
+            // Проверяем, не забанен ли пользователь (администраторы не блокируются)
+            $this->checkUserNotBanned("редактировать сообщения");
+
             $returnPage = (int)($_POST['returnPage'] ?? 1);
 
             $post = $this->getPostById($postId);
@@ -2651,21 +3044,7 @@ class forum
             }
 
             // Проверяем, не забанен ли пользователь (администраторы не блокируются)
-            if (!user::self()->isAdmin()) {
-                $ban = ForumBan::isUserBanned(user::self()->getId());
-                if ($ban) {
-                    $banMessage = "Вам запрещено ставить лайки";
-                    if ($ban['banned_until']) {
-                        $banMessage .= " до " . date('d.m.Y H:i', strtotime($ban['banned_until']));
-                    } else {
-                        $banMessage .= " (перманентный бан)";
-                    }
-                    if ($ban['reason']) {
-                        $banMessage .= ". Причина: " . htmlspecialchars($ban['reason']);
-                    }
-                    throw new Exception($banMessage);
-                }
-            }
+            $this->checkUserNotBanned("ставить лайки");
 
             $postId = $_POST['postId'] ?? board::error("Не указан пост");
             $likeImage = $_POST['likeImage'] ?? board::error("Не указано изображение лайка");
@@ -2761,6 +3140,9 @@ class forum
             if (!user::self()->isAuth()) {
                 throw new Exception("Необходимо авторизоваться");
             }
+
+            // Проверяем, не забанен ли пользователь
+            $this->checkUserNotBanned("загружать изображения");
 
             // Поддержим несколько возможных ключей (filepond, image) или первый файл в $_FILES
             if (isset($_FILES['filepond'])) {
@@ -3691,6 +4073,9 @@ class forum
             if (!user::self()->isAuth()) {
                 throw new Exception("Необходимо авторизоваться");
             }
+
+            // Проверяем, не забанен ли пользователь
+            $this->checkUserNotBanned("голосовать в опросах");
 
             $threadId = $_POST['threadId'] ?? throw new Exception("Не указан ID темы");
             $optionIds = $_POST['options'] ?? throw new Exception("Не выбраны варианты");

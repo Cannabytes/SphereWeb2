@@ -801,4 +801,38 @@ $routes = [
         },
     ],
 
+    // Маршруты модерации первого сообщения (антиспам)
+    [
+        "method" => "GET",
+        "pattern" => "/forum/pending-moderation",
+        "file" => "forum.php",
+        "call" => function () {
+            (new sphere_forum\forum())->pendingModeration();
+        },
+    ],
+    [
+        "method" => "POST",
+        "pattern" => "/forum/pending-moderation/approve",
+        "file" => "forum.php",
+        "call" => function () {
+            (new sphere_forum\forum())->approvePendingContent();
+        },
+    ],
+    [
+        "method" => "POST",
+        "pattern" => "/forum/pending-moderation/reject",
+        "file" => "forum.php",
+        "call" => function () {
+            (new sphere_forum\forum())->rejectPendingContent();
+        },
+    ],
+    [
+        "method" => "POST",
+        "pattern" => "/forum/pending-moderation/reject-ban",
+        "file" => "forum.php",
+        "call" => function () {
+            (new sphere_forum\forum())->rejectAndBanPendingContent();
+        },
+    ],
+
 ];

@@ -4,6 +4,19 @@
 
 {% block content %}
 <div class="container-fluid">
+
+ {% if getUser().isAdmin() and pendingModerationCount > 0 %}
+ <div class="row mb-3">
+     <div class="col-12">
+         <a href="/forum/pending-moderation" class="btn btn-warning d-flex align-items-center gap-2" style="width: fit-content;">
+             <i class="bi bi-shield-plus"></i>
+             <span>{{phrase('pending_moderation_queue')}}</span>
+             <span class="badge bg-danger rounded-pill ms-1">{{ pendingModerationCount }}</span>
+         </a>
+     </div>
+ </div>
+ {% endif %}
+
  {% include "/sphere_forum/tpl/categories.html" %}
 </div>
 

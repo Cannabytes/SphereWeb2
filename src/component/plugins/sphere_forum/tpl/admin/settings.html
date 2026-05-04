@@ -287,6 +287,38 @@
                     </div>
                 </div>
 
+                <hr class="my-4">
+
+                <!-- Настройки антиспам модерации первого сообщения -->
+                <div class="mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="bi bi-shield-plus me-2"></i>{{phrase('first_post_moderation')}}
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enable_first_post_moderation" name="enable_first_post_moderation" 
+                                       {% if forumSettings.enable_first_post_moderation %}checked{% endif %}>
+                                <label class="form-check-label" for="enable_first_post_moderation">
+                                    {{phrase('enable_first_post_moderation')}}
+                                </label>
+                            </div>
+                            <div class="form-text">{{phrase('first_post_moderation_help')}}</div>
+                        </div>
+                    </div>
+
+                    {% if forumSettings.enable_first_post_moderation %}
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <a href="/forum/pending-moderation" class="btn btn-warning">
+                                <i class="bi bi-inbox me-1"></i>{{phrase('pending_moderation_queue')}}
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
                 <div class="card-footer text-end">
                     <a href="/admin/sphere/forum" class="btn btn-secondary me-2">
                         <i class="bi bi-arrow-left me-1"></i>{{phrase('back')}}

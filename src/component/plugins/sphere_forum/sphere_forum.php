@@ -93,6 +93,9 @@ class sphere_forum
             'allow_guest_view' => isset($_POST['allow_guest_view']),
             'require_approval_new_topics' => isset($_POST['require_approval_new_topics']),
             'require_approval_new_posts' => isset($_POST['require_approval_new_posts']),
+            
+            // Настройки модерации первого сообщения (антиспам)
+            'enable_first_post_moderation' => isset($_POST['enable_first_post_moderation']),
         ];
         
         $this->saveForumSettings($settings);
@@ -170,6 +173,9 @@ class sphere_forum
             'allow_guest_view' => true,
             'require_approval_new_topics' => false,
             'require_approval_new_posts' => false,
+            
+            // Настройки модерации первого сообщения (антиспам)
+            'enable_first_post_moderation' => false,
         ];
     }
 
