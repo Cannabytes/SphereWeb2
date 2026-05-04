@@ -317,6 +317,17 @@
                                 <div class=" mt-1">
                                     <div class="d-flex flex-column align-items-center">
                                         {% set displayUser = user %}
+
+                                        {# Отображение ранга пользователя #}
+                                        {% set rankData = getForumUserRank(user.getId()) %}
+                                        {% if rankData %}
+                                        <div class="mb-2">
+                                            <span class="badge fw-bold px-3 py-1 {{ rankData.bg_class }} {{ rankData.text_class }}" style="font-size: 0.75rem;">
+                                                <i class="bi {{ rankData.icon }} me-1"></i>{{ rankData.name }}
+                                            </span>
+                                        </div>
+                                        {% endif %}
+
                                         <span class="{% if displayUser.isOnline() %}online{%else%}offline{% endif %} mb-1">
                                             {% if displayUser.isAvatarVideo() %}
                                                 <video src="{{ displayUser.getAvatar() }}" class="img-fluid rounded" style="max-width: 200px;" autoplay loop muted playsinline></video>

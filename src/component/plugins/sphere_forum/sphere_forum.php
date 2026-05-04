@@ -209,4 +209,125 @@ class sphere_forum
         }
     }
 
+    /**
+     * Отображает страницу управления рангами пользователей
+     */
+    public function ranks(): void
+    {
+        validation::user_protection("admin");
+        $ranks = self::getForumRanks();
+        $showAdminRank = self::isShowAdminRank();
+        tpl::addVar([
+            'ranks' => $ranks,
+            'showAdminRank' => $showAdminRank,
+        ]);
+        tpl::displayPlugin("sphere_forum/tpl/admin/ranks.html");
+    }
+
+    /**
+     * Получает все ранги из settings
+     */
+    public static function getForumRanks(): array
+    {
+        $row = sql::getRow(
+            "SELECT setting FROM settings WHERE `key` = '__FORUM_USER_RANKS__' AND serverId = 0 LIMIT 1"
+        );
+        if ($row && !empty($row['setting'])) {
+            $decoded = json_decode($row['setting'], true);
+            return is_array($decoded) ? $decoded : [];
+        }
+        return [];
+    }
+
+    /**
+     * Проверяет, нужно ли показывать ранги администраторам
+     */
+    public static function isShowAdminRank(): bool
+    {
+        $row = sql::getRow(
+            "SELECT setting FROM settings WHERE `key` = '__FORUM_SHOW_ADMIN_RANK__' AND serverId = 0 LIMIT 1"
+        );
+        return $row && $row['setting'] === '1';
+    }
+
+    /**
+     * Сохраняет ранги (JSON в settings)
+     */
+    public function saveRanks(): void
+    {
+        validation::user_protection("admin");
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!$input || !isset($input['ranks']) || !is_array($input['ranks'])) {
+            \Ofey\Logan22\component\alert\board::error("Некорректные данные");
+            return;
+        }
+
+        $languages = ['ru', 'en', 'ua', 'es', 'pt', 'gr'];
+
+        $ranks = [];
+        foreach ($input['ranks'] as $item) {
+            $postCount = (int)($item['post_count'] ?? 0);
+            $names = [];
+
+            foreach ($languages as $lang) {
+                if (isset($item['names'][$lang]) && trim($item['names'][$lang]) !== '') {
+                    $names[$lang] = trim($item['names'][$lang]);
+                }
+            }
+
+            $ranks[] = [
+                'post_count' => $postCount,
+                'names' => $names,
+                'icon' => $item['icon'] ?? 'bi-trophy-fill',
+                'bg_class' => $item['bg_class'] ?? 'bg-warning',
+                'text_class' => $item['text_class'] ?? 'text-dark',
+            ];
+        }
+
+        sql::run("DELETE FROM settings WHERE `key` = '__FORUM_USER_RANKS__' AND serverId = 0");
+        sql::run(
+            "INSERT INTO settings (`key`, setting, serverId, dateUpdate) VALUES (?, ?, 0, NOW())",
+            ['__FORUM_USER_RANKS__', json_encode($ranks, JSON_UNESCAPED_UNICODE)]
+        );
+
+        // Сохраняем настройку показа рангов админам
+        $showAdminRank = !empty($input['show_admin_rank']) ? '1' : '0';
+        sql::run("DELETE FROM settings WHERE `key` = '__FORUM_SHOW_ADMIN_RANK__' AND serverId = 0");
+        sql::run(
+            "INSERT INTO settings (`key`, setting, serverId, dateUpdate) VALUES (?, ?, 0, NOW())",
+            ['__FORUM_SHOW_ADMIN_RANK__', $showAdminRank]
+        );
+
+        \Ofey\Logan22\component\alert\board::success("Ранги успешно сохранены");
+    }
+
+    /**
+     * Удаляет ранг по индексу
+     */
+    public function deleteRank(): void
+    {
+        validation::user_protection("admin");
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $index = (int)($input['index'] ?? -1);
+        if ($index < 0) {
+            \Ofey\Logan22\component\alert\board::error("Не указан индекс ранга");
+            return;
+        }
+
+        $ranks = self::getForumRanks();
+        if (isset($ranks[$index])) {
+            array_splice($ranks, $index, 1);
+
+            sql::run("DELETE FROM settings WHERE `key` = '__FORUM_USER_RANKS__' AND serverId = 0");
+            sql::run(
+                "INSERT INTO settings (`key`, setting, serverId, dateUpdate) VALUES (?, ?, 0, NOW())",
+                ['__FORUM_USER_RANKS__', json_encode($ranks, JSON_UNESCAPED_UNICODE)]
+            );
+        }
+
+        \Ofey\Logan22\component\alert\board::success("Ранг удален");
+    }
+
 }

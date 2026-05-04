@@ -1,0 +1,745 @@
+{% extends 'struct.html' %}
+
+{% block head %}
+<link href="{{template_plugin}}/tpl/admin/ranks.css" rel="stylesheet">
+<link href="{{template_plugin}}/tpl/css/style_clan_name.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card custom-card">
+        <div class="card-header justify-content-between">
+            <div class="card-title d-flex align-items-center">
+                <a href="/admin/sphere/forum" class="border text-muted me-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z"></path>
+                    </svg>
+                </a>
+                <i class="bi bi-trophy me-2"></i> Ранги пользователей
+            </div>
+        </div>
+
+        <div class="card-body">
+            {% if getPluginActive('sphere_forum') == false %}
+            <div class="alert alert-danger" role="alert">
+                {{phrase('plugin_disabled_message')|raw}}
+            </div>
+            {% endif %}
+
+            <div class="alert alert-info d-flex align-items-center gap-2" role="alert">
+                <i class="bi bi-info-circle fs-5"></i>
+                <span>
+                    Перетаскивайте карточки <i class="bi bi-grip-vertical"></i> чтобы менять порядок рангов.
+                    Первый подходящий ранг (сверху вниз) получит пользователь.
+                    Для редактирования нажмите на карточку — откроется модальное окно.
+                </span>
+            </div>
+
+            <!-- Настройка: показывать ранг админам -->
+            <div class="p-3 mb-4 rounded theme-aware-bg">
+                <div class="custom-toggle-switch d-flex align-items-center">
+                    <input id="showAdminRank" name="showAdminRank" type="checkbox" {% if showAdminRank %}checked=""{% endif %}>
+                    <label for="showAdminRank" class="label-success"></label>
+                    <span class="ms-3 fw-semibold">
+                        <i class="bi bi-shield-check me-1"></i>Выводить ранг для администраторов
+                    </span>
+                </div>
+                <div class="text-muted mt-2" style="font-size:0.85rem;padding-left:3.2rem;">
+                    Если включено — администраторы тоже будут видеть свой ранг по количеству сообщений.
+                    Если выключено — ранги отображаются только для обычных пользователей.
+                </div>
+            </div>
+
+            <!-- Ranks Container -->
+            <div id="ranksContainer" class="d-flex flex-column gap-3 mb-4">
+                {% for rank in ranks %}
+                <div class="rank-card card p-3" data-index="{{ loop.index0 }}">
+                    <div class="d-flex align-items-start gap-3">
+                        <!-- Drag Handle -->
+                        <div class="drag-handle mt-1 fs-5">
+                            <i class="bi bi-grip-vertical"></i>
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="flex-shrink-0" style="width: 200px;">
+                            <div class="mb-2">
+                                <strong class="text-muted" style="font-size:0.75rem;">ПРЕДПРОСМОТР</strong>
+                            </div>
+                            <span class="rank-preview-badge preview-el {{ rank.bg_class|default('bg-warning') }} {{ rank.text_class|default('text-dark') }}">
+                                <i class="preview-icon bi {{ rank.icon|default('bi-trophy-fill') }}"></i>
+                                <span class="preview-name">{{ rank.names.ru|default(rank.names.en|default('Ранг')) }}</span>
+                            </span>
+                            <div class="mt-1 text-muted" style="font-size:0.75rem;">
+                                от <strong>{{ rank.post_count }}</strong> сообщений
+                            </div>
+                        </div>
+
+                        <!-- Names -->
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="rank-name-inputs">
+                                {% set langs = {'ru':'RU','en':'EN','ua':'UA','es':'ES','pt':'PT','gr':'GR'} %}
+                                {% for code, label in langs %}
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">{{ label }}</span>
+                                    <input type="text" class="form-control name-{{ code }}"
+                                           value="{{ attribute(rank.names, code)|default('') }}"
+                                           placeholder="{{ {'ru':'Название','en':'Name','ua':'Назва','es':'Nombre','pt':'Nome','gr':'Όνομα'}[code] }}">
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Post Count + Actions -->
+                        <div class="flex-shrink-0 text-end" style="width: 110px;">
+                            <div class="mb-2">
+                                <label class="text-muted" style="font-size:0.75rem;">Сообщений</label>
+                                <input type="number" class="form-control form-control-sm post-count text-center"
+                                       value="{{ rank.post_count }}" min="0" required>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100 edit-rank-btn" title="Настроить оформление">
+                                <i class="bi bi-palette me-1"></i>Оформление
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm w-100 mt-1 delete-rank-btn" title="Удалить ранг">
+                                <i class="bi bi-trash me-1"></i>Удалить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="empty-state text-center text-muted py-5">
+                    <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                    <h5>Ранги ещё не созданы</h5>
+                    <p class="mb-3">Нажмите «Добавить ранг» чтобы начать</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-success" id="addRankBtn">
+                    <i class="bi bi-plus-lg me-1"></i>Добавить ранг
+                </button>
+                <button type="button" class="btn btn-primary px-4" id="saveRanksBtn">
+                    <i class="bi bi-check-lg me-1"></i>Сохранить все ранги
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Modal: Edit Appearance ────────────────────────────── -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-palette me-2"></i>Оформление ранга
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Live Preview -->
+                <div class="text-center mb-4 p-3 bg-light rounded">
+                    <div class="mb-2"><strong>Предпросмотр</strong></div>
+                    <span class="rank-preview-badge" id="modalPreview">
+                        <i class="bi" id="modalPreviewIcon"></i>
+                        <span id="modalPreviewName">Название ранга</span>
+                    </span>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Icon Selection -->
+                    <div class="col-md-5">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-emoji-smile me-1"></i>Иконка
+                        </label>
+                        <div class="icon-picker-grid" id="iconPicker">
+                            {% set icons = [
+                                'bi-trophy-fill','bi-trophy','bi-star-fill','bi-star','bi-award-fill','bi-award',
+                                'bi-gem','bi-diamond-fill','bi-diamond','bi-crown','bi-king','bi-flag-fill',
+                                'bi-shield-fill','bi-shield','bi-fire','bi-lightning-fill','bi-lightning',
+                                'bi-moon-fill','bi-sun-fill','bi-cloud-sun-fill','bi-snow','bi-snow2',
+                                'bi-heart-fill','bi-heart','bi-star-half','bi-bookmark-fill','bi-bookmark',
+                                'bi-bookmark-star','bi-bookmark-check','bi-bookmark-heart',
+                                'bi-arrow-up-circle-fill','bi-arrow-down-circle-fill','bi-arrow-right-circle-fill',
+                                'bi-check-circle-fill','bi-check-lg','bi-check-square','bi-check-all',
+                                'bi-x-circle-fill','bi-x-lg','bi-x-square','bi-dash-circle','bi-plus-circle',
+                                'bi-emoji-dizzy-fill','bi-emoji-sunglasses-fill','bi-emoji-heart-eyes',
+                                'bi-emoji-smile','bi-emoji-frown','bi-emoji-neutral',
+                                'bi-controller','bi-joystick','bi-cpu-fill','bi-cpu','bi-motherboard',
+                                'bi-shield-check','bi-shield-exclamation','bi-crosshair','bi-shield-plus',
+                                'bi-shield-fill-plus','bi-shield-minus','bi-shield-shaded',
+                                'bi-hand-thumbs-up-fill','bi-hand-thumbs-up','bi-hand-thumbs-down',
+                                'bi-eye-fill','bi-eye','bi-eye-slash',
+                                'bi-gear-fill','bi-gear','bi-gear-wide','bi-sliders','bi-toggles',
+                                'bi-graph-up','bi-graph-down','bi-bar-chart-fill','bi-bar-chart',
+                                'bi-pie-chart-fill','bi-pie-chart','bi-activity',
+                                'bi-people-fill','bi-people','bi-person-fill','bi-person','bi-person-badge',
+                                'bi-chat-fill','bi-chat','bi-chat-dots','bi-chat-quote','bi-chat-text',
+                                'bi-envelope-fill','bi-envelope','bi-envelope-open','bi-send-fill','bi-send',
+                                'bi-bell-fill','bi-bell','bi-bell-slash','bi-bell-ring',
+                                'bi-camera-fill','bi-camera','bi-camera-video','bi-images',
+                                'bi-music-note','bi-music-note-beamed','bi-volume-up','bi-volume-down',
+                                'bi-pin-fill','bi-pin','bi-pin-angle','bi-geo-alt-fill','bi-geo-alt',
+                                'bi-map-fill','bi-map','bi-compass-fill','bi-compass',
+                                'bi-clock-fill','bi-clock','bi-clock-history','bi-alarm-fill','bi-alarm',
+                                'bi-calendar-fill','bi-calendar','bi-calendar-event','bi-calendar-check',
+                                'bi-tag-fill','bi-tag','bi-tags-fill','bi-tags',
+                                'bi-link-45deg','bi-link','bi-unlink','bi-folder-fill','bi-folder',
+                                'bi-folder-plus','bi-file-earmark-text','bi-file-earmark-check',
+                                'bi-box-fill','bi-box','bi-box2-fill','bi-box2','bi-cube',
+                                'bi-layers-fill','bi-layers','bi-intersect','bi-collection',
+                                'bi-wallet-fill','bi-wallet','bi-credit-card','bi-credit-card-2-front',
+                                'bi-telephone-fill','bi-telephone','bi-telephone-outbound',
+                                'bi-printer-fill','bi-printer','bi-display','bi-laptop','bi-phone',
+                                'bi-globe','bi-globe-americas','bi-compass','bi-hurricane',
+                                'bi-palette-fill','bi-palette','bi-brush-fill','bi-brush',
+                                'bi-magic','bi-wand','bi-stars','bi-flower1','bi-flower2',
+                                'bi-tree-fill','bi-tree','bi-flower3','bi-gift-fill','bi-gift',
+                                'bi-key-fill','bi-key','bi-lock-fill','bi-lock','bi-unlock-fill','bi-unlock',
+                                'bi-search-heart','bi-search','bi-zoom-in','bi-zoom-out',
+                                'bi-cart-fill','bi-cart','bi-cart-check','bi-cart-plus',
+                                'bi-bag-fill','bi-bag','bi-bag-check','bi-bag-plus',
+                                'bi-inbox-fill','bi-inbox','bi-inboxes-fill','bi-inboxes',
+                                'bi-cone-striped','bi-cone','bi-exclamation-triangle-fill','bi-exclamation-triangle',
+                                'bi-question-circle-fill','bi-question-circle','bi-info-circle-fill','bi-info-circle',
+                                'bi-exclamation-circle-fill','bi-exclamation-circle','bi-bug-fill','bi-bug',
+                                'bi-hdd-fill','bi-hdd','bi-hdd-network','bi-database-fill','bi-database',
+                                'bi-wifi','bi-signal','bi-bluetooth','bi-battery-full','bi-battery-half',
+                                'bi-droplet-fill','bi-droplet','bi-droplet-half','bi-water',
+                                'bi-umbrella-fill','bi-umbrella','bi-cloud-fill','bi-cloud',
+                                'bi-cloud-sun','bi-cloud-moon','bi-cloud-drizzle','bi-cloud-lightning-rain',
+                                'bi-sunrise','bi-sunset','bi-sun','bi-moon','bi-cloud-arrow-up',
+                            ] %}
+                            {% for icon in icons %}
+                            <div class="icon-option" data-icon="{{ icon }}">
+                                <i class="bi {{ icon }}"></i>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Background Color -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-paint-bucket me-1"></i>Фон бейджа
+                        </label>
+                        <div class="accordion custom-accordion mb-2" id="bgAccordion">
+                            <!-- Standard -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed py-1 px-2" type="button" data-bs-toggle="collapse" data-bs-target="#bgStandard">
+                                        <small class="fw-semibold">Standard</small>
+                                    </button>
+                                </h2>
+                                <div id="bgStandard" class="accordion-collapse collapse show" data-bs-parent="#bgAccordion">
+                                    <div class="accordion-body p-2">
+                                        <div class="color-picker-grid" id="bgColorPicker">
+                                            {% set bgColors = [
+                                                {class:'bg-primary', label:'P'},
+                                                {class:'bg-secondary', label:'S'},
+                                                {class:'bg-success', label:'G'},
+                                                {class:'bg-danger', label:'D'},
+                                                {class:'bg-warning', label:'W'},
+                                                {class:'bg-info', label:'I'},
+                                                {class:'bg-dark', label:'Dk'},
+                                                {class:'bg-light', label:'L'},
+                                                {class:'bg-white', label:'W'},
+                                                {class:'bg-transparent', label:'T'},
+                                            ] %}
+                                            {% for c in bgColors %}
+                                            <div class="color-swatch {{ c.class }}" data-color="{{ c.class }}" title="{{ c.class }}">{{ c.label }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Transparent / Light -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed py-1 px-2" type="button" data-bs-toggle="collapse" data-bs-target="#bgTransparent">
+                                        <small class="fw-semibold">Light / Transparent</small>
+                                    </button>
+                                </h2>
+                                <div id="bgTransparent" class="accordion-collapse collapse" data-bs-parent="#bgAccordion">
+                                    <div class="accordion-body p-2">
+                                        <div class="color-picker-grid">
+                                            {% set lightColors = [
+                                                {class:'bg-primary-transparent', label:'P'},
+                                                {class:'bg-secondary-transparent', label:'S'},
+                                                {class:'bg-success-transparent', label:'G'},
+                                                {class:'bg-danger-transparent', label:'D'},
+                                                {class:'bg-warning-transparent', label:'W'},
+                                                {class:'bg-info-transparent', label:'I'},
+                                                {class:'bg-light-transparent', label:'L'},
+                                                {class:'bg-dark-transparent', label:'Dk'},
+                                            ] %}
+                                            {% for c in lightColors %}
+                                            <div class="color-swatch {{ c.class }}" data-color="{{ c.class }}" title="{{ c.class }}">{{ c.label }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Gradient -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed py-1 px-2" type="button" data-bs-toggle="collapse" data-bs-target="#bgGradient">
+                                        <small class="fw-semibold">Gradient</small>
+                                    </button>
+                                </h2>
+                                <div id="bgGradient" class="accordion-collapse collapse" data-bs-parent="#bgAccordion">
+                                    <div class="accordion-body p-2">
+                                        <div class="color-picker-grid">
+                                            {% set gradColors = [
+                                                {class:'bg-primary-gradient', label:'P'},
+                                                {class:'bg-secondary-gradient', label:'S'},
+                                                {class:'bg-success-gradient', label:'G'},
+                                                {class:'bg-danger-gradient', label:'D'},
+                                                {class:'bg-warning-gradient', label:'W'},
+                                                {class:'bg-info-gradient', label:'I'},
+                                                {class:'bg-orange-gradient', label:'O'},
+                                                {class:'bg-purple-gradient', label:'Pu'},
+                                            ] %}
+                                            {% for c in gradColors %}
+                                            <div class="color-swatch {{ c.class }}" data-color="{{ c.class }}" title="{{ c.class }}">{{ c.label }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Outline -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed py-1 px-2" type="button" data-bs-toggle="collapse" data-bs-target="#bgOutline">
+                                        <small class="fw-semibold">Outline</small>
+                                    </button>
+                                </h2>
+                                <div id="bgOutline" class="accordion-collapse collapse" data-bs-parent="#bgAccordion">
+                                    <div class="accordion-body p-2">
+                                        <div class="color-picker-grid">
+                                            {% set outlineColors = [
+                                                {class:'bg-outline-primary', label:'P'},
+                                                {class:'bg-outline-secondary', label:'S'},
+                                                {class:'bg-outline-success', label:'G'},
+                                                {class:'bg-outline-danger', label:'D'},
+                                                {class:'bg-outline-warning', label:'W'},
+                                                {class:'bg-outline-info', label:'I'},
+                                                {class:'bg-outline-light', label:'L'},
+                                                {class:'bg-outline-dark', label:'Dk'},
+                                            ] %}
+                                            {% for c in outlineColors %}
+                                            <div class="color-swatch {{ c.class }}" data-color="{{ c.class }}" title="{{ c.class }}">{{ c.label }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Text Color -->
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-type me-1"></i>Цвет текста
+                        </label>
+                        <div class="color-picker-grid" id="textColorPicker">
+                            {% set textColors = [
+                                {class:'text-dark', label:'Dk'},
+                                {class:'text-light', label:'L'},
+                                {class:'text-white', label:'W'},
+                                {class:'text-muted', label:'M'},
+                                {class:'text-primary', label:'P'},
+                                {class:'text-success', label:'G'},
+                                {class:'text-danger', label:'D'},
+                                {class:'text-warning', label:'W'},
+                                {class:'text-info', label:'I'},
+                                {class:'text-dark', label:'---'},
+                            ] %}
+                            {% for c in textColors %}
+                            <div class="color-swatch {{ c.class }}" data-color="{{ c.class }}" title="{{ c.class }}"
+                                 style="background:{% if c.class == 'text-white' %}#333{% else %}transparent{% endif %};color:currentColor;border:2px solid #dee2e6;">
+                                {{ c.label }}
+                            </div>
+                            {% endfor %}
+                            <div class="w-100 mt-2"><small class="text-muted">Clan-style:</small></div>
+                            {% set clanColors = [
+                                'text-clan-golden','text-clan-emerald','text-clan-neon-blue','text-clan-fiery',
+                                'text-clan-purple','text-clan-crimson','text-clan-lime','text-clan-marine',
+                                'text-clan-pink','text-clan-icy','text-clan-orange','text-clan-salad',
+                                'text-clan-turquoise','text-clan-coral','text-clan-amethyst','text-clan-amber',
+                                'text-clan-sapphire','text-clan-ruby','text-clan-ultramarine','text-clan-pearl',
+                                'text-clan-cosmic','text-clan-sunset','text-clan-aurora','text-clan-electric',
+                                'text-clan-purple-haze','text-clan-bronze','text-clan-moonlight','text-clan-acid',
+                                'text-clan-aquamarine',
+                            ] %}
+                            {% for cc in clanColors %}
+                            <div class="color-swatch {{ cc }}" data-color="{{ cc }}" title="{{ cc }}"
+                                 style="font-size:0.5rem;width:30px;height:30px;">A</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden fields for modal state -->
+                <input type="hidden" id="modalTargetIndex" value="-1">
+                <input type="hidden" id="modalSelectedIcon" value="bi-trophy-fill">
+                <input type="hidden" id="modalSelectedBg" value="bg-warning">
+                <input type="hidden" id="modalSelectedText" value="text-dark">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" id="modalApplyBtn">
+                    <i class="bi bi-check-lg me-1"></i>Применить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+(function() {
+    const container = document.getElementById('ranksContainer');
+    let dragSrc = null;
+
+    // ─── Drag & Drop on cards ───────────────────────────
+    container.addEventListener('dragstart', function(e) {
+        const card = e.target.closest('.rank-card');
+        if (!card) { e.preventDefault(); return; }
+        if (!e.target.closest('.drag-handle')) { e.preventDefault(); return; }
+        dragSrc = card;
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', '');
+    });
+
+    container.addEventListener('dragend', function() {
+        if (dragSrc) dragSrc.classList.remove('dragging');
+        dragSrc = null;
+        document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    });
+
+    container.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        const card = e.target.closest('.rank-card');
+        if (!card || card === dragSrc) return;
+        card.classList.add('drag-over');
+    });
+
+    container.addEventListener('dragleave', function(e) {
+        const card = e.target.closest('.rank-card');
+        if (card) card.classList.remove('drag-over');
+    });
+
+    container.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const target = e.target.closest('.rank-card');
+        if (!target || !dragSrc || target === dragSrc) return;
+        target.classList.remove('drag-over');
+
+        const rect = target.getBoundingClientRect();
+        const midY = rect.top + rect.height / 2;
+
+        if (e.clientY > midY) {
+            container.insertBefore(dragSrc, target.nextSibling);
+        } else {
+            container.insertBefore(dragSrc, target);
+        }
+        reindex();
+    });
+
+    function reindex() {
+        container.querySelectorAll('.rank-card').forEach((card, i) => {
+            card.dataset.index = i;
+        });
+    }
+
+    // ─── Empty state helper ─────────────────────────────
+    function removeEmptyState() {
+        const es = container.querySelector('.empty-state');
+        if (es) es.remove();
+    }
+    function showEmptyIfNeeded() {
+        if (container.querySelectorAll('.rank-card').length === 0) {
+            container.insertAdjacentHTML('beforeend',
+                '<div class="empty-state text-center text-muted py-5">' +
+                '<i class="bi bi-inbox fs-1 d-block mb-3"></i>' +
+                '<h5>Ранги ещё не созданы</h5>' +
+                '<p class="mb-3">Нажмите «Добавить ранг» чтобы начать</p></div>');
+        }
+    }
+
+    // ─── Add Rank (creates a new card) ─────────────────
+    document.getElementById('addRankBtn').addEventListener('click', function() {
+        removeEmptyState();
+        const div = document.createElement('div');
+        div.className = 'rank-card card p-3';
+        div.dataset.index = container.querySelectorAll('.rank-card').length;
+        div.draggable = false;
+        div.innerHTML =
+            '<div class="d-flex align-items-start gap-3">' +
+            '  <div class="drag-handle mt-1 fs-5"><i class="bi bi-grip-vertical"></i></div>' +
+            '  <div class="flex-shrink-0" style="width:200px;">' +
+            '    <div class="mb-2"><strong class="text-muted" style="font-size:0.75rem;">ПРЕДПРОСМОТР</strong></div>' +
+            '    <span class="rank-preview-badge preview-el bg-warning text-dark">' +
+            '      <i class="preview-icon bi bi-trophy-fill"></i>' +
+            '      <span class="preview-name">Новый ранг</span>' +
+            '    </span>' +
+            '    <div class="mt-1 text-muted" style="font-size:0.75rem;">от <strong class="preview-count">0</strong> сообщений</div>' +
+            '  </div>' +
+            '  <div class="flex-grow-1 min-w-0">' +
+            '    <div class="rank-name-inputs">' +
+            '      <div class="input-group input-group-sm"><span class="input-group-text">RU</span><input type="text" class="form-control name-ru" placeholder="Название"></div>' +
+            '      <div class="input-group input-group-sm"><span class="input-group-text">EN</span><input type="text" class="form-control name-en" placeholder="Name"></div>' +
+            '      <div class="input-group input-group-sm"><span class="input-group-text">UA</span><input type="text" class="form-control name-ua" placeholder="Назва"></div>' +
+            '      <div class="input-group input-group-sm"><span class="input-group-text">ES</span><input type="text" class="form-control name-es" placeholder="Nombre"></div>' +
+            '      <div class="input-group input-group-sm"><span class="input-group-text">PT</span><input type="text" class="form-control name-pt" placeholder="Nome"></div>' +
+            '      <div class="input-group input-group-sm"><span class="input-group-text">GR</span><input type="text" class="form-control name-gr" placeholder="Όνομα"></div>' +
+            '    </div>' +
+            '  </div>' +
+            '  <div class="flex-shrink-0 text-end" style="width:110px;">' +
+            '    <div class="mb-2"><label class="text-muted" style="font-size:0.75rem;">Сообщений</label><input type="number" class="form-control form-control-sm post-count text-center" value="0" min="0" required></div>' +
+            '    <button type="button" class="btn btn-outline-primary btn-sm w-100 edit-rank-btn"><i class="bi bi-palette me-1"></i>Оформление</button>' +
+            '    <button type="button" class="btn btn-outline-danger btn-sm w-100 mt-1 delete-rank-btn"><i class="bi bi-trash me-1"></i>Удалить</button>' +
+            '  </div>' +
+            '</div>';
+        // Store default styling as data attributes
+        div.dataset.icon = 'bi-trophy-fill';
+        div.dataset.bgClass = 'bg-warning';
+        div.dataset.textClass = 'text-dark';
+        container.appendChild(div);
+        div.querySelector('.post-count').focus();
+        updatePreviewFromCard(div);
+    });
+
+    // ─── Delete ────────────────────────────────────────
+    container.addEventListener('click', function(e) {
+        const btn = e.target.closest('.delete-rank-btn');
+        if (!btn) return;
+        const card = btn.closest('.rank-card');
+        if (!card) return;
+        const idx = parseInt(card.dataset.index);
+
+        if (!isNaN(idx) && idx >= 0) {
+            if (!confirm('Удалить этот ранг?')) return;
+            $.ajax({
+                url: '/admin/sphere/forum/ranks/delete',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ index: idx }),
+                dataType: 'json',
+                success: function(data) {
+                    if (data.ok) {
+                        card.remove();
+                        reindex();
+                        showEmptyIfNeeded();
+                    } else { alert(data.error || 'Ошибка'); }
+                },
+                error: function() { alert('Ошибка при удалении'); }
+            });
+        } else {
+            card.remove();
+            reindex();
+            showEmptyIfNeeded();
+        }
+    });
+
+    // ─── Live preview update from card inputs ──────────
+    container.addEventListener('input', function(e) {
+        const card = e.target.closest('.rank-card');
+        if (card) updatePreviewFromCard(card);
+    });
+
+    function updatePreviewFromCard(card) {
+        const preview = card.querySelector('.preview-el');
+        const icon = preview.querySelector('.preview-icon');
+        const name = preview.querySelector('.preview-name');
+        const count = card.querySelector('.preview-count');
+        const ru = card.querySelector('.name-ru');
+        const pc = card.querySelector('.post-count');
+
+        // Icon from data attribute
+        const savedIcon = card.dataset.icon || 'bi-trophy-fill';
+        icon.className = 'preview-icon bi ' + savedIcon;
+
+        // Name: use RU or first non-empty
+        let firstName = '';
+        card.querySelectorAll('[class*=" name-"]').forEach(inp => {
+            if (!firstName && inp.value.trim()) firstName = inp.value.trim();
+        });
+        name.textContent = firstName || 'Новый ранг';
+
+        // Post count
+        if (count && pc) count.textContent = pc.value;
+
+        // Classes from data attributes
+        preview.className = 'rank-preview-badge preview-el ' +
+            (card.dataset.bgClass || 'bg-warning') + ' ' +
+            (card.dataset.textClass || 'text-dark');
+    }
+
+    // ─── Open modal on "Оформление" click ──────────────
+    const modal = new bootstrap.Modal(document.getElementById('editModal'));
+    let activeCard = null;
+
+    container.addEventListener('click', function(e) {
+        const btn = e.target.closest('.edit-rank-btn');
+        if (!btn) return;
+        activeCard = btn.closest('.rank-card');
+        if (!activeCard) return;
+
+        // Load current values into modal
+        document.getElementById('modalTargetIndex').value = activeCard.dataset.index;
+        const curIcon = activeCard.dataset.icon || 'bi-trophy-fill';
+        const curBg = activeCard.dataset.bgClass || 'bg-warning';
+        const curText = activeCard.dataset.textClass || 'text-dark';
+
+        // Set hidden fields
+        document.getElementById('modalSelectedIcon').value = curIcon;
+        document.getElementById('modalSelectedBg').value = curBg;
+        document.getElementById('modalSelectedText').value = curText;
+
+        // Set preview
+        updateModalPreview(curIcon, curBg, curText);
+
+        // Mark selections
+        document.querySelectorAll('#iconPicker .icon-option').forEach(el => {
+            el.classList.toggle('selected', el.dataset.icon === curIcon);
+        });
+        document.querySelectorAll('#bgAccordion .color-swatch').forEach(el => {
+            el.classList.toggle('selected', el.dataset.color === curBg);
+        });
+        document.querySelectorAll('#textColorPicker .color-swatch').forEach(el => {
+            el.classList.toggle('selected', el.dataset.color === curText);
+        });
+
+        modal.show();
+    });
+
+    // ─── Icon picker in modal ──────────────────────────
+    document.getElementById('iconPicker').addEventListener('click', function(e) {
+        const opt = e.target.closest('.icon-option');
+        if (!opt) return;
+        document.querySelectorAll('#iconPicker .icon-option').forEach(el => el.classList.remove('selected'));
+        opt.classList.add('selected');
+        const icon = opt.dataset.icon;
+        document.getElementById('modalSelectedIcon').value = icon;
+        updateModalPreview(icon, null, null);
+    });
+
+    // ─── BG color picker in modal (all accordion sections) ──────
+    document.getElementById('bgAccordion').addEventListener('click', function(e) {
+        const swatch = e.target.closest('.color-swatch');
+        if (!swatch) return;
+        // Remove selected from all bg swatches in the accordion
+        document.querySelectorAll('#bgAccordion .color-swatch').forEach(el => el.classList.remove('selected'));
+        swatch.classList.add('selected');
+        const color = swatch.dataset.color;
+        document.getElementById('modalSelectedBg').value = color;
+        updateModalPreview(null, color, null);
+    });
+
+    // ─── Text color picker in modal ────────────────────
+    document.getElementById('textColorPicker').addEventListener('click', function(e) {
+        const swatch = e.target.closest('.color-swatch');
+        if (!swatch) return;
+        document.querySelectorAll('#textColorPicker .color-swatch').forEach(el => el.classList.remove('selected'));
+        swatch.classList.add('selected');
+        const color = swatch.dataset.color;
+        document.getElementById('modalSelectedText').value = color;
+        updateModalPreview(null, null, color);
+    });
+
+    function updateModalPreview(icon, bg, text) {
+        const prev = document.getElementById('modalPreview');
+        const prevIcon = document.getElementById('modalPreviewIcon');
+        const prevName = document.getElementById('modalPreviewName');
+
+        icon = icon || document.getElementById('modalSelectedIcon').value;
+        bg = bg || document.getElementById('modalSelectedBg').value;
+        text = text || document.getElementById('modalSelectedText').value;
+
+        // Get the first rank name from modal or active card
+        let name = 'Название ранга';
+        if (activeCard) {
+            const ru = activeCard.querySelector('.name-ru');
+            if (ru && ru.value.trim()) name = ru.value.trim();
+        }
+
+        prevIcon.className = 'bi ' + icon;
+        prevName.textContent = name;
+        prev.className = 'rank-preview-badge ' + bg + ' ' + text;
+    }
+
+    // ─── Apply modal changes ───────────────────────────
+    document.getElementById('modalApplyBtn').addEventListener('click', function() {
+        if (!activeCard) return;
+        const icon = document.getElementById('modalSelectedIcon').value;
+        const bg = document.getElementById('modalSelectedBg').value;
+        const text = document.getElementById('modalSelectedText').value;
+
+        activeCard.dataset.icon = icon;
+        activeCard.dataset.bgClass = bg;
+        activeCard.dataset.textClass = text;
+
+        updatePreviewFromCard(activeCard);
+        modal.hide();
+    });
+
+    // ─── Save ──────────────────────────────────────────
+    document.getElementById('saveRanksBtn').addEventListener('click', function() {
+        const cards = container.querySelectorAll('.rank-card');
+        if (cards.length === 0) { alert('Нет рангов для сохранения'); return; }
+
+        const ranks = [];
+        cards.forEach(function(card) {
+            const names = {};
+            card.querySelectorAll('[class*=" name-"]').forEach(inp => {
+                const classNames = inp.className.split(' ');
+                const langClass = classNames.find(c => c.startsWith('name-'));
+                if (langClass) {
+                    const lang = langClass.replace('name-', '');
+                    names[lang] = inp.value.trim();
+                }
+            });
+            ranks.push({
+                post_count: parseInt(card.querySelector('.post-count').value) || 0,
+                names: names,
+                icon: card.dataset.icon || 'bi-trophy-fill',
+                bg_class: card.dataset.bgClass || 'bg-warning',
+                text_class: card.dataset.textClass || 'text-dark',
+            });
+        });
+
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Сохранение...';
+
+        $.ajax({
+            url: '/admin/sphere/forum/ranks/save',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                ranks: ranks,
+                show_admin_rank: document.getElementById('showAdminRank').checked ? 1 : 0
+            }),
+            dataType: 'json',
+            success: function(data) {
+                if (data.ok) { location.reload(); }
+                else { alert(data.message || 'Ошибка'); resetBtn(btn); }
+            },
+            error: function() { alert('Ошибка при сохранении'); resetBtn(btn); }
+        });
+    });
+
+    function resetBtn(btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Сохранить все ранги';
+    }
+
+})();
+</script>
+{% endblock %}

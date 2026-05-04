@@ -1,0 +1,233 @@
+/* ─── Rank Admin Card Styles ──────────────────────────── */
+
+.rank-card {
+    border: 1px solid var(--border, #dee2e6);
+    border-radius: var(--radius-lg, 0.75rem);
+    background: var(--bg-card, #fff);
+    transition: box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+}
+.rank-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border-color: var(--bs-primary, #0d6efd);
+}
+
+.rank-card.dragging {
+    opacity: 0.3;
+}
+.rank-card.drag-over {
+    outline: 2px dashed var(--bs-primary, #0d6efd);
+    outline-offset: 3px;
+}
+
+.rank-card .drag-handle {
+    cursor: grab;
+    color: var(--text-muted, #6c757d);
+    user-select: none;
+    touch-action: none;
+}
+.rank-card .drag-handle:hover {
+    color: var(--bs-primary, #0d6efd);
+}
+
+/* ─── Rank Preview Badge ─────────────────────────────── */
+.rank-preview-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+/* ─── Color Picker Grid ──────────────────────────────── */
+.color-picker-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+.color-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 0.4rem;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+}
+.color-swatch:hover {
+    transform: scale(1.15);
+}
+.color-swatch.selected {
+    border-color: #000;
+    transform: scale(1.15);
+}
+.color-swatch.bg-white {
+    border: 2px solid #dee2e6;
+}
+.color-swatch.bg-white.selected {
+    border-color: #000;
+}
+
+/* ─── Icon Picker Grid ───────────────────────────────── */
+.icon-picker-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+.icon-option {
+    width: 38px;
+    height: 38px;
+    border-radius: 0.4rem;
+    border: 2px solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    background: var(--bg-secondary, #f8f9fa);
+    transition: transform 0.15s, border-color 0.15s, background 0.15s;
+}
+.icon-option:hover {
+    transform: scale(1.2);
+    background: var(--bg-hover, #e9ecef);
+}
+.icon-option.selected {
+    border-color: var(--bs-primary, #0d6efd);
+    background: color-mix(in srgb, var(--bs-primary, #0d6efd) 10%, transparent);
+    transform: scale(1.2);
+}
+
+/* ─── Gradient swatch previews ──────────────────────── */
+.color-swatch.bg-primary-gradient {
+    background: linear-gradient(135deg, #0d6efd, #6610f2) !important;
+    color: #fff;
+}
+.color-swatch.bg-secondary-gradient {
+    background: linear-gradient(135deg, #6c757d, #495057) !important;
+    color: #fff;
+}
+.color-swatch.bg-success-gradient {
+    background: linear-gradient(135deg, #198754, #0b5e3b) !important;
+    color: #fff;
+}
+.color-swatch.bg-danger-gradient {
+    background: linear-gradient(135deg, #dc3545, #a71d2a) !important;
+    color: #fff;
+}
+.color-swatch.bg-warning-gradient {
+    background: linear-gradient(135deg, #ffc107, #d39e00) !important;
+    color: #000;
+}
+.color-swatch.bg-info-gradient {
+    background: linear-gradient(135deg, #0dcaf0, #0a97b3) !important;
+    color: #000;
+}
+.color-swatch.bg-orange-gradient {
+    background: linear-gradient(135deg, #fd7e14, #d4630a) !important;
+    color: #fff;
+}
+.color-swatch.bg-purple-gradient {
+    background: linear-gradient(135deg, #6f42c1, #512e8f) !important;
+    color: #fff;
+}
+
+/* ─── Outline swatch previews ───────────────────────── */
+.color-swatch.bg-outline-primary {
+    background: #fff !important;
+    border: 2px solid #0d6efd !important;
+    color: #0d6efd;
+}
+.color-swatch.bg-outline-secondary {
+    background: #fff !important;
+    border: 2px solid #6c757d !important;
+    color: #6c757d;
+}
+.color-swatch.bg-outline-success {
+    background: #fff !important;
+    border: 2px solid #198754 !important;
+    color: #198754;
+}
+.color-swatch.bg-outline-danger {
+    background: #fff !important;
+    border: 2px solid #dc3545 !important;
+    color: #dc3545;
+}
+.color-swatch.bg-outline-warning {
+    background: #fff !important;
+    border: 2px solid #ffc107 !important;
+    color: #856404;
+}
+.color-swatch.bg-outline-info {
+    background: #fff !important;
+    border: 2px solid #0dcaf0 !important;
+    color: #0c8599;
+}
+.color-swatch.bg-outline-light {
+    background: #fff !important;
+    border: 2px solid #f8f9fa !important;
+    color: #6c757d;
+}
+.color-swatch.bg-outline-dark {
+    background: #fff !important;
+    border: 2px solid #212529 !important;
+    color: #212529;
+}
+
+/* ─── Theme-aware background (works in light & dark) ── */
+.theme-aware-bg {
+    background: var(--default-body-bg-color, #f8f9fa);
+    border: 1px solid var(--default-border, #e9edf4);
+}
+
+/* ─── Transparent swatch subtle bg ──────────────────── */
+.color-swatch.bg-primary-transparent { background: color-mix(in srgb, #0d6efd 15%, transparent) !important; }
+.color-swatch.bg-secondary-transparent { background: color-mix(in srgb, #6c757d 15%, transparent) !important; }
+.color-swatch.bg-success-transparent { background: color-mix(in srgb, #198754 15%, transparent) !important; }
+.color-swatch.bg-danger-transparent { background: color-mix(in srgb, #dc3545 15%, transparent) !important; }
+.color-swatch.bg-warning-transparent { background: color-mix(in srgb, #ffc107 15%, transparent) !important; }
+.color-swatch.bg-info-transparent { background: color-mix(in srgb, #0dcaf0 15%, transparent) !important; }
+.color-swatch.bg-light-transparent { background: color-mix(in srgb, #f8f9fa 50%, transparent) !important; }
+.color-swatch.bg-dark-transparent { background: color-mix(in srgb, #212529 15%, transparent) !important; }
+
+/* ─── Accordion tweaks in modal ─────────────────────── */
+#bgAccordion .accordion-item {
+    border: none;
+    margin-bottom: 2px;
+}
+#bgAccordion .accordion-button {
+    font-size: 0.8rem;
+    background: var(--bg-secondary, #f8f9fa);
+}
+#bgAccordion .accordion-button:not(.collapsed) {
+    background: var(--bg-hover, #e9ecef);
+    box-shadow: none;
+}
+#bgAccordion .accordion-body {
+    background: transparent;
+}
+
+/* ─── Rank Card Name Inputs ──────────────────────────── */
+.rank-name-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.5rem;
+}
+.rank-name-inputs .input-group {
+    flex-wrap: nowrap;
+}
+.rank-name-inputs .input-group-text {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.45rem;
+    min-width: 32px;
+    justify-content: center;
+}
+.rank-name-inputs .form-control {
+    font-size: 0.82rem;
+}

@@ -293,6 +293,33 @@ $routes = [
     ],
 
     [
+        "method" => "GET",
+        "pattern" => "/admin/sphere/forum/ranks",
+        "file" => "sphere_forum.php",
+        "call" => function () {
+            (new sphere_forum\sphere_forum())->ranks();
+        }
+    ],
+
+    [
+        "method" => "POST",
+        "pattern" => "/admin/sphere/forum/ranks/save",
+        "file" => "sphere_forum.php",
+        "call" => function () {
+            (new sphere_forum\sphere_forum())->saveRanks();
+        }
+    ],
+
+    [
+        "method" => "POST",
+        "pattern" => "/admin/sphere/forum/ranks/delete",
+        "file" => "sphere_forum.php",
+        "call" => function () {
+            (new sphere_forum\sphere_forum())->deleteRank();
+        }
+    ],
+
+    [
         "method" => "POST",
         "pattern" => "/forum/thread/toggle-pin",
         "file" => "forum.php",

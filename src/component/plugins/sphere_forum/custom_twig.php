@@ -81,6 +81,90 @@ class custom_twig
         return $count;
     }
 
+    /**
+     * Возвращает данные ранга пользователя на основе количества сообщений
+     * Возвращает массив с ключами: name, icon, bg_class, text_class
+     */
+    public function getForumUserRank(int $userId): ?array
+    {
+        // Проверка: если пользователь администратор и ранг админам отключён — не показываем
+        try {
+            $userObj = \Ofey\Logan22\model\user\user::getUserId($userId);
+            if ($userObj && $userObj->isAdmin() && !sphere_forum::isShowAdminRank()) {
+                return null;
+            }
+        } catch (\Exception $e) {
+            // Если не удалось проверить — показываем ранг
+        }
+
+        $postCount = $this->getForumPostCount($userId);
+        $ranks = sphere_forum::getForumRanks();
+
+        if (empty($ranks)) {
+            return null;
+        }
+
+        // Определяем язык пользователя
+        $lang = $this->detectUserLang($userId);
+
+        // Проходим по рангам сверху вниз (порядок = приоритет)
+        $matchedRank = null;
+        foreach ($ranks as $rank) {
+            if ($postCount >= (int)$rank['post_count']) {
+                $matchedRank = $rank;
+                break;
+            }
+        }
+
+        if ($matchedRank === null) {
+            return null;
+        }
+
+        // Название на языке пользователя
+        $names = $matchedRank['names'] ?? [];
+        $name = null;
+        if (isset($names[$lang]) && !empty($names[$lang])) {
+            $name = $names[$lang];
+        } else {
+            foreach (['ru', 'en', 'ua', 'es', 'pt', 'gr'] as $fallback) {
+                if (isset($names[$fallback]) && !empty($names[$fallback])) {
+                    $name = $names[$fallback];
+                    break;
+                }
+            }
+        }
+
+        if (!$name) {
+            return null;
+        }
+
+        return [
+            'name' => $name,
+            'icon' => $matchedRank['icon'] ?? 'bi-trophy-fill',
+            'bg_class' => $matchedRank['bg_class'] ?? 'bg-warning',
+            'text_class' => $matchedRank['text_class'] ?? 'text-dark',
+        ];
+    }
+
+    /**
+     * Определяет язык пользователя
+     */
+    private function detectUserLang(int $userId): string
+    {
+        try {
+            $user = \Ofey\Logan22\model\user\user::getUserId($userId);
+            if ($user) {
+                $userLang = $user->getVar('lang');
+                if ($userLang && !empty($userLang['val'])) {
+                    return $userLang['val'];
+                }
+            }
+        } catch (\Exception $e) {
+            // fall through to default
+        }
+        return \Ofey\Logan22\component\lang\lang::get_phrase('0') === 'Description' ? 'en' : 'ru';
+    }
+
     public function getLikeBuffList(): array
     {
         return self::BUFF_LIKE_LIST;
