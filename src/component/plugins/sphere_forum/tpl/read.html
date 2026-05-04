@@ -386,6 +386,13 @@
                                                 </div>
                                             {% endif %}
 
+                                            {# Сообщения на форуме #}
+                                            <div class="text-center bg-opacity-10">
+                                                <span class="text-{{clan.getTextColor()}} fw-semibold">
+                                                    {{getForumPostCount(user.getId())}} <small class="text-{{clan.getTextColor()}}">{{phrase('messages')}}</small>
+                                                </span>
+                                            </div>
+
                                             <!-- Characters -->
                                             {% if isForumSettingEnabled(user.getId(), 'showCharacters') %}
                                             <div class=" p-1 text-center bg-opacity-10">

@@ -45,6 +45,42 @@ class custom_twig
 
     private static array $settingsCache = [];
 
+    private static array $postCountCache = [];
+
+    public function getForumPostCount(int $userId): int {
+        if (isset(self::$postCountCache[$userId])) {
+            return self::$postCountCache[$userId];
+        }
+
+        $stored = sql::getRow(
+            "SELECT val FROM user_variables WHERE user_id = ? AND var = 'forum_post_count'",
+            [$userId]
+        );
+
+        if ($stored && isset($stored['val'])) {
+            $count = (int)$stored['val'];
+            self::$postCountCache[$userId] = $count;
+            return $count;
+        }
+
+        $count = (int)sql::getValue(
+            "SELECT COUNT(*) FROM forum_posts WHERE user_id = ? AND is_approved = 1",
+            [$userId]
+        );
+
+        try {
+            $user = \Ofey\Logan22\model\user\user::getUserId($userId);
+            if ($user) {
+                $user->addVar('forum_post_count', (string)$count);
+            }
+        } catch (\Exception $e) {
+            // Silently fail - cache miss only causes a recount next time
+        }
+
+        self::$postCountCache[$userId] = $count;
+        return $count;
+    }
+
     public function getLikeBuffList(): array
     {
         return self::BUFF_LIKE_LIST;

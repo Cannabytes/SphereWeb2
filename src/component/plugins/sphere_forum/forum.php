@@ -711,6 +711,7 @@ class forum
                     if ($threadInfo) {
                         $this->incrementCategoryCounters((int)$threadInfo['category_id']);
                     }
+                    $this->recalculateUserPostCount((int)$thread['user_id']);
                     $this->markUserAsTrusted((int)$thread['user_id'], $adminId);
                 } else {
                     $post = sql::getRow("SELECT user_id, thread_id FROM forum_posts WHERE id = ?", [$contentId]);
@@ -720,6 +721,7 @@ class forum
                         "UPDATE forum_posts SET is_approved = 1, approved_by = ?, approved_at = NOW() WHERE id = ?",
                         [$adminId, $contentId]
                     );
+                    $this->recalculateUserPostCount((int)$post['user_id']);
                     $this->markUserAsTrusted((int)$post['user_id'], $adminId);
                 }
 
@@ -968,6 +970,7 @@ class forum
                 $postsPerPage = $this->getPostsPerPage();
                 $lastPage = ceil($totalPosts / $postsPerPage);
                 sql::commit();
+                $this->recalculateUserPostCount(user::self()->getId());
                 $thread = $this->getThreadById($topicId);
                 $custom_twig = new custom_twig();
                 $translit = $custom_twig->transliterateToEn($thread->getTitle());
@@ -1262,6 +1265,8 @@ class forum
                 $this->incrementCategoryCounters($categoryId);
 
                 sql::commit();
+
+                $this->recalculateUserPostCount(user::self()->getId());
 
                 $this->cleanupUnusedAttachments();
 
@@ -2231,6 +2236,8 @@ class forum
 
                 sql::commit();
 
+                $this->recalculateUserPostCount($post->getUserId());
+
                 board::reload('now');
                 board::success("Удалено");
 
@@ -2398,6 +2405,12 @@ class forum
                 [$threadId]
             );
 
+            // Получаем всех пользователей, чьи посты будут удалены
+            $affectedUsers = sql::getRows(
+                "SELECT DISTINCT user_id FROM forum_posts WHERE thread_id = ?",
+                [$threadId]
+            );
+
             // Удаляем тему и все сообщения
             $this->deleteThreadAndRelated($thread);
 
@@ -2406,6 +2419,11 @@ class forum
 
             // Обновляем информацию о последней теме в категории
             $this->updateCategoryAfterThreadRemoval($categoryId);
+
+            // Пересчитываем количество сообщений для всех затронутых пользователей
+            foreach ($affectedUsers as $affectedUser) {
+                $this->recalculateUserPostCount((int)$affectedUser['user_id']);
+            }
 
             $categoryName = $this->getCategoryName($categoryId);
             $custom_twig = new custom_twig();
@@ -3399,6 +3417,9 @@ class forum
                 $this->incrementCategoryCounters($thread->getCategoryId());
 
                 sql::commit();
+
+                $this->recalculateUserPostCount($thread->getAuthorId());
+
                 board::reload();
                 board::success("Тема успешно подтверждена");
 
@@ -4512,6 +4533,24 @@ class forum
 
         } catch (Exception $e) {
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Пересчитывает и сохраняет количество сообщений пользователя на форуме
+     */
+    private function recalculateUserPostCount(int $userId): void {
+        try {
+            $count = (int)sql::getValue(
+                "SELECT COUNT(*) FROM forum_posts WHERE user_id = ? AND is_approved = 1",
+                [$userId]
+            );
+            $user = user::getUserId($userId);
+            if ($user) {
+                $user->addVar('forum_post_count', (string)$count);
+            }
+        } catch (Exception $e) {
+            // Silently fail - next request will recalculate
         }
     }
 
