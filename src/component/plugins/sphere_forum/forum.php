@@ -188,7 +188,11 @@ class forum
                     "SELECT COUNT(*) FROM forum_threads WHERE is_approved = 0"
                 );
                 $pendingCount += (int)sql::getValue(
-                    "SELECT COUNT(*) FROM forum_posts WHERE is_approved = 0"
+                    "SELECT COUNT(*) FROM forum_posts p 
+                     WHERE p.is_approved = 0 
+                       AND p.id != (
+                         SELECT MIN(p2.id) FROM forum_posts p2 WHERE p2.thread_id = p.thread_id
+                       )"
                 );
             } catch (\Exception $e) {
 
@@ -661,12 +665,17 @@ class forum
         ");
 
         // Получаем посты, ожидающие модерации
+        // Исключаем первый пост темы, если сама тема ещё на модерации —
+        // он уже представлен в списке ожидающих тем и дублируется здесь
         $pendingPosts = sql::getRows("
             SELECT p.*, u.name as author_name, t.title as thread_title, t.id as thread_id
             FROM forum_posts p
             LEFT JOIN users u ON p.user_id = u.id
             LEFT JOIN forum_threads t ON p.thread_id = t.id
             WHERE p.is_approved = 0
+              AND p.id != (
+                SELECT MIN(p2.id) FROM forum_posts p2 WHERE p2.thread_id = p.thread_id
+              )
             ORDER BY p.created_at DESC
         ");
 
@@ -2417,18 +2426,26 @@ class forum
                 [$threadId]
             );
 
-            // Удаляем тему и все сообщения
-            $this->deleteThreadAndRelated($thread);
+            sql::beginTransaction();
+            try {
+                // Удаляем тему и все сообщения
+                $this->deleteThreadAndRelated($thread);
 
-            // Уменьшаем счетчики в категории
-            $this->decrementCategoryCounters($categoryId, $postCount);
+                // Уменьшаем счетчики в категории
+                $this->decrementCategoryCounters($categoryId, $postCount);
 
-            // Обновляем информацию о последней теме в категории
-            $this->updateCategoryAfterThreadRemoval($categoryId);
+                // Обновляем информацию о последней теме в категории
+                $this->updateCategoryAfterThreadRemoval($categoryId);
 
-            // Пересчитываем количество сообщений для всех затронутых пользователей
-            foreach ($affectedUsers as $affectedUser) {
-                $this->recalculateUserPostCount((int)$affectedUser['user_id']);
+                // Пересчитываем количество сообщений для всех затронутых пользователей
+                foreach ($affectedUsers as $affectedUser) {
+                    $this->recalculateUserPostCount((int)$affectedUser['user_id']);
+                }
+
+                sql::commit();
+            } catch (Exception $e) {
+                sql::rollback();
+                throw $e;
             }
 
             $categoryName = $this->getCategoryName($categoryId);
@@ -2711,47 +2728,34 @@ class forum
             );
         }
 
-        // Транзакционное удаление связанных данных
-        try {
-            sql::beginTransaction();
+        // Удаляем связанные данные
+        // (транзакция управляется вызывающим кодом)
+        sql::run(
+            "DELETE FROM forum_user_thread_tracks WHERE thread_id = ?",
+            [$thread->getId()]
+        );
 
-            // Удаляем отслеживания тем
-            sql::run(
-                "DELETE FROM forum_user_thread_tracks WHERE thread_id = ?",
-                [$thread->getId()]
-            );
+        sql::run(
+            "DELETE FROM forum_notifications WHERE thread_id = ?",
+            [$thread->getId()]
+        );
 
-            // Удаляем уведомления
-            sql::run(
-                "DELETE FROM forum_notifications WHERE thread_id = ?",
-                [$thread->getId()]
-            );
-
-            // Удаляем лайки постов - оптимизированный запрос
-            sql::run(
-                "DELETE fl FROM forum_post_likes fl 
+        sql::run(
+            "DELETE fl FROM forum_post_likes fl 
             INNER JOIN forum_posts fp ON fl.post_id = fp.id 
             WHERE fp.thread_id = ?",
-                [$thread->getId()]
-            );
+            [$thread->getId()]
+        );
 
-            // Удаляем посты темы
-            sql::run(
-                "DELETE FROM forum_posts WHERE thread_id = ?",
-                [$thread->getId()]
-            );
+        sql::run(
+            "DELETE FROM forum_posts WHERE thread_id = ?",
+            [$thread->getId()]
+        );
 
-            // Удаляем саму тему
-            sql::run(
-                "DELETE FROM forum_threads WHERE id = ?",
-                [$thread->getId()]
-            );
-
-            sql::commit();
-        } catch (\Exception $e) {
-            sql::rollBack();
-            throw $e;
-        }
+        sql::run(
+            "DELETE FROM forum_threads WHERE id = ?",
+            [$thread->getId()]
+        );
     }
 
     /**
