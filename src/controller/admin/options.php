@@ -1319,4 +1319,27 @@ class options
         ];
     }
 
+    /**
+     * Скачать список email-адресов, подписанных на рассылку
+     */
+    public static function downloadNewsletterEmails(): void
+    {
+        $rows = sql::getRows(
+            "SELECT u.`email`
+             FROM `user_variables` uv
+             JOIN `users` u ON u.`id` = uv.`user_id`
+             WHERE uv.`var` = 'newsletter_consent' AND uv.`val` = '1'
+             ORDER BY u.`email` ASC"
+        );
+
+        $emails = array_column($rows, 'email');
+        $content = implode("\r\n", $emails);
+
+        header('Content-Type: text/plain; charset=utf-8');
+        header('Content-Disposition: attachment; filename="newsletter_emails.txt"');
+        header('Content-Length: ' . strlen($content));
+        echo $content;
+        exit;
+    }
+
 }

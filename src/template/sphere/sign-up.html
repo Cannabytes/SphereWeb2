@@ -791,6 +791,15 @@
                   </div>
                   {% endif %}
 
+                  {% if config().other().isNewsletterConsent() %}
+                  <div class="d-flex align-items-start mt-2">
+                    <input class="agreement-checkbox me-2 flex-shrink-0" type="checkbox" id="newsletter-consent" name="newsletter_consent">
+                    <label for="newsletter-consent">
+                      {{ phrase('i_agree_newsletter')|raw }}
+                    </label>
+                  </div>
+                  {% endif %}
+
                 </div>
 
                 <div class="col-xl-12 d-grid mt-2">

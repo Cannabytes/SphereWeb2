@@ -2378,6 +2378,7 @@ Password: %%password%%',
     'i_agree_private_police' => ' Я прочитал(а) и согласен(а) с <a href="%s" target="_blank" class="text-primary">Политикой конфиденциальности</a>',
     'i_agree_terms_of_service' => 'Я прочитал(а) и согласен(а) с <a href="%s" target="_blank" class="text-primary">Пользовательским соглашением</a>',
     'i_agree_server_rules' => 'Я прочитал(а) и согласен(а) с <a href="%s" target="_blank" class="text-primary">Правилами сервера</a>',
+    'i_agree_newsletter' => 'Я согласен(а) получать новости и промокоды',
 
 	'personal account' => 'Личный кабинет',
 

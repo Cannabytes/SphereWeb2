@@ -3170,4 +3170,33 @@ return array (
     'page' => 'admin/forum.html',
     'comment' => '',
   ),
+  225 => 
+  array (
+    'enable' => 1,
+    'method' => 'GET',
+    'pattern' => '/admin/newsletter/download',
+    'func' => 'controller\admin\options::downloadNewsletterEmails',
+    'access' => 
+    array (
+      0 => 'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Скачать список email подписчиков рассылки',
+  ),
+  226 => 
+  array (
+    'enable' => 1,
+    'method' => 'POST',
+    'pattern' => '/user/newsletter/toggle',
+    'func' => 'controller\user\profile\change::toggleNewsletter',
+    'access' => 
+    array (
+      'admin',
+      'user',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => 'Переключение подписки на рассылку',
+  ),
 );

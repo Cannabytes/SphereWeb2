@@ -107,6 +107,11 @@ class auth
 
                 $user = user::getUserId($userID);
 
+                // Автоматическая подписка на рассылку для Gmail, если включено в настройках
+                if (config::load()->other()->isGmailAutoSubscribe()) {
+                    $user->addVar('newsletter_consent', '1');
+                }
+
                 //Выдаем бонусы при регистрации
                 foreach (server::getServerAll() as $server) {
                     if ($server->bonus()->isRegistrationBonus()) {

@@ -76,6 +76,29 @@
           </div>
           {% endif %}
 
+          {# Подписка на рассылку - только для реальных email #}
+          {% if getUser().isAuth() and not getUser().isTelegramEmail() %}
+          <i class="border-top d-block my-3"></i>
+          <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <i class="ri-mail-send-line fs-4 me-2 text-primary"></i>
+                <div>
+                  <label class="form-label mb-0 fw-semibold">Рассылка новостей и промокодов</label>
+                  <p class="text-muted fs-12 mb-0">Управление подпиской на новости и промокоды</p>
+                </div>
+              </div>
+              <div>
+                <div class="custom-toggle-switch">
+                  <input id="newsletterToggle" type="checkbox"
+                    {% if getUser().getVar('newsletter_consent') and getUser().getVar('newsletter_consent').val == '1' %}checked="" {% endif %}>
+                  <label for="newsletterToggle" class="label-success mb-1"></label>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
         </div>
       </div>
 
@@ -90,6 +113,31 @@
     </form>
   </div>
 </div>
+
+<script>
+$(document).ready(function() {
+  $('#newsletterToggle').on('change', function() {
+    const isChecked = $(this).is(':checked') ? 1 : 0;
+    $.ajax({
+      url: '/user/newsletter/toggle',
+      type: 'POST',
+      data: { subscribe: isChecked },
+      success: function(response) {
+        if (response.ok) {
+          $.Toast(response.message, 'success');
+        } else {
+          $.Toast(response.message || 'Ошибка', 'error');
+          $('#newsletterToggle').prop('checked', !$(this).is(':checked'));
+        }
+      },
+      error: function() {
+        $.Toast('Ошибка сервера', 'error');
+        $('#newsletterToggle').prop('checked', !$(this).is(':checked'));
+      }
+    });
+  });
+});
+</script>
 
 {# Модальное окно настройки 2FA #}
 {% if getUser().isAuth() and getUser().getPassword() != "GOOGLE" and getUser().getPassword() != "TELEGRAM" %}

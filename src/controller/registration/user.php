@@ -79,6 +79,11 @@ class user
         \Ofey\Logan22\model\user\user::self()->setId($_SESSION['id']);
         \Ofey\Logan22\model\user\user::self()->addLog(logTypes::LOG_REGISTRATION_USER, "LOG_REGISTRATION_USER", [$email]);
 
+        // Сохраняем согласие на рассылку новостей и промокодов
+        if (config::load()->other()->isNewsletterConsent() && isset($_POST['newsletter_consent'])) {
+            \Ofey\Logan22\model\user\user::self()->addVar('newsletter_consent', '1');
+        }
+
         auth::addAuthLog($_SESSION['id']);
 
         $mailTemplate = mail::getTemplates();

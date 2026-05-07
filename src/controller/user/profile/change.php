@@ -237,5 +237,21 @@ class change
         ]);
     }
 
+    /**
+     * Переключение подписки на рассылку новостей и промокодов
+     */
+    public static function toggleNewsletter(): void
+    {
+        $subscribe = (int)($_POST['subscribe'] ?? 0);
+
+        if ($subscribe) {
+            user::self()->addVar('newsletter_consent', '1');
+            board::success('Вы подписались на рассылку');
+        } else {
+            user::self()->deleteVar('newsletter_consent');
+            board::success('Вы отписались от рассылки');
+        }
+    }
+
 
 }

@@ -1180,6 +1180,57 @@
                                     </div>
                                 </li>
 
+                                <li class="list-group-item">
+                                    <div class="mb-3">
+                                        <p class="fs-14 mb-1 fw-semibold">Согласие на рассылку новостей и промокодов
+                                        </p>
+                                    </div>
+
+                                    <div class="d-sm-flex d-block align-items-top justify-content-between mb-3">
+                                        <div>
+                                            <p class="fs-12 mb-0 text-muted">Запрашивать у пользователя разрешение на
+                                                рассылку новостей, промокодов и т.п. при регистрации</p>
+                                        </div>
+                                        <div>
+                                            <div class="custom-toggle-switch float-sm-end">
+                                                <input id="isNewsletterConsent" name="isNewsletterConsent" type="checkbox" {% if
+                                                    config().other().isNewsletterConsent() %}checked="" {% endif %}>
+                                                <label for="isNewsletterConsent" class="label-success mb-1"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-sm-flex d-block align-items-top justify-content-between mb-3">
+                                        <div>
+                                            <p class="fs-14 mb-1 fw-semibold">Если пользователь авторизуется через Gmail
+                                                — автоматически подписывать на рассылку</p>
+                                            <p class="fs-12 mb-0 text-muted">При первой авторизации через Gmail
+                                                пользователь будет автоматически подписан на новости и промокоды</p>
+                                        </div>
+                                        <div>
+                                            <div class="custom-toggle-switch float-sm-end">
+                                                <input id="gmailAutoSubscribe" name="gmailAutoSubscribe" type="checkbox" {% if
+                                                    config().other().isGmailAutoSubscribe() %}checked="" {% endif %}>
+                                                <label for="gmailAutoSubscribe" class="label-success mb-1"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-sm-flex d-block align-items-top justify-content-between">
+                                        <div>
+                                            <p class="fs-14 mb-1 fw-semibold">Скачать список email подписчиков
+                                            </p>
+                                            <p class="fs-12 mb-0 text-muted">Скачать .txt файл со списком email,
+                                                подписанных на рассылку новостей и промокодов</p>
+                                        </div>
+                                        <div>
+                                            <a href="/admin/newsletter/download" class="btn btn-outline-success btn-sm">
+                                                <i class="ti ti-download"></i> Скачать
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+
 
                                 <script>
                                     $(document).ready(function () {

@@ -1219,6 +1219,14 @@ class userModel
     }
 
     /**
+     * Проверяет, является ли email пользователя Telegram псевдо-почтой
+     */
+    public function isTelegramEmail(): bool
+    {
+        return strpos($this->email, 'TG:@') === 0;
+    }
+
+    /**
      * @param string $email
      *
      * @return userModel

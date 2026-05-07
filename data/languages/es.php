@@ -2302,6 +2302,7 @@ Contraseña: %%password%%',
     'i_agree_private_police' => 'Acepto la <a href="%s" target="_blank" class="text-primary">Política de Privacidad</a>',
     'i_agree_terms_of_service' => 'He leído y acepto el <a href="%s" target="_blank" class="text-primary">Acuerdo de Usuario</a>',
     'i_agree_server_rules' => 'He leído y acepto las <a href="%s" target="_blank" class="text-primary">Reglas del Servidor</a>',
+    'i_agree_newsletter' => 'Acepto recibir noticias y códigos promocionales',
     'personal account' => 'Cuenta personal',
 
     // Wiki Craft Calculator (recipe_product.html)

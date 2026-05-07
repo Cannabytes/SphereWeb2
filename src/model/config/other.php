@@ -65,6 +65,10 @@ class other
     private bool $isAllowDeleteAccount = true;
     private bool $oauth = true;
 
+    private bool $isNewsletterConsent = false;
+
+    private bool $gmailAutoSubscribe = false;
+
     public function __construct($setting)
     {
         $this->openPassword = filter_var($setting['saveOpenPassword'] ?? false, FILTER_VALIDATE_BOOLEAN);
@@ -98,6 +102,8 @@ class other
         $this->isAllowDeleteAccount = filter_var($setting['isAllowDeleteAccount'] ?? true, FILTER_VALIDATE_BOOLEAN);
         $this->analyticsHead = $setting['analyticsHead'] ?? $this->analyticsHead;
         $this->analyticsBody = $setting['analyticsBody'] ?? $this->analyticsBody;
+        $this->isNewsletterConsent = filter_var($setting['isNewsletterConsent'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $this->gmailAutoSubscribe = filter_var($setting['gmailAutoSubscribe'] ?? false, FILTER_VALIDATE_BOOLEAN);
     }
 
     public function isOAuth(): bool {
@@ -245,6 +251,16 @@ class other
     public function getContactAdmin(): string
     {
         return $this->contactAdmin;
+    }
+
+    public function isNewsletterConsent(): bool
+    {
+        return $this->isNewsletterConsent;
+    }
+
+    public function isGmailAutoSubscribe(): bool
+    {
+        return $this->gmailAutoSubscribe;
     }
 
     public function getBalanceNotice(): string
