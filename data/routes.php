@@ -2260,6 +2260,20 @@ return array (
     'page' => '',
     'comment' => '',
   ),
+  165 => 
+  array (
+    'enable' => true,
+    'method' => 'POST',
+    'pattern' => '/support/admin/clear/topics',
+    'func' => 'controller\support\support::clearTopics',
+    'access' => 
+    array (
+      'admin',
+    ),
+    'weight' => 0,
+    'page' => '',
+    'comment' => '',
+  ),
   161 => 
   array (
     'enable' => true,

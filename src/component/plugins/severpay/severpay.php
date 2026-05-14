@@ -253,21 +253,28 @@ class severpay extends BasePaymentPlugin
             board::error(sprintf(lang::get_phrase('severpay_api_error'), ($response['httpCode'] ?? 0)));
         }
 
-        $result = json_decode((string)($response['body'] ?? ''), true);
-        if (!is_array($result)) {
-            board::error(lang::get_phrase('severpay_invalid_response'));
-        }
+		$result = json_decode((string)($response['body'] ?? ''), true);
 
-        if (($result['status'] ?? false) !== true) {
-            board::error(sprintf(lang::get_phrase('severpay_payment_error'), ($result['msg'] ?? 'Unknown error')));
-        }
+		if (!is_array($result)) {
+			board::error(lang::get_phrase('severpay_invalid_response'));
+			return;
+		}
 
-        $url = $result['data']['url'] ?? null;
-        if (!$url) {
-            board::error(lang::get_phrase('severpay_no_payment_link'));
-        }
+		if (($result['status'] ?? null) !== true) {
+			$errorMsg = isset($result['msg']) && is_string($result['msg'])
+				? $result['msg']
+				: 'Unknown error';
+			board::error($errorMsg);
+		}
 
-        board::response('success', ['url' => $url]);
+		$url = $result['data']['url'] ?? null;
+
+		if (empty($url) || !filter_var($url, FILTER_VALIDATE_URL)) {
+			board::error(lang::get_phrase('severpay_no_payment_link'));
+			return;
+		}
+
+		board::response('success', ['url' => $url]);
     }
 
     public function webhook(): void

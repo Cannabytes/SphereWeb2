@@ -511,6 +511,37 @@ class support
     {
         self::isEnable();
         $id = $_POST['id'] ?? board::error("No ID");
+        self::deleteTopicWithFiles((int) $id);
+        board::redirect("/support");
+        board::success("Диалог удален");
+    }
+
+    public static function clearTopics(): void
+    {
+        self::isEnable();
+
+        if (!user::self()->isAdmin()) {
+            board::error("Запрещенное действие");
+        }
+
+        $threadIds = sql::getRows("SELECT `id` FROM `support_thread`");
+        foreach ($threadIds as $thread) {
+            self::deleteTopicWithFiles((int) $thread['id']);
+        }
+
+        sql::run("DELETE FROM `support_read_topics`");
+        sql::run("UPDATE `support_thread_name` SET `thread_count` = 0");
+
+        self::clearUnreadCache();
+        self::clearSectionsCache();
+
+        board::reload();
+        board::success("Тикеты очищены");
+    }
+
+    private static function deleteTopicWithFiles(int $id): void
+    {
+        $thread = sql::getRow("SELECT `thread_id` FROM `support_thread` WHERE `id` = ?", [$id]);
         sql::run("DELETE FROM support_thread WHERE `id` = ?", [$id]);
         $rows = sql::getRows("SELECT * FROM `support_message` WHERE `thread_id` = ?", [$id]);
 
@@ -539,8 +570,11 @@ class support
         }
 
         sql::run("DELETE FROM support_message WHERE `thread_id` = ?", [$id]);
-        board::redirect("/support");
-        board::success("Диалог удален");
+
+        if ($thread && isset($thread['thread_id'])) {
+            sql::run("UPDATE `support_thread_name` SET `thread_count` = GREATEST(thread_count - 1, 0) WHERE `id` = ?", [$thread['thread_id']]);
+            sql::run("DELETE FROM `support_read_topics` WHERE `topic_id` = ?", [$id]);
+        }
     }
 
     public static function deletePost(): void

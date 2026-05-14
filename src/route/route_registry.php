@@ -32,6 +32,7 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
         $userAccessLevel = user::self()->getAccessLevel();
         date_default_timezone_set(user::self()->getTimezone() ?? config::load()->other()->getTimezone());
         $routes = route::getRoutes($userAccessLevel);
+        $hasSupportClearTopicsRoute = false;
         foreach ($routes as $dbRoute) {
             if (route::getDisabledRoutes($dbRoute['pattern'])) {
                 continue;
@@ -56,6 +57,14 @@ if (file_exists(fileSys::get_dir('/data/db.php'))) {
                 $func = 'Ofey\\Logan22\\' . $func;
             }
             $route->$method($pattern, $func);
+
+            if ($method === 'post' && $pattern === '/support/admin/clear/topics') {
+                $hasSupportClearTopicsRoute = true;
+            }
+        }
+
+        if (! $hasSupportClearTopicsRoute) {
+            $route->post('/support/admin/clear/topics', 'Ofey\\Logan22\\controller\\support\\support::clearTopics');
         }
 
         // Загрузка кастомных роутеров администратора сайта

@@ -14,6 +14,13 @@
                        data-bs-original-title="{{ phrase(417) }}">
                         <i class="bx bx-left-arrow-alt"></i>
                     </a>
+                    {% if getUser().isAdmin() %}
+                    <button type="button" aria-label="anchor" class="vertical-phone border-0 bg-transparent ms-2"
+                            id="clearSupportTickets" data-bs-toggle="tooltip"
+                            data-bs-original-title="Очистить все тикеты">
+                        <i class="bx bx-trash"></i>
+                    </button>
+                    {% endif %}
                 </div>
 
                 <div class="unstyled inbox-pagination d-flex flex-wrap align-items-center gap-2 mb-0">
@@ -603,6 +610,18 @@
         AjaxSend("/support/admin/delete/post", "POST", {postId: postId});
     })
 </script>
+
+{% if getUser().isAdmin() %}
+<script>
+    $("#clearSupportTickets").on("click", function () {
+        if (!confirm("Вы действительно хотите очистить все тикеты? Это действие нельзя отменить.")) {
+            return;
+        }
+
+        AjaxSend("/support/admin/clear/topics", "POST", {}, false);
+    });
+</script>
+{% endif %}
 
 <script>
     // Парсер ссылок - преобразует текстовые URL в кликабельные ссылки

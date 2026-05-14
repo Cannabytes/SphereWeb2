@@ -445,6 +445,13 @@
                         <i class="bx bx-refresh"></i>
                     </a>
                     {% endif %}
+                    {% if getUser().isAdmin() %}
+                    <button type="button" aria-label="anchor" class="vertical-phone border-0 bg-transparent ms-2"
+                            id="clearSupportTickets" data-bs-toggle="tooltip"
+                            data-bs-original-title="Очистить все тикеты">
+                        <i class="bx bx-trash"></i>
+                    </button>
+                    {% endif %}
                 </div>
 
                 {% if currentSection is defined and currentSection != null %}
@@ -564,6 +571,18 @@
         </div>
     </div>
 </div>
+
+{% if getUser().isAdmin() %}
+<script>
+    $("#clearSupportTickets").on("click", function () {
+        if (!confirm("Вы действительно хотите очистить все тикеты? Это действие нельзя отменить.")) {
+            return;
+        }
+
+        AjaxSend("/support/admin/clear/topics", "POST", {}, false);
+    });
+</script>
+{% endif %}
 
 {% endblock %}
 

@@ -102,14 +102,14 @@
                                         }
                                     </style>
                                     <h6 class="fw-bold mb-3 text-primary d-flex align-items-center">
-                                        <i class="ri-gift-2-line me-2"></i> Счётчик бонусов:
+                                        <i class="ri-gift-2-line me-2"></i> {{ phrase('bonus_counter') }}:
                                     </h6>
                                     <div class="row g-3">
                                         {% if getServer().donate().isEnableOneTimeBonus() %}
                                         <div class="col-sm-6">
                                             <div class="bonus-item-summary d-flex align-items-center justify-content-between p-3 rounded-2 bg-white border" style="border: 1px solid rgba(100, 150, 255, 0.3) !important;">
                                                 <div>
-                                                    <div class="text-muted small fw-bold text-uppercase">Единоразовый бонус</div>
+                                                    <div class="text-muted small fw-bold text-uppercase">{{ phrase('one_time_bonus') }}</div>
                                                     <div id="modal_one_time_bonus_display" class="fw-bold text-primary fs-5 mt-1">+0</div>
                                                 </div>
                                                 <div class="text-primary opacity-50">
@@ -122,7 +122,7 @@
                                         <div class="col-sm-6">
                                             <div class="bonus-item-summary d-flex align-items-center justify-content-between p-3 rounded-2 bg-white border" style="border: 1px solid rgba(76, 175, 80, 0.3) !important;">
                                                 <div>
-                                                    <div class="text-muted small fw-bold text-uppercase">Накопительный бонус</div>
+                                                    <div class="text-muted small fw-bold text-uppercase">{{ phrase('cumulative_bonus') }}</div>
                                                     <div id="modal_cumulative_bonus_display" class="fw-bold text-success fs-5 mt-1">+0</div>
                                                 </div>
                                                 <div class="text-success opacity-50">
