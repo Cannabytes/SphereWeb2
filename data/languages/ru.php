@@ -218,6 +218,7 @@ return array(
 	'Deleting...' => 'Удаление...',
 	'Deleted' => 'Удалено',
 	'Please select both dates' => 'Пожалуйста, выберите обе даты',
+	'will_be_sent_to_server' => 'Будет отправлено на сервер:',
 // Connection check plugin phrases
 'connection_check.title' => 'Проверка соединения с БД и портами',
 'connection_check' => 'Проверка соединения с БД и портами через Sphere API',

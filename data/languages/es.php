@@ -12,6 +12,7 @@ return [
     'Showing first %s days' => 'Mostrando los primeros %s días',
     'Preview full' => 'Vista completa',
     'Full range records' => 'Registros del rango completo',
+    'will_be_sent_to_server' => 'Se enviara al servidor:',
     'Confirm deletion' => 'Confirmar eliminación',
     'This action will delete donations in the selected date range.' => 'Esta acción eliminará las donaciones en el rango de fechas seleccionado.',
     'Type DELETE to confirm' => 'Escriba DELETE para confirmar',

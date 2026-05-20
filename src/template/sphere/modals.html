@@ -872,7 +872,20 @@ $(document).ready(function() {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body px-4">
+        {% set transferTargetServer = getServer(getUser().getServerId()) %}
         <div class="row">
+
+            {% if getServerCount() > 1 and transferTargetServer %}
+          <div class="col-12 mb-3">
+            <div class="alert alert-info d-flex align-items-center mb-0" role="alert">
+              <i class="ri-server-line fs-5 me-2"></i>
+              <div>
+                  {{ phrase('will_be_sent_to_server') }}
+                <span class="fw-semibold">{{ transferTargetServer.getName() }} x{{ transferTargetServer.getRateExp() }}</span>
+              </div>
+            </div>
+          </div>
+          {% endif %}
 
           {% if not canSendItemsNow %}
           <div class="col-12 mb-3">
@@ -2004,6 +2017,17 @@ $(document).ready(function() {
                 </div>
                 {% endif %}
               </div>
+
+                      {% set warehouseTargetServer = getServer(getUser().getServerId()) %}
+                      {% if getServerCount() > 1 and warehouseTargetServer %}
+                      <div class="alert alert-info d-flex align-items-center mt-3 mb-0" role="alert">
+                        <i class="ri-server-line fs-5 me-2"></i>
+                        <div>
+                          {{ phrase('will_be_sent_to_server') }}
+                          <span class="fw-semibold">{{ warehouseTargetServer.getName() }} x{{ warehouseTargetServer.getRateExp() }}</span>
+                        </div>
+                      </div>
+                      {% endif %}
 
               <button type="button" id="warehouseSendItemsToPlayer" class="btn btn-success btn-xs mt-3" {% if not
                 isPlayers|default(false) or statusSphereServer() is same as(false) or getUser().countWarehouseItems()==0

@@ -21,6 +21,7 @@ return [
         'Deleting...' => 'Excluindo...',
         'Deleted' => 'Excluído',
         'Please select both dates' => 'Por favor, selecione ambas as datas',
+        'will_be_sent_to_server' => 'Sera enviado para o servidor:',
     // Connection check plugin phrases (fallback to English)
     'connection_check.title' => 'Verificação de conexão para DB e portas',
     'connection_check' => 'Verificação de conexão com BD e portas via Sphere API',

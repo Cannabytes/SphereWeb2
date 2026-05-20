@@ -334,6 +334,7 @@ return [
 	'Deleting...' => 'Deleting...',
 	'Deleted' => 'Deleted',
 	'Please select both dates' => 'Please select both dates',
+	'will_be_sent_to_server' => 'Will be sent to server:',
 	// Connection check plugin phrases
 	'connection_check.title' => 'Connection check for DB and ports',
 	'connection_check' => 'Connection check for DB and ports via Sphere API',
