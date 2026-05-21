@@ -352,7 +352,6 @@ class yoomoney extends BasePaymentPlugin
             exit();
         }
 
-        $request_hash = $_POST['sha1_hash'] ?? '';
         $withdraw_amount = $_POST['withdraw_amount'] ?? '';
         $operation_id = (string)($_POST['operation_id'] ?? '');
         $amount = (string)($_POST['amount'] ?? '');
@@ -361,13 +360,16 @@ class yoomoney extends BasePaymentPlugin
         $sender = (string)($_POST['sender'] ?? '');
         $codepro = (string)($_POST['codepro'] ?? '');
         $user_id = (string)($_POST['label'] ?? '');
-        $notification_secret = $shop['secret_key'];
+        $notification_secret = (string)$shop['secret_key'];
 
-        $hash = sha1("{$notification_type}&{$operation_id}&{$amount}&{$currency}&{$datetime}&{$sender}&{$codepro}&{$notification_secret}&{$user_id}");
-
-        if ($hash !== $request_hash) {
-            $this->logWebhook('SIGN_INVALID', ['operation_id' => $operation_id, 'user_id' => $user_id]);
-            exit("sha1_hash mismatch");
+        if (!$this->verifyNotificationSignature($_POST, $notification_secret)) {
+            $this->logWebhook('SIGN_INVALID', [
+                'operation_id' => $operation_id,
+                'user_id' => $user_id,
+                'has_sign' => isset($_POST['sign']),
+                'has_sha1_hash' => isset($_POST['sha1_hash']),
+            ]);
+            exit('signature mismatch');
         }
 
         if (!ctype_digit($user_id) || (int)$user_id <= 0) {
@@ -431,6 +433,99 @@ class yoomoney extends BasePaymentPlugin
         ], $userId);
 
         exit("YES");
+    }
+
+    /**
+     * Проверить подпись уведомления YooMoney.
+     */
+    private function verifyNotificationSignature(array $payload, string $secret): bool
+    {
+        $sign = $this->getPayloadString($payload, 'sign');
+        if ($sign === null) {
+            return false;
+        }
+
+        if ($sign !== '') {
+            $expectedSign = $this->buildNotificationSign($payload, $secret);
+            return $expectedSign !== '' && hash_equals($expectedSign, strtolower($sign));
+        }
+
+        return $this->verifyLegacyNotificationHash($payload, $secret);
+    }
+
+    /**
+     * Собрать HMAC-SHA256 подпись из всех параметров уведомления, кроме sign.
+     */
+    private function buildNotificationSign(array $payload, string $secret): string
+    {
+        unset($payload['sign']);
+        ksort($payload, SORT_STRING);
+
+        $parts = [];
+        foreach ($payload as $key => $value) {
+            if (!is_scalar($value) && $value !== null) {
+                return '';
+            }
+
+            $parts[] = $key . '=' . rawurlencode((string)$value);
+        }
+
+        return hash_hmac('sha256', implode('&', $parts), $secret);
+    }
+
+    /**
+     * Старый SHA-1 формат оставлен только для совместимости со старыми уведомлениями.
+     */
+    private function verifyLegacyNotificationHash(array $payload, string $secret): bool
+    {
+        $requestHash = $this->getPayloadString($payload, 'sha1_hash');
+        if ($requestHash === null) {
+            return false;
+        }
+
+        if ($requestHash === '') {
+            return false;
+        }
+
+        $fieldNames = ['notification_type', 'operation_id', 'amount', 'currency', 'datetime', 'sender', 'codepro', 'label'];
+        $fields = [];
+
+        foreach ($fieldNames as $field) {
+            $value = $this->getPayloadString($payload, $field);
+            if ($value === null) {
+                return false;
+            }
+
+            $fields[$field] = $value;
+        }
+
+        $expectedHash = sha1(implode('&', [
+            $fields['notification_type'],
+            $fields['operation_id'],
+            $fields['amount'],
+            $fields['currency'],
+            $fields['datetime'],
+            $fields['sender'],
+            $fields['codepro'],
+            $secret,
+            $fields['label'],
+        ]));
+
+        return hash_equals($expectedHash, strtolower($requestHash));
+    }
+
+    /**
+     * Получить строковое значение параметра уведомления.
+     */
+    private function getPayloadString(array $payload, string $key): ?string
+    {
+        $value = $payload[$key] ?? '';
+
+        if (!is_scalar($value) && $value !== null) {
+            return null;
+        }
+
+        return (string)$value;
     }
 
     /**
