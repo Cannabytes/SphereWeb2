@@ -3,7 +3,7 @@
 return [
     "PLUGIN_HIDE" => false,
     "PLUGIN_ENABLE" => true,
-    "PLUGIN_NAME" => "severpay",
+    "PLUGIN_NAME" => "SeverPay — СБП / ЕРИП / Карты",
     "PLUGIN_PHRASE_ID" => "severpay",
     "PLUGIN_VERSION" => "1.0.0",
     "PLUGIN_AUTHOR" => "Logan22",

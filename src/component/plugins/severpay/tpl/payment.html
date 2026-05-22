@@ -2,72 +2,116 @@
 
 {% block content %}
 <div class="container-fluid">
-  <div class="row justify-content-center">
-    <div class="col-xl-8">
-      <div class="card custom-card mb-4">
-        <div class="card-header">
-          <div class="d-flex align-items-center">
-            <div class="me-3">
-              <span class="avatar avatar-md avatar-rounded bg-primary">
-                <i class="bi bi-wallet2 fs-20"></i>
-              </span>
-            </div>
-            <div>
-              <h4 class="fw-semibold mb-1">{{ phrase('severpay_payment_title') }}</h4>
-              <p class="text-muted mb-0 fs-12">{{ phrase('severpay_payment_description') }}</p>
-            </div>
+  <div class="severpay-wrap">
+    <div class="severpay-panel">
+
+      <div class="severpay-hero">
+        <div class="severpay-hero-left">
+          <div class="severpay-hero-icon">
+            <i class="bi bi-wallet2"></i>
           </div>
+          <div>
+            <div class="severpay-kicker">SEVERPAY</div>
+            <h4 class="severpay-title">{{ phrase('severpay_payment_title') }}</h4>
+            <div class="severpay-subtitle">{{ phrase('severpay_payment_description') }}</div>
+          </div>
+        </div>
+
+        <div class="severpay-hero-note">
+          <i class="bi bi-shield-check"></i>
+          <span>Безопасное пополнение баланса через SeverPay</span>
         </div>
       </div>
 
-      <div class="card custom-card">
-        <div class="card-body">
-          <form id="severpayPaymentForm">
-            <div class="mb-3">
-              <label class="form-label fw-semibold">{{ phrase('severpay_select_currency') }}</label>
-              <input type="hidden" name="merchant_index" id="merchant_index" value="0">
-              <div class="row g-2" id="merchantCards">
-                {% for merchant in merchants %}
-                <div class="col-auto">
-                  <div class="card merchant-card p-2" data-index="{{ loop.index0 }}" data-currency="{{ merchant.currency }}" style="min-width:160px;cursor:pointer;">
-                    <div class="d-flex align-items-center justify-content-center">
-                      <div class="w-100 text-center" title="{{ phrase('severpay_select_currency_label') }} {{ merchant.currency }}">
-                      <div class="h4 mb-0">{{ merchant.currency }}</div>
-                      <div class="small text-muted">
-                        {% if merchant.currency == 'BYN' %}{{ phrase('severpay_belarussian_ruble') }}{% elseif merchant.currency == 'EUR' %}{{ phrase('severpay_euro') }}{% else %}{{ phrase('severpay_ruble') }}{% endif %}
-                      </div>
-                      </div>
-                    </div>
-                  </div>
+      <div class="severpay-body">
+        <form id="severpayPaymentForm">
+
+          <div class="severpay-section-head">
+            <div>
+              <div class="severpay-kicker">ВАЛЮТА</div>
+              <h5 class="severpay-section-title">{{ phrase('severpay_select_currency') }}</h5>
+            </div>
+            <div class="severpay-section-note">Выберите валюту оплаты</div>
+          </div>
+
+          <input type="hidden" name="merchant_index" id="merchant_index" value="0" />
+
+          <div class="row g-3 severpay-currency-grid" id="merchantCards">
+            {% for merchant in merchants %}
+            <div class="col-12 col-sm-6 col-lg-4">
+              <div
+                class="merchant-card severpay-currency-card"
+                data-index="{{ loop.index0 }}"
+                data-currency="{{ merchant.currency }}"
+                title="{{ phrase('severpay_select_currency_label') }} {{ merchant.currency }}"
+              >
+                <div class="severpay-currency-code">{{ merchant.currency }}</div>
+                <div class="severpay-currency-name">
+                  {% if merchant.currency == 'BYN' %}
+                    {{ phrase('severpay_belarussian_ruble') }}
+                  {% elseif merchant.currency == 'EUR' %}
+                    {{ phrase('severpay_euro') }}
+                  {% elseif merchant.currency == 'RUB' %}
+                    {{ phrase('severpay_ruble') }}
+                  {% else %}
+                    {{ merchant.currency }}
+                  {% endif %}
                 </div>
-                {% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="severpay-amount-card">
+            <label class="severpay-label" for="amount">
+              <i class="bi bi-cash-stack"></i>
+              {{ phrase('pally_new_amount_label') }}
+            </label>
+
+            <div class="input-group input-group-lg severpay-input-group">
+              <input
+                type="number"
+                class="form-control"
+                id="amount"
+                name="amount"
+                value="{{ defaultAmount }}"
+                step="1"
+                required
+              />
+              <span class="input-group-text" id="currencyLabel">Donate Coin</span>
+            </div>
+
+            <div class="severpay-meta-row">
+              <div class="severpay-meta-item">
+                <i class="bi bi-info-circle"></i>
+                <span>{{ phrase('severpay_minimum') }}: <strong>{{ minAmount }}</strong></span>
+              </div>
+              <div class="severpay-meta-item">
+                <i class="bi bi-arrow-up-circle"></i>
+                <span>{{ phrase('severpay_maximum') }}: <strong>{{ maxAmount }}</strong></span>
               </div>
             </div>
 
-            <div class="mb-3">
-              <label class="form-label fw-semibold">{{ phrase('severpay_amount_label') }}</label>
-              <div class="input-group input-group-lg">
-                <input type="number" class="form-control" id="amount" name="amount" value="{{ defaultAmount }}" step="1" required>
-                <span class="input-group-text" id="currencyLabel">Donate Coin</span>
+            <div class="severpay-cost-box">
+              <div>
+                <div class="severpay-cost-label">{{ phrase('severpay_estimated_cost') }}</div>
+                <div class="severpay-cost-hint">Итоговая сумма будет рассчитана по выбранной валюте.</div>
               </div>
-              <small class="text-muted d-block mt-2">
-                {{ phrase('severpay_minimum') }}: {{ minAmount }}, {{ phrase('severpay_maximum') }}: {{ maxAmount }}
-              </small>
-              <div class="form-text mt-2">
-                <i class="bi bi-cash me-1 text-muted"></i>
-                <span class="text-muted">{{ phrase('severpay_estimated_cost') }}</span>:
-                <strong><span id="costValue">0.00</span>&nbsp;<span id="costCurrency">—</span></strong>
+              <div class="severpay-cost-value">
+                <span id="costValue">0.00</span>
+                <span id="costCurrency">—</span>
               </div>
             </div>
+          </div>
 
-            <div class="d-grid">
-              <button type="submit" class="btn btn-primary btn-lg" id="payButton">
-                <i class="bi bi-arrow-right-circle me-2"></i>
-                {{ phrase('severpay_pay_button') }}
-              </button>
-            </div>
-          </form>
-        </div>
+          <div class="severpay-actions">
+            <button type="submit" class="btn severpay-pay-btn" id="payButton">
+              <i class="bi bi-arrow-right-circle me-2"></i>
+              {{ phrase('severpay_pay_button') }}
+            </button>
+          </div>
+
+        </form>
       </div>
     </div>
   </div>
@@ -76,82 +120,387 @@
 
 {% block js %}
 <script>
-$(function() {
-  // ── Estimated cost ────────────────────────────────────────────────────────────────────────────
-  const CurrencyRates = {
-    USD: parseFloat('{{ USD_val|default(0)|number_format(4, ".", "") }}') || 0,
-    EUR: parseFloat('{{ EUR_val|default(0)|number_format(4, ".", "") }}') || 0,
-    RUB: parseFloat('{{ RUB_val|default(0)|number_format(4, ".", "") }}') || 0,
-    UAH: parseFloat('{{ UAH_val|default(0)|number_format(4, ".", "") }}') || 0,
-  };
-  let activeCurrency = '{{ mainCurrency }}';
-  function updateCost() {
-    const n = parseInt($('#amount').val()) || 0;
-    const rate = CurrencyRates[activeCurrency] || 0;
-    $('#costValue').text((n * rate).toFixed(2));
-    $('#costCurrency').text(activeCurrency);
-  }
-  $('#amount').on('input', updateCost);
-  // ──────────────────────────────────────────────────────────────────────────────
+  $(function () {
+    const CurrencyRates = {
+      USD:
+        parseFloat('{{ USD_val|default(0)|number_format(4, ".", "") }}') || 0,
+      EUR:
+        parseFloat('{{ EUR_val|default(0)|number_format(4, ".", "") }}') || 0,
+      RUB:
+        parseFloat('{{ RUB_val|default(0)|number_format(4, ".", "") }}') || 0,
+      BYN:
+        parseFloat('{{ BYN_val|default(0)|number_format(4, ".", "") }}') || 0,
+      UAH:
+        parseFloat('{{ UAH_val|default(0)|number_format(4, ".", "") }}') || 0,
+    };
 
-  // Merchant card selection
-  $('#merchantCards').on('click', '.merchant-card', function() {
-    $('#merchantCards .merchant-card').removeClass('selected border-primary').css('box-shadow','');
-    $(this).addClass('selected border-primary').css('box-shadow','0 0 0 0.15rem rgba(13,110,253,.25)');
-    const idx = $(this).data('index');
-    $('#merchant_index').val(idx);
-    const mCurrency = ($(this).data('currency') + '').toUpperCase();
-    activeCurrency = CurrencyRates[mCurrency] !== undefined ? mCurrency : '{{ mainCurrency }}';
-    updateCost();
-  });
+    let activeCurrency = "{{ mainCurrency }}";
 
-  // select first card by default
-  if ($('#merchantCards .merchant-card').length) {
-    const $firstMerchant = $('#merchantCards .merchant-card').first();
-    $firstMerchant.addClass('selected border-primary').css('box-shadow','0 0 0 0.15rem rgba(13,110,253,.25)');
-    $('#merchant_index').val($firstMerchant.data('index'));
-    const mCurrency = ($firstMerchant.data('currency') + '').toUpperCase();
-    activeCurrency = CurrencyRates[mCurrency] !== undefined ? mCurrency : '{{ mainCurrency }}';
-  }
-  updateCost();
+    function updateCost() {
+      const n = parseInt($("#amount").val()) || 0;
+      const rate = CurrencyRates[activeCurrency] || 0;
+      $("#costValue").text((n * rate).toFixed(2));
+      $("#costCurrency").text(activeCurrency);
+    }
 
-$('#severpayPaymentForm').on('submit', function(e) {
-  e.preventDefault();
+    $("#amount").on("input", updateCost);
 
-  const $btn = $('#payButton');
-  const original = $btn.html();
-  let redirecting = false;
+    $("#merchantCards").on("click", ".merchant-card", function () {
+      $("#merchantCards .merchant-card").removeClass("selected");
+      $(this).addClass("selected");
 
-  $btn.prop('disabled', true).html(
-    '<span class="spinner-border spinner-border-sm me-2"></span>{{ phrase("severpay_payment_creating") }}'
-  );
+      const idx = $(this).data("index");
+      $("#merchant_index").val(idx);
 
-  AjaxSend('/severpay/payment/create', 'POST', $(this).serialize(), false)
-    .then(function(response) {
-      if (response && response.url) {
-        redirecting = true;
-        window.location.href = response.url;
-        return;
-      }
-      const msg = (response && response.message)
-        ? response.message
-        : '{{ phrase("severpay_unknown_error") }}';
-      showError(msg);
-    })
-    .catch(function(error) {
-      const msg = (error && error.message)
-        ? error.message
-        : '{{ phrase("severpay_connection_error") }}';
-      showError(msg);
-    })
-    .finally(function() {
-      if (!redirecting) {
-        $btn.prop('disabled', false).html(original);
-      }
+      const mCurrency = ($(this).data("currency") + "").toUpperCase();
+      activeCurrency =
+        CurrencyRates[mCurrency] !== undefined
+          ? mCurrency
+          : "{{ mainCurrency }}";
+
+      updateCost();
     });
-});
-  
-  
-});
+
+    if ($("#merchantCards .merchant-card").length) {
+      const $firstMerchant = $("#merchantCards .merchant-card").first();
+      $firstMerchant.addClass("selected");
+      $("#merchant_index").val($firstMerchant.data("index"));
+
+      const mCurrency = ($firstMerchant.data("currency") + "").toUpperCase();
+      activeCurrency =
+        CurrencyRates[mCurrency] !== undefined
+          ? mCurrency
+          : "{{ mainCurrency }}";
+    }
+
+    updateCost();
+
+    $("#severpayPaymentForm").on("submit", function (e) {
+      e.preventDefault();
+
+      const $btn = $("#payButton");
+      const original = $btn.html();
+      let redirecting = false;
+
+      $btn
+        .prop("disabled", true)
+        .html(
+          '<span class="spinner-border spinner-border-sm me-2"></span>{{ phrase("severpay_payment_creating") }}',
+        );
+
+      AjaxSend("/severpay/payment/create", "POST", $(this).serialize(), false)
+        .then(function (response) {
+          if (response && response.url) {
+            redirecting = true;
+            window.location.href = response.url;
+            return;
+          }
+
+          const msg =
+            response && response.message
+              ? response.message
+              : '{{ phrase("severpay_unknown_error") }}';
+
+          showError(msg);
+        })
+        .catch(function (error) {
+          const msg =
+            error && error.message
+              ? error.message
+              : '{{ phrase("severpay_connection_error") }}';
+
+          showError(msg);
+        })
+        .finally(function () {
+          if (!redirecting) {
+            $btn.prop("disabled", false).html(original);
+          }
+        });
+    });
+  });
 </script>
+
+<style>
+  .severpay-wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .severpay-panel {
+    background: #0b0b0d;
+    border: 1px solid rgba(255,204,51,.12);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 14px 35px rgba(0,0,0,.42);
+  }
+
+  .severpay-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 22px 26px;
+    background: linear-gradient(135deg,#171717 0%,#111111 55%,#0b0b0d 100%);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+
+  .severpay-hero-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .severpay-hero-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(255,204,51,.08);
+    border: 1px solid rgba(255,204,51,.22);
+    color: #ffcc33;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 0 18px rgba(255,204,51,.08);
+  }
+
+  .severpay-kicker {
+    color: #ffcc33;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .severpay-title {
+    color: #f4f4f5;
+    font-size: 18px;
+    font-weight: 900;
+    margin: 3px 0 2px 0;
+  }
+
+  .severpay-subtitle {
+    color: #a1a1aa;
+    font-size: 12px;
+  }
+
+  .severpay-hero-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: rgba(255,204,51,.06);
+    border: 1px solid rgba(255,204,51,.16);
+    color: #cbd5e1;
+    font-size: 12px;
+    max-width: 390px;
+  }
+
+  .severpay-hero-note i {
+    color: #ffcc33;
+  }
+
+  .severpay-body {
+    padding: 24px 26px 28px 26px;
+    background: #070707;
+  }
+
+  .severpay-section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .severpay-section-title {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 900;
+    margin: 3px 0 0 0;
+  }
+
+  .severpay-section-note {
+    color: #a1a1aa;
+    font-size: 12px;
+  }
+
+  .severpay-currency-grid {
+    margin-bottom: 20px;
+  }
+
+  .severpay-currency-card {
+    min-height: 86px;
+    padding: 14px 12px;
+    border-radius: 14px;
+    background: linear-gradient(180deg,#121212 0%,#0d0d0f 100%);
+    border: 1px solid rgba(255,204,51,.13);
+    color: #e5e7eb;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,.24);
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+
+  .severpay-currency-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,204,51,.34);
+    box-shadow: 0 12px 26px rgba(0,0,0,.32);
+  }
+
+  .severpay-currency-card.selected {
+    background: linear-gradient(180deg,rgba(255,204,51,.10) 0%,rgba(18,18,18,.98) 100%);
+    border-color: rgba(255,204,51,.62);
+    box-shadow: 0 0 0 .18rem rgba(255,204,51,.12), 0 12px 26px rgba(0,0,0,.32);
+  }
+
+  .severpay-currency-code {
+    color: #ffcc33;
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1.15;
+  }
+
+  .severpay-currency-name {
+    margin-top: 5px;
+    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  .severpay-amount-card {
+    padding: 16px;
+    border-radius: 16px;
+    background: linear-gradient(180deg,#111111 0%,#0c0c0e 100%);
+    border: 1px solid rgba(255,204,51,.14);
+  }
+
+  .severpay-label {
+    color: #d4d4d8;
+    font-size: 13px;
+    font-weight: 900;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 9px;
+  }
+
+  .severpay-label i {
+    color: #ffcc33;
+  }
+
+  .severpay-input-group .form-control {
+    background: #111111 !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    color: #f4f4f5 !important;
+    box-shadow: none !important;
+  }
+
+  .severpay-input-group .form-control:focus {
+    background: #141414 !important;
+    box-shadow: 0 0 0 .25rem rgba(255,204,51,.16) !important;
+    border-color: rgba(255,204,51,.62) !important;
+  }
+
+  .severpay-input-group .input-group-text {
+    background: linear-gradient(180deg,#191919 0%,#111111 100%) !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    color: #ffcc33 !important;
+    font-weight: 900 !important;
+  }
+
+  .severpay-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .severpay-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #a1a1aa;
+    font-size: 12px;
+  }
+
+  .severpay-meta-item i {
+    color: #ffcc33;
+  }
+
+  .severpay-meta-item strong {
+    color: #e5e7eb;
+  }
+
+  .severpay-cost-box {
+    margin-top: 13px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(255,204,51,.06);
+    border-left: 4px solid #ffcc33;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .severpay-cost-label {
+    color: #f4f4f5;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .severpay-cost-hint {
+    color: #a1a1aa;
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  .severpay-cost-value {
+    color: #ffcc33;
+    font-size: 18px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .severpay-actions {
+    margin-top: 20px;
+  }
+
+  .severpay-pay-btn {
+    width: 100%;
+    min-height: 46px;
+    background: linear-gradient(135deg,#ffcc33 0%,#f59e0b 100%) !important;
+    color: #111 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 900;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+
+  .severpay-pay-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(255,204,51,.22);
+  }
+
+  @media (max-width: 992px) {
+    .severpay-hero,
+    .severpay-section-head {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .severpay-body {
+      padding: 18px;
+    }
+
+    .severpay-cost-box {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>
 {% endblock %}
