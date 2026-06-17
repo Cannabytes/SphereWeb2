@@ -159,19 +159,12 @@ class severpay extends BasePaymentPlugin
         $EUR_val = $rateCalc($donateConfig->getRatioEUR());
         $RUB_val = $rateCalc($donateConfig->getRatioRUB());
         $UAH_val = $rateCalc($donateConfig->getRatioUAH());
-        $BYN_val = 0;
-
-        try {
-            if (\Ofey\Logan22\controller\config\config::load()->other()->isExchangeRates()) {
-                $exchangeRates = \Ofey\Logan22\controller\config\config::load()->other()->getExchangeRates();
-                $BYN_val = isset($exchangeRates['BYN']) ? $rateCalc((float)$exchangeRates['BYN']) : 0;
-            }
-        } catch (\Throwable $e) {
-        }
+        $BYN_val = $rateCalc($donateConfig->getRatioBYN());
         $userCountry = strtoupper(user::self()->getCountry() ?? '');
         $mainCurrency = match(true) {
             $userCountry === 'UA' => 'UAH',
             $userCountry === 'RU' => 'RUB',
+            $userCountry === 'BY' => 'BYN',
             default               => 'USD',
         };
 

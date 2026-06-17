@@ -65,7 +65,7 @@
           <div class="severpay-amount-card">
             <label class="severpay-label" for="amount">
               <i class="bi bi-cash-stack"></i>
-              {{ phrase('pally_new_amount_label') }}
+              {{ phrase('severpay_amount_label') }}
             </label>
 
             <div class="input-group input-group-lg severpay-input-group">
@@ -137,7 +137,7 @@
     let activeCurrency = "{{ mainCurrency }}";
 
     function updateCost() {
-      const n = parseInt($("#amount").val()) || 0;
+      const n = parseFloat($("#amount").val()) || 0;
       const rate = CurrencyRates[activeCurrency] || 0;
       $("#costValue").text((n * rate).toFixed(2));
       $("#costCurrency").text(activeCurrency);

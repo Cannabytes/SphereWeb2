@@ -161,6 +161,11 @@
                                         <input min="0.01" step="0.01" type="number" class="form-control" id="ratioRUB"
                                                value="{{server.donate().getRatioRUB()}}" placeholder="100">
                                     </div>
+                                    <div class="col-xl-2">
+                                        <label for="ratioBYN" class="form-label">BYN</label>
+                                        <input min="0.01" step="0.01" type="number" class="form-control" id="ratioBYN"
+                                               value="{{server.donate().getRatioBYN()}}" placeholder="3">
+                                    </div>
 
                                 </div>
 
@@ -1166,6 +1171,7 @@
             ratioEUR: $('#ratioEUR').val(),
             ratioUAH: $('#ratioUAH').val(),
             ratioRUB: $('#ratioRUB').val(),
+            ratioBYN: $('#ratioBYN').val(),
             enableCumulativeDiscountSystem: $('#enableCumulativeDiscountSystem').is(':checked'),
             table_CumulativeDiscountSystem: extractTableData('table_CumulativeDiscountSystem'),
             enableOneTimeBonus: $('#enableOneTimeBonus').is(':checked'),
@@ -1460,6 +1466,7 @@
         $('#ratioEUR').val(data.ratioEUR);
         $('#ratioUAH').val(data.ratioUAH);
         $('#ratioRUB').val(data.ratioRUB);
+        $('#ratioBYN').val(data.ratioBYN ?? 3);
 
         // Настройки переводов в игру
         $('#item_id_to_game_transfer').val(data.item_id_to_game_transfer);

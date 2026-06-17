@@ -636,6 +636,7 @@ class donate
             'RUB' => $calc($sum, config::load()->donate()->getRatioRUB(), $quantity),
             'UAH' => $calc($sum, config::load()->donate()->getRatioUAH(), $quantity),
             'EUR' => $calc($sum, config::load()->donate()->getRatioEUR(), $quantity),
+            'BYN' => $calc($sum, config::load()->donate()->getRatioBYN(), $quantity),
             default => $calc($sum, config::load()->donate()->getRatioUSD(), $quantity),
         };
     }

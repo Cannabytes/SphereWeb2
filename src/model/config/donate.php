@@ -32,6 +32,8 @@ class donate
 
     public float $ratioRUB = 90.44;
 
+    public float $ratioBYN = 3.0;
+
     public bool $enableCumulativeDiscountSystem = false;
 
     public bool $enableOneTimeBonus = false;
@@ -81,6 +83,7 @@ class donate
             $this->ratioEUR = filter_var($setting['ratioEUR'] ?? 1.09, FILTER_VALIDATE_FLOAT, ['options' => ['default' => 1.09]]);
             $this->ratioUAH = filter_var($setting['ratioUAH'] ?? 40.54, FILTER_VALIDATE_FLOAT, ['options' => ['default' => 40.54]]);
             $this->ratioRUB = filter_var($setting['ratioRUB'] ?? 90.44, FILTER_VALIDATE_FLOAT, ['options' => ['default' => 90.44]]);
+            $this->ratioBYN = filter_var($setting['ratioBYN'] ?? 3.0, FILTER_VALIDATE_FLOAT, ['options' => ['default' => 3.0, 'min_range' => 0.01]]);
             $this->enableCumulativeDiscountSystem = filter_var(
                 $setting['enableCumulativeDiscountSystem'],
                 FILTER_VALIDATE_BOOLEAN
@@ -374,6 +377,7 @@ class donate
             'RUB' => $this->ratioRUB,
             'UAH' => $this->ratioUAH,
             'EUR' => $this->ratioEUR,
+            'BYN' => $this->getRatioBYN(),
             default => $this->ratioUSD,
         };
     }
@@ -410,6 +414,20 @@ class donate
             return config::load()->other()->getExchangeRates()['RUB'];
         }
         return $this->ratioRUB;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRatioBYN(): float
+    {
+        if (config::load()->other()->isExchangeRates()) {
+            $exchangeRates = config::load()->other()->getExchangeRates();
+            if (is_array($exchangeRates) && isset($exchangeRates['BYN'])) {
+                return (float)$exchangeRates['BYN'];
+            }
+        }
+        return $this->ratioBYN;
     }
 
     /**
