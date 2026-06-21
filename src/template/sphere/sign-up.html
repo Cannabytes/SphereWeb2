@@ -757,9 +757,9 @@
 
                 <input type="hidden" name="finger" id="finger">
                 <div id="referralinput" class="col-xl-12 mb-2 {% if referral_name is empty %}d-none{% endif %}">
-                  <label for="referral" class="form-label text-default">{{ phrase('username') }}</label>
+                  <label for="referral" class="form-label text-default">{{ phrase('referral_inviter_nick') }}</label>
                   <input name="referral" value="{{referral_name}}" type="text" class="form-control form-control-lg"
-                         id="referral" placeholder="">
+                         id="referral" placeholder="" readonly aria-readonly="true">
                 </div>
 
                 <div class="col-xl-12 mb-2">

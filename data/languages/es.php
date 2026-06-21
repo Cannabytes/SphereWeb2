@@ -405,6 +405,7 @@ return [
     '314' => 'Copiar enlace',
     '315' => 'Primero crea un apodo',
     '316' => 'Personajes del usuario invitado',
+    'referral_inviter_nick' => 'Apodo del usuario que invitó',
     '317' => 'PvP',
     '318' => 'PK',
     '319' => 'Chats del juego',

@@ -397,6 +397,7 @@ return [
     '314' => 'Copiar link',
     '315' => 'Primeiro, crie seu nickname',
     '316' => 'Personagens do usuário convidado',
+    'referral_inviter_nick' => 'Apelido do usuário que convidou',
     '317' => 'PvP',
     '318' => 'PK',
     '319' => 'Chats de jogo',
