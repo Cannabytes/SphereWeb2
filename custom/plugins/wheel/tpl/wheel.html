@@ -319,7 +319,7 @@
   };
 
 
-  const data = JSON.parse(`{{items|raw}}`);
+  const data = JSON.parse(`{{items|raw}}`) || [];
 
   data.forEach((item) => {
     __config.wheel.items.push({

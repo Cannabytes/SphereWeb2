@@ -130,6 +130,7 @@ class wheel
     public function show($name)
     {
         validation::user_protection();
+        $requestedName = self::normalizeWheelName($name);
         $stories = sql::getRows(
             "SELECT `id`, `time`, `variables` FROM `logs_all` WHERE type=? AND user_id = ? AND server_id = ? ORDER BY id DESC",
             [
@@ -160,16 +161,27 @@ class wheel
         }
         $stories = $arrStories;
         $response = server::send(type::GET_WHEELS)->show()->getResponse();
-        if (isset($response['success']) and !$response['success'] or !$response['success']) {
+        if (empty($response['success']) || empty($response['wheels']) || !is_array($response['wheels'])) {
             redirect::location('/main');
         }
-        foreach ($response['wheels'] AS $row){
-            if($row['name']==$name){
-                $response = $row;
+
+        $wheel = null;
+        foreach ($response['wheels'] AS $row) {
+            if (self::normalizeWheelName($row['name'] ?? '') === $requestedName) {
+                $wheel = $row;
+                break;
             }
         }
-        foreach ($response['items'] as &$item) {
+
+        if (!$wheel || empty($wheel['items']) || !is_array($wheel['items'])) {
+            redirect::location('/main');
+        }
+
+        foreach ($wheel['items'] as &$item) {
             $itemData = client_icon::get_item_info($item['item_id']);
+            if (!is_object($itemData)) {
+                redirect::location('/main');
+            }
             $item['icon'] = $itemData->getIcon();
             $item['name'] = $itemData->getItemName();
             $item['add_name'] = $itemData->getAddName();
@@ -179,11 +191,16 @@ class wheel
         }
 
         tpl::addVar('stories', $stories);
-        tpl::addVar('id', (int)$response['id']);
-        tpl::addVar('name', $name);
-        tpl::addVar('cost', (int)$response['cost']);
-        tpl::addVar('items', json_encode($response['items']));
+        tpl::addVar('id', (int)$wheel['id']);
+        tpl::addVar('name', $wheel['name']);
+        tpl::addVar('cost', (int)$wheel['cost']);
+        tpl::addVar('items', json_encode($wheel['items'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
         tpl::displayPlugin("/wheel/tpl/wheel.html");
+    }
+
+    private static function normalizeWheelName(string $name): string
+    {
+        return mb_strtolower(trim(rawurldecode($name)));
     }
 
     public function callback()
