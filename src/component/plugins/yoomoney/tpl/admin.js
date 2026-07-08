@@ -40,6 +40,20 @@ document.addEventListener('DOMContentLoaded', function() {
             saveSupportedCountriesInstant();
         });
     }
+
+    const customNameField = document.getElementById('plugin_custom_name');
+    if (customNameField) {
+        customNameField.addEventListener('change', function() {
+            saveSupportedCountriesInstant();
+        });
+    }
+
+    const hideNameField = document.getElementById('plugin_hide_name');
+    if (hideNameField) {
+        hideNameField.addEventListener('change', function() {
+            saveSupportedCountriesInstant();
+        });
+    }
 });
 
 /**
@@ -192,6 +206,14 @@ function togglePluginEnabled(isEnabled) {
     if (descriptionField) {
         formData.append('PLUGIN_DESCRIPTION', descriptionField.value || '');
     }
+    const customNameField = document.getElementById('plugin_custom_name');
+    if (customNameField) {
+        formData.append('PLUGIN_CUSTOM_NAME', customNameField.value || '');
+    }
+    const hideNameField = document.getElementById('plugin_hide_name');
+    if (hideNameField) {
+        formData.append('PLUGIN_HIDE_NAME', hideNameField.checked ? '1' : '0');
+    }
 
     showLoader();
 
@@ -232,6 +254,14 @@ function saveSupportedCountriesInstant() {
     const descriptionField = document.getElementById('plugin_description');
     if (descriptionField) {
         formData.append('PLUGIN_DESCRIPTION', descriptionField.value || '');
+    }
+    const customNameField = document.getElementById('plugin_custom_name');
+    if (customNameField) {
+        formData.append('PLUGIN_CUSTOM_NAME', customNameField.value || '');
+    }
+    const hideNameField = document.getElementById('plugin_hide_name');
+    if (hideNameField) {
+        formData.append('PLUGIN_HIDE_NAME', hideNameField.checked ? '1' : '0');
     }
 
     document.querySelectorAll('input[name="supported_countries[]"]:checked').forEach(function(checkbox) {

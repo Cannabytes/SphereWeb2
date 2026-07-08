@@ -72,6 +72,16 @@
                     <h5 class="fw-semibold mb-0"><i class="bi bi-card-text me-2"></i>{{ phrase('payment_system_description') }}</h5>
                 </div>
                 <div class="card-body">
+                    {% set paymentPluginSettings = getPluginSetting(pluginName) %}
+                    <label for="plugin_custom_name" class="form-label">{{ phrase('payment_system_custom_name') }}</label>
+                    <input class="form-control" id="plugin_custom_name" name="PLUGIN_CUSTOM_NAME" value="{{ paymentPluginSettings.PLUGIN_CUSTOM_NAME|default('') }}" placeholder="YooMoney">
+                    <small class="text-muted d-block mt-2 mb-3">{{ phrase('payment_system_custom_name_hint') }}</small>
+                    {% set hidePaymentSystemName = paymentPluginSettings.PLUGIN_HIDE_NAME|default(false) in [true, 1, '1', 'true', 'on'] %}
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" role="switch" id="plugin_hide_name" name="PLUGIN_HIDE_NAME" value="1" {% if hidePaymentSystemName %}checked{% endif %}>
+                        <label class="form-check-label" for="plugin_hide_name">{{ phrase('payment_system_hide_name') }}</label>
+                        <small class="text-muted d-block mt-1">{{ phrase('payment_system_hide_name_hint') }}</small>
+                    </div>
                     <textarea class="form-control" id="plugin_description" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ pluginDescription|default('') }}</textarea>
                     <small class="text-muted d-block mt-2">{{ phrase('payment_system_description') }}</small>
                 </div>

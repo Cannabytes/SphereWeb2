@@ -81,6 +81,8 @@ class cryptocloud extends BasePaymentPlugin
         $this->setPluginSetting('currency', $currency);
         $this->setPluginSetting('supported_countries', $supportedCountries);
         $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
+        $this->savePluginCustomNameFromPost();
+        $this->savePluginHideNameFromPost();
 
         board::success(lang::get_phrase('cryptocloud_settings_saved', 'cryptocloud'));
     }

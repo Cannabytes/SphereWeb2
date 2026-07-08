@@ -104,6 +104,8 @@ class unitpay extends BasePaymentPlugin
         $this->setPluginSetting('showMainPage',        $showMainPage);
         $this->setPluginSetting('addToMenu',           $addToMenu);
         $this->setPluginSetting('PLUGIN_DESCRIPTION',  $pluginDescription);
+        $this->savePluginCustomNameFromPost();
+        $this->savePluginHideNameFromPost();
         $this->setPluginSetting('shop',                $shop);
 
         board::success(lang::get_phrase('unitpay_settings_saved'));

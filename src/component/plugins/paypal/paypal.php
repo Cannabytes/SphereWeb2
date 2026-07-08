@@ -134,6 +134,8 @@ class paypal extends BasePaymentPlugin
         $this->setPluginSetting('accounts', $accounts);
         $this->setPluginSetting('supported_countries', $supportedCountries);
         $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
+        $this->savePluginCustomNameFromPost();
+        $this->savePluginHideNameFromPost();
 
         board::success(lang::get_phrase('paypal_settings_saved'));
     }

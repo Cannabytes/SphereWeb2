@@ -225,6 +225,10 @@ function saveGlobalSettings() {
 
     const descriptionField = document.getElementById('plugin_description');
     params.append('PLUGIN_DESCRIPTION', descriptionField ? (descriptionField.value || '') : '');
+    const customNameField = document.getElementById('plugin_custom_name');
+    params.append('PLUGIN_CUSTOM_NAME', customNameField ? (customNameField.value || '') : '');
+    const hideNameField = document.getElementById('plugin_hide_name');
+    params.append('PLUGIN_HIDE_NAME', hideNameField && hideNameField.checked ? '1' : '0');
 
     document.querySelectorAll('input[name="supported_countries[]"]:checked').forEach(function(checkbox) {
         params.append('supported_countries[]', checkbox.value);

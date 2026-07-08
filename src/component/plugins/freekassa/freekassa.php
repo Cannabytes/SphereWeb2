@@ -204,10 +204,18 @@ class freekassa extends BasePaymentPlugin
             $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? []);
             $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? ''));
         }
+        $pluginCustomName = $saveContext === 'toggle'
+            ? trim((string)($settings['PLUGIN_CUSTOM_NAME'] ?? ''))
+            : $this->getPostedPluginCustomName($settings['PLUGIN_CUSTOM_NAME'] ?? '');
+        $pluginHideName = $saveContext === 'toggle'
+            ? $this->normalizePluginBool($settings['PLUGIN_HIDE_NAME'] ?? false)
+            : $this->getPostedPluginHideName($settings['PLUGIN_HIDE_NAME'] ?? false);
 
         $settings['enabled'] = $enabled;
         $settings['supported_countries'] = $supportedCountries;
         $settings['PLUGIN_DESCRIPTION'] = $pluginDescription;
+        $settings['PLUGIN_CUSTOM_NAME'] = $pluginCustomName;
+        $settings['PLUGIN_HIDE_NAME'] = $pluginHideName;
 
         $this->saveStoredSettings($settings);
         $this->syncPluginRegistry($enabled);

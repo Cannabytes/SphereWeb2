@@ -53,6 +53,16 @@
           </div>
 
           <div class="col-12">
+            {% set paymentPluginSettings = getPluginSetting(pluginName) %}
+            <label for="cryptocloud_plugin_custom_name" class="form-label">{{ phrase('payment_system_custom_name') }}</label>
+            <input id="cryptocloud_plugin_custom_name" class="form-control" name="PLUGIN_CUSTOM_NAME" value="{{ paymentPluginSettings.PLUGIN_CUSTOM_NAME|default('') }}" placeholder="CryptoCloud">
+            <div class="form-text mb-3">{{ phrase('payment_system_custom_name_hint') }}</div>
+            {% set hidePaymentSystemName = paymentPluginSettings.PLUGIN_HIDE_NAME|default(false) in [true, 1, '1', 'true', 'on'] %}
+            <div class="form-check form-switch mb-3">
+              <input id="cryptocloud_plugin_hide_name" class="form-check-input" type="checkbox" role="switch" name="PLUGIN_HIDE_NAME" value="1" {% if hidePaymentSystemName %}checked{% endif %}>
+              <label class="form-check-label" for="cryptocloud_plugin_hide_name">{{ phrase('payment_system_hide_name') }}</label>
+              <div class="form-text">{{ phrase('payment_system_hide_name_hint') }}</div>
+            </div>
             <label for="cryptocloud_plugin_description" class="form-label">{{ phrase('payment_system_description') }}</label>
             <textarea id="cryptocloud_plugin_description" class="form-control" name="PLUGIN_DESCRIPTION" rows="3" placeholder="{{ phrase('payment_system_description') }}">{{ pluginDescription|default('') }}</textarea>
           </div>
@@ -169,6 +179,8 @@
       api_key: $('#api_key').val(),
       secret_key: $('#secret_key').val(),
       currency: $('#currency').val(),
+      PLUGIN_CUSTOM_NAME: $('#cryptocloud_plugin_custom_name').val(),
+      PLUGIN_HIDE_NAME: $('#cryptocloud_plugin_hide_name').is(':checked') ? '1' : '0',
       PLUGIN_DESCRIPTION: $('#cryptocloud_plugin_description').val()
     };
 

@@ -142,6 +142,8 @@ class wata extends BasePaymentPlugin
         $this->setPluginSetting('currency', $currency);
         $this->setPluginSetting('supported_countries', $supportedCountries);
         $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
+        $this->savePluginCustomNameFromPost();
+        $this->savePluginHideNameFromPost();
 
         board::success(lang::get_phrase('wata_settings_saved'));
     }

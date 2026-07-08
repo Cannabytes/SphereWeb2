@@ -127,6 +127,8 @@ class severpay extends BasePaymentPlugin
         $this->setPluginSetting('merchants', $merchants);
         $this->setPluginSetting('supported_countries', $supportedCountries);
         $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
+        $this->savePluginCustomNameFromPost();
+        $this->savePluginHideNameFromPost();
 
         board::success(lang::get_phrase('severpay_settings_saved'));
     }

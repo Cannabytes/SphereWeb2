@@ -119,6 +119,8 @@ class pally extends BasePaymentPlugin
         $this->setPluginSetting('gateways', $gateways);
         $this->setPluginSetting('supported_countries', $supportedCountries);
         $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
+        $this->savePluginCustomNameFromPost();
+        $this->savePluginHideNameFromPost();
 
         board::success(lang::get_phrase('pally_settings_saved'));
     }

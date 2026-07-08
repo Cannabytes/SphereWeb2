@@ -127,6 +127,8 @@ class stripe extends BasePaymentPlugin
         $this->setPluginSetting('payment_methods', $paymentMethods);
         $this->setPluginSetting('supported_countries', $supportedCountries);
         $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
+        $this->savePluginCustomNameFromPost();
+        $this->savePluginHideNameFromPost();
 
         board::success('Настройки Stripe сохранены');
     }

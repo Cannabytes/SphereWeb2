@@ -62,9 +62,12 @@ class betaTransferDonate extends BasePaymentPlugin
     {
         validation::user_protection("admin");
 
+        $settings = plugin::getSetting($this->getNameClass());
         $publicKey = $_POST['public_api_key'] ?? '';
         $secretKey = $_POST['secret_api_key'] ?? '';
         $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? $_POST['description'] ?? ''));
+        $pluginCustomName = $this->getPostedPluginCustomName($settings['PLUGIN_CUSTOM_NAME'] ?? '');
+        $pluginHideName = $this->getPostedPluginHideName();
         $description = $pluginDescription;
         $supportedCountries = $this->sanitizeSupportedCountries($_POST['supported_countries'] ?? []);
 
@@ -105,6 +108,8 @@ class betaTransferDonate extends BasePaymentPlugin
             'public_api_key' => $publicKey,
             'secret_api_key' => $secretKey,
             'PLUGIN_DESCRIPTION' => $pluginDescription,
+            'PLUGIN_CUSTOM_NAME' => $pluginCustomName,
+            'PLUGIN_HIDE_NAME' => $pluginHideName,
             'description' => $description,
             'supported_countries' => $supportedCountries,
             'payment_methods' => $paymentMethods,

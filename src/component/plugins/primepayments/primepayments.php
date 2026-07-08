@@ -69,6 +69,8 @@ class primepayments extends BasePaymentPlugin
         $this->setPluginSetting('secret_2', $secret2);
         $this->setPluginSetting('supported_countries', $supportedCountries);
         $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
+        $this->savePluginCustomNameFromPost();
+        $this->savePluginHideNameFromPost();
 
         board::success(lang::get_phrase('primepayments_settings_saved'));
     }

@@ -372,6 +372,15 @@
                             {% set pluginSettings = plugin.PLUGIN_LINK ?? null %}
                             {% set pluginCode = plugin.PLUGIN_DIR_NAME|default(plugin.PLUGIN_NAME|default('')) %}
                             {% set pluginSettingData = pluginCode ? getPluginSetting(pluginCode) : {} %}
+                            {% set rawCustomName = pluginSettingData.PLUGIN_CUSTOM_NAME|default('') %}
+                            {% set rawCustomName = rawCustomName is not null ? rawCustomName|trim : '' %}
+                            {% if rawCustomName %}
+                                {% set pluginDisplayName = rawCustomName %}
+                            {% else %}
+                                {% set pluginDisplayName = plugin.PLUGIN_NAME %}
+                            {% endif %}
+                            {% set pluginHideNameValue = pluginSettingData.PLUGIN_HIDE_NAME|default(false) %}
+                            {% set pluginHideName = pluginHideNameValue in [true, 1, '1', 'true', 'on'] %}
                             {% set rawDescription = pluginSettingData.PLUGIN_DESCRIPTION
                                 |default(pluginSettingData.description
                                 |default(pluginSettingData.shop.description
@@ -402,7 +411,9 @@
                                 <i class="bi bi-cash-coin fs-3 me-3 text-primary"></i>
                                 {% endif %}
                                 <div>
-                                    <div class="fw-bold small">{{ plugin.PLUGIN_NAME }}</div>
+                                    {% if not pluginHideName %}
+                                    <div class="fw-bold small">{{ pluginDisplayName }}</div>
+                                    {% endif %}
                                     <div class="fs-10 text-muted">{{ resolvedDescription|raw }}</div>
                                     <div class="payment-plugin-flags mt-2">
                                         {% for countryCode in pluginCountries %}

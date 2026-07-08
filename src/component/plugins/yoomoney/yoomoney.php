@@ -91,11 +91,15 @@ class yoomoney extends BasePaymentPlugin
             ? $this->sanitizeSupportedCountries($_POST['supported_countries'])
             : $this->sanitizeSupportedCountries($this->getPluginSetting('supported_countries', ['world']));
         $pluginDescription = trim((string)($_POST['PLUGIN_DESCRIPTION'] ?? $this->getPluginSetting('PLUGIN_DESCRIPTION', '')));
+        $pluginCustomName = $this->getPostedPluginCustomName($this->getPluginSetting('PLUGIN_CUSTOM_NAME', ''));
+        $pluginHideName = $this->getPostedPluginHideName($this->getPluginSetting('PLUGIN_HIDE_NAME', false));
 
         // Сохраняем статус в собственных настройках плагина
         $this->setPluginSetting('enabled', $enabled);
         $this->setPluginSetting('supported_countries', $supportedCountries);
         $this->setPluginSetting('PLUGIN_DESCRIPTION', $pluginDescription);
+        $this->setPluginSetting('PLUGIN_CUSTOM_NAME', $pluginCustomName);
+        $this->setPluginSetting('PLUGIN_HIDE_NAME', $pluginHideName);
 
         // Используем системный метод для синхронизации в реестре '__PLUGIN__'
         $_POST['pluginName'] = $this->getNameClass();

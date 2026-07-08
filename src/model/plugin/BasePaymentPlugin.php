@@ -56,6 +56,60 @@ abstract class BasePaymentPlugin
         return lang::get_phrase($defaultPhraseKey);
     }
 
+    protected function getPostedPluginCustomName(mixed $fallback = ''): string
+    {
+        $customName = array_key_exists('PLUGIN_CUSTOM_NAME', $_POST)
+            ? $_POST['PLUGIN_CUSTOM_NAME']
+            : $fallback;
+
+        if (is_array($customName)) {
+            return '';
+        }
+
+        return trim(strip_tags((string)$customName));
+    }
+
+    protected function savePluginCustomNameFromPost(): void
+    {
+        $this->setPluginSetting('PLUGIN_CUSTOM_NAME', $this->getPostedPluginCustomName());
+    }
+
+    protected function normalizePluginBool(mixed $value): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return (bool)$value;
+        }
+
+        if (is_string($value)) {
+            return in_array(strtolower(trim($value)), ['1', 'true', 'yes', 'on'], true);
+        }
+
+        return false;
+    }
+
+    protected function getPostedPluginHideName(mixed $fallback = false): bool
+    {
+        if (!array_key_exists('PLUGIN_HIDE_NAME', $_POST)) {
+            return $this->normalizePluginBool($fallback);
+        }
+
+        $hideName = $_POST['PLUGIN_HIDE_NAME'];
+        if (is_array($hideName)) {
+            return false;
+        }
+
+        return $this->normalizePluginBool($hideName);
+    }
+
+    protected function savePluginHideNameFromPost(): void
+    {
+        $this->setPluginSetting('PLUGIN_HIDE_NAME', $this->getPostedPluginHideName());
+    }
+
     /**
      * Сохранить настройку плагина в таблицу settings
      */
