@@ -168,6 +168,7 @@ class pally extends BasePaymentPlugin
             'mainCurrency'  => $mainCurrency,
         ]);
 
+        $this->addPaymentDisplayVars('Pally');
         tpl::displayPlugin('/pally/tpl/payment.html');
     }
 

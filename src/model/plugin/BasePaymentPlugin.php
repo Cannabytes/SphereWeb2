@@ -8,6 +8,7 @@ use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
 use Ofey\Logan22\model\admin\userlog;
 use Ofey\Logan22\model\user\user;
+use Ofey\Logan22\template\tpl;
 use ReflectionClass;
 
 /**
@@ -108,6 +109,32 @@ abstract class BasePaymentPlugin
     protected function savePluginHideNameFromPost(): void
     {
         $this->setPluginSetting('PLUGIN_HIDE_NAME', $this->getPostedPluginHideName());
+    }
+
+    protected function getPluginDisplayName(string $defaultName): string
+    {
+        $customName = trim(strip_tags((string)$this->getPluginSetting('PLUGIN_CUSTOM_NAME', '')));
+        return $customName !== '' ? $customName : $defaultName;
+    }
+
+    protected function isPluginDisplayNameHidden(): bool
+    {
+        return $this->normalizePluginBool($this->getPluginSetting('PLUGIN_HIDE_NAME', false));
+    }
+
+    protected function addPaymentDisplayVars(string $defaultName): void
+    {
+        $displayName = $this->getPluginDisplayName($defaultName);
+        $hideName = $this->isPluginDisplayNameHidden();
+
+        tpl::addVar([
+            'paymentSystemDisplayName' => $displayName,
+            'paymentSystemHideName' => $hideName,
+            'paymentPageTitle' => $hideName
+                ? lang::get_phrase('payment_page_title_without_name')
+                : lang::get_phrase('payment_page_title_with_name', $displayName),
+            'paymentPageDescription' => lang::get_phrase('payment_page_description'),
+        ]);
     }
 
     /**

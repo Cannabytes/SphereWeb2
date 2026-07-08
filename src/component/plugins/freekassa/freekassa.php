@@ -403,6 +403,7 @@ class freekassa extends BasePaymentPlugin
             "mainCurrency"  => $mainCurrency,
         ]);
 
+        $this->addPaymentDisplayVars('FreeKassa');
         tpl::displayPlugin("/freekassa/tpl/payment.html");
     }
 

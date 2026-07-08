@@ -267,6 +267,7 @@ class yoomoney extends BasePaymentPlugin
             'mainCurrency'  => $mainCurrency,
         ]);
 
+        $this->addPaymentDisplayVars('YooMoney');
         tpl::displayPlugin('/yoomoney/tpl/payment.html');
     }
 

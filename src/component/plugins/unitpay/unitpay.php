@@ -158,6 +158,7 @@ class unitpay extends BasePaymentPlugin
             'mainCurrency'  => $mainCurrency,
         ]);
 
+        $this->addPaymentDisplayVars('UnitPay');
         tpl::displayPlugin('/unitpay/tpl/payment.html');
     }
 

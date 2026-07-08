@@ -183,6 +183,7 @@ class stripe extends BasePaymentPlugin
             'mainCurrency' => $mainCurrency,
         ]);
 
+        $this->addPaymentDisplayVars('Stripe');
         tpl::displayPlugin('/stripe/tpl/payment.html');
     }
 

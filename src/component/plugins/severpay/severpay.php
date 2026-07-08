@@ -184,6 +184,7 @@ class severpay extends BasePaymentPlugin
             'mainCurrency' => $mainCurrency,
         ]);
 
+        $this->addPaymentDisplayVars('SeverPay');
         tpl::displayPlugin('/severpay/tpl/payment.html');
     }
 

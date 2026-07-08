@@ -11,15 +11,17 @@
             <i class="bi bi-wallet2"></i>
           </div>
           <div>
-            <div class="severpay-kicker">SEVERPAY</div>
-            <h4 class="severpay-title">{{ phrase('severpay_payment_title') }}</h4>
-            <div class="severpay-subtitle">{{ phrase('severpay_payment_description') }}</div>
+            {% if not paymentSystemHideName %}
+            <div class="severpay-kicker">{{ paymentSystemDisplayName }}</div>
+            {% endif %}
+            <h4 class="severpay-title">{{ paymentPageTitle }}</h4>
+            <div class="severpay-subtitle">{{ paymentPageDescription }}</div>
           </div>
         </div>
 
         <div class="severpay-hero-note">
           <i class="bi bi-shield-check"></i>
-          <span>Безопасное пополнение баланса через SeverPay</span>
+          <span>{{ phrase('payment_page_secure_note') }}</span>
         </div>
       </div>
 

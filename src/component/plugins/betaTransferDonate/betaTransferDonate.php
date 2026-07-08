@@ -227,6 +227,7 @@ class betaTransferDonate extends BasePaymentPlugin
             'resolvedPaymentMethods' => $paymentMethods,
         ]);
 
+        $this->addPaymentDisplayVars('BetaTransfer Donate');
         tpl::displayPlugin("betaTransferDonate/tpl/donate.html");
     }
 

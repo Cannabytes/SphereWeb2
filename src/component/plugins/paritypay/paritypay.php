@@ -195,6 +195,7 @@ class paritypay extends BasePaymentPlugin
             'mainCurrency' => $mainCurrency,
         ]);
 
+        $this->addPaymentDisplayVars('ParityPay');
         tpl::displayPlugin('/paritypay/tpl/payment.html');
     }
 

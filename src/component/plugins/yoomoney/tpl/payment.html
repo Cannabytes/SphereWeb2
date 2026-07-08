@@ -1,6 +1,6 @@
 {% extends 'struct.html' %}
 
-{% block title %}{{ phrase('payment_title', 'yoomoney') }}{% endblock %}
+{% block title %}{{ paymentPageTitle }}{% endblock %}
 
 {% block content %}
 
@@ -17,8 +17,8 @@
                             </span>
                         </div>
                         <div>
-                            <h4 class="fw-semibold mb-1">{{ phrase('payment_title', 'yoomoney') }}</h4>
-                            <p class="text-muted mb-0 fs-12">{{ phrase('yoomoney_desc', 'yoomoney') }}</p>
+                            <h4 class="fw-semibold mb-1">{{ paymentPageTitle }}</h4>
+                            <p class="text-muted mb-0 fs-12">{{ paymentPageDescription }}</p>
                         </div>
                     </div>
                 </div>
@@ -75,10 +75,10 @@
                             </div>
                         </div>
 
-                        <!-- Информация о YooMoney -->
+                        <!-- Payment information -->
                         <div class="alert alert-info mb-4">
                             <i class="bi bi-info-circle me-2"></i>
-                            После нажатия кнопки оплаты вы будете перенаправлены на страницу YooMoney для завершения платежа.
+                            {{ paymentPageDescription }}
                         </div>
 
                         <!-- Кнопка оплаты -->

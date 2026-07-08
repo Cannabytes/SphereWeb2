@@ -192,6 +192,7 @@ class paypal extends BasePaymentPlugin
             'mainCurrency' => $mainCurrency,
         ]);
 
+        $this->addPaymentDisplayVars('PayPal');
         tpl::displayPlugin('/paypal/tpl/payment.html');
     }
 

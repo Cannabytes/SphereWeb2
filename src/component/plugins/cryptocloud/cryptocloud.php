@@ -137,6 +137,7 @@ class cryptocloud extends BasePaymentPlugin
             'mainCurrency' => $mainCurrency,
         ]);
 
+        $this->addPaymentDisplayVars('CryptoCloud');
         tpl::displayPlugin('/cryptocloud/tpl/payment.html');
     }
 

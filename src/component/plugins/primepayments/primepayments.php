@@ -117,6 +117,7 @@ class primepayments extends BasePaymentPlugin
             'mainCurrency' => $mainCurrency,
         ]);
 
+        $this->addPaymentDisplayVars('PrimePayments');
         tpl::displayPlugin('/primepayments/tpl/payment.html');
     }
 

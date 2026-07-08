@@ -196,6 +196,7 @@ class wata extends BasePaymentPlugin
             'mainCurrency' => $mainCurrency,
         ]);
 
+        $this->addPaymentDisplayVars('Wata');
         tpl::displayPlugin('/wata/tpl/payment.html');
     }
 
