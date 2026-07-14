@@ -21,7 +21,7 @@ $routes = [
     ],
     [
         "method" => "GET",
-        "pattern" => "/severpay/payment",
+        "pattern" => "/svpay/payment",
         "file" => "severpay.php",
         "call" => function() {
             (new severpay())->payment();
@@ -29,7 +29,7 @@ $routes = [
     ],
     [
         "method" => "GET",
-        "pattern" => "/severpay/payment/(\d+)",
+        "pattern" => "/svpay/payment/(\d+)",
         "file" => "severpay.php",
         "call" => function($count) {
             (new severpay())->payment($count);
@@ -37,7 +37,7 @@ $routes = [
     ],
     [
         "method" => "POST",
-        "pattern" => "/severpay/payment/create",
+        "pattern" => "/svpay/payment/create",
         "file" => "severpay.php",
         "call" => function() {
             (new severpay())->createPayment();

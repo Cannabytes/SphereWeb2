@@ -190,7 +190,7 @@
           '<span class="spinner-border spinner-border-sm me-2"></span>{{ phrase("severpay_payment_creating") }}',
         );
 
-      AjaxSend("/severpay/payment/create", "POST", $(this).serialize(), false)
+      AjaxSend("/svpay/payment/create", "POST", $(this).serialize(), false)
         .then(function (response) {
           if (response && response.url) {
             redirecting = true;
