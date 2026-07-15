@@ -181,45 +181,26 @@ class betaTransferDonate extends BasePaymentPlugin
             }
         }
 
-        // Расчет стоимости коинов
+        // Расчет стоимости одного коина в валюте каждого способа оплаты.
         $server = \Ofey\Logan22\model\server\server::getServer(user::self()->getServerId());
         $donate = $server->donate();
         $sphereCoinCost = $donate->getSphereCoinCost();
 
-        if ($sphereCoinCost >= 1) {
-            $USD_val = $donate->getRatioUSD() / $sphereCoinCost;
-            $EUR_val = $donate->getRatioEUR() / $sphereCoinCost;
-            $RUB_val = $donate->getRatioRUB() / $sphereCoinCost;
-            $UAH_val = $donate->getRatioUAH() / $sphereCoinCost;
-        } else {
-            $USD_val = $donate->getRatioUSD() * $sphereCoinCost;
-            $EUR_val = $donate->getRatioEUR() * $sphereCoinCost;
-            $RUB_val = $donate->getRatioRUB() * $sphereCoinCost;
-            $UAH_val = $donate->getRatioUAH() * $sphereCoinCost;
-        }
+        foreach ($paymentMethods as &$method) {
+            $currency = strtoupper(trim((string)($method['currency'] ?? 'USD')));
+            $ratio = (float)$donate->getRatio($currency);
 
-        $userCountry = strtoupper(user::self()->getCountry() ?? '');
-        if ($userCountry == 'UA') {
-            $mainCurrency = 'UAH';
-            $otherCurrencies = ['USD' => $USD_val, 'EUR' => $EUR_val, 'RUB' => $RUB_val];
-        } elseif ($userCountry == 'RU') {
-            $mainCurrency = 'RUB';
-            $otherCurrencies = ['USD' => $USD_val, 'EUR' => $EUR_val, 'UAH' => $UAH_val];
-        } else {
-            $mainCurrency = 'USD';
-            $otherCurrencies = ['EUR' => $EUR_val, 'RUB' => $RUB_val, 'UAH' => $UAH_val];
+            $method['currency'] = $currency;
+            $method['preview_cost_per_coin'] = $sphereCoinCost >= 1.0
+                ? $ratio / $sphereCoinCost
+                : $ratio * $sphereCoinCost;
         }
+        unset($method);
 
         tpl::addVar([
             'paymentMethods' => $paymentMethods,
             'settings' => $settings,
             'count' => $count,
-            'USD_val' => $USD_val,
-            'EUR_val' => $EUR_val,
-            'RUB_val' => $RUB_val,
-            'UAH_val' => $UAH_val,
-            'mainCurrency' => $mainCurrency,
-            'otherCurrencies' => $otherCurrencies,
         ]);
 
         tpl::addVar([

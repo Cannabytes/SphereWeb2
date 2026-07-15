@@ -126,21 +126,16 @@ $(document).ready(function() {
   let selectedMethod = null;
 
   const CurrencyManager = (function () {
-    const currencies = {
-      usd: parseFloat('{{ USD_val|default(0)|number_format(4, ".", "") }}') || 0,
-      eur: parseFloat('{{ EUR_val|default(0)|number_format(4, ".", "") }}') || 0,
-      rub: parseFloat('{{ RUB_val|default(0)|number_format(4, ".", "") }}') || 0,
-      uah: parseFloat('{{ UAH_val|default(0)|number_format(4, ".", "") }}') || 0
-    };
-    const mainCurrency = '{{ mainCurrency|lower }}';
-
     const updateCost = (coinCount) => {
-      const count = parseInt(coinCount) || 0;
-      if (currencies[mainCurrency] !== undefined) {
-        const cost = (count * currencies[mainCurrency]).toFixed(2);
-        $('#costValue').text(cost);
-        $('#costCurrency').text(mainCurrency.toUpperCase());
-      }
+      if (!selectedMethod) return;
+
+      const count = parseFloat(coinCount) || 0;
+      const costPerCoin = parseFloat(selectedMethod.preview_cost_per_coin) || 0;
+      const currency = String(selectedMethod.currency || '').trim().toUpperCase();
+      const cost = (count * costPerCoin).toFixed(2);
+
+      $('#costValue').text(cost);
+      $('#costCurrency').text(currency);
     };
 
     return { updateCost };
