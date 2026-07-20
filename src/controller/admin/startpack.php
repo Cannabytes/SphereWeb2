@@ -112,6 +112,23 @@ class startpack
                 ];
             }
 
+            $itemsForLog = json_encode(
+                $arrObjectItems,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            );
+            if ($itemsForLog === false) {
+                throw new Exception('Failed to encode start pack items for purchase log');
+            }
+
+            user::self()->addLog(
+                logTypes::LOG_BUY_START_PACK,
+                'LOG_USER_BUY_STARTPACK_TO_PLAYER',
+                [$startPackName, $totalPrice, $playerName, $account, $itemsForLog]
+            );
+            if (sql::getException() !== null) {
+                throw new Exception('Failed to save start pack purchase log');
+            }
+
             if (\Ofey\Logan22\controller\config\config::load()->notice()->isBuyStartPack()) {
                 $template = lang::get_other_phrase(\Ofey\Logan22\controller\config\config::load()->notice()->getNoticeLang(), 'notice_start_pack_to_player');
                 $msg = strtr($template, [
@@ -130,7 +147,6 @@ class startpack
             ])->show()->getResponse();
             if (isset($json['data']) && $json['data'] === true) {
                 $db->commit();
-                user::self()->addLog(logTypes::LOG_BUY_START_PACK, "LOG_USER_BUY_STARTPACK", [$startPackName]);
                 board::alert([
                     'type' => 'notice',
                     'ok' => true,
