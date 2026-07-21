@@ -16,6 +16,15 @@ use Ofey\Logan22\template\tpl;
 
 class session
 {
+    /**
+     * ID сессии текущего запроса.
+     *
+     * При первом визите setcookie() отправляет cookie только в ответе,
+     * поэтому нового ID ещё нет в $_COOKIE. Храним его отдельно,
+     * чтобы данные гостевой сессии сохранились в этом же запросе.
+     */
+    private static ?string $currentSessionId = null;
+
     // Общие настройки для всех типов запросов
     // Период времени в секундах для проверки флуда
     private static int $floodPeriodSeconds = 60;
@@ -55,6 +64,7 @@ class session
 
         // Генерируем или получаем ID сессии
         $sessionId = self::getSessionId();
+        self::$currentSessionId = $sessionId;
 
         // Загружаем данные сессии
         self::loadSession($sessionId);
@@ -584,11 +594,11 @@ class session
      */
     private static function saveSession()
     {
-        if (!isset($_COOKIE['sphere_session'])) {
+        $sessionId = self::$currentSessionId ?? ($_COOKIE['sphere_session'] ?? null);
+        if ($sessionId === null) {
             return;
         }
 
-        $sessionId = $_COOKIE['sphere_session'];
         $userId = $_SESSION['id'] ?? null;
 
         sql::run("

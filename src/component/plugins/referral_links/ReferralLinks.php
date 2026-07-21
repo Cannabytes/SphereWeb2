@@ -350,7 +350,8 @@ class ReferralLinks
         // Если нужно отслеживать - выполняем отслеживание
         if ($shouldTrack) {
             session::domainViewsCounter($linkPath);
-            $_SESSION['HTTP_REFERER'] = $linkPath;
+            // Сохраняем источник до редиректа, в том числе для нового посетителя.
+            session::add('HTTP_REFERER', $linkPath);
         }
 
         // Перенаправляем на целевой URL
