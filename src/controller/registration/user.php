@@ -22,6 +22,7 @@ use Ofey\Logan22\model\user\auth\registration;
 use Ofey\Logan22\model\user\player\player_account;
 use Ofey\Logan22\template\tpl;
 use Ofey\Logan22\component\plugins\registration_reward\registration_reward;
+use Ofey\Logan22\component\plugins\referral_links\ReferralLinks;
 
 class user
 {
@@ -72,8 +73,16 @@ class user
         }
 
         $account_name = registration::add($email, $password, $account_name);
-        if (session::get("HTTP_REFERER")) {
-            sql::run('INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)', [0, $_SESSION['id'], "HTTP_REFERER", session::get("HTTP_REFERER"),]);
+        $referralLinks = new ReferralLinks();
+        $httpReferer = session::get('HTTP_REFERER') ?: $referralLinks->getTrackedSource();
+        if ($httpReferer) {
+            $saved = sql::run(
+                'INSERT INTO `user_variables` (`server_id`, `user_id`, `var`, `val`) VALUES (?, ?, ?, ?)',
+                [0, $_SESSION['id'], 'HTTP_REFERER', $httpReferer]
+            );
+            if ($saved) {
+                $referralLinks->forgetTrackedSource();
+            }
         }
 
         \Ofey\Logan22\model\user\user::self()->setId($_SESSION['id']);

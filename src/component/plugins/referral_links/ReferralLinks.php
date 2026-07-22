@@ -14,6 +14,9 @@ use Ofey\Logan22\template\tpl;
 
 class ReferralLinks
 {
+    private const TRACKING_COOKIE = 'sphere_referral_source';
+    private const TRACKING_COOKIE_LIFETIME = 86400 * 30;
+
     private string $pluginName = "referral_links";
     private string $configFilePath;
 
@@ -352,10 +355,61 @@ class ReferralLinks
             session::domainViewsCounter($linkPath);
             // Сохраняем источник до редиректа, в том числе для нового посетителя.
             session::add('HTTP_REFERER', $linkPath);
+            $this->rememberTrackedSource($linkPath);
         }
 
         // Перенаправляем на целевой URL
         redirect::location($redirectUrl);
+    }
+
+    /**
+     * Возвращает источник из cookie, если он всё ещё есть в конфигурации реферальных ссылок.
+     */
+    public function getTrackedSource(): ?string
+    {
+        $source = $_COOKIE[self::TRACKING_COOKIE] ?? null;
+        if (!is_string($source) || $source === '') {
+            return null;
+        }
+
+        $config = $this->loadConfig();
+        return array_key_exists($source, $config) ? $source : null;
+    }
+
+    /**
+     * Удаляет cookie после успешной привязки источника к зарегистрированному пользователю.
+     */
+    public function forgetTrackedSource(): void
+    {
+        setcookie(self::TRACKING_COOKIE, '', $this->trackingCookieOptions(time() - 3600));
+        unset($_COOKIE[self::TRACKING_COOKIE]);
+    }
+
+    private function rememberTrackedSource(string $source): void
+    {
+        setcookie(
+            self::TRACKING_COOKIE,
+            $source,
+            $this->trackingCookieOptions(time() + self::TRACKING_COOKIE_LIFETIME)
+        );
+
+        // setcookie() не обновляет $_COOKIE в текущем запросе.
+        $_COOKIE[self::TRACKING_COOKIE] = $source;
+    }
+
+    private function trackingCookieOptions(int $expires): array
+    {
+        $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || ($_SERVER['REQUEST_SCHEME'] ?? '') === 'https'
+            || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+
+        return [
+            'expires' => $expires,
+            'path' => '/',
+            'secure' => $secure,
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ];
     }
 
     /**
