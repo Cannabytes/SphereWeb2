@@ -432,7 +432,9 @@ class options
             $resetPlayerToVillage = $server->isResetPlayerToVillage();
         }
 
-        $data = [
+        // Keep settings managed by other admin pages (server functions,
+        // bonuses, stacking, etc.) and replace only values from this form.
+        $data = array_replace($server->toStorageArray(), [
             "id" => $serverId,
             "login_id" => $loginServerID,
             "game_id" => $gameserverID,
@@ -456,7 +458,7 @@ class options
             'showOnlineInStatusServer' => $showOnlineInStatusServer,
             'resetItemsToWarehouse' => $resetItemsToWarehouse,
             'resetPlayerToVillage' => $resetPlayerToVillage,
-        ];
+        ]);
 
         $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         sql::run(
@@ -580,9 +582,10 @@ class options
             $server->save();
         }
 
-        $data = json_encode([
+        $server = \Ofey\Logan22\model\server\server::getServer($server_id);
+        $data = json_encode(array_replace($server->toStorageArray(), [
             "id" => $server_id,
-            "isDefault" => $isDefault,
+            "default" => $isDefault,
             "name" => $_POST['name'] ?? board::error("Server name is empty"),
             "rateExp" => $_POST['rateExp'] ?? board::error("Server rateExp is empty"),
             "rateSp" => $_POST['rateSp'] ?? board::error("Server rateSp is empty"),
@@ -591,7 +594,7 @@ class options
             "rateSpoil" => 1,
             "chronicle" => $_POST['version_client'] ?? board::error("Server chronicle is empty"),
             "source" => $_POST['sql_base_source'] ?? board::error("Server source is empty"),
-        ], JSON_UNESCAPED_UNICODE);
+        ]), JSON_UNESCAPED_UNICODE);
         sql::run(
             "UPDATE `servers` SET `data` = ? WHERE `id` = ?",
             [
@@ -622,8 +625,6 @@ class options
                 ])->show()->getResponse();
             }
         }
-
-        $server = \Ofey\Logan22\model\server\server::getServer($server_id);
 
         board::success(lang::get_phrase(217));
     }

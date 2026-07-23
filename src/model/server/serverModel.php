@@ -274,7 +274,27 @@ class serverModel
 
     public function save(): void
     {
-        $arr = [
+        $arr = $this->toStorageArray();
+        sql::run(
+            "INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)
+        ON DUPLICATE KEY UPDATE `data` = VALUES(`data`)",
+            [
+                $this->id,
+                json_encode($arr),
+            ]
+        );
+
+    }
+
+    /**
+     * Returns the complete server state stored in servers.data.
+     *
+     * All code paths that replace servers.data must use this method as a base
+     * so settings owned by another admin page are not silently discarded.
+     */
+    public function toStorageArray(): array
+    {
+        return [
             'id' => $this->id,
             'login_id' => $this->loginId,
             'game_id' => $this->gameId,
@@ -285,11 +305,12 @@ class serverModel
             'rateAdena' => $this->rateAdena,
             'rateDrop' => $this->rateDrop,
             'rateSpoil' => $this->rateSpoil,
+            'platform' => $this->platform,
             'chronicle' => $this->chronicle,
-            'chatGameEnabled' => $this->chatGameEnabled,
-            'launcherEnabled' => $this->launcherEnabled,
+            'chat_game_enabled' => $this->chatGameEnabled,
+            'launcher_enabled' => $this->launcherEnabled,
             'showStatusBar' => $this->showStatusBar,
-            'date_start_server' => $this->dateStartServer,
+            'dateStartServer' => $this->dateStartServer,
             'timezone' => $this->timezone,
             'collection' => $this->collection,
             'statusServer' => $this->statusServerMem,
@@ -299,20 +320,13 @@ class serverModel
             'stackableItem' => $this->stackableItem()->toArray(),
             'bonus' => $this->bonus()->toArray(),
             'maxOnline' => $this->maxOnline,
+            'resetHWID' => $this->resetHWID,
             'resetItemsToWarehouse' => $this->resetItemsToWarehouse,
             'resetPlayerToVillage' => $this->resetPlayerToVillage,
+            'showOnlineInStatusServer' => $this->showOnlineInStatusServer,
             'itemsSendAvailableFrom' => $this->itemsSendAvailableFrom,
             'itemsSendShowTime' => $this->itemsSendShowTime,
         ];
-        sql::run(
-            "INSERT INTO `servers` (`id`, `data`) VALUES (?, ?)
-        ON DUPLICATE KEY UPDATE `data` = VALUES(`data`)",
-            [
-                $this->id,
-                json_encode($arr),
-            ]
-        );
-
     }
 
 
