@@ -148,7 +148,6 @@ class sql
      */
     public static function getRows($query, array $args = []): array
     {
-        self::$countRequest++;
         $result = self::run($query, $args);
         if ($result instanceof PDOStatement) {
             return $result->fetchAll();

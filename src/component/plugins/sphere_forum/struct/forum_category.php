@@ -237,6 +237,11 @@ class forum_category
         return $this->thread = $threadObject;
     }
 
+    public function setLastThread(null|false|forum_thread $thread): void
+    {
+        $this->thread = $thread;
+    }
+
     public function getLastThreadId(): ?int
     {
         return $this->lastThreadId;

@@ -50,6 +50,8 @@ class custom_twig
 
     private static ?array $forumStatisticCache = null;
 
+    private static ?array $forumCategoriesCache = null;
+
     private static array $moderatorCache = [];
     private static array $moderatorPermissionCache = [];
 
@@ -338,14 +340,44 @@ class custom_twig
 
     public function getCategoriesForum(): array {
 
+        if (self::$forumCategoriesCache !== null) {
+            return self::$forumCategoriesCache;
+        }
+
         $forum_categories = sql::getRows(
             "SELECT * FROM `forum_categories` ORDER BY `sort_order` ASC"
         );
         $categories = [];
+        $categoryIds = [];
+        foreach ($forum_categories as $category) {
+            $categoryIds[] = (int)$category['id'];
+        }
+
+        $userId = (int)user::self()->getId();
+        $isAdmin = user::self()->isAdmin();
+        $moderatorCategories = [];
+        if (!$isAdmin && $categoryIds !== []) {
+            $placeholders = implode(',', array_fill(0, count($categoryIds), '?'));
+            $moderatorRows = sql::getRows(
+                "SELECT category_id
+                 FROM forum_moderators
+                 WHERE user_id = ?
+                   AND (category_id IS NULL OR category_id IN ({$placeholders}))",
+                [$userId, ...$categoryIds]
+            );
+            foreach ($moderatorRows as $moderatorRow) {
+                if ($moderatorRow['category_id'] === null) {
+                    $moderatorCategories['all'] = true;
+                    continue;
+                }
+                $moderatorCategories[(int)$moderatorRow['category_id']] = true;
+            }
+        }
+
         foreach ($forum_categories as $category) {
             $isHidden = (bool)($category['is_hidden'] ?? false);
 
-            if ($isHidden && !user::self()->isAdmin() && !ForumModerator::isUserModerator(user::self()->getId(), $category['id'])) {
+            if ($isHidden && !$isAdmin && !isset($moderatorCategories['all']) && !isset($moderatorCategories[(int)$category['id']])) {
                 continue;
             }
             $categories[] = new forum_category($category);
@@ -356,13 +388,86 @@ class custom_twig
             $category->loadSubcategories($categories);
         }
 
+        if (method_exists(forum_category::class, 'setLastThread')) {
+            $this->preloadCategoryLastThreads($categories, $userId, $isAdmin, $moderatorCategories);
+        }
+
         foreach ($categories as $i => $category) {
             if ($category->getParentId() != null) {
                 unset($categories[$i]);
             }
         }
 
-        return $categories;
+        return self::$forumCategoriesCache = array_values($categories);
+    }
+
+    private function preloadCategoryLastThreads(
+        array $categories,
+        int $userId,
+        bool $isAdmin,
+        array $moderatorCategories
+    ): void {
+        $lastThreadIds = array_values(array_unique(array_filter(
+            array_map(
+                static fn(forum_category $category): int => (int)($category->getLastThreadId() ?? 0),
+                $categories
+            )
+        )));
+
+        if ($lastThreadIds === []) {
+            foreach ($categories as $category) {
+                $category->setLastThread(false);
+            }
+            return;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($lastThreadIds), '?'));
+        $threadRows = sql::getRows(
+            "SELECT * FROM forum_threads WHERE id IN ({$placeholders})",
+            $lastThreadIds
+        );
+        $threadsById = [];
+        $hasUnapprovedThread = false;
+        foreach ($threadRows as $threadRow) {
+            $threadsById[(int)$threadRow['id']] = $threadRow;
+            $hasUnapprovedThread = $hasUnapprovedThread || !(bool)$threadRow['is_approved'];
+        }
+
+        $firstPostModerationEnabled = false;
+        if ($hasUnapprovedThread) {
+            $settings = sql::getRow(
+                "SELECT setting FROM settings WHERE `key` = '__FORUM_SETTINGS__' LIMIT 1"
+            );
+            $forumSettings = $settings ? json_decode($settings['setting'], true) : [];
+            $firstPostModerationEnabled = (bool)($forumSettings['enable_first_post_moderation'] ?? false);
+        }
+
+        foreach ($categories as $category) {
+            $threadRow = $threadsById[$category->getLastThreadId() ?? 0] ?? null;
+            if ($threadRow === null) {
+                $category->setLastThread(false);
+                continue;
+            }
+
+            $isModerator = $isAdmin
+                || isset($moderatorCategories['all'])
+                || isset($moderatorCategories[$category->getId()]);
+            if (
+                !(bool)$threadRow['is_approved']
+                && $firstPostModerationEnabled
+                && !$isModerator
+                && (int)$threadRow['user_id'] !== $userId
+            ) {
+                $category->setLastThread(false);
+                continue;
+            }
+
+            $thread = new forum_thread($threadRow);
+            $thread->canView = $isModerator
+                || $category->canViewTopics()
+                || (int)$threadRow['user_id'] === $userId;
+            $category->setLastThread($thread);
+        }
     }
 
 
