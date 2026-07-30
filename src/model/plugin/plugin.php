@@ -144,7 +144,51 @@ class plugin
         $pl->pluginName     = $getNameClass;
         $pl->pluginServerId = $serverId;
 
+        // Настройки платёжного плагина могут сохраняться, когда он выключен.
+        // В этом случае плагина нет в self::$plugins, поэтому без загрузки
+        // сохранённых значений очередное сохранение одного поля перезапишет
+        // всю конфигурацию (включая ключи платёжной системы).
+        foreach (self::loadStoredPluginSettings($getNameClass, $serverId) as $key => $value) {
+            $pl->$key = $value;
+        }
+
         return $pl;
+    }
+
+    private static function loadStoredPluginSettings(string $pluginName, int $serverId): array
+    {
+        // Глобальные настройки (serverId = 0) используются как значения по
+        // умолчанию для всех серверов. Это необходимо прежде всего для
+        // платёжных плагинов: их реквизиты сохраняются глобально, а страницу
+        // настроек администратор может открыть из контекста любого сервера.
+        $settings = self::loadPluginSettingsForServer($pluginName, 0);
+
+        if ($serverId === 0) {
+            return $settings;
+        }
+
+        // Настройки конкретного сервера имеют приоритет над глобальными,
+        // сохраняя ту же модель наследования, что используется при загрузке
+        // активных плагинов.
+        return array_replace(
+            $settings,
+            self::loadPluginSettingsForServer($pluginName, $serverId)
+        );
+    }
+
+    private static function loadPluginSettingsForServer(string $pluginName, int $serverId): array
+    {
+        $setting = sql::getRow(
+            "SELECT `setting` FROM `settings` WHERE `key` = ? AND `serverId` = ? LIMIT 1",
+            ["__PLUGIN__{$pluginName}", $serverId]
+        );
+
+        if (!$setting || empty($setting['setting'])) {
+            return [];
+        }
+
+        $data = json_decode($setting['setting'], true);
+        return is_array($data) ? $data : [];
     }
 
     private static function resolveServerIdFromRequest(): int
