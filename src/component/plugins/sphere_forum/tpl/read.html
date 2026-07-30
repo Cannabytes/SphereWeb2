@@ -301,6 +301,8 @@
                     {% for i, post in posts %}
 
                     {% set user = getUser(post.getUserId()) %}
+                    {% set userSettings = getForumUserSettings(user.getId()) %}
+                    {% set gameProfile = forumUserProfiles[post.getUserId()] ?? {'pvp': 0, 'pk': 0, 'online_time': 0, 'characters': []} %}
 
                     {# Получаем инфу о клане пользователя (если вступил) #}
 					{% set clan = null %}
@@ -350,7 +352,7 @@
                                         <strong data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Moderator" class="badge bg-success h6 mb-1">{{user.getName()}}</strong>
                                         {% else %}
                                         <h5 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="User" class="fw-semibold mb-1 text-center">
-                                            {% if isForumSettingEnabled(user.getId(), 'showFlagCountry') and user.getCountry() != "" %}
+                                            {% if userSettings.showFlagCountry and user.getCountry() != "" %}
                                             <img class="avatar avatar-xs" src="/uploads/images/flags/{{user.getCountry()|lower}}.png">
                                             {% endif %}
                                             {{user.getName()}}</h5>
@@ -365,34 +367,23 @@
                                         <div class="position-absolute w-100 h-100 border  rounded"></div>
                                         <div class="position-relative">
                                             {# Считаем суммарные значения всегда (онлайн время нужно показывать даже если PvP/PK скрыты) #}
-                                            {% set onlineTime = 0 %}
-                                            {% set pvp = 0 %}
-                                            {% set pk = 0 %}
-                                            {% for i, account in getUser(post.getUserId()).getAccounts() %}
-                                                {% for character in account.getCharacters() %}
-                                                    {% set pvp = pvp + character.getPvp() %}
-                                                    {% set pk = pk + character.getPk() %}
-                                                    {% set onlineTime = onlineTime + character.getTimeInGame() %}
-                                                {% endfor %}
-                                            {% endfor %}
-
                                             {# Отображаем PvP/PK только если включено в настройках пользователя #}
-                                            {% if isForumSettingEnabled(user.getId(), 'showPvPPK') %}
+                                            {% if userSettings.showPvPPK %}
                                                 <div class="d-flex align-items-center  bg-opacity-10">
                                                     <div class="text-center flex-grow-1">
-                                                        <div class="text-{{clan.getTextColor()}} fw-bold">{{pvp}} <small class="text-{{clan.getTextColor()}}" >PvP</small></div>
+                                                        <div class="text-{{clan.getTextColor()}} fw-bold">{{gameProfile.pvp}} <small class="text-{{clan.getTextColor()}}" >PvP</small></div>
                                                     </div>
                                                     <div class="text-center  flex-grow-1">
-                                                        <div class="text-{{clan.getTextColor()}} fw-bold">{{pk}} <small class="text-{{clan.getTextColor()}}">PK</small></div>
+                                                        <div class="text-{{clan.getTextColor()}} fw-bold">{{gameProfile.pk}} <small class="text-{{clan.getTextColor()}}">PK</small></div>
                                                     </div>
                                                 </div>
                                             {% endif %}
 
                                             {# Время в игре отображаем независимо от показа PvP/PK, но только если включена соответствующая настройка #}
-                                            {% if isForumSettingEnabled(user.getId(), 'showGameTime') %}
+                                            {% if userSettings.showGameTime %}
                                                 <div class="text-center bg-opacity-10">
                                                     <span class="text-{{clan.getTextColor()}} fw-semibold">
-                                                        {{timeHasPassed(onlineTime,true)}}
+                                                        {{timeHasPassed(gameProfile.online_time,true)}}
                                                     </span>
                                                 </div>
                                             {% endif %}
@@ -405,17 +396,15 @@
                                             </div>
 
                                             <!-- Characters -->
-                                            {% if isForumSettingEnabled(user.getId(), 'showCharacters') %}
+                                            {% if userSettings.showCharacters %}
                                             <div class=" p-1 text-center bg-opacity-10">
                                                 <div class="d-flex justify-content-center gap-1 flex-wrap">
-                                                    {% for i, account in getUser(post.getUserId()).getAccounts() %}
-                                                    {% for character in account.getCharacters() %}
-                                                    <img src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
-                                                         class="rounded-circle avatar avatar-sm {% if character.getOnline() %}border border-success{% else %}opacity-75{% endif %}"
+                                                    {% for character in gameProfile.characters %}
+                                                    <img src="{{tempate}}/uploads/images/race/{{ sex(character.sex) }}/{{ get_class_race(character.class_id) }}.jpg"
+                                                         class="rounded-circle avatar avatar-sm {% if character.online %}border border-success{% else %}opacity-75{% endif %}"
                                                          data-bs-toggle="tooltip"
-                                                         title="{{character.getPlayerName()}} [{{character.getLevel()}}]"
-                                                         alt="{{character.getPlayerName()}}">
-                                                    {% endfor %}
+                                                         title="{{character.player_name}} [{{character.level}}]"
+                                                         alt="{{character.player_name}}">
                                                     {% endfor %}
                                                 </div>
                                             </div>
@@ -542,7 +531,7 @@
 
                                 {% endif %}
 
-                          {% set likes = getPostLikes(post.getId()) %}
+                          {% set likes = forumPostLikes[post.getId()] ?? [] %}
                           <div id="post-buff-{{post.getId()}}"
                               data-post-id="{{post.getId()}}"
                               class="avatar-list-stacked post-likes {% if likes|length > 0 %}list-group-item list-group-item-light{% endif %}">
@@ -677,6 +666,7 @@
                                 <div class="border-bottom mt-1">
                                     <div class="d-flex flex-column align-items-center">
                                                 {% set panelUser = getUser() %}
+                                                {% set panelGameProfile = forumUserProfiles[panelUser.getId()] ?? {'pvp': 0, 'pk': 0, 'online_time': 0, 'characters': []} %}
                                                 <span class="online mb-1">
                                                     {% if panelUser.isAvatarVideo() %}
                                                         <video src="{{ panelUser.getAvatar() }}" class="img-fluid rounded" style="max-width: 200px;" autoplay loop muted playsinline></video>
@@ -688,30 +678,17 @@
                                     </div>
                                 </div>
 
-                                {% if user.isUser() %}
-
-                                {% set onlineTime = 0 %}
-                                {% set pvp = 0 %}
-                                {% set pk = 0 %}
+                                {% if panelUser.isUser() %}
 
                                 {# Правильно итерируем аккаунты и персонажей, чтобы корректно суммировать значения #}
-                                {% for ai, account in getUser(post.getUserId()).getAccounts() %}
-                                    {% for ci, character in account.getCharacters() %}
-                                        {% set pvp = pvp + character.getPvp() %}
-                                        {% set pk = pk + character.getPk() %}
-                                        {% set onlineTime = onlineTime + character.getTimeInGame() %}
-                                    {% endfor %}
-                                {% endfor %}
-
-
                                 <div class="card-body p-0">
                                     <div class="d-flex align-items-center justify-content-center w-100">
                                         <div class="text-center py-2   w-100">
-                                            <p class="fw-bold mb-0">{{pvp}}</p>
+                                            <p class="fw-bold mb-0">{{panelGameProfile.pvp}}</p>
                                             <p class="text-muted mb-0 fs-12">PvP</p>
                                         </div>
                                         <div class="text-center py-2  border-start w-100">
-                                            <p class="fw-bold mb-0">{{pk}}</p>
+                                            <p class="fw-bold mb-0">{{panelGameProfile.pk}}</p>
                                             <p class="text-muted mb-0 fs-12">PK</p>
                                         </div>
                                     </div>
@@ -719,15 +696,13 @@
                                     <div class="d-flex align-items-center  justify-content-center w-100 ">
                                         <div class="text-center py-2   border-bottom w-100">
                                             <div class="avatar-list-stacked">
-                                                {% for i, account in getUser(post.getUserId()).getAccounts() %}
-                                                {% for character in account.getCharacters() %}
+                                                {% for character in panelGameProfile.characters %}
                                                 <span
-                                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{character.getPlayerName()}} [{{character.getLevel()}}]"
-                                                        class="avatar avatar-sm avatar-rounded {% if character.getOnline() %} online {% else %} offline {% endif %} ">
-                                                                                <img src="{{tempate}}/uploads/images/race/{{ sex(character.getSex()) }}/{{ get_class_race(character.getClassId()) }}.jpg"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{character.player_name}} [{{character.level}}]"
+                                                        class="avatar avatar-sm avatar-rounded {% if character.online %} online {% else %} offline {% endif %} ">
+                                                                                <img src="{{tempate}}/uploads/images/race/{{ sex(character.sex) }}/{{ get_class_race(character.class_id) }}.jpg"
                                                                                      alt="img">
                                                                             </span>
-                                                {% endfor %}
                                                 {% endfor %}
                                             </div>
                                         </div>
@@ -1258,4 +1233,4 @@
         }
     });
 </script>
-{% endblock %} 
+{% endblock %}

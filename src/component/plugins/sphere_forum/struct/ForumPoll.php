@@ -44,9 +44,9 @@ class ForumPoll
     private function loadOptions(): void
     {
         $this->options = sql::getRows(
-            "SELECT id, text, votes_count 
-            FROM forum_poll_options 
-            WHERE poll_id = ? 
+            "SELECT id, text, votes_count
+            FROM forum_poll_options
+            WHERE poll_id = ?
             ORDER BY id",
             [$this->id]
         );
@@ -55,7 +55,7 @@ class ForumPoll
     public function hasUserVoted(int $userId): bool
     {
         return sql::getValue(
-                "SELECT COUNT(*) FROM forum_poll_votes 
+                "SELECT COUNT(*) FROM forum_poll_votes
             WHERE poll_id = ? AND user_id = ?",
                 [$this->id, $userId]
             ) > 0;
@@ -92,7 +92,7 @@ class ForumPoll
         }
     }
 
-    // Геттеры и другие методы
+
     public function getId(): int
     {
         return $this->id;
@@ -141,7 +141,7 @@ public function update(array $data): bool {
 
         foreach ($data['options'] as $index => $newOption) {
             if (isset($currentOptions[$index])) {
-                // Обновляем текст опции, независимо от наличия голосов
+
                 sql::run(
                     "UPDATE forum_poll_options
                      SET text = ?
@@ -157,7 +157,7 @@ public function update(array $data): bool {
             }
         }
 
-        // Удаляем лишние опции, сохраняя те, за которые голосовали
+
         if (count($data['options']) < count($currentOptions)) {
             $keepOptionIds = array_column(array_slice($currentOptions, 0, count($data['options'])), 'id');
             $placeholders = str_repeat('?,', count($keepOptionIds) - 1) . '?';

@@ -31,9 +31,9 @@ use Ofey\Logan22\model\user\userModel;
 use Ofey\Logan22\template\tpl;
 use ReflectionClass;
 
-/**
- * Класс форума, обеспечивающий основную функциональность форума
- */
+
+
+
 class forum
 {
     private ?string $nameClass = null;
@@ -57,9 +57,9 @@ class forum
         tpl::addVar("pluginActive", (bool)plugin::getPluginActive("sphere_forum") ?? false);
     }
 
-    /**
-     * Получает настройки форума из базы данных
-     */
+
+
+
     private function getForumSettings(): array
     {
         if ($this->forumSettings !== null) {
@@ -80,9 +80,9 @@ class forum
         return $this->forumSettings;
     }
 
-    /**
-     * Возвращает настройки по умолчанию
-     */
+
+
+
     private function getDefaultSettings(): array
     {
         return [
@@ -112,41 +112,47 @@ class forum
         ];
     }
 
-    /**
-     * Получает значение настройки posts_per_page
-     */
+
+
+
     private function getPostsPerPage(): int
     {
         $settings = $this->getForumSettings();
         return $settings['posts_per_page'] ?? 10;
     }
 
-    /**
-     * Проверяет, включены ли кланы
-     */
+    private function getTopicsPerPage(): int
+    {
+        $settings = $this->getForumSettings();
+        return max(1, min(100, (int)($settings['topics_per_page'] ?? 20)));
+    }
+
+
+
+
     public static function areClanEnabled(): bool
     {
         $settings = self::getForumSettingsStatic();
         return $settings['enable_clans'] ?? true;
     }
 
-    /**
-     * Статический метод для получения настроек форума
-     */
+
+
+
     public static function getForumSettingsStatic(): array
     {
         $settings = sql::getRow(
             "SELECT setting FROM settings WHERE `key` = '__FORUM_SETTINGS__' LIMIT 1"
         );
-        
+
         if ($settings && !empty($settings['setting'])) {
             $decoded = json_decode($settings['setting'], true);
             if ($decoded) {
                 return $decoded;
             }
         }
-        
-        // Возвращаем настройки по умолчанию
+
+
         return [
             'posts_per_page' => 10,
             'topics_per_page' => 20,
@@ -175,12 +181,12 @@ class forum
         ];
     }
 
-    /**
-     * Отображает главную страницу форума
-     */
+
+
+
     public function show(): void
     {
-        // Для админа — считаем ожидающие модерации элементы
+
         $pendingCount = 0;
         if (user::self()->isAdmin()) {
             try {
@@ -188,28 +194,28 @@ class forum
                     "SELECT COUNT(*) FROM forum_threads WHERE is_approved = 0"
                 );
                 $pendingCount += (int)sql::getValue(
-                    "SELECT COUNT(*) FROM forum_posts p 
-                     WHERE p.is_approved = 0 
+                    "SELECT COUNT(*) FROM forum_posts p
+                     WHERE p.is_approved = 0
                        AND p.id != (
                          SELECT MIN(p2.id) FROM forum_posts p2 WHERE p2.thread_id = p.thread_id
                        )"
                 );
             } catch (\Exception $e) {
 
-                // Таблицы могут ещё не существовать
+
             }
         }
         tpl::addVar('pendingModerationCount', $pendingCount);
         tpl::displayPlugin("sphere_forum/tpl/main.html");
     }
 
-    /**
-     * Получает и отображает темы для указанной категории
-     *
-     * @param string $sectionName Название раздела
-     * @param int $sectionId ID раздела
-     * @throws Exception
-     */
+
+
+
+
+
+
+
     public function getTopics(string $sectionName, int $sectionId): void
     {
         try {
@@ -220,26 +226,31 @@ class forum
                 return;
             }
 
-            // Если раздел скрыт — перенаправляем обычных пользователей на /forum
             if ($category->isHidden() && !user::self()->isAdmin() && !ForumModerator::isUserModerator(user::self()->getId(), $category->getId())) {
                 redirect::location('/forum');
                 return;
             }
 
-            // Проверяем права на создание тем
+
             $canCreateTopics = user::self()->isAdmin() || $category->canCreateTopics() || user::self()->isAuth();
 
-            $subCategories = $this->getSubCategories($sectionId);
-            $threads = $this->getThreadsByCategory($sectionId);
+            $currentPage = max(1, (int)($_GET['page'] ?? 1));
+            $topicsPerPage = $this->getTopicsPerPage();
+            $totalThreads = $this->getThreadsCountByCategory($sectionId);
+            $totalPages = max(1, (int)ceil($totalThreads / $topicsPerPage));
+            $currentPage = min($currentPage, $totalPages);
 
-            // Проверяем непрочитанные сообщения для каждой темы
+            $subCategories = $this->getSubCategories($sectionId);
+            $threads = $this->getThreadsByCategory($sectionId, $currentPage, $topicsPerPage);
+
+
             if (user::self()->isAuth()) {
                 foreach ($threads as $thread) {
                     $thread->hasUnread = $thread->hasUnreadPosts();
                 }
             }
 
-            // Получаем родительскую категорию
+
             $parentCategory = null;
             if ($category->getParentId() !== null) {
                 $parentCategory = $this->getCategoryById($category->getParentId());
@@ -250,12 +261,14 @@ class forum
                 "category" => $category,
                 "parentCategory" => $parentCategory,
                 "sectionId" => $sectionId,
-                "categoryId" => $sectionId, // Убедимся, что это значение передается
+                "categoryId" => $sectionId,
                 "sectionName" => $sectionName,
                 "threads" => $threads,
                 "categories" => $subCategories,
                 "canCreateTopics" => $canCreateTopics,
                 "categoryParents" => $categoryParents,
+                "currentPage" => $currentPage,
+                "totalPages" => $totalPages,
             ]);
 
             tpl::displayPlugin("sphere_forum/tpl/topics_list.html");
@@ -264,9 +277,9 @@ class forum
         }
     }
 
-    /**
-     * Вспомогательные private методы
-     */
+
+
+
     private function getCategoryById(int $id): forum_category
     {
         $category = sql::getRow("SELECT * FROM `forum_categories` WHERE `id` = ? LIMIT 1", [$id]);
@@ -285,7 +298,7 @@ class forum
         return array_map(fn($item) => new forum_category($item), $categories);
     }
 
-    private function getThreadsByCategory(int $categoryId): array
+    private function getThreadsCountByCategory(int $categoryId): int
     {
         $approveFilter = '';
         if ($this->isFirstPostModerationEnabled() && !user::self()->isAdmin() && !ForumModerator::isUserModerator(user::self()->getId(), $categoryId)) {
@@ -293,22 +306,38 @@ class forum
             $approveFilter = " AND (is_approved = 1 OR user_id = {$userId})";
         }
 
-        $threads = sql::getRows(
-            "SELECT * FROM `forum_threads` 
-        WHERE `category_id` = ? {$approveFilter}
-        ORDER BY `is_pinned` DESC, `updated_at` DESC",
+        return (int)sql::getValue(
+            "SELECT COUNT(*) FROM `forum_threads` WHERE `category_id` = ? {$approveFilter}",
             [$categoryId]
+        );
+    }
+
+    private function getThreadsByCategory(int $categoryId, int $page, int $topicsPerPage): array
+    {
+        $approveFilter = '';
+        if ($this->isFirstPostModerationEnabled() && !user::self()->isAdmin() && !ForumModerator::isUserModerator(user::self()->getId(), $categoryId)) {
+            $userId = (int)user::self()->getId();
+            $approveFilter = " AND (is_approved = 1 OR user_id = {$userId})";
+        }
+
+        $offset = ($page - 1) * $topicsPerPage;
+        $threads = sql::getRows(
+            "SELECT * FROM `forum_threads`
+        WHERE `category_id` = ? {$approveFilter}
+        ORDER BY `is_pinned` DESC, `updated_at` DESC
+        LIMIT ? OFFSET ?",
+            [$categoryId, $topicsPerPage, $offset]
         );
         return array_map(fn($thread) => new forum_thread($thread), $threads);
     }
 
 
-    /**
-     * Получает и отображает конкретную тему
-     *
-     * @param int $topicId ID темы
-     * @throws Exception
-     */
+
+
+
+
+
+
     public function getTopicRead(int $topicId): void
     {
         try {
@@ -321,7 +350,7 @@ class forum
 
             $totalPages = $this->getTotalPages($topicId);
 
-            // Если страниц нет (нет одобренных постов), показываем первую страницу без редиректа
+
             if ($totalPages <= 0) {
                 $totalPages = 1;
             }
@@ -334,12 +363,12 @@ class forum
                 return;
             }
 
-            // Регистрируем просмотр темы
+
             $this->registerThreadView($topicId);
 
             $postBoundaries = sql::getRow(
-                "SELECT MIN(id) as first_post_id, MAX(id) as last_post_id 
-     FROM forum_posts 
+                "SELECT MIN(id) as first_post_id, MAX(id) as last_post_id
+     FROM forum_posts
      WHERE thread_id = ?",
                 [$topicId]
             );
@@ -347,18 +376,18 @@ class forum
                 $firstPostId = $postBoundaries['first_post_id'];
                 $lastPostId = $postBoundaries['last_post_id'];
 
-                // Теперь у нас есть оба ID из одного запроса
+
                 if ($lastPostId) {
                     ForumTracker::trackThreadView($topicId, $lastPostId);
                 }
             }
 
-            // После получения постов темы, отмечаем уведомления как прочитанные
+
             if (user::self()->isAuth()) {
-                // Получаем ID всех уведомлений для этой темы
+
                 $notifications = sql::getRows(
-                    "SELECT id 
-                FROM forum_notifications 
+                    "SELECT id
+                FROM forum_notifications
                 WHERE user_id = ? AND thread_id = ? AND is_read = 0",
                     [user::self()->getId(), $topicId]
                 );
@@ -373,14 +402,14 @@ class forum
 
             $categoryParents = $this->getCategoryParents($thread->getCategoryId());
 
-            // Сначала проверяем статус модерации
+
             if ((!$thread->isApproved()) && (
                 $category->isModerated() || $this->isFirstPostModerationEnabled()
             )) {
-                // Тема на модерации может быть доступна только:
-                // 1. Администраторам
-                // 2. Модераторам этой категории
-                // 3. Автору темы
+
+
+
+
                 if (!user::self()->isAdmin() &&
                     !ForumModerator::isUserModerator(user::self()->getId(), $category->getId()) &&
                     $thread->getAuthorId() !== user::self()->getId()) {
@@ -388,7 +417,7 @@ class forum
                 }
             }
 
-            // Затем проверяем общие права на просмотр
+
             if (!user::self()->isAdmin() &&
                 !ForumModerator::isUserModerator(user::self()->getId(), $category->getId())) {
                 if (!$category->canViewTopics()) {
@@ -402,18 +431,26 @@ class forum
 
             $categoryName = $this->getCategoryName($thread->getCategoryId());
             $posts = $this->getPostsByThread($topicId, $currentPage);
+            $topicUserIds = array_map(static fn(forum_post $post): int => $post->getUserId(), $posts);
+            if (user::self()->isAuth()) {
+                $topicUserIds[] = user::self()->getId();
+            }
+            $topicViewData = (new custom_twig())->getTopicViewData(
+                $topicUserIds,
+                array_map(static fn(forum_post $post): int => $post->getId(), $posts)
+            );
 
             $isSubscribed = false;
             if (user::self()->isAuth()) {
                 $isSubscribed = (bool)sql::getValue(
-                    "SELECT is_subscribed 
-        FROM forum_user_thread_tracks 
+                    "SELECT is_subscribed
+        FROM forum_user_thread_tracks
         WHERE user_id = ? AND thread_id = ?",
                     [user::self()->getId(), $topicId]
                 );
             }
 
-            // Extract first post content for page description
+
             $pageDesc = '';
             if (!empty($posts)) {
                 $firstPost = reset($posts);
@@ -433,9 +470,11 @@ class forum
                 "totalPages" => $totalPages,
                 "currentPage" => $currentPage,
                 "categoryParents" => $categoryParents,
-                "isSubscribed" => $isSubscribed, // Добавляем статус подписки
+                "isSubscribed" => $isSubscribed,
                 "firstPostId" => $firstPostId,
                 "pageDesc" => $pageDesc,
+                "forumUserProfiles" => $topicViewData['profiles'],
+                "forumPostLikes" => $topicViewData['likes'],
             ]);
 
             tpl::displayPlugin("sphere_forum/tpl/read.html");
@@ -452,17 +491,17 @@ class forum
 
     private function registerThreadView(int $threadId): void
     {
-        // Получаем текущего пользователя или гостя
+
         $userId = user::self()->isAuth() ? user::self()->getId() : null;
         $ipAddress = $_SERVER['REMOTE_ADDR'];
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
-        // Проверяем, не было ли просмотра за последние 24 часа
+
         $existing = sql::getRow(
-            "SELECT id FROM forum_thread_views 
-        WHERE thread_id = ? 
+            "SELECT id FROM forum_thread_views
+        WHERE thread_id = ?
         AND (
-            (user_id IS NOT NULL AND user_id = ?) OR 
+            (user_id IS NOT NULL AND user_id = ?) OR
             (user_id IS NULL AND ip_address = ? AND user_agent = ?)
         )
         AND viewed_at > DATE_SUB(NOW(), INTERVAL 24 HOUR)",
@@ -470,18 +509,18 @@ class forum
         );
 
         if (!$existing) {
-            // Регистрируем новый просмотр
+
             sql::run(
-                "INSERT INTO forum_thread_views 
-            (thread_id, user_id, ip_address, user_agent) 
+                "INSERT INTO forum_thread_views
+            (thread_id, user_id, ip_address, user_agent)
             VALUES (?, ?, ?, ?)",
                 [$threadId, $userId, $ipAddress, $userAgent]
             );
 
-            // Обновляем счетчик в таблице тем
+
             sql::run(
-                "UPDATE forum_threads 
-            SET views = views + 1 
+                "UPDATE forum_threads
+            SET views = views + 1
             WHERE id = ?",
                 [$threadId]
             );
@@ -498,17 +537,17 @@ class forum
     {
         $offset = ($page - 1) * $this->getPostsPerPage();
 
-        // Если включена модерация первого сообщения:
-        // - админ видит все посты
-        // - автор видит свои посты (включая неодобренные)
-        // - остальные видят только одобренные
+
+
+
+
         $approveFilter = '';
         if ($this->isFirstPostModerationEnabled() && !user::self()->isAdmin()) {
             $userId = (int)user::self()->getId();
             $approveFilter = " AND (p.is_approved = 1 OR p.user_id = {$userId})";
         }
 
-        // Получаем посты с учетом пагинации
+
         $posts = sql::getRows(
             "SELECT * FROM `forum_posts` p
         WHERE p.`thread_id` = ? {$approveFilter}
@@ -517,7 +556,7 @@ class forum
             [$threadId, $this->getPostsPerPage(), $offset]
         );
 
-        // Обрабатываем содержимое постов через XSS-фильтр на чтении
+
         foreach ($posts as &$postRow) {
             if (isset($postRow['content']) && is_string($postRow['content'])) {
                 $postRow['content'] = XssSecurity::clean($postRow['content']);
@@ -542,13 +581,13 @@ class forum
         return ceil($totalPosts / $this->getPostsPerPage());
     }
 
-    /**
-     * Проверяет, не забанен ли пользователь на форуме.
-     * Администраторы пропускаются без проверки.
-     *
-     * @param string $actionDescription Описание действия для сообщения об ошибке (напр. "писать сообщения", "ставить лайки")
-     * @throws Exception Если пользователь забанен
-     */
+
+
+
+
+
+
+
     private function checkUserNotBanned(string $actionDescription): void
     {
         if (!user::self()->isAdmin()) {
@@ -568,18 +607,18 @@ class forum
         }
     }
 
-    /**
-     * Проверяет, включена ли модерация первого сообщения
-     */
+
+
+
     private function isFirstPostModerationEnabled(): bool
     {
         $settings = $this->getForumSettings();
         return $settings['enable_first_post_moderation'] ?? false;
     }
 
-    /**
-     * Создаёт таблицы для модерации первого сообщения, если их нет
-     */
+
+
+
     private function ensureFirstPostTables(): void
     {
         try {
@@ -594,28 +633,27 @@ class forum
                 ");
             }
 
-            // Добавляем колонку is_approved в forum_posts если её нет
+
             $colExists = sql::getRow("SHOW COLUMNS FROM `forum_posts` LIKE 'is_approved'");
             if (!$colExists) {
-                sql::run("ALTER TABLE `forum_posts` 
+                sql::run("ALTER TABLE `forum_posts`
                     ADD COLUMN `is_approved` tinyint(1) NOT NULL DEFAULT 1 AFTER `content`,
                     ADD COLUMN `approved_by` int(11) DEFAULT NULL AFTER `is_approved`,
                     ADD COLUMN `approved_at` datetime DEFAULT NULL AFTER `approved_by`");
             }
         } catch (\Exception $e) {
-            // Игнорируем ошибки — таблицы могли уже существовать
         }
     }
 
-    /**
-     * Проверяет, является ли пользователь "доверенным" (уже есть одобренный контент)
-     */
+
+
+
     private function isUserTrusted(int $userId): bool
     {
         if (!user::getUserId($userId)->isAuth()) {
             return false;
         }
-        // Администраторы всегда доверенные
+
         if (user::getUserId($userId)->isAdmin()) {
             return true;
         }
@@ -630,9 +668,9 @@ class forum
         }
     }
 
-    /**
-     * Помечает пользователя как доверенного после одобрения первого контента
-     */
+
+
+
     private function markUserAsTrusted(int $userId, int $approvedBy): void
     {
         $this->ensureFirstPostTables();
@@ -642,9 +680,9 @@ class forum
         );
     }
 
-    /**
-     * Отображает страницу очереди на модерацию первого сообщения
-     */
+
+
+
     public function pendingModeration(): void
     {
         if (!user::self()->isAdmin()) {
@@ -654,7 +692,7 @@ class forum
 
         $this->ensureFirstPostTables();
 
-        // Получаем темы, ожидающие модерации (первый пост пользователя)
+
         $pendingThreads = sql::getRows("
             SELECT t.*, u.name as author_name, c.name as category_name
             FROM forum_threads t
@@ -664,9 +702,6 @@ class forum
             ORDER BY t.created_at DESC
         ");
 
-        // Получаем посты, ожидающие модерации
-        // Исключаем первый пост темы, если сама тема ещё на модерации —
-        // он уже представлен в списке ожидающих тем и дублируется здесь
         $pendingPosts = sql::getRows("
             SELECT p.*, u.name as author_name, t.title as thread_title, t.id as thread_id
             FROM forum_posts p
@@ -687,9 +722,9 @@ class forum
         tpl::displayPlugin("sphere_forum/tpl/pending_moderation.html");
     }
 
-    /**
-     * Одобряет контент (тему или пост) и помечает пользователя как доверенного
-     */
+
+
+
     public function approvePendingContent(): void
     {
         try {
@@ -697,7 +732,7 @@ class forum
                 throw new Exception("Недостаточно прав");
             }
 
-            $type = $_POST['type'] ?? ''; // 'thread' или 'post'
+            $type = $_POST['type'] ?? '';
             $contentId = (int)($_POST['content_id'] ?? 0);
 
             if (!$contentId || !in_array($type, ['thread', 'post'])) {
@@ -716,13 +751,13 @@ class forum
                         "UPDATE forum_threads SET is_approved = 1, approved_by = ?, approved_at = NOW() WHERE id = ?",
                         [$adminId, $contentId]
                     );
-                    // Также одобряем первый пост темы
+
                     sql::run(
-                        "UPDATE forum_posts SET is_approved = 1, approved_by = ?, approved_at = NOW() 
+                        "UPDATE forum_posts SET is_approved = 1, approved_by = ?, approved_at = NOW()
                          WHERE thread_id = ? ORDER BY id ASC LIMIT 1",
                         [$adminId, $contentId]
                     );
-                    // Обновляем счётчики категории
+
                     $threadInfo = sql::getRow("SELECT category_id FROM forum_threads WHERE id = ?", [$contentId]);
                     if ($threadInfo) {
                         $this->incrementCategoryCounters((int)$threadInfo['category_id']);
@@ -754,9 +789,9 @@ class forum
         }
     }
 
-    /**
-     * Отклоняет контент (удаляет его)
-     */
+
+
+
     public function rejectPendingContent(): void
     {
         try {
@@ -799,9 +834,9 @@ class forum
         }
     }
 
-    /**
-     * Отклоняет контент и банит пользователя
-     */
+
+
+
     public function rejectAndBanPendingContent(): void
     {
         try {
@@ -817,7 +852,7 @@ class forum
                 throw new Exception("Неверные параметры");
             }
 
-            // Получаем ID пользователя до удаления контента
+
             $userId = null;
             if ($type === 'thread') {
                 $thread = sql::getRow("SELECT user_id FROM forum_threads WHERE id = ?", [$contentId]);
@@ -831,7 +866,7 @@ class forum
                 throw new Exception("Пользователь не найден");
             }
 
-            // Нельзя забанить админа
+
             $targetUser = user::getUserId($userId);
             if ($targetUser->isAdmin()) {
                 throw new Exception("Нельзя забанить администратора");
@@ -839,7 +874,7 @@ class forum
 
             sql::beginTransaction();
             try {
-                // Удаляем ВСЕ ожидающие модерации сообщения пользователя
+
                 $pendingPosts = sql::getRows(
                     "SELECT id, thread_id FROM forum_posts WHERE user_id = ? AND is_approved = 0",
                     [$userId]
@@ -849,7 +884,7 @@ class forum
                     sql::run("DELETE FROM forum_posts WHERE id = ?", [(int)$pp['id']]);
                 }
 
-                // Удаляем ВСЕ ожидающие модерации темы пользователя
+
                 $pendingThreads = sql::getRows(
                     "SELECT id FROM forum_threads WHERE user_id = ? AND is_approved = 0",
                     [$userId]
@@ -861,10 +896,10 @@ class forum
                     }
                 }
 
-                // Баним пользователя
+
                 ForumBan::createBan($userId, user::self()->getId(), $reason, null);
 
-                // Логируем
+
                 ForumModerator::logAction(
                     user::self()->getId(),
                     'ban_user',
@@ -887,11 +922,11 @@ class forum
         }
     }
 
-    /**
-     * Добавляет сообщение в тему
-     *
-     * @throws Exception
-     */
+
+
+
+
+
     public function addTopicMessage(): void
     {
         try {
@@ -899,15 +934,14 @@ class forum
             $antiFlood->checkFlood();
             $this->validateMessageInput();
 
-            // Проверяем, не забанен ли пользователь (администраторы не блокируются)
+
             $this->checkUserNotBanned("писать сообщения");
 
-            // Проверка модерации первого сообщения
+
             $needsModeration = false;
             if ($this->isFirstPostModerationEnabled() && !user::self()->isAdmin()) {
                 $this->ensureFirstPostTables();
                 if (!$this->isUserTrusted(user::self()->getId())) {
-                    // Если у пользователя уже есть ожидающие модерации сообщения — запрещаем новые
                     $pendingCount = (int)sql::getValue(
                         "SELECT COUNT(*) FROM forum_posts WHERE user_id = ? AND is_approved = 0",
                         [user::self()->getId()]
@@ -925,7 +959,7 @@ class forum
 
             $topicId = (int)$_POST['topicId'];
             $message = isset($_POST['message']) ? $_POST['message'] : '';
-            
+
             $message = XssSecurity::clean($message);
             $attachments = isset($_POST['attachments']) && is_array($_POST['attachments'])
                 ? array_map('intval', $_POST['attachments'])
@@ -1014,18 +1048,18 @@ class forum
         }
     }
 
-    /**
-     * Валидация содержания сообщения
-     * @param string $message Текст сообщения
-     * @param forum_category $category Категория форума
-     * @throws Exception
-     */
+
+
+
+
+
+
     private function validateMessageContent(string $message, forum_category $category): void
     {
-        // Удаляем HTML-теги для проверки реального содержания
+
         $plainText = strip_tags($message);
 
-        // Очищаем от пробелов в начале и конце
+
         $plainText = trim($plainText);
 
         if (mb_strlen($plainText) < 1) {
@@ -1076,9 +1110,9 @@ class forum
         $this->updateCategoryAndParents($categoryId, user::self()->getId(), $lastPostId, $threadId);
     }
 
-    /**
-     * Обновление количества сообщений в категории
-     */
+
+
+
     private function updateCategoryPostCount(int $categoryId, bool $addIncrementTopic = false): void
     {
         $postCount = sql::getValue(
@@ -1101,17 +1135,17 @@ class forum
         }
     }
 
-    /**
-     * Рекурсивное обновление категории и её родителей
-     */
+
+
+
     private function updateCategoryAndParents(int $categoryId, int $userId, int $lastPostId, int $lastThreadId): void
     {
         sql::run(
-            "UPDATE `forum_categories` SET 
-            `updated_at` = ?, 
-            `last_reply_user_id` = ?, 
-            `last_post_id` = ?, 
-            `last_thread_id` = ? 
+            "UPDATE `forum_categories` SET
+            `updated_at` = ?,
+            `last_reply_user_id` = ?,
+            `last_post_id` = ?,
+            `last_thread_id` = ?
          WHERE `id` = ?",
             [time::mysql(), $userId, $lastPostId, $lastThreadId, $categoryId]
         );
@@ -1126,9 +1160,9 @@ class forum
         }
     }
 
-    /**
-     * Увеличивает счетчик ответов в теме
-     */
+
+
+
     private function incrementThreadReplies(int $threadId): void
     {
         sql::run(
@@ -1137,24 +1171,24 @@ class forum
         );
     }
 
-    /**
-     * Увеличивает счетчик постов в категории
-     */
+
+
+
     private function incrementCategoryPostCount(int $categoryId): void
     {
-        // Обновляем счетчик постов в текущей категории
+
         sql::run(
             "UPDATE `forum_categories` SET `post_count` = `post_count` + 1 WHERE `id` = ?",
             [$categoryId]
         );
 
-        // Обновляем счетчики в родительских категориях
+
         $this->updateParentCategoryCounters($categoryId);
     }
 
-    /**
-     * Рекурсивно обновляет счетчики в родительских категориях
-     */
+
+
+
     private function updateParentCategoryCounters(int $categoryId): void
     {
         $category = sql::getRow("SELECT parent_id FROM `forum_categories` WHERE `id` = ?", [$categoryId]);
@@ -1162,25 +1196,25 @@ class forum
         if ($category && $category['parent_id'] !== null) {
             $parentId = (int)$category['parent_id'];
 
-            // Обновляем счетчики в родительской категории
+
             sql::run(
-                "UPDATE `forum_categories` SET 
+                "UPDATE `forum_categories` SET
                     `post_count` = `post_count` + 1
                  WHERE `id` = ?",
                 [$parentId]
             );
 
-            // Рекурсивно обновляем счетчики для следующего уровня родителей
+
             $this->updateParentCategoryCounters($parentId);
         }
     }
 
-    /**
-     * Создает новую тему
-     *
-     * @param string $sectionName Название раздела
-     * @param int $categoryId ID категории
-     */
+
+
+
+
+
+
     public function createTopic(string $sectionName, int $categoryId): void
     {
         try {
@@ -1194,7 +1228,7 @@ class forum
                 throw new Exception("Необходимо авторизоваться");
             }
 
-            // Проверяем, не забанен ли пользователь (администраторы не блокируются)
+
             $this->checkUserNotBanned("создавать темы");
 
             tpl::addVar([
@@ -1215,15 +1249,14 @@ class forum
 
             $this->validateTopicInput();
 
-            // Проверяем, не забанен ли пользователь (администраторы не блокируются)
+
             $this->checkUserNotBanned("создавать темы");
 
-            // Проверка модерации первого сообщения
+
             $needsFirstPostModeration = false;
             if ($this->isFirstPostModerationEnabled() && !user::self()->isAdmin()) {
                 $this->ensureFirstPostTables();
                 if (!$this->isUserTrusted(user::self()->getId())) {
-                    // Если у пользователя уже есть ожидающие модерации — запрещаем новые
                     $pendingCount = (int)sql::getValue(
                         "SELECT COUNT(*) FROM forum_posts WHERE user_id = ? AND is_approved = 0",
                         [user::self()->getId()]
@@ -1243,16 +1276,16 @@ class forum
             $title = trim($_POST['title']);
             $message = trim($_POST['content']);
 
-            // XSS защита: очищаем название темы и сообщение
+
             $title = XssSecurity::clean($title);
             $message = XssSecurity::clean($message);
 
-            // Валидация названия темы
+
             $this->validateTopicTitle($title);
 
             $category = $this->getCategoryById($categoryId);
 
-            // Добавляем валидацию содержания темы
+
             $this->validateTopicContent($title, $message, $category);
             $this->validateMessageContent($message, $category);
 
@@ -1260,7 +1293,7 @@ class forum
             $attachments = isset($_POST['attachments']) ? array_map('intval', $_POST['attachments']) : [];
 
 
-            // Проверяем требуется ли модерация
+
             $isApproved = (!$category->isModerated() || user::self()->isAdmin()) && !$needsFirstPostModeration;
 
             sql::beginTransaction();
@@ -1277,7 +1310,7 @@ class forum
                 $this->updateThreadAfterCreation($topicId, $lastPostId);
                 $this->updateCategoriesAfterNewTopic($categoryId, $lastPostId, $topicId);
 
-                // Обновляем информацию об активности пользователя
+
                 $antiFlood->updateActivity();
 
                 $this->incrementCategoryCounters($categoryId);
@@ -1314,8 +1347,8 @@ class forum
 
     private function createPollForThread(int $topicId, array $pollData): ?int {
         sql::run(
-            "INSERT INTO forum_polls 
-        (thread_id, question, is_multiple, expires_at) 
+            "INSERT INTO forum_polls
+        (thread_id, question, is_multiple, expires_at)
         VALUES (?, ?, ?, ?)",
             [
                 $topicId,
@@ -1346,7 +1379,7 @@ class forum
 
     private function validateTopicContent(string $title, string $message, forum_category $category): void
     {
-        // Проверяем заголовок
+
         $plainTitle = trim(strip_tags($title));
         if (mb_strlen($plainTitle) < 3) {
             throw new Exception("Название темы слишком короткое. Минимальная длина - 3 символа.");
@@ -1356,7 +1389,7 @@ class forum
             throw new Exception("Название темы слишком длинное. Максимальная длина - 100 символов.");
         }
 
-        // Проверяем содержание первого сообщения
+
         $this->validateMessageContent($message, $category);
     }
 
@@ -1377,13 +1410,13 @@ class forum
     private function insertNewThread(int $categoryId, string $title, int $isClose, bool $isApproved): int
     {
         sql::run(
-            "INSERT INTO `forum_threads` SET 
-        `category_id` = ?, 
-        `user_id` = ?, 
-        `title` = ?, 
+            "INSERT INTO `forum_threads` SET
+        `category_id` = ?,
+        `user_id` = ?,
+        `title` = ?,
         `first_message_id` = ?,
-        `created_at` = ?, 
-        `updated_at` = ?, 
+        `created_at` = ?,
+        `updated_at` = ?,
         `is_closed` = ?,
         `is_approved` = ?",
             [$categoryId, user::self()->getId(), $title, 0, time::mysql(), time::mysql(), $isClose, (int)$isApproved]
@@ -1396,13 +1429,13 @@ class forum
         return $this->createPost($topicId, $message, null, $isApproved);
     }
 
-    /**
-     * Связывает загруженные файлы с постом
-     *
-     * @param int $postId ID поста
-     * @param array $attachmentIds Массив ID прикрепленных файлов
-     * @throws Exception
-     */
+
+
+
+
+
+
+
     private function linkAttachmentsToPost(int $postId, array $attachmentIds): void
     {
         if (empty($attachmentIds)) {
@@ -1428,20 +1461,20 @@ class forum
     {
         foreach ($this->getCategoryParents($categoryId) as $categoryParent) {
             sql::run(
-                "UPDATE `forum_categories` SET 
-            `updated_at` = ?, 
-            `last_reply_user_id` = ?, 
-            `last_post_id` = ?, 
-            `last_thread_id` = ? 
+                "UPDATE `forum_categories` SET
+            `updated_at` = ?,
+            `last_reply_user_id` = ?,
+            `last_post_id` = ?,
+            `last_thread_id` = ?
             WHERE `id` = ?",
                 [time::mysql(), user::self()->getId(), $lastPostId, $topicId, $categoryParent->getId()]
             );
         }
     }
 
-    /**
-     * Получение цепочки родительских категорий
-     */
+
+
+
     private function getCategoryParents(int $categoryId): array
     {
         $parents = [];
@@ -1464,14 +1497,14 @@ class forum
         return array_reverse($parents);
     }
 
-    /**
-     * Увеличивает счетчики категории при создании новой темы
-     */
+
+
+
     private function incrementCategoryCounters(int $categoryId): void
     {
-        // Обновляем счетчики в текущей категории
+
         sql::run(
-            "UPDATE `forum_categories` SET 
+            "UPDATE `forum_categories` SET
             `thread_count` = `thread_count` + 1,
             `post_count` = `post_count` + 1,
             `updated_at` = ?
@@ -1479,13 +1512,13 @@ class forum
             [time::mysql(), $categoryId]
         );
 
-        // Обновляем счетчики во всех родительских категориях
+
         $this->updateParentCategoryCountersIncrement($categoryId);
     }
 
-    /**
-     * Рекурсивно обновляет счетчики в родительских категориях
-     */
+
+
+
     private function updateParentCategoryCountersIncrement(int $categoryId): void
     {
         $category = sql::getRow("SELECT parent_id FROM `forum_categories` WHERE `id` = ?", [$categoryId]);
@@ -1493,9 +1526,9 @@ class forum
         if ($category && $category['parent_id'] !== null) {
             $parentId = (int)$category['parent_id'];
 
-            // Обновляем счетчики в родительской категории
+
             sql::run(
-                "UPDATE `forum_categories` SET 
+                "UPDATE `forum_categories` SET
                 `thread_count` = `thread_count` + 1,
                 `post_count` = `post_count` + 1,
                 `updated_at` = ?
@@ -1503,20 +1536,20 @@ class forum
                 [time::mysql(), $parentId]
             );
 
-            // Рекурсивно обновляем счетчики для следующего уровня родителей
+
             $this->updateParentCategoryCountersIncrement($parentId);
         }
     }
 
-    /**
-     * Удаляет неиспользованные прикрепленные файлы
-     */
+
+
+
     public function cleanupUnusedAttachments(): void
     {
-        // Получаем список неиспользованных файлов старше 1 дня
+
         $unusedAttachments = sql::getRows(
-            "SELECT * FROM forum_attachments 
-        WHERE post_id IS NULL 
+            "SELECT * FROM forum_attachments
+        WHERE post_id IS NULL
         AND created_at < DATE_SUB(NOW(), INTERVAL 1 DAY)"
         );
 
@@ -1527,10 +1560,10 @@ class forum
             }
         }
 
-        // Удаляем записи из базы
+
         sql::run(
-            "DELETE FROM forum_attachments 
-        WHERE post_id IS NULL 
+            "DELETE FROM forum_attachments
+        WHERE post_id IS NULL
         AND created_at < DATE_SUB(NOW(), INTERVAL 1 DAY)"
         );
     }
@@ -1552,11 +1585,11 @@ class forum
         board::success("Тема создана");
     }
 
-    /**
-     * Создает новую категорию
-     *
-     * @throws Exception
-     */
+
+
+
+
+
     public function createCategory(): void
     {
         try {
@@ -1566,7 +1599,7 @@ class forum
             $name = $_POST['name'];
             $description = $_POST['description'] ?? "";
             $icon = $_POST['icon'] ?? "";
-            
+
             $name = XssSecurity::clean($name);
             $description = XssSecurity::clean($description);
 
@@ -1605,9 +1638,9 @@ class forum
         }
     }
 
-    /**
-     * Удаление категории и всех связанных данных
-     */
+
+
+
 
     public function deleteCategory(): void
     {
@@ -1618,10 +1651,10 @@ class forum
             $action = $_POST['action'] ?? 'delete';
             $destinationCategoryId = $_POST['destinationCategoryId'] ?? null;
 
-            // Инициализируем custom_twig для транслитерации
+
             $custom_twig = new custom_twig();
 
-            // Получаем информацию о категории
+
             $category = $this->getCategoryById($categoryId);
             if (!$category) {
                 throw new Exception("Категория не найдена");
@@ -1630,70 +1663,70 @@ class forum
             sql::beginTransaction();
             try {
                 if ($action === 'move' && $destinationCategoryId) {
-                    // Проверяем существование целевой категории
+
                     $destinationCategory = $this->getCategoryById($destinationCategoryId);
                     if (!$destinationCategory) {
                         throw new Exception("Категория назначения не найдена");
                     }
 
-                    // Сначала перемещаем темы из текущей категории
+
                     sql::run(
-                        "UPDATE forum_threads 
-                    SET category_id = ?, updated_at = ? 
+                        "UPDATE forum_threads
+                    SET category_id = ?, updated_at = ?
                     WHERE category_id = ?",
                         [$destinationCategoryId, time::mysql(), $categoryId]
                     );
 
-                    // Получаем прямые подкатегории текущей категории
+
                     $directSubcategories = sql::getRows(
                         "SELECT * FROM `forum_categories` WHERE `parent_id` = ? ORDER BY `sort_order` ASC",
                         [$categoryId]
                     );
 
                     foreach ($directSubcategories as $subcat) {
-                        // Перемещаем каждую подкатегорию в целевую категорию
+
                         sql::run(
-                            "UPDATE forum_categories 
-                        SET parent_id = ?, updated_at = ? 
+                            "UPDATE forum_categories
+                        SET parent_id = ?, updated_at = ?
                         WHERE id = ?",
                             [$destinationCategoryId, time::mysql(), $subcat['id']]
                         );
                     }
 
-                    // Обновляем счетчики в целевой категории
+
                     $this->recalculateCategoryCounters($destinationCategoryId);
 
-                    // Обновляем информацию о последнем посте в целевой категории
+
                     $this->updateLastPostInfo($destinationCategoryId);
 
-                    // Удаляем исходную категорию после перемещения всего содержимого
+
                     sql::run("DELETE FROM forum_categories WHERE id = ?", [$categoryId]);
 
                 } else {
-                    // Получаем все ID подкатегорий
+
                     $allCategoryIds = $this->getAllChildCategories($categoryId);
                     $allCategoryIds[] = $categoryId;
 
                     $placeholders = str_repeat('?,', count($allCategoryIds) - 1) . '?';
 
-                    // Удаляем все посты из тем всех категорий
+
                     sql::run(
-                        "DELETE fp FROM forum_posts fp 
-                    INNER JOIN forum_threads ft ON fp.thread_id = ft.id 
+                        "DELETE fp FROM forum_posts fp
+                    INNER JOIN forum_threads ft ON fp.thread_id = ft.id
                     WHERE ft.category_id IN ($placeholders)",
                         $allCategoryIds
                     );
 
-                    // Удаляем все темы из всех категорий
+
                     sql::run(
-                        "DELETE FROM forum_threads 
+                        "DELETE FROM forum_threads
                     WHERE category_id IN ($placeholders)",
                         $allCategoryIds
                     );
 
-                    // Удаляем все категории включая подкатегории
+
                     sql::run(
-                        "DELETE FROM forum_categories 
+                        "DELETE FROM forum_categories
                     WHERE id IN ($placeholders)",
                         $allCategoryIds
                     );
@@ -1701,7 +1734,7 @@ class forum
 
                 sql::commit();
 
-                // Определяем куда делать редирект
+
                 if ($action === 'move') {
                     board::redirect("/forum/" . $custom_twig->transliterateToEn($destinationCategory->getName()) . "." . $destinationCategoryId);
                     board::success("Содержимое категории успешно перемещено");
@@ -1726,14 +1759,14 @@ class forum
 
     private function updateLastPostInfo(int $categoryId): void
     {
-        // Получаем последний пост в категории и всех её подкатегориях
+
         $lastPost = sql::getRow(
             "SELECT p.id as post_id, p.thread_id, p.user_id
          FROM forum_posts p
          JOIN forum_threads t ON p.thread_id = t.id
-         WHERE t.category_id = ? 
+         WHERE t.category_id = ?
             OR t.category_id IN (
-                SELECT id FROM forum_categories 
+                SELECT id FROM forum_categories
                 WHERE parent_id = ?
             )
          ORDER BY p.created_at DESC
@@ -1743,7 +1776,7 @@ class forum
 
         if ($lastPost) {
             sql::run(
-                "UPDATE forum_categories 
+                "UPDATE forum_categories
             SET last_post_id = ?,
                 last_thread_id = ?,
                 last_reply_user_id = ?,
@@ -1758,7 +1791,7 @@ class forum
                 ]
             );
 
-            // Если у категории есть родитель, обновляем и его
+
             $parent = sql::getRow(
                 "SELECT parent_id FROM forum_categories WHERE id = ?",
                 [$categoryId]
@@ -1773,20 +1806,20 @@ class forum
 
     private function recalculateCategoryCounters(int $categoryId): void
     {
-        // Получаем количество тем и постов для категории
+
         $stats = sql::getRow(
-            "SELECT 
+            "SELECT
             (SELECT COUNT(*) FROM forum_threads WHERE category_id = ?) as thread_count,
-            (SELECT COUNT(p.id) 
-             FROM forum_posts p 
-             JOIN forum_threads t ON p.thread_id = t.id 
+            (SELECT COUNT(p.id)
+             FROM forum_posts p
+             JOIN forum_threads t ON p.thread_id = t.id
              WHERE t.category_id = ?) as post_count",
             [$categoryId, $categoryId]
         );
 
-        // Обновляем счетчики в категории
+
         sql::run(
-            "UPDATE forum_categories 
+            "UPDATE forum_categories
          SET thread_count = ?,
              post_count = ?,
              updated_at = ?
@@ -1799,24 +1832,24 @@ class forum
             ]
         );
 
-        // Получаем родительскую категорию
+
         $parentCategory = sql::getRow(
             "SELECT parent_id FROM forum_categories WHERE id = ?",
             [$categoryId]
         );
 
-        // Рекурсивно обновляем счетчики родительских категорий
+
         if ($parentCategory && $parentCategory['parent_id'] !== null) {
             $this->recalculateCategoryCounters($parentCategory['parent_id']);
         }
     }
 
-    /**
-     * Получает все ID дочерних категорий рекурсивно для указанной родительской категории
-     *
-     * @param int $parentId ID родительской категории
-     * @return array Массив ID всех дочерних категорий
-     */
+
+
+
+
+
+
     private function getAllChildCategories(int $parentId): array
     {
         $childCategories = [];
@@ -1825,18 +1858,18 @@ class forum
 
         foreach ($children as $child) {
             $childCategories[] = $child['id'];
-            // Рекурсивно получаем ID подкатегорий для каждой дочерней категории
+
             $childCategories = array_merge($childCategories, $this->getAllChildCategories($child['id']));
         }
 
         return $childCategories;
     }
 
-    /**
-     * Отображает форму редактирования поста
-     *
-     * @param int $postId ID поста для редактирования
-     */
+
+
+
+
+
     public function postEdit(int $postId, int $returnPage): void
     {
         $post = sql::getRow("SELECT * FROM `forum_posts` WHERE `id` = ?", [$postId]);
@@ -1853,19 +1886,19 @@ class forum
 
     private function getThreadByPostId(int $postId): ?forum_thread {
         $thread = sql::getRow(
-            "SELECT t.* FROM forum_threads t 
-         JOIN forum_posts p ON p.thread_id = t.id 
+            "SELECT t.* FROM forum_threads t
+         JOIN forum_posts p ON p.thread_id = t.id
          WHERE p.id = ?",
             [$postId]
         );
         return $thread ? new forum_thread($thread) : null;
     }
 
-    /**
-     * Сохраняет отредактированный пост
-     *
-     * @throws Exception
-     */
+
+
+
+
+
     public function postEditSave(): void
     {
         try {
@@ -1875,11 +1908,11 @@ class forum
 
             $postId = (int)$_POST['postId'];
             $message = $_POST['content'];
-            
-            // XSS защита: очищаем сообщение от потенциально опасного содержимого
+
+
             $message = XssSecurity::clean($message);
 
-            // Проверяем, не забанен ли пользователь (администраторы не блокируются)
+
             $this->checkUserNotBanned("редактировать сообщения");
 
             $returnPage = (int)($_POST['returnPage'] ?? 1);
@@ -1895,7 +1928,7 @@ class forum
             }
             $category = $this->getCategoryById($thread->getCategoryId());
 
-            // Проверка прав: автор, админ, или модератор категории с правом редактирования
+
             if ($post->getUserId() != user::self()->getId()) {
                 $isAdmin = user::self()->isAdmin();
                 $canModeratorEdit = ForumModerator::hasPermission(user::self()->getId(), $thread->getCategoryId(), 'can_edit_posts');
@@ -1904,20 +1937,20 @@ class forum
                 }
             }
 
-            // Проверяем длину сообщения
+
             if (mb_strlen(strip_tags($message)) > $category->getMaxPostLength()) {
                 throw new Exception("Сообщение превышает максимально допустимую длину");
             }
 
-            // Проверяем время редактирования: пользователи могут редактировать свои сообщения
-            // только в течение 60 минут после создания. Админы и модераторы с правом
-            // `can_edit_posts` не ограничены этим таймаутом.
+
+
+
             $timePassedMinutes = (time() - strtotime($post->getCreatedAt())) / 60;
             $isAdmin = user::self()->isAdmin();
             $canModeratorEdit = ForumModerator::hasPermission(user::self()->getId(), $thread->getCategoryId(), 'can_edit_posts');
 
             if (!$isAdmin && !$canModeratorEdit) {
-                // Только автор может редактировать своё сообщение в пределах таймаута
+
                 if ($post->getUserId() === user::self()->getId()) {
                     if ($timePassedMinutes > 60) {
                         throw new Exception("Время редактирования сообщения истекло");
@@ -1933,18 +1966,18 @@ class forum
             $custom_twig = new custom_twig();
             $translit = $custom_twig->transliterateToEn($thread->getName());
 
-            // Опрос можно будет изменять только первому сообщению темы
+
             if($thread->getFirstMessageId() == $post->getId()){
                 if (isset($_POST['poll']) and !empty($_POST['poll'])) {
                     $pollData = $_POST['poll'];
                     if ($thread->getPoll()) {
-                        // Обновляем существующий опрос
+
                         $poll = $thread->getPoll();
                         if (!$poll->update($pollData)) {
                             throw new Exception("Ошибка при обновлении опроса");
                         }
                     } else {
-                        // Создаем новый опрос
+
                         $pollId = $this->createPollForThread($thread->getId(), $pollData);
                         sql::run(
                             "UPDATE forum_threads SET poll_id = ? WHERE id = ?",
@@ -1979,7 +2012,7 @@ class forum
             $description = XssSecurity::clean($description);
             $link = XssSecurity::cleanUrl($link);
 
-            // Валидация и приведение типов для числовых параметров
+
             $canUsersDeleteOwnThreads = isset($_POST['canUsersDeleteOwnThreads']) && $_POST['canUsersDeleteOwnThreads'] === 'true' ? 1 : 0;
             $threadDeleteTimeoutMinutes = isset($_POST['threadDeleteTimeoutMinutes']) ?
                 max(1, min(10080, (int)$_POST['threadDeleteTimeoutMinutes'])) : 30;
@@ -1992,9 +2025,9 @@ class forum
             $titleColor = $_POST['titleColor'] ?? 'dark';
 
             $sql = "INSERT INTO `forum_categories` (
-    `name`, 
-    `description`, 
-    `parent_id`, 
+    `name`,
+    `description`,
+    `parent_id`,
     `icon_svg`,
     `link`,
     `is_hidden`,
@@ -2050,9 +2083,9 @@ class forum
         }
     }
 
-    /**
-     * Получение значений чекбоксов для создания секции
-     */
+
+
+
     private function getCheckboxFields(): array
     {
         return [
@@ -2066,12 +2099,12 @@ class forum
     }
 
 
-    /**
-     * Извлекает пути к изображениям из HTML-контента
-     *
-     * @param string $content HTML-контент
-     * @return array Массив путей к изображениям для удаления
-     */
+
+
+
+
+
+
     private function normalizeForumAttachmentFilename(string $path): ?string
     {
         if (!str_starts_with($path, '/uploads/forum/')) {
@@ -2119,24 +2152,24 @@ class forum
     private function extractImagesToDelete(string $content): array {
         $filesToDelete = [];
 
-        // Используем htmlspecialchars для безопасного преобразования
+
         $content = htmlspecialchars_decode($content);
 
         $dom = new \DOMDocument();
 
-        // Добавляем обработку ошибок
+
         $useInternalErrors = libxml_use_internal_errors(true);
 
-        // Добавляем базовую HTML-структуру для корректного парсинга
+
         $dom->loadHTML(
             '<?xml encoding="UTF-8">' . $content,
             LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
         );
 
-        // Восстанавливаем предыдущее состояние обработки ошибок
+
         libxml_use_internal_errors($useInternalErrors);
 
-        // Получаем все изображения
+
         $images = $dom->getElementsByTagName('img');
 
         foreach ($images as $img) {
@@ -2147,15 +2180,15 @@ class forum
             }
         }
 
-        // Возвращаем уникальные значения
+
         return array_unique($filesToDelete);
     }
 
-    /**
-     * Удаляет файлы форума и их миниатюры
-     *
-     * @param string $filename Имя файла
-     */
+
+
+
+
+
     private function deleteForumFiles(string $filename): void {
         $filename = basename($filename);
         if ($filename === '') {
@@ -2174,9 +2207,9 @@ class forum
         }
     }
 
-    /**
-     * Удаление сообщения
-     */
+
+
+
     public function deleteMessage(): void {
         try {
             $messageId = $_POST['messageId'] ?? board::error("Не указано сообщение");
@@ -2189,7 +2222,7 @@ class forum
             $thread = $this->getThreadById($post->getThreadId());
             $category = $this->getCategoryById($thread->getCategoryId());
 
-            // Проверка прав
+
             if (!user::self()->isAdmin() &&
                 !ForumModerator::hasPermission(user::self()->getId(), $thread->getCategoryId(), 'can_delete_posts')) {
 
@@ -2206,7 +2239,7 @@ class forum
                 }
             }
 
-            // Логируем действие модератора
+
             if (ForumModerator::isUserModerator(user::self()->getId(), $thread->getCategoryId())) {
                 ForumModerator::logAction(
                     user::self()->getId(),
@@ -2273,24 +2306,24 @@ class forum
         );
     }
 
-    /**
-     * Уменьшает счетчик постов в категории
-     */
+
+
+
     private function decrementCategoryPostCount(int $categoryId): void
     {
-        // Уменьшаем счетчик в текущей категории
+
         sql::run(
             "UPDATE forum_categories SET post_count = GREATEST(post_count - 1, 0) WHERE id = ?",
             [$categoryId]
         );
 
-        // Обновляем родительские категории
+
         $this->updateParentCategoryCountersDecrement($categoryId);
     }
 
-    /**
-     * Рекурсивно уменьшает счетчик постов в родительских категориях
-     */
+
+
+
     private function updateParentCategoryCountersDecrement(int $categoryId): void
     {
         $category = sql::getRow("SELECT parent_id FROM forum_categories WHERE id = ?", [$categoryId]);
@@ -2298,20 +2331,20 @@ class forum
         if ($category && $category['parent_id'] !== null) {
             $parentId = (int)$category['parent_id'];
 
-            // Уменьшаем счетчик в родительской категории
+
             sql::run(
                 "UPDATE forum_categories SET post_count = GREATEST(post_count - 1, 0) WHERE id = ?",
                 [$parentId]
             );
 
-            // Рекурсивно обновляем родительские категории
+
             $this->updateParentCategoryCountersDecrement($parentId);
         }
     }
 
-    /**
-     * Переименование категории
-     */
+
+
+
     public function renameCategory(): void
     {
         try {
@@ -2319,22 +2352,22 @@ class forum
 
             $categoryId = $_POST['categoryId'] ?? board::error("Не указана категория");
             $newName = $_POST['newName'] ?? board::error("Не указано название");
-            $newDescription = $_POST['newDescription'] ?? ""; // Добавляем получение описания
-            $newIcon = $_POST['icon'] ?? ""; // Добавляем получение иконки
-            $titleColor = $_POST['titleColor'] ?? 'dark'; // Добавляем получение цвета
-            
-            // XSS защита: очищаем название, описание и иконку
+            $newDescription = $_POST['newDescription'] ?? "";
+            $newIcon = $_POST['icon'] ?? "";
+            $titleColor = $_POST['titleColor'] ?? 'dark';
+
+
             $newName = XssSecurity::clean($newName);
             $newDescription = XssSecurity::clean($newDescription);
             $newIcon = XssSecurity::clean($newIcon);
 
             sql::run(
-                "UPDATE `forum_categories` 
-             SET `name` = ?, 
+                "UPDATE `forum_categories`
+             SET `name` = ?,
                  `description` = ?,
                  `title_color` = ?,
                  `icon_svg` = ?,
-                 `updated_at` = ? 
+                 `updated_at` = ?
              WHERE `id` = ?",
                 [$newName, $newDescription, $titleColor, $newIcon, time::mysql(), $categoryId]
             );
@@ -2346,9 +2379,9 @@ class forum
         }
     }
 
-    /**
-     * Перемещение категории
-     */
+
+
+
     public function moveCategory(): void
     {
         try {
@@ -2374,10 +2407,10 @@ class forum
         }
     }
 
-    /**
-     * Удаление темы форума
-     * @throws Exception
-     */
+
+
+
+
     public function deleteThread(): void
     {
         try {
@@ -2390,18 +2423,18 @@ class forum
 
             $category = $this->getCategoryById($thread->getCategoryId());
 
-            // Проверяем права на удаление
+
             if (!user::self()->isAdmin() &&
                 !ForumModerator::hasPermission(user::self()->getId(), $thread->getCategoryId(), 'can_delete_threads')) {
 
-                // Проверяем, может ли пользователь удалить свою тему
+
                 if (!($thread->getAuthorId() === user::self()->getId() &&
                     $thread->canUserDeleteOwnThread($category))) {
                     throw new Exception("Недостаточно прав для удаления темы");
                 }
             }
 
-            // Если удаляет модератор, логируем действие
+
             if (ForumModerator::isUserModerator(user::self()->getId(), $thread->getCategoryId())) {
                 ForumModerator::logAction(
                     user::self()->getId(),
@@ -2414,13 +2447,13 @@ class forum
 
             $categoryId = $thread->getCategoryId();
 
-            // Получаем количество постов в теме перед удалением
+
             $postCount = sql::getValue(
                 "SELECT COUNT(*) FROM forum_posts WHERE thread_id = ?",
                 [$threadId]
             );
 
-            // Получаем всех пользователей, чьи посты будут удалены
+
             $affectedUsers = sql::getRows(
                 "SELECT DISTINCT user_id FROM forum_posts WHERE thread_id = ?",
                 [$threadId]
@@ -2428,16 +2461,16 @@ class forum
 
             sql::beginTransaction();
             try {
-                // Удаляем тему и все сообщения
+
                 $this->deleteThreadAndRelated($thread);
 
-                // Уменьшаем счетчики в категории
+
                 $this->decrementCategoryCounters($categoryId, $postCount);
 
-                // Обновляем информацию о последней теме в категории
+
                 $this->updateCategoryAfterThreadRemoval($categoryId);
 
-                // Пересчитываем количество сообщений для всех затронутых пользователей
+
                 foreach ($affectedUsers as $affectedUser) {
                     $this->recalculateUserPostCount((int)$affectedUser['user_id']);
                 }
@@ -2460,31 +2493,31 @@ class forum
         }
     }
 
-    /**
-     * Обновляет информацию о последней теме в категории после удаления темы
-     *
-     * @param int $categoryId ID категории
-     * @return void
-     */
+
+
+
+
+
+
     private function updateCategoryAfterThreadRemoval(int $categoryId): void
     {
-        // Получаем последнюю активную тему в категории (если есть)
+
         $lastThread = sql::getRow(
-            "SELECT * FROM forum_threads 
-        WHERE category_id = ? 
-        ORDER BY updated_at DESC 
+            "SELECT * FROM forum_threads
+        WHERE category_id = ?
+        ORDER BY updated_at DESC
         LIMIT 1",
             [$categoryId]
         );
 
         if ($lastThread) {
-            // Если есть темы в категории, обновляем данные на последнюю тему
+
             sql::run(
-                "UPDATE forum_categories SET 
-            last_thread_id = ?, 
+                "UPDATE forum_categories SET
+            last_thread_id = ?,
             last_post_id = ?,
             last_reply_user_id = ?,
-            updated_at = ? 
+            updated_at = ?
             WHERE id = ?",
                 [
                     $lastThread['id'],
@@ -2495,13 +2528,13 @@ class forum
                 ]
             );
         } else {
-            // Если тем нет, очищаем информацию о последней теме
+
             sql::run(
-                "UPDATE forum_categories SET 
-            last_thread_id = NULL, 
+                "UPDATE forum_categories SET
+            last_thread_id = NULL,
             last_post_id = NULL,
             last_reply_user_id = NULL,
-            updated_at = ? 
+            updated_at = ?
             WHERE id = ?",
                 [
                     time::mysql(),
@@ -2510,20 +2543,20 @@ class forum
             );
         }
 
-        // Обновляем родительские категории
+
         $this->updateParentCategoriesLastThread($categoryId);
     }
 
-    /**
-     * Оптимизированная версия рекурсивного обновления информации о последней теме
-     * в родительских категориях с минимальным количеством запросов
-     *
-     * @param int $categoryId ID текущей категории
-     * @return void
-     */
+
+
+
+
+
+
+
     private function updateParentCategoriesLastThread(int $categoryId): void
     {
-        // Получаем всю цепочку родительских категорий сразу
+
         $parentIds = [];
         $currentId = $categoryId;
 
@@ -2542,12 +2575,12 @@ class forum
         }
 
         if (empty($parentIds)) {
-            return; // Нет родительских категорий
+            return;
         }
 
-        // Обновляем каждую родительскую категорию, начиная с ближайшей
+
         foreach ($parentIds as $parentId) {
-            // Получаем все категории, которые нужно проверить (текущий родитель и все его прямые подкатегории)
+
             $categoriesToCheck = sql::getRows(
                 "SELECT id FROM forum_categories WHERE id = ? OR parent_id = ?",
                 [$parentId, $parentId]
@@ -2559,27 +2592,27 @@ class forum
                 continue;
             }
 
-            // Формируем строку с плейсхолдерами для SQL запроса
+
             $placeholders = rtrim(str_repeat('?,', count($categoryIds)), ',');
 
-            // Находим последнюю активную тему во всех этих категориях
+
             $lastThreadInfo = sql::getRow(
-                "SELECT t.id, t.last_post_id, t.last_reply_user_id, t.updated_at 
-            FROM forum_threads t 
+                "SELECT t.id, t.last_post_id, t.last_reply_user_id, t.updated_at
+            FROM forum_threads t
             WHERE t.category_id IN ($placeholders) AND t.is_approved = 1
-            ORDER BY t.updated_at DESC 
+            ORDER BY t.updated_at DESC
             LIMIT 1",
                 $categoryIds
             );
 
             if ($lastThreadInfo) {
-                // Обновляем родительскую категорию
+
                 sql::run(
-                    "UPDATE forum_categories SET 
-                last_thread_id = ?, 
+                    "UPDATE forum_categories SET
+                last_thread_id = ?,
                 last_post_id = ?,
                 last_reply_user_id = ?,
-                updated_at = ? 
+                updated_at = ?
                 WHERE id = ?",
                     [
                         $lastThreadInfo['id'],
@@ -2590,13 +2623,13 @@ class forum
                     ]
                 );
             } else {
-                // Если активных тем нет, очищаем данные
+
                 sql::run(
-                    "UPDATE forum_categories SET 
-                last_thread_id = NULL, 
+                    "UPDATE forum_categories SET
+                last_thread_id = NULL,
                 last_post_id = NULL,
                 last_reply_user_id = NULL,
-                updated_at = ? 
+                updated_at = ?
                 WHERE id = ?",
                     [
                         time::mysql(),
@@ -2607,31 +2640,31 @@ class forum
         }
     }
 
-    /**
-     * Проверяет права на удаление темы
-     *
-     * @param forum_thread $thread Тема форума
-     * @param forum_category $category Категория форума
-     * @return array [bool, string] Возвращает массив [можно_удалить, причина_запрета]
-     */
+
+
+
+
+
+
+
     private function canDeleteThread(forum_thread $thread, forum_category $category): array
     {
-        // Администраторы могут удалять любые темы
+
         if (user::self()->isAdmin()) {
             return [true, ""];
         }
 
-        // Проверяем, является ли пользователь автором темы
+
         if ($thread->getAuthorId() !== user::self()->getId()) {
             return [false, "Вы не являетесь автором этой темы"];
         }
 
-        // Проверяем, разрешено ли в данной категории удаление тем пользователями
+
         if (!$category->canUsersDeleteOwnThreads()) {
             return [false, "В данной категории запрещено удаление тем пользователями"];
         }
 
-        // Проверяем временное ограничение
+
         $createdTime = strtotime($thread->getCreatedAt());
         $currentTime = time();
         $timeoutMinutes = $category->getThreadDeleteTimeoutMinutes();
@@ -2648,32 +2681,32 @@ class forum
     }
 
 
-    /**
-     * Удаление темы и связанных данных
-     */
+
+
+
     private function deleteThreadAndRelated(forum_thread $thread): void {
-        // Удаление опроса и связанных с ним данных
+
         if ($thread->getPollId()) {
-            // Удаляем голоса
+
             sql::run(
                 "DELETE FROM forum_poll_votes WHERE poll_id = ?",
                 [$thread->getPollId()]
             );
 
-            // Удаляем варианты ответов
+
             sql::run(
                 "DELETE FROM forum_poll_options WHERE poll_id = ?",
                 [$thread->getPollId()]
             );
 
-            // Удаляем сам опрос
+
             sql::run(
                 "DELETE FROM forum_polls WHERE id = ?",
                 [$thread->getPollId()]
             );
         }
 
-        // Получаем контент постов для извлечения изображений
+
         $posts = sql::getRows(
             "SELECT content FROM forum_posts WHERE thread_id = ?",
             [$thread->getId()]
@@ -2700,10 +2733,10 @@ class forum
             }
         }
 
-        // Получаем неприкрепленные файлы
+
         $unattachedFiles = sql::getRows(
-            "SELECT filename FROM forum_attachments 
-        WHERE (post_id IS NULL AND user_id = ?) OR 
+            "SELECT filename FROM forum_attachments
+        WHERE (post_id IS NULL AND user_id = ?) OR
               (post_id IN (SELECT id FROM forum_posts WHERE thread_id = ?))",
             [user::self()->getId(), $thread->getId()]
         );
@@ -2714,12 +2747,12 @@ class forum
 
         $filesToDelete = array_unique($filesToDelete);
 
-        // Удаляем физические файлы
+
         foreach ($filesToDelete as $filename) {
             $this->deleteForumFiles($filename);
         }
 
-        // Удаляем записи из БД, используя полные имена файлов
+
         if (!empty($filesToDelete)) {
             $placeholders = implode(',', array_fill(0, count($filesToDelete), '?'));
             sql::run(
@@ -2728,8 +2761,8 @@ class forum
             );
         }
 
-        // Удаляем связанные данные
-        // (транзакция управляется вызывающим кодом)
+
+
         sql::run(
             "DELETE FROM forum_user_thread_tracks WHERE thread_id = ?",
             [$thread->getId()]
@@ -2741,8 +2774,8 @@ class forum
         );
 
         sql::run(
-            "DELETE fl FROM forum_post_likes fl 
-            INNER JOIN forum_posts fp ON fl.post_id = fp.id 
+            "DELETE fl FROM forum_post_likes fl
+            INNER JOIN forum_posts fp ON fl.post_id = fp.id
             WHERE fp.thread_id = ?",
             [$thread->getId()]
         );
@@ -2758,73 +2791,73 @@ class forum
         );
     }
 
-    /**
-     * Уменьшает счетчики категории при удалении темы
-     */
+
+
+
     private function decrementCategoryCounters(int $categoryId, int $postCount): void
     {
-        // Уменьшаем счетчики в текущей категории
+
         sql::run(
-            "UPDATE forum_categories SET 
+            "UPDATE forum_categories SET
         thread_count = GREATEST(thread_count - 1, 0),
         post_count = GREATEST(post_count - ?, 0)
         WHERE id = ?",
             [$postCount, $categoryId]
         );
 
-        // Обновляем счетчики родительских категорий
+
         $this->updateParentCategoryCountersDecrementBulk($categoryId, $postCount);
     }
 
-    /**
-     * Рекурсивно уменьшает счетчики в родительских категориях при удалении тем или сообщений
-     *
-     * @param int $categoryId ID текущей категории
-     * @param int $postCount Количество удаляемых постов
-     * @param bool $decrementThreadCount Нужно ли уменьшать счетчик тем (по умолчанию true)
-     */
+
+
+
+
+
+
+
     private function updateParentCategoryCountersDecrementBulk(int $categoryId, int $postCount, bool $decrementThreadCount = true): void
     {
-        // Получаем информацию о категории и проверяем существование родителя
+
         $category = sql::getRow(
-            "SELECT c.*, p.id as parent_exists 
-         FROM forum_categories c 
-         LEFT JOIN forum_categories p ON c.parent_id = p.id 
-         WHERE c.id = ? 
+            "SELECT c.*, p.id as parent_exists
+         FROM forum_categories c
+         LEFT JOIN forum_categories p ON c.parent_id = p.id
+         WHERE c.id = ?
          LIMIT 1",
             [$categoryId]
         );
 
-        // Проверяем что категория существует и имеет родителя
+
         if ($category && $category['parent_id'] !== null && $category['parent_exists']) {
             $parentId = (int)$category['parent_id'];
 
             if ($decrementThreadCount) {
-                // Уменьшаем оба счетчика - и постов, и тем
+
                 sql::run(
-                    "UPDATE forum_categories 
+                    "UPDATE forum_categories
                  SET post_count = GREATEST(post_count - ?, 0),
                      thread_count = GREATEST(thread_count - 1, 0),
-                     updated_at = ? 
+                     updated_at = ?
                  WHERE id = ?",
                     [$postCount, time::mysql(), $parentId]
                 );
             } else {
-                // Уменьшаем только счетчик постов
+
                 sql::run(
-                    "UPDATE forum_categories 
+                    "UPDATE forum_categories
                  SET post_count = GREATEST(post_count - ?, 0),
-                     updated_at = ? 
+                     updated_at = ?
                  WHERE id = ?",
                     [$postCount, time::mysql(), $parentId]
                 );
             }
 
-            // Получаем последний пост в категории после обновления
+
             $lastPost = sql::getRow(
                 "SELECT p.id, p.thread_id, p.user_id
              FROM forum_posts p
-             JOIN forum_threads t ON p.thread_id = t.id 
+             JOIN forum_threads t ON p.thread_id = t.id
              WHERE t.category_id = ?
              ORDER BY p.created_at DESC
              LIMIT 1",
@@ -2832,9 +2865,9 @@ class forum
             );
 
             if ($lastPost) {
-                // Обновляем информацию о последнем посте
+
                 sql::run(
-                    "UPDATE forum_categories 
+                    "UPDATE forum_categories
                  SET last_post_id = ?,
                      last_thread_id = ?,
                      last_reply_user_id = ?
@@ -2847,9 +2880,9 @@ class forum
                     ]
                 );
             } else {
-                // Если постов нет, очищаем информацию
+
                 sql::run(
-                    "UPDATE forum_categories 
+                    "UPDATE forum_categories
                  SET last_post_id = NULL,
                      last_thread_id = NULL,
                      last_reply_user_id = NULL
@@ -2858,7 +2891,7 @@ class forum
                 );
             }
 
-            // Рекурсивно обновляем родительские категории выше по иерархии
+
             $this->updateParentCategoryCountersDecrementBulk(
                 $parentId,
                 $postCount,
@@ -2867,9 +2900,9 @@ class forum
         }
     }
 
-    /**
-     * Обновление категории после удаления темы
-     */
+
+
+
     private function updateCategoryAfterThreadDeletion(forum_thread $thread): void
     {
         $category = $this->getCategoryById($thread->getCategoryId());
@@ -2890,9 +2923,9 @@ class forum
         }
     }
 
-    /**
-     * Перемещение темы в другую категорию
-     */
+
+
+
     public function moveThread(): void
     {
         try {
@@ -2901,7 +2934,7 @@ class forum
             $threadId = $_POST['threadId'] ?? board::error("Не указана тема");
             $newCategoryId = $_POST['newCategoryId'] ?? board::error("Не указана новая категория");
 
-            // Получаем информацию о теме
+
             $thread = $this->getThreadById($threadId);
             if (!$thread) {
                 throw new Exception("Тема не найдена");
@@ -2911,31 +2944,31 @@ class forum
 
             sql::beginTransaction();
             try {
-                // Получаем количество постов в теме
+
                 $postCount = sql::getValue(
                     "SELECT COUNT(*) FROM forum_posts WHERE thread_id = ?",
                     [$threadId]
                 );
 
-                // Уменьшаем счетчики в старой категории
+
                 $this->decrementCategoryCounters($oldCategoryId, $postCount);
 
-                // Перемещаем тему
+
                 sql::run(
                     "UPDATE forum_threads SET category_id = ?, updated_at = ? WHERE id = ?",
                     [$newCategoryId, time::mysql(), $threadId]
                 );
 
-                // Увеличиваем счетчики в новой категории
+
                 $this->incrementCategoryCounters($newCategoryId);
 
-                // Обновляем информацию о последней теме в обеих категориях
+
                 $this->updateCategoryAfterThreadMove($oldCategoryId);
                 $this->updateCategoryAfterThreadMove($newCategoryId);
 
                 sql::commit();
 
-                // Редирект на тему
+
                 $title = $thread->getTitle();
                 $custom_twig = new custom_twig();
                 $translit = $custom_twig->transliterateToEn($title);
@@ -2951,9 +2984,9 @@ class forum
         }
     }
 
-    /**
-     * Обновление информации о последней теме в категории
-     */
+
+
+
     private function updateCategoryAfterThreadMove(int $categoryId): void
     {
         $lastThread = sql::getRow(
@@ -2963,11 +2996,11 @@ class forum
 
         if ($lastThread) {
             sql::run(
-                "UPDATE forum_categories 
-            SET last_thread_id = ?, 
-                last_post_id = ?, 
+                "UPDATE forum_categories
+            SET last_thread_id = ?,
+                last_post_id = ?,
                 last_reply_user_id = ?,
-                updated_at = ? 
+                updated_at = ?
             WHERE id = ?",
                 [
                     $lastThread['id'],
@@ -2978,22 +3011,22 @@ class forum
                 ]
             );
         } else {
-            // Если тем нет, очищаем информацию
+
             sql::run(
-                "UPDATE forum_categories 
-            SET last_thread_id = NULL, 
-                last_post_id = NULL, 
+                "UPDATE forum_categories
+            SET last_thread_id = NULL,
+                last_post_id = NULL,
                 last_reply_user_id = NULL,
-                updated_at = ? 
+                updated_at = ?
             WHERE id = ?",
                 [time::mysql(), $categoryId]
             );
         }
     }
 
-    /**
-     * Переименование темы
-     */
+
+
+
     public function renameThread(): void
     {
         try {
@@ -3008,8 +3041,8 @@ class forum
             $isAdmin = user::self()->isAdmin();
             $canModeratorEdit = ForumModerator::hasPermission(user::self()->getId(), $thread->getCategoryId(), 'can_edit_posts');
 
-            // Админ или модератор с правом редактирования могут переименовывать всегда.
-            // Автор темы может переименовать в течение 60 минут после создания.
+
+
             if (!$isAdmin && !$canModeratorEdit) {
                 if ($thread->getAuthorId() !== user::self()->getId()) {
                     throw new Exception("Недостаточно прав для выполнения операции");
@@ -3020,14 +3053,14 @@ class forum
                 }
             }
 
-            // XSS защита: очищаем название темы
+
             $title = XssSecurity::clean($title);
 
             if (empty(trim($title))) {
                 throw new Exception("Название темы не может быть пустым");
             }
 
-            // Получаем информацию о теме
+
             $thread = $this->getThreadById($threadId);
             if (!$thread) {
                 throw new Exception("Тема не найдена");
@@ -3035,7 +3068,7 @@ class forum
 
             sql::beginTransaction();
             try {
-                // Обновляем название темы
+
                 sql::run(
                     "UPDATE forum_threads SET title = ?, updated_at = ? WHERE id = ?",
                     [$title, time::mysql(), $threadId]
@@ -3043,7 +3076,7 @@ class forum
 
                 sql::commit();
 
-                // Редирект на тему с новым названием
+
                 $custom_twig = new custom_twig();
                 $translit = $custom_twig->transliterateToEn($title);
 
@@ -3058,12 +3091,12 @@ class forum
         }
     }
 
-    /**
-     * Добавление лайка к посту
-     */
-    /**
-     * Добавление лайка к посту
-     */
+
+
+
+
+
+
     public function addLike(): void
     {
         try {
@@ -3071,46 +3104,46 @@ class forum
                 throw new Exception("Необходимо авторизоваться");
             }
 
-            // Проверяем, не забанен ли пользователь (администраторы не блокируются)
+
             $this->checkUserNotBanned("ставить лайки");
 
             $postId = $_POST['postId'] ?? board::error("Не указан пост");
             $likeImage = $_POST['likeImage'] ?? board::error("Не указано изображение лайка");
             $message = $_POST['message'] ?? "";
-            
-            // XSS защита: очищаем сообщение
+
+
             $message = XssSecurity::clean($message);
 
-            // Получаем информацию о посте
+
             $post = sql::getRow("SELECT id, user_id FROM forum_posts WHERE id = ?", [$postId]);
             if (!$post) {
                 throw new Exception("Пост не найден");
             }
 
-            // Проверяем, не является ли пользователь автором поста
+
             if ($post['user_id'] == user::self()->getId()) {
                 throw new Exception("Нельзя ставить лайк своим сообщениям");
             }
 
-            // Какой пользователь получит бафф
+
             $to_user = $post['user_id'];
 
             sql::beginTransaction();
             try {
-                // Проверяем, не ставил ли уже пользователь лайк этому посту
+
                 $existingLike = sql::getRow(
                     "SELECT id FROM forum_post_likes WHERE post_id = ? AND user_id = ?",
                     [$postId, user::self()->getId()]
                 );
 
                 if ($existingLike) {
-                    // Если лайк уже есть - обновляем его
+
                     sql::run(
                         "UPDATE forum_post_likes SET like_image = ? WHERE id = ?",
                         [$likeImage, $existingLike['id']]
                     );
                 } else {
-                    // Если лайка нет - добавляем новый
+
                     sql::run(
                         "INSERT INTO forum_post_likes (post_id, user_id, to_user, like_image) VALUES (?, ?, ?, ?)",
                         [$postId, user::self()->getId(), $to_user, $likeImage]
@@ -3120,10 +3153,10 @@ class forum
                 sql::commit();
 
                 $ct = new custom_twig();
-                // Получаем все лайки поста для ответа
+
                 $likes = $ct->getPostLikes($postId);
 
-                // Отправляем ответ в JSON формате
+
                 echo json_encode([
                     'ok' => true,
                     'message' => 'Лайк добавлен',
@@ -3141,27 +3174,27 @@ class forum
         }
     }
 
-    /**
-     * Получение списка лайков поста
-     */
+
+
+
     private function getPostLikes(int $postId): array
     {
         return sql::getRows(
-            "SELECT l.*, u.name as user_name 
-        FROM forum_post_likes l 
-        LEFT JOIN users u ON l.user_id = u.id 
-        WHERE l.post_id = ? 
+            "SELECT l.*, u.name as user_name
+        FROM forum_post_likes l
+        LEFT JOIN users u ON l.user_id = u.id
+        WHERE l.post_id = ?
         ORDER BY l.created_at DESC",
             [$postId]
         );
     }
 
-    /**
-     * Загружает изображение и возвращает информацию о нем
-     *
-     * @return void
-     * @throws Exception
-     */
+
+
+
+
+
+
     public function uploadImage(): void
     {
         try {
@@ -3169,28 +3202,28 @@ class forum
                 throw new Exception("Необходимо авторизоваться");
             }
 
-            // Проверяем, не забанен ли пользователь
+
             $this->checkUserNotBanned("загружать изображения");
 
-            // Поддержим несколько возможных ключей (filepond, image) или первый файл в $_FILES
+
             if (isset($_FILES['filepond'])) {
                 $files = $_FILES['filepond'];
             } elseif (isset($_FILES['image'])) {
                 $files = $_FILES['image'];
             } elseif (!empty($_FILES)) {
-                // Возьмём первый элемент в $_FILES
+
                 $first = reset($_FILES);
                 $files = $first;
             } else {
                 throw new Exception("Файл не был получен");
             }
 
-            // Проверка лимита загрузок для обычных пользователей
+
             if (!user::self()->isAdmin()) {
-                $time = time() - 600; // 10 минут
+                $time = time() - 600;
                 $row = sql::getRow(
-                    "SELECT count(*) AS `count` 
-                FROM `forum_attachments` 
+                    "SELECT count(*) AS `count`
+                FROM `forum_attachments`
                 WHERE created_at > ? AND user_id = ?",
                     [
                         date('Y-m-d H:i:s', $time),
@@ -3207,7 +3240,7 @@ class forum
                 throw new Exception('Одновременно можно загрузить не более 6 изображений');
             }
 
-            // Создаем директорию если её нет
+
             $uploadDir = fileSys::get_dir('/uploads/forum/');
             if (!is_dir($uploadDir)) {
                 if (!mkdir($uploadDir, 0755, true) && !is_dir($uploadDir)) {
@@ -3215,7 +3248,7 @@ class forum
                 }
             }
 
-            // Обработка первого файла
+
             $tmpName = is_array($files['tmp_name']) ? $files['tmp_name'][0] : $files['tmp_name'];
             $error = is_array($files['error']) ? $files['error'][0] : $files['error'];
             $originalName = is_array($files['name']) ? $files['name'][0] : $files['name'];
@@ -3229,7 +3262,7 @@ class forum
                 throw new Exception("Файл повреждён или пустой");
             }
 
-            $maxUploadSize = 5 * 1024 * 1024; // 5MB, совпадает с ограничением FilePond
+            $maxUploadSize = 5 * 1024 * 1024;
             if ($originalSize > $maxUploadSize) {
                 throw new Exception('Размер файла превышает допустимый лимит в 5MB');
             }
@@ -3287,10 +3320,10 @@ class forum
 
             try {
                 try {
-                    // Сохраняем оригинал в webp без изменения размера
+
                     $image->save($originalPath, 90, $extension);
                 } catch (\Throwable $saveException) {
-                    // Падение на webp - пробуем PNG
+
                     $extension = 'png';
                     $savedMime = 'image/png';
                     $filename = $basename . '.' . $extension;
@@ -3303,7 +3336,7 @@ class forum
                 }
                 $savedPaths[] = $originalPath;
 
-                // Создаём миниатюру, пропорционально уменьшенную до 200px по большей стороне
+
                 $thumbnailImage = $manager->read($tmpName)->scaleDown(width: 200, height: 200);
                 $thumbWidth = (int) $thumbnailImage->width();
                 $thumbHeight = (int) $thumbnailImage->height();
@@ -3313,7 +3346,7 @@ class forum
                 $savedSize = filesize($originalPath) ?: $originalSize;
 
                 sql::run(
-                    "INSERT INTO forum_attachments SET 
+                    "INSERT INTO forum_attachments SET
                 post_id = ?,
                 user_id = ?,
                 filename = ?,
@@ -3368,7 +3401,7 @@ class forum
         }
     }
 
-    // Функция одобрения темы для админов
+
 
     public function approveThread(): void
     {
@@ -3399,13 +3432,13 @@ class forum
 
             $threadId = $_POST['threadId'] ?? throw new Exception("Не указан ID темы");
 
-            // Получаем информацию о теме
+
             $thread = $this->getThreadById($threadId);
             if (!$thread) {
                 throw new Exception("Тема не найдена");
             }
 
-            // Получаем категорию для проверки настроек модерации
+
             $category = $this->getCategoryById($thread->getCategoryId());
             if (!$category->isModerated()) {
                 throw new Exception("Для данной категории не требуется модерация");
@@ -3413,17 +3446,17 @@ class forum
 
             sql::beginTransaction();
             try {
-                // Подтверждаем тему
+
                 sql::run(
-                    "UPDATE forum_threads 
+                    "UPDATE forum_threads
                 SET is_approved = 1,
                     approved_by = ?,
-                    approved_at = ? 
+                    approved_at = ?
                 WHERE id = ?",
                     [user::self()->getId(), time::mysql(), $threadId]
                 );
 
-                // Обновляем счетчики категории
+
                 $this->incrementCategoryCounters($thread->getCategoryId());
 
                 sql::commit();
@@ -3452,12 +3485,12 @@ class forum
             $name = $_POST['name'] ?? board::error("Не указано название");
             $link = $_POST['link'] ?? board::error("Не указана ссылка");
             $icon = $_POST['icon'] ?? "";
-            
-            // XSS защита: очищаем пользовательские данные
+
+
             $name = XssSecurity::clean($name);
             $link = XssSecurity::cleanUrl($link);
 
-            // Проверяем корректность URL
+
             if (!filter_var($link, FILTER_VALIDATE_URL)) {
                 board::error("Некорректный URL");
             }
@@ -3484,7 +3517,7 @@ class forum
             sql::beginTransaction();
             try {
                 if ($type === 'category') {
-                    // Обработка сортировки основных категорий
+
                     foreach ($orders as $categoryId => $order) {
                         sql::run(
                             "UPDATE forum_categories SET sort_order = ? WHERE id = ?",
@@ -3492,11 +3525,11 @@ class forum
                         );
                     }
                 } else {
-                    // Обработка сортировки подкатегорий
+
                     foreach ($orders as $sectionId => $data) {
                         sql::run(
-                            "UPDATE forum_categories SET 
-                            sort_order = ?, 
+                            "UPDATE forum_categories SET
+                            sort_order = ?,
                             parent_id = ?,
                             updated_at = ?
                         WHERE id = ?",
@@ -3522,68 +3555,68 @@ class forum
         }
     }
 
-    /**
-     * Получает информацию о посте по его ID
-     *
-     * @param int $postId ID поста
-     * @return forum_post|null Возвращает объект поста или null, если пост не найден
-     */
+
+
+
+
+
+
     private function getPostById(int $postId): ?forum_post
     {
         try {
-            // Получаем данные поста из БД
+
             $postData = sql::getRow(
-                "SELECT p.*, t.title as thread_title 
-             FROM forum_posts p 
-             LEFT JOIN forum_threads t ON p.thread_id = t.id 
+                "SELECT p.*, t.title as thread_title
+             FROM forum_posts p
+             LEFT JOIN forum_threads t ON p.thread_id = t.id
              WHERE p.id = ?",
                 [$postId]
             );
 
-            // Если пост не найден, возвращаем null
+
             if (!$postData) {
                 return null;
             }
 
-            // Создаем и возвращаем объект поста
+
             return new forum_post($postData);
 
         } catch (Exception $e) {
-            // Логируем ошибку
+
             error_log("Error getting post by ID {$postId}: " . $e->getMessage());
             return null;
         }
     }
 
 
-    /**
-     * Валидация названия темы
-     *
-     * @param string $title Название темы
-     * @throws Exception
-     */
+
+
+
+
+
+
     private function validateTopicTitle(string $title): void
     {
-        // Очищаем от пробелов в начале и конце
+
         $title = trim($title);
 
-        // Проверяем минимальную длину
+
         if (mb_strlen($title) < 3) {
             throw new Exception("Название темы должно содержать минимум 3 символа");
         }
 
-        // Проверяем максимальную длину
+
         if (mb_strlen($title) > 60) {
             throw new Exception("Название темы не может быть длиннее 60 символов");
         }
 
-        // Проверяем на пустоту после удаления HTML тегов
+
         $plainTitle = strip_tags($title);
         if (empty($plainTitle)) {
             throw new Exception("Название темы не может быть пустым");
         }
 
-        // Проверяем на повторяющиеся символы
+
         if (preg_match('/^(.)\1+$/', $plainTitle)) {
             throw new Exception("Название темы не может состоять из повторяющихся символов");
         }
@@ -3597,19 +3630,19 @@ class forum
             return;
         }
 
-        // Получаем данные из базы данных
+
         $moderatorsData = sql::getRows(
-            "SELECT 
+            "SELECT
             m.*,
             u.name as user_name,
-            c.name as category_name 
+            c.name as category_name
         FROM forum_moderators m
         LEFT JOIN users u ON m.user_id = u.id
         LEFT JOIN forum_categories c ON m.category_id = c.id
         ORDER BY m.created_at DESC"
         );
 
-        // Преобразуем данные в массив объектов ForumModerator
+
         $moderators = array_map(function ($data) {
             $moderator = new ForumModerator();
             $moderator->setId($data['id']);
@@ -3649,24 +3682,24 @@ class forum
             }
 
             $username = $_POST['username'] ?? throw new Exception("Не указан пользователь");
-            
-            // XSS защита: очищаем имя пользователя
+
+
             $username = XssSecurity::cleanText($username);
 
-            // Корректно обрабатываем categoryId
+
             $categoryId = isset($_POST['categoryId']) && $_POST['categoryId'] !== ''
                 ? (int)$_POST['categoryId']
                 : null;
 
             $permissions = $_POST['permissions'] ?? throw new Exception("Не указаны права");
 
-            // Получаем пользователя по имени
+
             $user = user::getUserByName($username);
             if (!$user) {
                 throw new Exception("Пользователь не найден");
             }
 
-            // Проверяем, не является ли пользователь уже модератором
+
             if (ForumModerator::isUserModerator($user->getId(), $categoryId)) {
                 if ($categoryId === null) {
                     throw new Exception("Пользователь уже является глобальным модератором");
@@ -3675,10 +3708,10 @@ class forum
                 }
             }
 
-            // Преобразуем права из JSON в булевы значения
+
             $permissionsData = is_string($permissions) ? json_decode($permissions, true) : $permissions;
 
-            // Явно преобразуем строковые значения в булевы
+
             $parsedPermissions = [
                 'can_delete_threads' => filter_var($permissionsData['canDeleteThreads'], FILTER_VALIDATE_BOOLEAN),
                 'can_delete_posts' => filter_var($permissionsData['canDeletePosts'], FILTER_VALIDATE_BOOLEAN),
@@ -3690,9 +3723,9 @@ class forum
             ];
 
             sql::run(
-                "INSERT INTO forum_moderators 
-            (user_id, category_id, can_delete_threads, can_delete_posts, can_edit_posts, 
-             can_move_threads, can_pin_threads, can_close_threads, can_approve_threads, created_by) 
+                "INSERT INTO forum_moderators
+            (user_id, category_id, can_delete_threads, can_delete_posts, can_edit_posts,
+             can_move_threads, can_pin_threads, can_close_threads, can_approve_threads, created_by)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 [
                     $user->getId(),
@@ -3748,14 +3781,14 @@ class forum
 
             $moderatorId = $_POST['moderatorId'] ?? throw new Exception("Не указан ID модератора");
 
-            // Корректно обрабатываем categoryId
+
             $categoryId = isset($_POST['categoryId']) && $_POST['categoryId'] !== ''
                 ? (int)$_POST['categoryId']
                 : null;
 
             $permissions = $_POST['permissions'] ?? throw new Exception("Не указаны права");
 
-            // Проверяем существование модератора
+
             $moderator = sql::getRow(
                 "SELECT * FROM forum_moderators WHERE id = ?",
                 [$moderatorId]
@@ -3765,10 +3798,10 @@ class forum
                 throw new Exception("Модератор не найден");
             }
 
-            // Преобразуем права из JSON в булевы значения
+
             $permissionsData = is_string($permissions) ? json_decode($permissions, true) : $permissions;
 
-            // Явно преобразуем строковые значения в булевы
+
             $parsedPermissions = [
                 'can_delete_threads' => filter_var($permissionsData['canDeleteThreads'], FILTER_VALIDATE_BOOLEAN),
                 'can_delete_posts' => filter_var($permissionsData['canDeletePosts'], FILTER_VALIDATE_BOOLEAN),
@@ -3780,7 +3813,7 @@ class forum
             ];
 
             sql::run(
-                "UPDATE forum_moderators SET 
+                "UPDATE forum_moderators SET
                 category_id = ?,
                 can_delete_threads = ?,
                 can_delete_posts = ?,
@@ -3803,7 +3836,7 @@ class forum
                 ]
             );
 
-            // Добавляем запись в лог модерации
+
             ForumModerator::logAction(
                 user::self()->getId(),
                 'edit_moderator',
@@ -3822,32 +3855,32 @@ class forum
     public function toggleThreadStatus(): void
     {
         try {
-            // Получаем необходимые параметры
+
             $threadId = $_POST['threadId'] ?? throw new Exception("Не указан ID темы");
             $newStatus = $_POST['status'] ?? throw new Exception("Не указан новый статус");
 
-            // Получаем информацию о теме
+
             $thread = $this->getThreadById($threadId);
             if (!$thread) {
                 throw new Exception("Тема не найдена");
             }
 
-            // Получаем категорию
+
             $category = $this->getCategoryById($thread->getCategoryId());
 
-            // Проверяем права
+
             if (!user::self()->isAdmin() &&
                 !ForumModerator::hasPermission(user::self()->getId(), $category->getId(), 'can_close_threads')) {
                 throw new Exception("Недостаточно прав для выполнения этого действия");
             }
 
-            // Обновляем статус темы
+
             sql::run(
                 "UPDATE forum_threads SET is_closed = ? WHERE id = ?",
                 [$newStatus === 'close' ? 1 : 0, $threadId]
             );
 
-            // Логируем действие модератора
+
             if (ForumModerator::isUserModerator(user::self()->getId(), $category->getId())) {
                 ForumModerator::logAction(
                     user::self()->getId(),
@@ -3866,24 +3899,24 @@ class forum
     }
 
 
-    /**
-     * Обновляет права категории
-     */
+
+
+
     public function updateCategoryPermissions(): void
     {
         try {
             $this->validateAdminRights();
 
-            // Получаем и валидируем ID категории
+
             $categoryId = filter_input(INPUT_POST, 'categoryId', FILTER_VALIDATE_INT);
             if (!$categoryId) {
                 throw new Exception("Некорректный ID категории");
             }
 
-            // Получаем права из POST
+
             $permissions = $_POST['permissions'] ?? throw new Exception("Не указаны права доступа");
 
-            // Создаем массив с значениями по умолчанию и валидацией
+
             $sanitizedPermissions = [
                 'isHidden' => $this->sanitizeBool($permissions['is_hidden'] ?? false),
                 'canCreateTopics' => $this->sanitizeBool($permissions['can_create_topics'] ?? true),
@@ -3893,22 +3926,22 @@ class forum
                 'canUsersDeleteOwnThreads' => $this->sanitizeBool($permissions['can_users_delete_own_threads'] ?? false),
                 'threadDeleteTimeoutMinutes' => $this->sanitizeInt(
                     $permissions['thread_delete_timeout_minutes'] ?? 30,
-                    1,      // минимальное значение
-                    10080,  // максимальное значение (7 дней)
-                    30      // значение по умолчанию
+                    1,
+                    10080,
+                    30
                 ),
                 'canUsersDeleteOwnPosts' => $this->sanitizeBool($permissions['can_users_delete_own_posts'] ?? false),
                 'maxPostLength' => $this->sanitizeInt(
                     $permissions['max_post_length'] ?? 10000,
-                    100,    // минимальная длина
-                    50000,  // максимальная длина
-                    10000   // значение по умолчанию
+                    100,
+                    50000,
+                    10000
                 ),
                 'hideLastTopic' => $this->sanitizeBool($permissions['hide_last_topic'] ?? false),
                 'notifyTelegram' => $this->sanitizeBool($permissions['notify_telegram'] ?? false)
             ];
 
-            // Проверяем существование категории
+
             $category = sql::getRow("SELECT id FROM forum_categories WHERE id = ?", [$categoryId]);
             if (!$category) {
                 throw new Exception("Категория не найдена");
@@ -3916,9 +3949,9 @@ class forum
 
             sql::beginTransaction();
             try {
-                // Обновляем права категории
+
                 sql::run(
-                    "UPDATE forum_categories SET 
+                    "UPDATE forum_categories SET
                     is_hidden = ?,
                     can_create_topics = ?,
                     can_reply_topics = ?,
@@ -3963,9 +3996,9 @@ class forum
         }
     }
 
-    /**
-     * Безопасное преобразование в булево значение
-     */
+
+
+
     private function sanitizeBool($value): int
     {
         if (is_string($value)) {
@@ -3974,9 +4007,9 @@ class forum
         return $value ? 1 : 0;
     }
 
-    /**
-     * Безопасное преобразование в целое число с ограничениями
-     */
+
+
+
     private function sanitizeInt($value, int $min, int $max, int $default): int
     {
         $value = (int)$value;
@@ -4013,19 +4046,19 @@ class forum
             $threadId = $_POST['threadId'] ?? board::error("Не указана тема");
             $status = $_POST['status'] ?? 'pin';
 
-            // Получаем информацию о теме
+
             $thread = $this->getThreadById($threadId);
             if (!$thread) {
                 throw new Exception("Тема не найдена");
             }
 
-            // Обновляем статус закрепления
+
             sql::run(
                 "UPDATE forum_threads SET is_pinned = ?, updated_at = ? WHERE id = ?",
                 [$status === 'pin' ? 1 : 0, time::mysql(), $threadId]
             );
 
-            // Логируем действие модератора
+
             if (ForumModerator::isUserModerator(user::self()->getId(), $thread->getCategoryId())) {
                 ForumModerator::logAction(
                     user::self()->getId(),
@@ -4051,14 +4084,14 @@ class forum
             $setting = $_POST['setting'] ?? throw new Exception("Не указана настройка");
             $value = filter_var($_POST['value'], FILTER_VALIDATE_BOOLEAN);
 
-            // Получаем текущие настройки
+
             $customTwig = new custom_twig();
             $currentSettings = $customTwig->getForumUserSettings(user::self()->getId());
 
-            // Обновляем конкретную настройку
+
             $currentSettings[$setting] = $value;
 
-            // Сохраняем обновленные настройки
+
             $customTwig->saveForumUserSettings(user::self()->getId(), $currentSettings);
 
             board::success("Настройки сохранены");
@@ -4069,29 +4102,29 @@ class forum
     }
 
 
-    // В классе Forum добавим метод:
+
     private function hasUnreadPosts(forum_thread $thread): bool {
         if (!user::self()->isAuth()) {
             return false;
         }
 
-        // Получаем информацию о последнем прочитанном посте
+
         $lastRead = sql::getRow(
-            "SELECT last_read_post_id 
-         FROM forum_user_thread_tracks 
+            "SELECT last_read_post_id
+         FROM forum_user_thread_tracks
          WHERE user_id = ? AND thread_id = ?",
             [user::self()->getId(), $thread->getId()]
         );
 
-        // Если пользователь никогда не читал тему - она считается непрочитанной
+
         if (!$lastRead) {
             return true;
         }
 
-        // Проверяем, есть ли посты новее последнего прочитанного
+
         $newerPosts = sql::getValue(
-            "SELECT COUNT(*) 
-         FROM forum_posts 
+            "SELECT COUNT(*)
+         FROM forum_posts
          WHERE thread_id = ? AND id > ?",
             [$thread->getId(), $lastRead['last_read_post_id']]
         );
@@ -4105,7 +4138,7 @@ class forum
                 throw new Exception("Необходимо авторизоваться");
             }
 
-            // Проверяем, не забанен ли пользователь
+
             $this->checkUserNotBanned("голосовать в опросах");
 
             $threadId = $_POST['threadId'] ?? throw new Exception("Не указан ID темы");
@@ -4130,16 +4163,16 @@ class forum
         }
     }
 
-    /**
-     * Проверяет наличие таблиц для системы банов и создает их при необходимости
-     */
+
+
+
     private function checkAndCreateBanTables(): void {
         try {
-            // Проверяем существование таблицы forum_user_bans
+
             $tableExists = sql::getRow("SHOW TABLES LIKE 'forum_user_bans'");
-            
+
             if (!$tableExists) {
-                // Создаем таблицу forum_user_bans
+
                 sql::run("
                     CREATE TABLE IF NOT EXISTS `forum_user_bans` (
                       `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -4158,18 +4191,18 @@ class forum
                       INDEX `banned_until_idx`(`banned_until` ASC) USING BTREE
                     ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic
                 ");
-                
-                // Обновляем enum в forum_moderator_log для поддержки логирования банов
+
+
                 try {
                     sql::run("
-                        ALTER TABLE `forum_moderator_log` 
-                        MODIFY COLUMN `target_type` enum('thread','post','moderator','user') 
+                        ALTER TABLE `forum_moderator_log`
+                        MODIFY COLUMN `target_type` enum('thread','post','moderator','user')
                         CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
                     ");
                 } catch (Exception $e) {
-                    // Если таблица или колонка уже обновлена, игнорируем ошибку
+
                 }
-                
+
                 board::success("Система банов успешно установлена!");
             }
         } catch (Exception $e) {
@@ -4177,15 +4210,15 @@ class forum
         }
     }
 
-    /**
-     * Отображает панель управления банами для админов и модераторов
-     */
+
+
+
     public function showBansPanel(): void {
         if (!user::self()->isAuth()) {
             redirect::location("/");
         }
 
-        // Проверяем права доступа - админ или модератор
+
         $isAdmin = user::self()->isAdmin();
         $isModerator = ForumModerator::isUserModerator(user::self()->getId());
 
@@ -4194,19 +4227,19 @@ class forum
             redirect::location("/forum");
         }
 
-        // Проверяем наличие таблицы forum_user_bans и создаем при необходимости
+
         $this->checkAndCreateBanTables();
 
-        // Получаем параметры для фильтрации
+
         $showOnlyActive = isset($_GET['active']) ? filter_var($_GET['active'], FILTER_VALIDATE_BOOLEAN) : true;
         $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
         $perPage = 20;
         $offset = ($page - 1) * $perPage;
 
-        // Получаем список банов
+
         $bans = ForumBan::getAllBans($showOnlyActive, $perPage, $offset);
 
-        // Получаем общее количество банов для пагинации
+
         $totalBansQuery = "SELECT COUNT(*) FROM forum_user_bans";
         if ($showOnlyActive) {
             $totalBansQuery .= " WHERE is_active = 1 AND (banned_until IS NULL OR banned_until > NOW())";
@@ -4226,16 +4259,16 @@ class forum
         tpl::displayPlugin("sphere_forum/tpl/bans_panel.html");
     }
 
-    /**
-     * Создает новый бан для пользователя
-     */
+
+
+
     public function createBan(): void {
         try {
             if (!user::self()->isAuth()) {
                 throw new Exception("Необходимо авторизоваться");
             }
 
-            // Проверяем права доступа
+
             $isAdmin = user::self()->isAdmin();
             $isModerator = ForumModerator::isUserModerator(user::self()->getId());
 
@@ -4243,28 +4276,28 @@ class forum
                 throw new Exception("У вас нет прав для бана пользователей");
             }
 
-            // Получаем данные из POST
+
             $userId = filter_var($_POST['user_id'] ?? 0, FILTER_VALIDATE_INT);
             $reason = XssSecurity::clean($_POST['reason'] ?? '');
-            $duration = $_POST['duration'] ?? 'permanent'; // permanent, 1hour, 1day, 1week, 1month, custom
+            $duration = $_POST['duration'] ?? 'permanent';
             $customDate = $_POST['custom_date'] ?? null;
 
             if (!$userId) {
                 throw new Exception("Не указан пользователь для бана");
             }
 
-            // Нельзя забанить самого себя
+
             if ($userId === user::self()->getId()) {
                 throw new Exception("Вы не можете забанить самого себя");
             }
 
-            // Нельзя забанить админа (только админ может забанить админа)
+
             $targetUser = user::getUserId($userId);
             if ($targetUser->isAdmin() && !$isAdmin) {
                 throw new Exception("Модераторы не могут банить администраторов");
             }
 
-            // Вычисляем дату окончания бана
+
             $bannedUntil = null;
             switch ($duration) {
                 case '1hour':
@@ -4302,7 +4335,7 @@ class forum
                     break;
             }
 
-            // Создаем бан
+
             $banId = ForumBan::createBan(
                 $userId,
                 user::self()->getId(),
@@ -4310,7 +4343,7 @@ class forum
                 $bannedUntil
             );
 
-            // Логируем действие модератора
+
             ForumModerator::logAction(
                 user::self()->getId(),
                 'ban_user',
@@ -4327,16 +4360,16 @@ class forum
         }
     }
 
-    /**
-     * Обновляет информацию о бане
-     */
+
+
+
     public function updateBan(): void {
         try {
             if (!user::self()->isAuth()) {
                 throw new Exception("Необходимо авторизоваться");
             }
 
-            // Проверяем права доступа
+
             $isAdmin = user::self()->isAdmin();
             $isModerator = ForumModerator::isUserModerator(user::self()->getId());
 
@@ -4353,7 +4386,7 @@ class forum
                 throw new Exception("Не указан ID бана");
             }
 
-            // Вычисляем новую дату окончания бана
+
             $bannedUntil = null;
             switch ($duration) {
                 case '1hour':
@@ -4388,7 +4421,7 @@ class forum
                     break;
             }
 
-            // Обновляем бан
+
             ForumBan::updateBan($banId, $reason ?: null, $bannedUntil);
 
             board::reload();
@@ -4399,16 +4432,16 @@ class forum
         }
     }
 
-    /**
-     * Снимает бан с пользователя
-     */
+
+
+
     public function removeBan(): void {
         try {
             if (!user::self()->isAuth()) {
                 throw new Exception("Необходимо авторизоваться");
             }
 
-            // Проверяем права доступа
+
             $isAdmin = user::self()->isAdmin();
             $isModerator = ForumModerator::isUserModerator(user::self()->getId());
 
@@ -4422,16 +4455,16 @@ class forum
                 throw new Exception("Не указан ID бана");
             }
 
-            // Получаем информацию о бане для логирования
+
             $ban = ForumBan::getBanById($banId);
             if (!$ban) {
                 throw new Exception("Бан не найден");
             }
 
-            // Снимаем бан
+
             ForumBan::removeBan($banId, user::self()->getId());
 
-            // Логируем действие
+
             ForumModerator::logAction(
                 user::self()->getId(),
                 'unban_user',
@@ -4448,16 +4481,16 @@ class forum
         }
     }
 
-    /**
-     * Получает историю банов пользователя
-     */
+
+
+
     public function getBanHistory(int $userId): void {
         try {
             if (!user::self()->isAuth()) {
                 throw new Exception("Необходимо авторизоваться");
             }
 
-            // Проверяем права доступа
+
             $isAdmin = user::self()->isAdmin();
             $isModerator = ForumModerator::isUserModerator(user::self()->getId());
 
@@ -4481,19 +4514,19 @@ class forum
         }
     }
 
-    /**
-     * Поиск пользователей для системы банов (AJAX)
-     */
+
+
+
     public function searchUsers(): void {
         header('Content-Type: application/json');
-        
+
         try {
             if (!user::self()->isAuth()) {
                 echo json_encode(['success' => false, 'message' => 'Необходимо авторизоваться']);
                 return;
             }
 
-            // Проверяем права доступа
+
             $isAdmin = user::self()->isAdmin();
             $isModerator = ForumModerator::isUserModerator(user::self()->getId());
 
@@ -4510,25 +4543,25 @@ class forum
                 return;
             }
 
-            // Ищем пользователей по имени или email
+
             $users = sql::getRows(
-                "SELECT id, name, email, avatar, date_create 
-                 FROM users 
-                 WHERE (name LIKE ? OR email LIKE ?) 
+                "SELECT id, name, email, avatar, date_create
+                 FROM users
+                 WHERE (name LIKE ? OR email LIKE ?)
                  AND id != ?
-                 ORDER BY name ASC 
+                 ORDER BY name ASC
                  LIMIT 20",
                 ['%' . $searchQuery . '%', '%' . $searchQuery . '%', user::self()->getId()]
             );
 
             $result = [];
             foreach ($users as $userData) {
-                // Проверяем, забанен ли пользователь
+
                 $ban = ForumBan::isUserBanned($userData['id']);
-                
-                // Формируем правильный путь к аватарке (как в методе getAvatar() класса userModel)
+
+
                 $avatarPath = '/uploads/avatar/' . ($userData['avatar'] ?? 'none.jpeg');
-                
+
                 $result[] = [
                     'id' => (int)$userData['id'],
                     'name' => $userData['name'],
@@ -4546,9 +4579,9 @@ class forum
         }
     }
 
-    /**
-     * Пересчитывает и сохраняет количество сообщений пользователя на форуме
-     */
+
+
+
     private function recalculateUserPostCount(int $userId): void {
         try {
             $count = (int)sql::getValue(
@@ -4560,7 +4593,7 @@ class forum
                 $user->addVar('forum_post_count', (string)$count);
             }
         } catch (Exception $e) {
-            // Silently fail - next request will recalculate
+
         }
     }
 

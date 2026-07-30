@@ -62,7 +62,7 @@ class forum_post
             '<p><br></p><p><br></p>',
             $content
         );
-        
+
         $replacements = [
             '<div><br></div>' => '',
             '<br><br>' => '<br>',
@@ -88,7 +88,7 @@ class forum_post
             'oncopy' => 'оnсoрy',
             'oncut' => 'оnсut',
         ];
-        
+
         return strtr($content, $replacements);
     }
 
@@ -130,9 +130,9 @@ class forum_post
 
         if ($this->replyData === null) {
             $this->replyData = sql::getRow(
-                "SELECT p.*, u.name as user_name 
-            FROM forum_posts p 
-            LEFT JOIN users u ON p.user_id = u.id 
+                "SELECT p.*, u.name as user_name
+            FROM forum_posts p
+            LEFT JOIN users u ON p.user_id = u.id
             WHERE p.id = ?",
                 [$this->replyToId]
             );
@@ -141,11 +141,11 @@ class forum_post
         return $this->replyData;
     }
 
-    /**
-     * Проверяет, можно ли еще редактировать сообщение
-     * @param int $timeoutMinutes Таймаут в минутах
-     * @return bool True если время редактирования НЕ истекло (прошло меньше timeoutMinutes)
-     */
+
+
+
+
+
     public function isEditableByTime(int $timeoutMinutes): bool {
         try {
             $created = new DateTime($this->createdAt);

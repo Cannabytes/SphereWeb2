@@ -26,7 +26,7 @@ class forum_category
     private bool $isModerated;
     private int $sortOrder = 0;
 
-    /** @var forum_category[] */
+
     private array $subcategories = [];
     private null|false|forum_thread $thread = null;
     private bool $isHidden;
@@ -39,10 +39,10 @@ class forum_category
     private bool $hideLastTopic;
     private string $titleColor;
 
-    /**
-     * Конструктор категории.
-     * @param array $category Данные категории.
-     */
+
+
+
+
     public function __construct(array $category)
     {
         $this->id = (int)$category['id'];
@@ -85,10 +85,10 @@ class forum_category
         return $this->isHidden;
     }
 
-    /**
-     * Определяет, нужно ли скрывать информацию о последней теме
-     * @return bool
-     */
+
+
+
+
     public function shouldHideLastTopic(): bool
     {
         return $this->hideLastTopic;
@@ -119,10 +119,10 @@ class forum_category
         return $this->link;
     }
 
-    /**
-     * Связывает подкатегории.
-     * @param forum_category[] $allCategories Все категории для поиска подкатегорий.
-     */
+
+
+
+
     public function loadSubcategories(array $allCategories): void
     {
         $this->subcategories = [];
@@ -132,7 +132,7 @@ class forum_category
             }
         }
 
-        // Сортируем подкатегории по sortOrder
+
         usort($this->subcategories, function($a, $b) {
             return $a->getSortOrder() - $b->getSortOrder();
         });
@@ -143,10 +143,10 @@ class forum_category
         return $this->parentId;
     }
 
-    /**
-     * Возвращает список подкатегорий.
-     * @return array|false
-     */
+
+
+
+
     public function getSubcategories(): array|false
     {
         return $this->subcategories !== [] ? $this->subcategories : false;
@@ -197,8 +197,8 @@ class forum_category
         if (!$thread) {
             return $this->thread = false;
         }
-        
-        // Если тема не одобрена и включена предмодерация — не показываем её чужим пользователям
+
+
         if (!$thread['is_approved']) {
             $settings = \Ofey\Logan22\model\db\sql::getRow(
                 "SELECT setting FROM settings WHERE `key` = '__FORUM_SETTINGS__' LIMIT 1"
@@ -214,26 +214,26 @@ class forum_category
                 }
             }
         }
-        
+
         $threadObject = new forum_thread($thread);
-        
-        // Проверяем права на просмотр темы
+
+
         $canView = true;
-        if (!\Ofey\Logan22\model\user\user::self()->isAdmin() && 
+        if (!\Ofey\Logan22\model\user\user::self()->isAdmin() &&
             !\Ofey\Logan22\component\plugins\sphere_forum\struct\ForumModerator::isUserModerator(
-                \Ofey\Logan22\model\user\user::self()->getId(), 
+                \Ofey\Logan22\model\user\user::self()->getId(),
                 $this->getId()
             )) {
             if (!$this->canViewTopics) {
-                // Если пользователь не автор темы - нет прав на просмотр
+
                 if ($thread['user_id'] !== \Ofey\Logan22\model\user\user::self()->getId()) {
                     $canView = false;
                 }
             }
         }
-        
+
         $threadObject->canView = $canView;
-        
+
         return $this->thread = $threadObject;
     }
 
@@ -292,10 +292,10 @@ class forum_category
         return $this->maxPostLength;
     }
 
-    /**
-     * Возвращает время в минутах, в течение которого можно удалить тему
-     * @return int
-     */
+
+
+
+
     public function getThreadDeleteTimeoutMinutes(): int
     {
         return $this->threadDeleteTimeoutMinutes;

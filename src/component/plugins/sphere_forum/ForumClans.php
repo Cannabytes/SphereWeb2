@@ -19,9 +19,9 @@ class ForumClans
     private $clans = [];
     private $clanName = [];
 
-    /**
-     * Проверяет, включена ли функция кланов
-     */
+
+
+
     private function checkClansEnabled(): void
     {
         if (!forum::areClanEnabled()) {
@@ -33,7 +33,7 @@ class ForumClans
     public function create(): void
     {
         $this->checkClansEnabled();
-        
+
         try {
             if(user::self()->isGuest()){
                 redirect::location("/forum");
@@ -43,10 +43,10 @@ class ForumClans
 
             $clanName = trim($_POST['clanName']);
             $clanDescription = trim($_POST['clanDescription']);
-            
+
             $clanName = XssSecurity::clean($clanName);
             $clanDescription = XssSecurity::clean($clanDescription);
-            
+
             $data = [
                 'clanName' => $clanName,
                 'clanDescription' => $clanDescription,
@@ -62,7 +62,7 @@ class ForumClans
             $backgroundPath = $bgFile ? $this->handleImage($bgFile, 'bg_') : null;
 
             sql::run(
-                "INSERT INTO forum_clans (owner_id, name, `desc`, logo, background_logo, text_color, acceptance) 
+                "INSERT INTO forum_clans (owner_id, name, `desc`, logo, background_logo, text_color, acceptance)
              VALUES (?, ?, ?, ?, ?, ?, ?)",
                 [
                     user::self()->getId(),
@@ -157,7 +157,7 @@ class ForumClans
                 mkdir($uploadDir, 0755, true);
             }
 
-            // Обработка файла
+
             $tmpName = is_array($file['tmp_name']) ? $file['tmp_name'][0] : $file['tmp_name'];
             $error = is_array($file['error']) ? $file['error'][0] : $file['error'];
 
@@ -202,7 +202,7 @@ class ForumClans
         $row = sql::getRow("SELECT * FROM forum_clans WHERE id = ? LIMIT 1", [$clanId]);
         if ($row) {
             $clan = new ForumClan($row);
-            $this->clans[$clanId] = $clan; // Сохраняем клан по ID
+            $this->clans[$clanId] = $clan;
             $this->clanName[$clan->getName()] = &$this->clans[$clanId];
             return $clan;
         }
@@ -219,7 +219,7 @@ class ForumClans
         if ($row) {
             $clan = new ForumClan($row);
             $this->clans[$clan->getId()] = $clan;
-            $this->clanName[$clan->getName()] = &$this->clans[$clan->getId()]; 
+            $this->clanName[$clan->getName()] = &$this->clans[$clan->getId()];
             return $clan;
         }
         return false;
@@ -257,13 +257,13 @@ class ForumClans
         }
         $isMember = false;
         $hasPendingRequest = false;
-        
+
         if ($clan) {
             $isMember = $this->isMember($clan->getId());
             $hasPendingRequest = $clan->hasPendingRequest(user::self()->getId());
         }
 
-        // Получаем сообщения клана
+
         $clanPosts = $clan->getClanPosts();
         tpl::addVar('isMember', $isMember);
         tpl::addVar('hasPendingRequest', $hasPendingRequest);
@@ -304,13 +304,13 @@ class ForumClans
             $data = $_POST;
 
             $userOwnerClan = $this->getUserOwnerClan();
-            //Если пользователь не овнер клана, тогда прощаемся с ним
+
             if(!$userOwnerClan->getOwnerId()) {
                 board::error("У Вас нет клана");
             }
             $this->validateClanData($data, $userOwnerClan->getId());
 
-            // Обработка изображений
+
             $logoPath = isset($_FILES['clanLogo']) ? $this->handleImage($_FILES['clanLogo'], 'logo_') : null;
             $backgroundPath = isset($_FILES['clanBackground']) ? $this->handleImage($_FILES['clanBackground'], 'bg_') : null;
 
@@ -354,19 +354,19 @@ class ForumClans
             board::error("Клан не найден");
         }
 
-        // Проверяем, не состоит ли уже пользователь в клане
+
         if ($this->isMember($clanId)) {
             board::error("Вы уже состоите в этом клане");
         }
 
         try {
-            if ($clan->getAcceptance() == 1) { // Автоматическое принятие
+            if ($clan->getAcceptance() == 1) {
                 sql::run(
                     "INSERT INTO forum_clan_members (clan_id, user_id) VALUES (?, ?)",
                     [$clanId, user::self()->getId()]
                 );
                 user::self()->addVar('clanId', $clanId);
-            } else { // Отправка заявки
+            } else {
                 sql::run(
                     "INSERT INTO forum_clan_requests (clan_id, user_id) VALUES (?, ?)",
                     [$clanId, user::self()->getId()]
@@ -396,19 +396,19 @@ class ForumClans
         try {
             if ($accept) {
                 sql::transaction(function() use ($request) {
-                    // Добавляем пользователя в клан
+
                     sql::run(
                         "INSERT INTO forum_clan_members (clan_id, user_id) VALUES (?, ?)",
                         [$request['clan_id'], $request['user_id']]
                     );
 
-                    // Обновляем статус заявки
+
                     sql::run(
                         "UPDATE forum_clan_requests SET status = 'accepted' WHERE id = ?",
                         [$request['id']]
                     );
 
-                    // Добавляем переменную пользователю
+
                     $user = user::getUserId($request['user_id']);
                     $user->addVar('clanId', $request['clan_id']);
                     });
@@ -452,11 +452,11 @@ class ForumClans
                 "DELETE FROM forum_clan_requests WHERE clan_id = ? AND user_id = ? AND status = 'pending'",
                 [$clanId, user::self()->getId()]
             );
-            
+
             if ($stmt && $stmt->rowCount() > 0) {
                 return true;
             }
-            
+
             board::error("Заявка не найдена или уже обработана");
             return false;
         } catch (Exception $e) {
@@ -494,8 +494,8 @@ class ForumClans
 
             $clanId = $_POST['clan_id'] ?? null;
             $message = $_POST['message'] ?? '';
-            
-            // XSS защита: очищаем сообщение
+
+
             $message = XssSecurity::clean($message);
 
             if (!$clanId) {
@@ -511,7 +511,7 @@ class ForumClans
                 throw new \Exception('Нет прав для публикации сообщений');
             }
 
-            // Обработка изображений
+
             $images = [];
             if (isset($_FILES['images'])) {
                 $images = $this->handleImages($_FILES['images']);
@@ -520,7 +520,7 @@ class ForumClans
                 }
             }
 
-            // Создаем пост
+
             $post = $clan->createPost(user::self()->getId(), $message, $images);
 
             echo json_encode([
@@ -548,8 +548,8 @@ class ForumClans
             $postId = $_POST['post_id'] ?? null;
             $message = $_POST['message'] ?? '';
             $clanId = $_POST['clan_id'] ?? null;
-            
-            // XSS защита: очищаем сообщение
+
+
             $message = XssSecurity::clean($message);
 
             if (!$postId || !$message || !$clanId) {
@@ -616,30 +616,30 @@ class ForumClans
                 continue;
             }
 
-            // Проверка типа файла
+
             $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
             if (!in_array($files['type'][$index], $allowedTypes)) {
                 continue;
             }
 
-            // Проверка размера
-            if ($files['size'][$index] > 5 * 1024 * 1024) { // 5MB
+
+            if ($files['size'][$index] > 5 * 1024 * 1024) {
                 continue;
             }
 
             try {
-                // Создаем уникальное имя файла
+
                 $filename = 'post_' . uniqid() . '.webp';
 
-                // Читаем изображение
+
                 $image = $manager->read($files['tmp_name'][$index]);
 
-                // Изменяем размер если нужно
+
                 if ($image->width() > 2048 || $image->height() > 2048) {
                     $image->scale(width: 2048, height: 2048);
                 }
 
-                // Сохраняем как webp
+
                 if ($image->save($uploadDir . $filename)) {
                     $images[] = $filename;
                 }
@@ -665,13 +665,13 @@ class ForumClans
                 throw new Exception('Клан не найден');
             }
 
-            // Проверяем права (владелец или администратор)
+
             if ($clan->getOwnerId() !== user::self()->getId() && !user::self()->isAdmin()) {
                 throw new Exception('Недостаточно прав для удаления клана');
             }
 
             sql::transaction(function() use ($clanId) {
-                // Удаляем все связанные данные
+
                 sql::run("DELETE FROM forum_clan_chat WHERE clan_id = ?", [$clanId]);
                 sql::run("DELETE FROM forum_clan_requests WHERE clan_id = ?", [$clanId]);
                 sql::run("DELETE FROM forum_clan_members WHERE clan_id = ?", [$clanId]);
@@ -679,7 +679,7 @@ class ForumClans
                 sql::run("DELETE FROM forum_clan_posts WHERE clan_id = ?", [$clanId]);
                 sql::run("DELETE FROM forum_clans WHERE id = ?", [$clanId]);
 
-                // Удаляем переменную clanId у всех пользователей клана
+
                 sql::run("DELETE FROM user_variables WHERE `var` = 'clanId' AND `val` = ?", [$clanId]);
             });
 
@@ -693,7 +693,7 @@ class ForumClans
     public function showAllClans() {
         $this->checkClansEnabled();
         $clans = sql::getRows(
-            "SELECT c.*, 
+            "SELECT c.*,
             u.name as owner_name,
             COUNT(DISTINCT m.user_id) as members_count
         FROM forum_clans c
@@ -719,7 +719,7 @@ class ForumClans
         }
 
         $clans = sql::getRows(
-            "SELECT c.*, 
+            "SELECT c.*,
             u.name as owner_name,
             COUNT(DISTINCT m.user_id) as members_count
         FROM forum_clans c
@@ -753,24 +753,24 @@ class ForumClans
     public function kickMember($clanId, $memberId): bool
     {
         $this->checkClansEnabled();
-        
+
         try {
             $clan = $this->getClanInfoById($clanId);
             if (!$clan) {
                 throw new Exception("Клан не найден");
             }
 
-            // Проверяем, является ли текущий пользователь владельцем клана
+
             if ($clan->getOwnerId() !== user::self()->getId()) {
                 throw new Exception("У вас нет прав для удаления членов клана");
             }
 
-            // Проверяем, что не пытаемся удалить владельца
+
             if ((int)$memberId === $clan->getOwnerId()) {
                 throw new Exception("Вы не можете удалить владельца клана");
             }
 
-            // Проверяем, что пользователь действительно состоит в клане
+
             $member = sql::getRow(
                 "SELECT * FROM forum_clan_members WHERE clan_id = ? AND user_id = ? LIMIT 1",
                 [$clanId, $memberId]
@@ -780,7 +780,7 @@ class ForumClans
                 throw new Exception("Пользователь не состоит в клане");
             }
 
-            // Удаляем пользователя из клана
+
             sql::run(
                 "DELETE FROM forum_clan_members WHERE clan_id = ? AND user_id = ?",
                 [$clanId, $memberId]

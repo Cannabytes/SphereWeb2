@@ -1228,6 +1228,54 @@
                             </tbody>
                         </table>
                         {% endif %}
+
+                        {% if totalPages > 1 %}
+                        <nav class="mt-3" aria-label="{{ phrase('topics') }}">
+                            <ul class="pagination justify-content-center mb-0">
+                                {% if currentPage > 1 %}
+                                <li class="page-item">
+                                    <a class="page-link" href="/forum/{{ transliterateToEn(sectionName) }}.{{ sectionId }}?page={{ currentPage - 1 }}">&laquo;</a>
+                                </li>
+                                {% endif %}
+
+                                <li class="page-item{% if currentPage == 1 %} active{% endif %}">
+                                    <a class="page-link" href="/forum/{{ transliterateToEn(sectionName) }}.{{ sectionId }}?page=1">1</a>
+                                </li>
+
+                                {% if totalPages > 2 %}
+                                    {% set firstMiddlePage = max(2, currentPage - 2) %}
+                                    {% set lastMiddlePage = min(totalPages - 1, currentPage + 2) %}
+                                    {% if firstMiddlePage > 2 %}
+                                    <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                                    {% endif %}
+
+                                    {% for page in range(firstMiddlePage, lastMiddlePage) %}
+                                    <li class="page-item{% if currentPage == page %} active{% endif %}">
+                                        <a class="page-link" href="/forum/{{ transliterateToEn(sectionName) }}.{{ sectionId }}?page={{ page }}">{{ page }}</a>
+                                    </li>
+                                    {% endfor %}
+
+                                    {% if lastMiddlePage < totalPages - 1 %}
+                                    <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                                    {% endif %}
+
+                                    <li class="page-item{% if currentPage == totalPages %} active{% endif %}">
+                                        <a class="page-link" href="/forum/{{ transliterateToEn(sectionName) }}.{{ sectionId }}?page={{ totalPages }}">{{ totalPages }}</a>
+                                    </li>
+                                {% elseif totalPages == 2 %}
+                                <li class="page-item{% if currentPage == 2 %} active{% endif %}">
+                                    <a class="page-link" href="/forum/{{ transliterateToEn(sectionName) }}.{{ sectionId }}?page=2">2</a>
+                                </li>
+                                {% endif %}
+
+                                {% if currentPage < totalPages %}
+                                <li class="page-item">
+                                    <a class="page-link" href="/forum/{{ transliterateToEn(sectionName) }}.{{ sectionId }}?page={{ currentPage + 1 }}">&raquo;</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
                     </div>
 
                 </div>

@@ -25,10 +25,10 @@ class forum_thread
     public bool $canView = true;
     private ?int $poll_id = null;
 
-    /**
-     * Конструктор для инициализации данных темы.
-     * @param array|false $thread Данные темы из базы.
-     */
+
+
+
+
     public function __construct(array $thread)
     {
         $this->id = (int)$thread['id'];
@@ -48,7 +48,7 @@ class forum_thread
         $this->poll_id = $thread['poll_id'] !== null ? (int)$thread['poll_id'] : null;
     }
 
-    // Добавляем геттер и сеттер
+
     public function hasUnread(): bool {
         return $this->hasUnread;
     }
@@ -136,65 +136,65 @@ class forum_thread
         return (int)ceil(($this->replies) / $postsPerPage);
     }
 
-    /**
-     * Проверяет, может ли пользователь удалить тему
-     *
-     * @param forum_category $category Категория, к которой принадлежит тема
-     * @return bool Возвращает true, если тему можно удалить
-     */
+
+
+
+
+
+
     public function canUserDeleteOwnThread(forum_category $category): bool {
-        // Если пользователь не автор темы - нельзя удалить
+
         if ($this->authorId !== user::self()->getId()) {
             return false;
         }
 
-        // Если в категории запрещено удаление тем - нельзя удалить
+
         if (!$category->canUsersDeleteOwnThreads()) {
             return false;
         }
 
-        // Проверяем не истекло ли время для удаления
+
         $createdTime = strtotime($this->createdAt);
         $currentTime = time();
 
-        // Получаем разрешенное время для удаления в минутах
+
         $timeoutMinutes = $category->getThreadDeleteTimeoutMinutes();
 
-        // Считаем сколько минут прошло с момента создания
+
         $minutesPassed = ($currentTime - $createdTime) / 60;
 
-        // Возвращаем true если не превышен лимит времени
+
         return $minutesPassed <= $timeoutMinutes;
     }
 
-    /**
-     * Проверяет наличие непрочитанных сообщений в теме
-     * @return bool
-     */
+
+
+
+
     public function hasUnreadPosts(): bool {
         if (!user::self()->isAuth()) {
             return false;
         }
 
-        // Проверяем наличие записи в таблице отслеживания
+
         $trackInfo = sql::getRow(
-            "SELECT last_read_post_id 
-            FROM forum_user_thread_tracks 
+            "SELECT last_read_post_id
+            FROM forum_user_thread_tracks
             WHERE user_id = ? AND thread_id = ?",
             [user::self()->getId(), $this->id]
         );
 
-        // Если нет записи об отслеживании - тема считается непрочитанной
+
         if (!$trackInfo) {
             return true;
         }
 
-        // Проверяем наличие новых сообщений после последнего прочитанного
+
         $hasNewer = sql::getValue(
             "SELECT EXISTS(
-                SELECT 1 FROM forum_posts 
-                WHERE thread_id = ? 
-                AND id > ? 
+                SELECT 1 FROM forum_posts
+                WHERE thread_id = ?
+                AND id > ?
                 LIMIT 1
             )",
             [$this->id, $trackInfo['last_read_post_id']]
@@ -217,10 +217,10 @@ class forum_thread
             return null;
         }
 
-        // Load poll options
+
         $pollData['options'] = sql::getRows(
-            "SELECT id, text, votes_count 
-        FROM forum_poll_options 
+            "SELECT id, text, votes_count
+        FROM forum_poll_options
         WHERE poll_id = ?",
             [$this->poll_id]
         );

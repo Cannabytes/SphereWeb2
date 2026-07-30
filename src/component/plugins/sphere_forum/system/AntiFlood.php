@@ -7,7 +7,7 @@ use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\user\user;
 
 class AntiFlood {
-    // Константы для типов действий
+
     public const TYPE_POST = 'post';
     public const TYPE_THREAD = 'thread';
 
@@ -28,33 +28,33 @@ class AntiFlood {
         $this->userId = user::self()->getId();
         $this->activityType = $activityType;
 
-        // Очищаем устаревшие блокировки
+
         $this->clearExpiredCooldowns();
 
         $this->loadUserActivity();
     }
 
     private function loadUserActivity(): void {
-        // Сначала проверим наличие записи
+
         $activity = sql::getRow(
-            "SELECT * FROM forum_user_activity 
+            "SELECT * FROM forum_user_activity
          WHERE user_id = ? AND activity_type = ?",
             [$this->userId, $this->activityType]
         );
 
         if (!$activity) {
-            // Если записи нет - создаем новую с текущим Unix timestamp
+
             $currentTime = time();
             sql::run(
-                "INSERT INTO forum_user_activity 
-             (user_id, activity_type, last_action_time, actions_count, cooldown_until) 
+                "INSERT INTO forum_user_activity
+             (user_id, activity_type, last_action_time, actions_count, cooldown_until)
              VALUES (?, ?, ?, 0, NULL)",
                 [$this->userId, $this->activityType, $currentTime]
             );
 
-            // Загружаем только что созданную запись
+
             $activity = sql::getRow(
-                "SELECT * FROM forum_user_activity 
+                "SELECT * FROM forum_user_activity
              WHERE user_id = ? AND activity_type = ?",
                 [$this->userId, $this->activityType]
             );
@@ -74,9 +74,9 @@ class AntiFlood {
         $this->activity = $activity;
     }
 
-    /**
-     * Получает настройки форума из базы данных
-     */
+
+
+
     private function getForumSettings(): array {
         if ($this->forumSettings !== null) {
             return $this->forumSettings;
@@ -96,9 +96,9 @@ class AntiFlood {
         return $this->forumSettings;
     }
 
-    /**
-     * Возвращает настройки по умолчанию для антифлуда
-     */
+
+
+
     private function getDefaultSettings(): array {
         return [
             'post_max_per_minute' => 10,
@@ -112,12 +112,12 @@ class AntiFlood {
         ];
     }
 
-    /**
-     * Получает настройки антифлуда в зависимости от типа активности
-     */
+
+
+
     private function getSettings(): array {
         $forumSettings = $this->getForumSettings();
-        
+
         return $this->activityType === self::TYPE_POST ?
             [
                 'max_per_minute' => $forumSettings['post_max_per_minute'] ?? 10,
@@ -136,22 +136,22 @@ class AntiFlood {
     }
 
     public function checkFlood(): void {
-        // Пропускаем проверку для администраторов
+
         if (user::self()->isAdmin()) {
             return;
         }
 
-        // Сначала очищаем устаревшие блокировки
+
         $this->clearExpiredCooldowns();
 
-        // Проверяем существует ли активность для данного пользователя
+
         if ($this->activity === null) {
             $this->loadUserActivity();
         }
 
         $settings = $this->getSettings();
 
-        // Проверяем блокировку
+
         if (!empty($this->activity['cooldown_until'])) {
             $cooldownTime = (int)$this->activity['cooldown_until'];
             $currentTime = time();
@@ -161,15 +161,15 @@ class AntiFlood {
             }
         }
 
-        // Для новых тем проверяем только интервал
+
         if ($this->activityType === self::TYPE_THREAD) {
-            // Если у пользователя ещё не было действий — позволяем создать первую тему сразу
+
             if ((int)($this->activity['actions_count'] ?? 0) === 0) {
                 return;
             }
 
-            // Дополнительная надёжная проверка: если у пользователя вообще нет созданных тем в БД,
-            // позволяем создать первую тему (на случай, если запись в forum_user_activity некорректна).
+
+
             $userThreads = sql::getValue(
                 "SELECT COUNT(*) FROM forum_threads WHERE user_id = ?",
                 [$this->userId]
@@ -180,7 +180,7 @@ class AntiFlood {
 
             $lastActionTime = (int)$this->activity['last_action_time'];
             $timePassed = time() - $lastActionTime;
-            
+
             if ($timePassed < $settings['min_interval']) {
                 $timeToWait = $settings['min_interval'] - $timePassed;
                 throw new Exception("Пожалуйста, подождите {$timeToWait} секунд перед созданием новой темы.");
@@ -188,9 +188,9 @@ class AntiFlood {
             return;
         }
 
-        // Для сообщений проверяем количество
+
         $actionsLastMinute = sql::getValue(
-            "SELECT COUNT(*) FROM forum_posts 
+            "SELECT COUNT(*) FROM forum_posts
          WHERE user_id = ? AND created_at > DATE_SUB(NOW(), INTERVAL 1 MINUTE)",
             [$this->userId]
         );
@@ -201,7 +201,7 @@ class AntiFlood {
         }
 
         $actionsLastHour = sql::getValue(
-            "SELECT COUNT(*) FROM forum_posts 
+            "SELECT COUNT(*) FROM forum_posts
          WHERE user_id = ? AND created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)",
             [$this->userId]
         );
@@ -213,13 +213,13 @@ class AntiFlood {
     }
 
     private function clearExpiredCooldowns(): void {
-        // Очищаем все устаревшие блокировки (сравниваем Unix timestamp)
+
         $currentTime = time();
         sql::run(
-            "UPDATE forum_user_activity 
+            "UPDATE forum_user_activity
          SET cooldown_until = NULL,
              actions_count = 0
-         WHERE cooldown_until IS NOT NULL 
+         WHERE cooldown_until IS NOT NULL
          AND cooldown_until < ?",
             [$currentTime]
         );
@@ -230,21 +230,21 @@ class AntiFlood {
         $settings = $this->getSettings();
         $violations = $this->getViolationsCount();
 
-        // Прогрессивное увеличение времени блокировки
+
         $cooldownTime = $settings['cooldown'] * pow(2, $violations);
 
-        // Сохраняем Unix timestamp (время сервера)
+
         $cooldownUntil = time() + $cooldownTime;
 
         sql::run(
-            "UPDATE forum_user_activity 
-         SET cooldown_until = ?, 
+            "UPDATE forum_user_activity
+         SET cooldown_until = ?,
              actions_count = actions_count + 1
          WHERE user_id = ? AND activity_type = ?",
             [$cooldownUntil, $this->userId, $this->activityType]
         );
 
-        // Обновляем локальные данные
+
         $this->activity['cooldown_until'] = $cooldownUntil;
         $this->activity['actions_count']++;
 
@@ -255,7 +255,7 @@ class AntiFlood {
 
     private function getViolationsCount(): int {
         return sql::getValue(
-            "SELECT COUNT(*) FROM forum_user_activity 
+            "SELECT COUNT(*) FROM forum_user_activity
             WHERE user_id = ? AND activity_type = ? AND cooldown_until IS NOT NULL",
             [$this->userId, $this->activityType]
         );
@@ -264,9 +264,9 @@ class AntiFlood {
     public function updateActivity(): void {
         $currentTime = time();
         sql::run(
-            "UPDATE forum_user_activity 
-            SET last_action_time = ?, 
-                actions_count = actions_count + 1 
+            "UPDATE forum_user_activity
+            SET last_action_time = ?,
+                actions_count = actions_count + 1
             WHERE user_id = ? AND activity_type = ?",
             [$currentTime, $this->userId, $this->activityType]
         );
@@ -274,7 +274,7 @@ class AntiFlood {
 
 
     private function notifyModerators(): void {
-        // Здесь реализация уведомления модераторов
-        // Можно отправлять через внутреннюю систему сообщений или email
+
+
     }
 }

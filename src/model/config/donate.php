@@ -78,7 +78,7 @@ class donate
             $this->minSummaPaySphereCoin = filter_var($setting['minSummaPaySphereCoin'] ?? 1, FILTER_VALIDATE_INT, ['options' => ['default' => 1, 'min_range' => 1]]);
             $this->maxSummaPaySphereCoin = filter_var($setting['maxSummaPaySphereCoin'] ?? 999999, FILTER_VALIDATE_INT, ['options' => ['default' => 999999, 'min_range' => 1]]);
             $this->defaultSummaPaySphereCoin = filter_var($setting['defaultSummaPaySphereCoin'] ?? 1, FILTER_VALIDATE_INT, ['options' => ['default' => 999999, 'min_range' => 1]]);
-            $this->sphereCoinCost = filter_var($setting['sphereCoinCost'] ?? 1, FILTER_VALIDATE_FLOAT, ['options' => ['default' => 1, 'min_range' => 0.1]]);
+            $this->sphereCoinCost = filter_var($setting['sphereCoinCost'] ?? 1, FILTER_VALIDATE_FLOAT, ['options' => ['default' => 1, 'min_range' => 0.01]]);
             $this->ratioUSD = filter_var($setting['ratioUSD'] ?? 1, FILTER_VALIDATE_FLOAT, ['options' => ['default' => 1]]);
             $this->ratioEUR = filter_var($setting['ratioEUR'] ?? 1.09, FILTER_VALIDATE_FLOAT, ['options' => ['default' => 1.09]]);
             $this->ratioUAH = filter_var($setting['ratioUAH'] ?? 40.54, FILTER_VALIDATE_FLOAT, ['options' => ['default' => 40.54]]);

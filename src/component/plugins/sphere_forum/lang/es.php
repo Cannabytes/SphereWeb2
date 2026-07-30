@@ -299,8 +299,8 @@ return [
     'participants' => 'Participantes',
     'moderator_approval_of_topics' => 'Aprobación de temas por moderadores',
     'delete_own_topics' => 'Eliminar temas propios',
-    
-    // Sistema de Baneos
+
+
     'ban_management' => 'Gestión de Baneos',
     'ban_user' => 'Banear Usuario',
     'unban_user' => 'Desbanear Usuario',
@@ -383,8 +383,8 @@ return [
     'close' => 'Cerrar',
     'user' => 'Usuario',
     'unknown' => 'Desconocido',
-    
-    // Página de configuración del foro
+
+
     'forum_settings' => 'Configuración del foro',
     'general_settings' => 'Configuración general',
     'posts_per_page' => 'Publicaciones por página',
@@ -399,8 +399,8 @@ return [
     'enable_clans_help' => 'Activa/desactiva la funcionalidad de clanes en el foro. Cuando está desactivado, el botón de crear clan y todas las secciones de clanes no estarán disponibles',
     'max_attachment_size' => 'Tamaño máximo de archivo adjunto',
     'max_attachment_size_help' => 'Tamaño máximo del archivo adjunto en megabytes',
-    
-    // Anti-flood
+
+
     'antiflood_posts_settings' => 'Configuración anti-flood para publicaciones',
     'antiflood_threads_settings' => 'Configuración anti-flood para temas',
     'max_posts_per_minute' => 'Máximo de publicaciones por minuto',
@@ -419,30 +419,30 @@ return [
     'min_thread_interval_help' => 'Tiempo mínimo en segundos entre la creación de temas',
     'thread_cooldown' => 'Tiempo de bloqueo por flood de temas',
     'thread_cooldown_help' => 'Tiempo en segundos que el usuario será bloqueado por exceder el límite de creación de temas',
-    
-    // Moderación
+
+
     'moderation_settings' => 'Configuración de moderación',
     'enable_auto_moderation' => 'Habilitar auto-moderación',
     'enable_post_edit' => 'Permitir edición de publicaciones',
     'post_edit_time_limit' => 'Límite de tiempo para editar publicaciones',
     'post_edit_time_limit_help' => 'Tiempo en segundos durante el cual un usuario puede editar su publicación',
     'enable_post_delete' => 'Permitir eliminación de publicaciones',
-    
-    // Permisos
+
+
     'permissions_settings' => 'Configuración de permisos',
     'allow_guest_view' => 'Permitir visualización a invitados',
     'require_approval_new_topics' => 'Requerir aprobación para nuevos temas',
     'require_approval_new_posts' => 'Requerir aprobación para nuevas publicaciones',
-    
-    // Mensajes
+
+
     'settings_saved_successfully' => 'Configuración guardada correctamente',
     'error_saving_settings' => 'Error al guardar la configuración',
     'save_settings' => 'Guardar configuración',
     'back' => 'Atrás',
     'display_settings' => 'Configuración de visualización',
     'user_blocks' => 'Bloqueos de usuarios',
-    
-    // Herramientas
+
+
     'tools' => 'Herramientas',
     'recalculate_post_counts' => 'Recalcular contador de mensajes',
     'recalculate_post_counts_help' => 'Recalcula el número de mensajes aprobados para todos los usuarios del foro.',

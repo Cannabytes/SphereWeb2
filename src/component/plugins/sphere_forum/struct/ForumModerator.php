@@ -21,25 +21,25 @@ class ForumModerator implements \JsonSerializable {
     private string $createdAt;
     private int $createdBy;
 
-    /**
-     * Проверяет, есть ли у пользователя права модератора на определенную категорию
-     *
-     * @param int $userId ID пользователя
-     * @param int|null $categoryId ID категории или null для всех категорий
-     * @return bool
-     */
+
+
+
+
+
+
+
     public static function isUserModerator(int $userId, ?int $categoryId = null): bool {
-        // Если категория не указана, проверяем только на глобального модератора
+
         if ($categoryId === null) {
             $moderator = sql::getRow(
-                "SELECT * FROM forum_moderators 
+                "SELECT * FROM forum_moderators
                 WHERE user_id = ? AND category_id IS NULL",
                 [$userId]
             );
         } else {
-            // Если категория указана, проверяем как конкретную категорию, так и глобальные права
+
             $moderator = sql::getRow(
-                "SELECT * FROM forum_moderators 
+                "SELECT * FROM forum_moderators
                 WHERE user_id = ? AND (category_id IS NULL OR category_id = ?)",
                 [$userId, $categoryId]
             );
@@ -48,25 +48,25 @@ class ForumModerator implements \JsonSerializable {
         return $moderator !== false && $moderator !== null;
     }
 
-    /**
-     * Проверяет конкретное право модератора
-     *
-     * @param int $userId ID пользователя
-     * @param int|null $categoryId ID категории или null для всех категорий
-     * @param string $permission Название права
-     * @return bool
-     */
+
+
+
+
+
+
+
+
     public static function hasPermission(int $userId, ?int $categoryId, string $permission): bool {
-        // Аналогичная логика для проверки прав
+
         if ($categoryId === null) {
             $moderator = sql::getRow(
-                "SELECT $permission FROM forum_moderators 
+                "SELECT $permission FROM forum_moderators
                 WHERE user_id = ? AND category_id IS NULL",
                 [$userId]
             );
         } else {
             $moderator = sql::getRow(
-                "SELECT $permission FROM forum_moderators 
+                "SELECT $permission FROM forum_moderators
                 WHERE user_id = ? AND (category_id IS NULL OR category_id = ?)",
                 [$userId, $categoryId]
             );
@@ -75,13 +75,13 @@ class ForumModerator implements \JsonSerializable {
         return (bool)($moderator[$permission] ?? false);
     }
 
-    /**
-     * Логирует действие модератора
-     */
+
+
+
     public static function logAction(int $moderatorId, string $action, string $targetType, int $targetId, ?string $reason = null): void {
         sql::run(
-            "INSERT INTO forum_moderator_log 
-            (moderator_id, action, target_type, target_id, reason) 
+            "INSERT INTO forum_moderator_log
+            (moderator_id, action, target_type, target_id, reason)
             VALUES (?, ?, ?, ?, ?)",
             [$moderatorId, $action, $targetType, $targetId, $reason]
         );
@@ -227,10 +227,10 @@ class ForumModerator implements \JsonSerializable {
         $this->createdBy = $createdBy;
     }
 
-    /**
-     * Определяет, как объект должен быть сериализован в JSON
-     * @return array
-     */
+
+
+
+
     public function jsonSerialize(): array
     {
         return [

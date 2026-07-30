@@ -298,8 +298,8 @@ return [
     'participants' => 'Participants',
     'moderator_approval_of_topics' => 'Moderator approval of topics',
     'delete_own_topics' => 'Delete own topics',
-    
-    // Ban System
+
+
     'ban_management' => 'Ban Management',
     'ban_user' => 'Ban User',
     'unban_user' => 'Unban User',
@@ -355,8 +355,8 @@ return [
     'edit_ban' => 'Edit Ban',
     'ban_end_date' => 'Ban End Date',
     'back_to_bans_list' => 'Back to bans list',
-    
-    // User Search for Ban
+
+
     'search_user' => 'Search User',
     'search_user_to_ban' => 'Search user to ban',
     'enter_username_or_email' => 'Enter username or email...',
@@ -368,8 +368,8 @@ return [
     'user_already_banned' => 'User is already banned',
     'clear_selection' => 'Clear selection',
     'selected_user' => 'Selected User',
-    
-    // Ban Panel Interface
+
+
     'ban_users_blocking' => 'Forum users blocking',
     'all_history' => 'All History',
     'not_specified' => 'Not specified',
@@ -386,8 +386,8 @@ return [
     'close' => 'Close',
     'user' => 'User',
     'unknown' => 'Unknown',
-    
-    // Forum settings page
+
+
     'forum_settings' => 'Forum Settings',
     'general_settings' => 'General Settings',
     'posts_per_page' => 'Posts per page',
@@ -402,8 +402,8 @@ return [
     'enable_clans_help' => 'Enables/disables clan functionality on the forum. When disabled, the create clan button and all clan sections will be unavailable',
     'max_attachment_size' => 'Maximum attachment size',
     'max_attachment_size_help' => 'Maximum attachment file size in megabytes',
-    
-    // Anti-flood
+
+
     'antiflood_posts_settings' => 'Anti-flood settings for posts',
     'antiflood_threads_settings' => 'Anti-flood settings for topics',
     'max_posts_per_minute' => 'Max posts per minute',
@@ -422,30 +422,30 @@ return [
     'min_thread_interval_help' => 'Minimum time in seconds between creating topics',
     'thread_cooldown' => 'Topic flood cooldown time',
     'thread_cooldown_help' => 'Time in seconds the user will be blocked for exceeding the topic creation limit',
-    
-    // Moderation
+
+
     'moderation_settings' => 'Moderation Settings',
     'enable_auto_moderation' => 'Enable auto-moderation',
     'enable_post_edit' => 'Allow post editing',
     'post_edit_time_limit' => 'Post edit time limit',
     'post_edit_time_limit_help' => 'Time in seconds during which a user can edit their post',
     'enable_post_delete' => 'Allow post deletion',
-    
-    // Permissions
+
+
     'permissions_settings' => 'Permissions Settings',
     'allow_guest_view' => 'Allow guest viewing',
     'require_approval_new_topics' => 'Require approval for new topics',
     'require_approval_new_posts' => 'Require approval for new posts',
-    
-    // Messages
+
+
     'settings_saved_successfully' => 'Settings saved successfully',
     'error_saving_settings' => 'Error saving settings',
     'save_settings' => 'Save Settings',
     'back' => 'Back',
     'display_settings' => 'Display Settings',
     'user_blocks' => 'User Blocks',
-    
-    // First post moderation (anti-spam)
+
+
     'first_post_moderation' => 'First message moderation (anti-spam)',
     'enable_first_post_moderation' => 'Enable first message moderation',
     'first_post_moderation_help' => 'When enabled, new users\' first message or topic will be sent for moderation. After an admin approves it, the user will be able to post without pre-moderation.',
@@ -468,8 +468,8 @@ return [
     'content_rejected' => 'Content rejected and deleted',
     'content_rejected_and_banned' => 'Content deleted, user banned',
     'spam_default_reason' => 'Spam',
-    
-    // Tools
+
+
     'tools' => 'Tools',
     'recalculate_post_counts' => 'Recalculate post counts',
     'recalculate_post_counts_help' => 'Recalculates the number of approved posts for all forum users.',

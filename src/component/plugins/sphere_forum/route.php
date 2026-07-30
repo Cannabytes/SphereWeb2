@@ -54,7 +54,7 @@ $routes = [
     ],
 
 
-    //Новое сообщение
+
     [
         "method" => "POST",
         "pattern" => "/forum/topic/message/add",
@@ -354,7 +354,7 @@ $routes = [
         "call" => function () {
             if (user::self()->isAuth()) {
                 $notifications = sql::getRows(
-                    "SELECT id FROM forum_notifications 
+                    "SELECT id FROM forum_notifications
                 WHERE user_id = ? AND is_read = 0",
                     [user::self()->getId()]
                 );
@@ -457,8 +457,8 @@ $routes = [
 
             $clanId = $_POST['clan_id'] ?? null;
             $message = $_POST['message'] ?? '';
-            
-            // XSS защита: очищаем сообщение
+
+
             $message = \Ofey\Logan22\component\request\XssSecurity::clean($message);
 
             if (!$clanId || !$message) {
@@ -602,7 +602,7 @@ $routes = [
                 $posts = array_reverse($posts);
                 echo json_encode([
                     'success' => true,
-                    'posts' => array_values($posts) // Убедимся, что отдаем массив
+                    'posts' => array_values($posts)
                 ]);
 
             } catch (\Exception $e) {
@@ -650,8 +650,8 @@ $routes = [
             try {
                 $clanId = $_POST['clan_id'] ?? null;
                 $description = $_POST['description'] ?? '';
-                
-                // XSS защита: очищаем описание
+
+
                 $description = \Ofey\Logan22\component\request\XssSecurity::clean($description);
 
                 if (!$clanId || !$description) {
@@ -689,8 +689,8 @@ $routes = [
             try {
                 $clanId = $_POST['clan_id'] ?? null;
                 $clanNameGame = $_POST['clan_name_game'] ?? null;
-                
-                // XSS защита: очищаем название клана
+
+
                 if ($clanNameGame !== null) {
                     $clanNameGame = \Ofey\Logan22\component\request\XssSecurity::cleanText($clanNameGame);
                 }
@@ -706,7 +706,7 @@ $routes = [
                     throw new Exception('Клан не найден');
                 }
 
-                // Проверяем, является ли текущий пользователь владельцем клана
+
                 if ($clan->getOwnerId() !== user::self()->getId()) {
                     throw new Exception('Недостаточно прав для изменения названия клана');
                 }
@@ -787,7 +787,7 @@ $routes = [
         }
     ],
 
-    // Управление банами (используем user-block вместо ban для обхода AdBlocker)
+
     [
         "method" => "GET",
         "pattern" => "/forum/user-blocks",
@@ -837,7 +837,7 @@ $routes = [
         },
     ],
 
-    // Маршруты модерации первого сообщения (антиспам)
+
     [
         "method" => "GET",
         "pattern" => "/forum/pending-moderation",
