@@ -1217,12 +1217,21 @@ class options
 
     public static function saveRegistrationBonusItems(): void
     {
-        $serverId = $_POST['serverId'] ?? -1;
-        if(!\Ofey\Logan22\model\server\server::getServer($serverId)){
-            board::notice(false, "Сервер не найден");
+        $serverId = filter_var($_POST['server_id'] ?? $_POST['serverId'] ?? null, FILTER_VALIDATE_INT);
+        if ($serverId === false || $serverId <= 0) {
+            board::notice(false, "Сервер не найден");
         }
+
         $server = \Ofey\Logan22\model\server\server::getServer($serverId);
-        $server->bonus()->setRegistrationBonusItems($_POST['enabled'], $_POST['issueAllItems'], $_POST['bonus_items']);
+        if ($server === null || $server->getId() !== $serverId) {
+            board::notice(false, "Сервер не найден");
+        }
+
+        $server->bonus()->setRegistrationBonusItems(
+            $_POST['enabled'] ?? false,
+            $_POST['issueAllItems'] ?? false,
+            $_POST['bonus_items'] ?? [],
+        );
         $server->save();
         board::notice(true, "Настройки сохранены");
     }
