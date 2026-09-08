@@ -1,6 +1,6 @@
 <?php
 
-use stripe\stripe;
+use sphere_stripe\stripe;
 
 $routes = [
     [

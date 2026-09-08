@@ -1,6 +1,9 @@
 <?php
 
-namespace stripe;
+// Keep the plugin namespace distinct from the Stripe SDK namespace.
+// PHP class and namespace names are case-insensitive, so `stripe\stripe`
+// collides with the SDK's `Stripe\Stripe` class and hijacks setApiKey().
+namespace sphere_stripe;
 
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
