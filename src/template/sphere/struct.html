@@ -98,7 +98,9 @@
   {% endif %}
    
   {{ include('modals.html') }}
-  {{ include('modal_donate.html') }}
+  {% if config().enabled().canTopUpBalance(getUser()) %}
+    {{ include('modal_donate.html') }}
+  {% endif %}
 
   <div class="page">
     <!-- app-header -->

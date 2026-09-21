@@ -137,6 +137,7 @@
     };
 
     let activeCurrency = "{{ mainCurrency }}";
+    let paymentCreating = false;
 
     function updateCost() {
       const n = parseFloat($("#amount").val()) || 0;
@@ -179,6 +180,10 @@
 
     $("#severpayPaymentForm").on("submit", function (e) {
       e.preventDefault();
+      if (paymentCreating) {
+        return;
+      }
+      paymentCreating = true;
 
       const $btn = $("#payButton");
       const original = $btn.html();
@@ -215,6 +220,7 @@
         })
         .finally(function () {
           if (!redirecting) {
+            paymentCreating = false;
             $btn.prop("disabled", false).html(original);
           }
         });

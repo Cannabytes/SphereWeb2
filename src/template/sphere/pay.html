@@ -1372,8 +1372,13 @@
                    initialSelected.closest('.payment-system-item').addClass('selected');
                }
 
+               let createLinkPending = false;
+
                // Обработчик кнопки оплаты
                $('#paynext').on('click', function() {
+                   if (createLinkPending) {
+                       return false;
+                   }
                    const selectedPaySystem = getSelectedPaySystemValue();
 
                    if (!selectedPaySystem) {
@@ -1399,6 +1404,8 @@
                        return false;
                    }
 
+                   createLinkPending = true;
+                   const $payButton = $(this).prop('disabled', true);
                    $.ajax({
                        type: "POST",
                        url: `/donate/transfer/${selectedPaySystem}/createlink`,
@@ -1414,6 +1421,9 @@
                                window.open(redirectLink, '_blank');
                            }
                        }
+                   }).always(function() {
+                       createLinkPending = false;
+                       $payButton.prop('disabled', false);
                    });
                });
            };

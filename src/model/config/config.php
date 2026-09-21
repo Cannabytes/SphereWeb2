@@ -83,6 +83,20 @@ class config
             }
         }
 
+        if ($configName === '__config_enabled__') {
+            $minLevel = filter_var($_POST['balance_character_min_level'] ?? 5, FILTER_VALIDATE_INT, [
+                'options' => ['min_range' => 1, 'max_range' => 255],
+            ]);
+            if ($minLevel === false) {
+                board::error('Укажите уровень персонажа от 1 до 255');
+            }
+            $_POST['balance_character_min_level'] = $minLevel;
+            $_POST['balance_character_level_required'] = filter_var(
+                $_POST['balance_character_level_required'] ?? false,
+                FILTER_VALIDATE_BOOLEAN
+            );
+        }
+
         $post = json_encode($_POST, JSON_UNESCAPED_UNICODE);
         if ( ! $post) {
             board::error("Ошибка парсинга JSON");

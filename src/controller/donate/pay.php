@@ -25,6 +25,11 @@ class pay
 
     public static function pay(): void
     {
+        if (!\Ofey\Logan22\controller\config\config::load()->enabled()->canTopUpBalance(user::self())) {
+            redirect::location('/main');
+            return;
+        }
+
         if(server::get_count_servers()==0){
             error::error404("Ошибка: Необходимо подключить хотя бы один сервер и настроить его платежную систему.");
             return;

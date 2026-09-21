@@ -133,4 +133,32 @@ $route->set404(function () {
     }
     \Ofey\Logan22\component\redirect::location("/main");
 });
+// Проверка перед созданием платежа охватывает обычные системы и платежные плагины.
+if ($route instanceof \Ofey\Logan22\route\Route) {
+    $requestPath = rtrim(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/', '/') ?: '/';
+    $requestMethod = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+    $pluginPaymentPath = '#^/(?:cryptocloud|paritypay|freekassa|yoomoney|pally|paypal|unitpay|primepayments|stripe|svpay)/payment(?:/create|/\d+)?$#';
+    $isCheckout = ($requestMethod === 'POST' && preg_match('#^/donate/transfer/[^/]+/createlink$#', $requestPath))
+        || (preg_match($pluginPaymentPath, $requestPath) && in_array($requestMethod, ['GET', 'POST'], true))
+        || ($requestMethod === 'POST' && $requestPath === '/donate/betatransfer/create')
+        || ($requestMethod === 'GET' && (
+            $requestPath === '/donate/pay'
+            || preg_match('#^/donate/betatransfer(?:/\d+)?$#', $requestPath)
+        ));
+
+    if ($isCheckout && !config::load()->enabled()->canTopUpBalance(user::self())) {
+        if ($requestMethod === 'GET') {
+            \Ofey\Logan22\component\redirect::location('/main');
+        } else {
+            \Ofey\Logan22\component\alert\board::error(
+                \Ofey\Logan22\component\lang\lang::get_phrase(
+                    'balance_character_level_required_notice',
+                    config::load()->enabled()->getBalanceCharacterMinLevel()
+                )
+            );
+        }
+        exit;
+    }
+}
+
 $route->run();

@@ -144,177 +144,68 @@
                         </div>
 
                         <div class="tab-pane" id="functionsdata" role="tabpanel">
-                            <div id="function_list" class="row gy-2">
-                                <div class="col-xl-3">
-                                    <div class="card custom-card shadow-none border">
-                                        <div
-                                            class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                            <div class="">
-                                                <span class="fw-semibold">{{ phrase('news') }}</span>
-                                            </div>
-                                            <div>
-                                                <div class="custom-toggle-switch float-sm-end">
-                                                    <input class="enableFunction" id="enable_news" name="enable_news"
-                                                        type="checkbox" {% if config().enabled().isEnableNews()
-                                                        %}checked="" {% endif %}>
-                                                    <label for="enable_news" class="label-success mb-1"></label>
+                            {% set functionRows = [
+                                {'id': 'enable_news', 'name': phrase('news'), 'enabled': config().enabled().isEnableNews()},
+                                {'id': 'enable_shop', 'name': phrase(215), 'enabled': config().enabled().isEnableShop()},
+                                {'id': 'enable_balance', 'name': phrase(486), 'enabled': config().enabled().isEnableBalance()},
+                                {'id': 'enable_statistic', 'name': phrase('menu_statistics'), 'enabled': config().enabled().isEnableStatistic()},
+                                {'id': 'enable_support', 'name': phrase('technical support'), 'enabled': config().enabled().isEnableSupport()},
+                                {'id': 'enable_send_balance_game', 'name': phrase('transfer_balance_to_game'), 'enabled': config().enabled().isEnableSendBalanceGame()},
+                                {'id': 'enable_bonus_code', 'name': phrase('code_bonus'), 'enabled': config().enabled().isEnableBonusCode()},
+                                {'id': 'enable_stream', 'name': phrase('stream'), 'enabled': config().enabled().isEnableStream()},
+                                {'id': 'enable_emulation', 'name': phrase('Data emulations'), 'enabled': config().enabled().isEnableEmulation()}
+                            ] %}
+                            <div id="function_list" class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">{{ phrase('functions') }}</th>
+                                            <th scope="col" class="text-end">{{ phrase('status') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for functionRow in functionRows %}
+                                        <tr>
+                                            <th scope="row" class="fw-semibold">{{ functionRow.name }}</th>
+                                            <td class="text-end">
+                                                <div class="custom-toggle-switch d-inline-block">
+                                                    <input class="enableFunction" id="{{ functionRow.id }}" name="{{ functionRow.id }}"
+                                                        type="checkbox" {% if functionRow.enabled %}checked{% endif %}>
+                                                    <label for="{{ functionRow.id }}" class="label-success mb-0"></label>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-3">
-                                    <div class="card custom-card shadow-none border">
-                                        <div
-                                            class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                            <div class="">
-                                                <span class="fw-semibold">{{ phrase(215) }}</span>
-                                            </div>
-                                            <div>
-                                                <div class="custom-toggle-switch float-sm-end">
-                                                    <input class="enableFunction" id="enable_shop" name="enable_shop"
-                                                        type="checkbox" {% if config().enabled().isEnableShop()
-                                                        %}checked="" {% endif %}>
-                                                    <label for="enable_shop" class="label-success mb-1"></label>
+                                            </td>
+                                        </tr>
+                                        {% if functionRow.id == 'enable_balance' %}
+                                        <tr>
+                                            <td>
+                                                <label for="balance_character_level_required" class="fw-semibold mb-0">
+                                                    {{ phrase('balance_character_level_required') }}
+                                                </label>
+                                                <div class="text-muted small">{{ phrase('balance_character_level_required_desc') }}</div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-end gap-3">
+                                                    <div class="custom-toggle-switch d-inline-block">
+                                                        <input id="balance_character_level_required" name="balance_character_level_required"
+                                                            type="checkbox" {% if config().enabled().isBalanceCharacterLevelRequired() %}checked{% endif %}>
+                                                        <label for="balance_character_level_required" class="label-success mb-0"></label>
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <label for="balance_character_min_level" class="small text-muted mb-0">
+                                                            {{ phrase('balance_character_min_level') }}
+                                                        </label>
+                                                        <input id="balance_character_min_level" name="balance_character_min_level"
+                                                            class="form-control form-control-sm" type="number" min="1" max="255" step="1" required
+                                                            style="width: 80px; flex: none" value="{{ config().enabled().getBalanceCharacterMinLevel() }}"
+                                                            aria-label="{{ phrase('balance_character_min_level') }}">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-3">
-                                    <div class="card custom-card shadow-none border">
-                                        <div
-                                            class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                            <div class="">
-                                                <span class="fw-semibold">{{ phrase(486) }}</span>
-                                            </div>
-                                            <div>
-                                                <div class="custom-toggle-switch float-sm-end">
-                                                    <input class="enableFunction" id="enable_balance"
-                                                        name="enable_balance" type="checkbox" {% if
-                                                        config().enabled().isEnableBalance() %}checked="" {% endif %}>
-                                                    <label for="enable_balance" class="label-success mb-1"></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-3">
-                                    <div class="card custom-card shadow-none border">
-                                        <div
-                                            class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                            <div class="">
-                                                <span class="fw-semibold">{{ phrase('menu_statistics') }}</span>
-                                            </div>
-                                            <div>
-                                                <div class="custom-toggle-switch float-sm-end">
-                                                    <input class="enableFunction" id="enable_statistic"
-                                                        name="enable_statistic" type="checkbox" {% if
-                                                        config().enabled().isEnableStatistic() %}checked="" {% endif %}>
-                                                    <label for="enable_statistic" class="label-success mb-1"></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-xl-3">
-                                    <div class="card custom-card shadow-none border">
-                                        <div
-                                            class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                            <div class="">
-                                                <span class="fw-semibold">{{ phrase('technical support') }}</span>
-                                            </div>
-                                            <div>
-                                                <div class="custom-toggle-switch float-sm-end">
-                                                    <input class="enableFunction" id="enable_support"
-                                                        name="enable_support" type="checkbox" {% if
-                                                        config().enabled().isEnableSupport() %}checked="" {% endif %}>
-                                                    <label for="enable_support" class="label-success mb-1"></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-xl-3">
-                                    <div class="card custom-card shadow-none border">
-                                        <div
-                                            class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                            <div class="">
-                                                <span class="fw-semibold">{{phrase('transfer_balance_to_game')}}</span>
-                                            </div>
-                                            <div>
-                                                <div class="custom-toggle-switch float-sm-end">
-                                                    <input class="enableFunction" id="enable_send_balance_game"
-                                                        name="enable_send_balance_game" type="checkbox" {% if
-                                                        config().enabled().isEnableSendBalanceGame() %}checked="" {%
-                                                        endif %}>
-                                                    <label for="enable_send_balance_game"
-                                                        class="label-success mb-1"></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="col-xl-3">
-                                    <div class="card custom-card shadow-none border">
-                                        <div
-                                            class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                            <div class="">
-                                                <span class="fw-semibold">{{ phrase('code_bonus') }}</span>
-                                            </div>
-                                            <div>
-                                                <div class="custom-toggle-switch float-sm-end">
-                                                    <input class="enableFunction" id="enable_bonus_code"
-                                                        name="enable_bonus_code" type="checkbox" {% if
-                                                        config().enabled().isEnableBonusCode() %}checked="" {% endif %}>
-                                                    <label for="enable_bonus_code" class="label-success mb-1"></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-xl-3">
-                                    <div class="card custom-card shadow-none border">
-                                        <div
-                                            class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                            <div class="">
-                                                <span class="fw-semibold">{{ phrase('stream') }}</span>
-                                            </div>
-                                            <div>
-                                                <div class="custom-toggle-switch float-sm-end">
-                                                    <input class="enableFunction" id="enable_stream"
-                                                        name="enable_stream" type="checkbox" {% if
-                                                        config().enabled().isEnableStream() %}checked="" {% endif %}>
-                                                    <label for="enable_stream" class="label-success mb-1"></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-3">
-                                    <div class="card custom-card shadow-none border">
-                                        <div
-                                            class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                            <div class="">
-                                                <span class="fw-semibold">{{ phrase('Data emulations') }}</span>
-                                            </div>
-                                            <div>
-                                                <div class="custom-toggle-switch float-sm-end">
-                                                    <input class="enableFunction" id="enable_emulation"
-                                                        name="enable_emulation" type="checkbox" {% if
-                                                        config().enabled().isEnableEmulation() %}checked="" {% endif %}>
-                                                    <label for="enable_emulation" class="label-success mb-1"></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                         <div class="tab-pane p-0" id="captchaSystem" role="tabpanel">
@@ -2405,23 +2296,30 @@
             $(tableId + ' tbody').append(newRow);
         }
 
-        $('#function_list input[type="checkbox"]').on('change', function () {
-
-            let className = $(this).attr('id');
-            if ($(this).is(':checked')) {
-                $('.' + className).show();
-            } else {
-                $('.' + className).hide();
+        function saveFunctionSettings() {
+            const levelInput = document.getElementById('balance_character_min_level');
+            if (!levelInput.checkValidity()) {
+                levelInput.reportValidity();
+                return;
             }
 
-            let data = {};
-            $('#function_list .custom-toggle-switch').each(function () {
-                let checkboxId = $(this).find('input[type="checkbox"]').attr('id');
-                data[checkboxId] = $(this).find('input[type="checkbox"]').is(':checked');
+            const data = {
+                __config_name__: '__config_enabled__',
+                balance_character_level_required: $('#balance_character_level_required').is(':checked'),
+                balance_character_min_level: levelInput.value
+            };
+            $('#function_list .enableFunction').each(function () {
+                data[this.id] = this.checked;
             });
-            data['__config_name__'] = '__config_enabled__';
             AjaxSend('/admin/config/save', 'POST', data, false);
+        }
+
+        $('#function_list .enableFunction').on('change', function () {
+            $('.' + this.id).toggle(this.checked);
+            saveFunctionSettings();
         });
+        $('#balance_character_level_required').on('change', saveFunctionSettings);
+        $('#balance_character_min_level').on('change', saveFunctionSettings);
 
         $('#saveLangData').click(function () {
             let languages = [];

@@ -21,11 +21,6 @@ class severpay extends \Ofey\Logan22\model\donate\pay_abstract
 
     protected static string $currency_default = 'RUB';
 
-    private array $allowIP = [
-        '45.76.81.14',
-        '207.148.69.64',
-    ];
-
     public static function inputs(): array
     {
         return [
@@ -62,7 +57,7 @@ class severpay extends \Ofey\Logan22\model\donate\pay_abstract
 
         $mid = self::getConfigValue('mid');
         $token = self::getConfigValue('token');
-        $order_id = user::self()->getId() . '_' . time();
+        $order_id = user::self()->getId() . '_' . time() . '_' . bin2hex(random_bytes(16));
         $salt = bin2hex(random_bytes(16));
 
         $body = [
@@ -100,89 +95,23 @@ class severpay extends \Ofey\Logan22\model\donate\pay_abstract
         }
     }
 
-    //Получение информации об оплате
+    // The old URL remains an alias for the plugin's single webhook handler.
     function webhook(): void
     {
-        if (!(config::load()->donate()->getDonateSystems('severpay')?->isEnable() ?? false)) {
-            echo 'disabled';
-            exit;
-        }
-
-        \Ofey\Logan22\component\request\ip::allowIP($this->allowIP);
-        $inputJSON = file_get_contents('php://input');
-
-        $input = json_decode($inputJSON, TRUE);
-
-        if (!$input || !isset($input['sign'])) {
-            die('Invalid input');
-        }
-
-        $token = self::getConfigValue('token');
-        $input_sign = $input['sign'];
-        unset($input['sign']);
-
-        $sign = hash_hmac("sha256", json_encode($input), $token);
-
-        if (!hash_equals($input_sign, $sign)) {
-            http_response_code(400);
-            echo json_encode([
-                'status' => false,
-                'msg' => 'Wrong sign'
-            ]);
-            exit;
-        }
-
-        if ($input['type'] !== 'payin') {
-            http_response_code(400);
-            echo json_encode([
-                'status' => false,
-                'msg' => 'Invalid type'
-            ]);
-            exit;
-        }
-
-        $data = $input['data'];
-        if ($data['status'] === 'success') {
-
-            $amount = $data['amount'];
-            $order_id = $data['order_id'];
-            $user_id = explode('_', $order_id)[0];
-
-            try {
-                donate::control_uuid(uuid: $input_sign, pay_system_name: get_called_class(), request: $data);
-            } catch (\Throwable $e) {
-                echo json_encode(['status' => false, 'msg' => 'UUID control failed']);
-                return;
+        $legacyMerchant = [];
+        try {
+            $legacySystem = config::load()->donate()->getDonateSystems('severpay');
+            if ($legacySystem?->isEnable()) {
+                $legacyMerchant[] = [
+                    'mid' => self::getConfigValue('mid'),
+                    'token' => self::getConfigValue('token'),
+                    'currency' => $legacySystem->getCurrency() ?? self::getCurrency(),
+                ];
             }
-
-            try {
-                $amount = donate::currency($amount, $data['currency']);
-            } catch (\Throwable $e) {
-                echo json_encode(['status' => false, 'msg' => 'Currency conversion failed']);
-                return;
-            }
-
-            try {
-                self::telegramNotice(user::getUserId($user_id), $data['amount'], $data['currency'], $amount, get_called_class());
-            } catch (\Throwable $e) {
-            }
-
-            try {
-                user::getUserId($user_id)->donateAdd($amount)
-                    ->AddHistoryDonate(amount: $amount, pay_system: get_called_class(), input: $inputJSON);
-            } catch (\Throwable $e) {
-                echo json_encode(['status' => false, 'msg' => 'Failed to add funds']);
-                return;
-            }
-
-            try {
-                donate::addUserBonus($user_id, $amount);
-            } catch (\Throwable $e) {
-            }
-
-            echo json_encode(['status' => true]);
-        } else {
-            echo json_encode(['status' => false, 'msg' => 'Payment not successful']);
+        } catch (\Throwable $e) {
+            error_log('SeverPay legacy webhook configuration failed: ' . $e->getMessage());
         }
+        require_once __DIR__ . '/../../plugins/severpay/severpay.php';
+        (new \severpay\severpay())->webhook($legacyMerchant);
     }
 }

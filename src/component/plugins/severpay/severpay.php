@@ -5,28 +5,26 @@ namespace severpay;
 use Ofey\Logan22\component\alert\board;
 use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\component\redirect;
-use Ofey\Logan22\component\request\ip;
+use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\controller\admin\telegram;
 use Ofey\Logan22\model\admin\validation;
+use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\donate\donate;
+use Ofey\Logan22\model\donate\payMessage;
+use Ofey\Logan22\model\log\logTypes;
 use Ofey\Logan22\model\plugin\plugin;
 use Ofey\Logan22\model\plugin\BasePaymentPlugin;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
-use ReflectionClass;
+use PDO;
+use RuntimeException;
+use Throwable;
 
 class severpay extends BasePaymentPlugin
 {
     private const API_CREATE_URL = 'https://severpay.io/api/merchant/payin/create';
 
     private const ALLOWED_CURRENCIES = ['RUB', 'EUR', 'BYN'];
-
-    private const WEBHOOK_IPS = [
-        '45.76.81.14',
-        '2001:19f0:6c01:878:5400:5ff:fe38:50d1',
-        '207.148.69.64',
-        '2401:c080:1400:109b:5400:5ff:fe95:20d3',
-    ];
 
     public function __construct()
     {
@@ -237,7 +235,7 @@ class severpay extends BasePaymentPlugin
             $donateConfig->getSphereCoinCost()
         );
 
-        $orderId = user::self()->getId() . '_' . time() . '_' . random_int(1000, 9999);
+        $orderId = user::self()->getId() . '_' . time() . '_' . bin2hex(random_bytes(16));
         $salt = bin2hex(random_bytes(16));
 
         $payload = [
@@ -283,144 +281,295 @@ class severpay extends BasePaymentPlugin
 		board::response('success', ['url' => $url]);
     }
 
-    public function webhook(): void
+    public function webhook(array $additionalMerchants = []): void
     {
-        if (!$this->isPluginActive()) {
-            $this->logWebhook('DISABLED', ['reason' => 'Plugin disabled']);
-            echo json_encode(['status' => false, 'msg' => 'Plugin disabled']);
+        header('Content-Type: application/json');
+
+        $legacyMerchants = $this->sanitizeMerchants($additionalMerchants);
+        $pluginActive = $this->isPluginActive();
+        if (!$pluginActive && $legacyMerchants === []) {
+            $this->logWebhookSafely('DISABLED', ['reason' => 'Plugin disabled']);
+            $this->respondWebhook(false, 'Plugin disabled', 503);
             return;
         }
 
-        $merchants = $this->getMerchants();
+        $merchants = $pluginActive
+            ? array_merge($legacyMerchants, $this->getMerchants())
+            : $legacyMerchants;
         if (empty($merchants)) {
-            $this->logWebhook('NOT_CONFIGURED', ['reason' => 'No merchant configured']);
-            echo json_encode(['status' => false, 'msg' => 'No merchant configured']);
+            $this->logWebhookSafely('NOT_CONFIGURED', ['reason' => 'No merchant configured']);
+            $this->respondWebhook(false, 'No merchant configured', 503);
             return;
         }
 
-        ip::allowIP(self::WEBHOOK_IPS);
-
-        $inputJSON = file_get_contents('php://input');
+        $inputJSON = file_get_contents('php://input') ?: '';
         $input = json_decode($inputJSON, true);
 
-        if (!$input || !isset($input['sign'])) {
-            $this->logWebhook('INPUT_INVALID', ['reason' => 'Invalid input or missing sign']);
-            echo json_encode(['status' => false, 'msg' => 'Invalid input']);
+        if (!is_array($input) || !isset($input['sign']) || !is_string($input['sign'])) {
+            $this->logWebhookSafely('INPUT_INVALID', ['reason' => 'Invalid JSON or missing sign']);
+            $this->respondWebhook(false, 'Invalid input', 400);
             return;
         }
 
-        $inputSign = (string)$input['sign'];
+        $inputSign = $input['sign'];
         unset($input['sign']);
 
-        $verifiedMerchant = null;
-        foreach ($merchants as $merchant) {
-            $sign = hash_hmac('sha256', json_encode($input), (string)$merchant['token']);
-            if (hash_equals($inputSign, $sign)) {
-                $verifiedMerchant = $merchant;
-                break;
-            }
-        }
+        $verifiedMerchant = $this->verifyWebhookMerchant($input, $inputSign, $merchants);
 
         if ($verifiedMerchant === null) {
-            $this->logWebhook('SIGN_INVALID', ['reason' => 'No merchant matched signature']);
-            http_response_code(400);
-            echo json_encode([
-                'status' => false,
-                'msg' => 'Wrong sign'
-            ]);
-            exit;
+            $this->logWebhookSafely('SIGN_INVALID', ['reason' => 'No merchant matched signature']);
+            $this->respondWebhook(false, 'Wrong sign', 400);
+            return;
+        }
+
+        if (($input['type'] ?? '') === 'test') {
+            $this->logWebhookSafely('TEST_SUCCESS');
+            $this->respondWebhook(true);
+            return;
         }
 
         if (($input['type'] ?? '') !== 'payin') {
-            $this->logWebhook('INPUT_INVALID', ['reason' => 'Invalid type', 'type' => (string)($input['type'] ?? '')]);
-            http_response_code(400);
-            echo json_encode([
-                'status' => false,
-                'msg' => 'Invalid type'
+            $this->logWebhookSafely('INPUT_INVALID', ['reason' => 'Invalid type']);
+            $this->respondWebhook(false, 'Invalid type', 400);
+            return;
+        }
+
+        $data = $input['data'] ?? null;
+        if (!is_array($data)) {
+            $this->logWebhookSafely('INPUT_INVALID', ['reason' => 'Missing payment data']);
+            $this->respondWebhook(false, 'Invalid payment data', 400);
+            return;
+        }
+
+        $status = $data['status'] ?? null;
+        if (in_array($status, ['new', 'process', 'decline', 'fail'], true)) {
+            $this->logWebhookSafely('PAYMENT_STATUS', [
+                'payment_id' => $data['id'] ?? null,
+                'status' => $status,
             ]);
-            exit;
+            $this->respondWebhook(true);
+            return;
         }
-
-        $data = $input['data'] ?? [];
-        if (($data['status'] ?? '') !== 'success') {
-            $this->logWebhook('PAYMENT_NOT_CONFIRMED', ['status' => (string)($data['status'] ?? '')]);
-            http_response_code(400);
-            echo json_encode(['status' => false, 'msg' => 'Payment not successful']);
-            exit;
-        }
-
-        $orderId = (string)($data['order_id'] ?? '');
-        $orderParts = explode('_', $orderId);
-        $userId = (int)($orderParts[0] ?? 0);
-        if ($userId <= 0) {
-            $this->logWebhook('INVALID_USER_ID', ['order_id' => $orderId, 'user_id' => $userId]);
-            http_response_code(400);
-            echo json_encode(['status' => false, 'msg' => 'Invalid order_id']);
+        if ($status !== 'success') {
+            $this->logWebhookSafely('INPUT_INVALID', ['reason' => 'Unknown payment status']);
+            $this->respondWebhook(false, 'Invalid payment status', 400);
             return;
         }
 
-        $currency = strtoupper((string)($data['currency'] ?? $verifiedMerchant['currency']));
-        $amountInput = (float)($data['amount'] ?? 0);
-        $uuid = (string)($data['id'] ?? $inputSign);
-
-        try {
-            donate::control_uuid(uuid: $uuid, pay_system_name: get_called_class(), request: $data);
-        } catch (\Throwable $e) {
-            $this->logWebhook('UUID_CONTROL_FAILED', [
-                'error' => $e->getMessage(),
-                'uuid' => $uuid,
-            ], $userId);
-            http_response_code(400);
-            echo json_encode(['status' => false, 'msg' => 'UUID control failed']);
+        $paymentId = $data['id'] ?? null;
+        $orderId = $data['order_id'] ?? null;
+        $amountInput = $data['amount'] ?? null;
+        $currency = $data['currency'] ?? null;
+        if ((!is_int($paymentId) && (!is_string($paymentId) || !ctype_digit($paymentId)))
+            || (int)$paymentId <= 0
+            || !is_string($orderId)
+            || !preg_match('/^([1-9][0-9]*)_[0-9]{10}(?:_[a-f0-9]{4,32})?$/D', $orderId, $orderParts)
+            || (!is_int($amountInput) && !is_float($amountInput))
+            || !is_finite((float)$amountInput)
+            || $amountInput <= 0
+            || !is_string($currency)
+            || strtoupper($currency) !== $verifiedMerchant['currency']) {
+            $this->logWebhookSafely('INPUT_INVALID', ['reason' => 'Invalid payment fields']);
+            $this->respondWebhook(false, 'Invalid payment data', 400);
             return;
         }
 
+        $userId = (int)$orderParts[1];
+        $currency = strtoupper($currency);
+        $uuid = (string)$paymentId;
+
         try {
-            $amount = donate::currency($amountInput, $currency);
-        } catch (\Throwable $e) {
-            $this->logWebhook('CURRENCY_ERROR', [
+            $amount = donate::currency((float)$amountInput, $currency);
+            if (!is_finite((float)$amount) || $amount <= 0) {
+                throw new RuntimeException('Invalid converted amount');
+            }
+        } catch (Throwable $e) {
+            $this->logWebhookSafely('CURRENCY_ERROR', [
                 'error' => $e->getMessage(),
                 'amount' => $amountInput,
                 'currency' => $currency,
             ], $userId);
-            http_response_code(400);
-            echo json_encode(['status' => false, 'msg' => 'Currency conversion failed']);
+            $this->respondWebhook(false, 'Currency conversion failed', 503);
             return;
         }
 
         try {
-            telegram::telegramNotice(user::getUserId($userId), $amountInput, $currency, $amount, $this->getNameClass());
-        } catch (\Throwable $e) {
-        }
-
-        try {
-            user::getUserId($userId)
-                ->donateAdd($amount)
-                ->AddHistoryDonate(amount: $amount, pay_system: $this->getNameClass(), input: $inputJSON);
-        } catch (\Throwable $e) {
-            $this->logWebhook('PROCESS_ERROR', [
+            $creditResult = $this->creditWebhookPayment($uuid, $orderId, $inputSign, $userId, $amount, $data);
+        } catch (Throwable $e) {
+            error_log('SeverPay payment ' . $uuid . ' could not be credited: ' . $e->getMessage());
+            $this->logWebhookSafely('PROCESS_ERROR', [
                 'error' => $e->getMessage(),
                 'uuid' => $uuid,
                 'amount' => $amount,
             ], $userId);
-            http_response_code(400);
-            echo json_encode(['status' => false, 'msg' => 'Failed to add funds']);
+            $this->respondWebhook(false, 'Failed to add funds', 503);
             return;
         }
 
-        try {
-            donate::addUserBonus($userId, $amount);
-        } catch (\Throwable $e) {
+        if ($creditResult !== 'credited') {
+            $event = $creditResult === 'order_duplicate' ? 'ORDER_DUPLICATE' : 'PAYMENT_DUPLICATE';
+            $details = ['payment_id' => $uuid, 'order_id' => $orderId];
+            $this->respondWebhook(true);
+            if (function_exists('fastcgi_finish_request')) {
+                fastcgi_finish_request();
+            }
+            if ($creditResult === 'order_duplicate') {
+                error_log('SeverPay duplicate order needs review: ' . json_encode($details));
+            }
+            $this->logWebhookSafely($event, $details, $userId);
+            return;
         }
 
-        $this->logWebhook('PAYMENT_SUCCESS', [
+        $this->respondWebhook(true);
+        // The credit is committed; reporting and bonuses run after the acknowledgement.
+        if (function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
+        }
+        $this->logWebhookSafely('PAYMENT_SUCCESS', [
             'uuid' => $uuid,
             'order_id' => $orderId,
             'amount' => $amount,
             'currency' => $currency,
         ], $userId);
+        try {
+            \Ofey\Logan22\component\sphere\server::send(type::DONATE_STATISTIC, [
+                'paySystem' => $this->getNameClass(),
+                'request' => $inputJSON,
+            ]);
+            user::getUserId($userId)->addLog(logTypes::LOG_DONATE_SUCCESS, 'LOG_DONATE_SUCCESS', [$amount, $this->getNameClass()]);
+        } catch (Throwable $e) {
+            $this->logWebhookSafely('STATISTIC_ERROR', ['error' => $e->getMessage()], $userId);
+        }
+        try {
+            telegram::telegramNotice(user::getUserId($userId), $amountInput, $currency, $amount, $this->getNameClass());
+        } catch (Throwable $e) {
+            $this->logWebhookSafely('NOTICE_ERROR', ['error' => $e->getMessage()], $userId);
+        }
+        try {
+            donate::addUserBonus($userId, $amount);
+        } catch (Throwable $e) {
+            $this->logWebhookSafely('BONUS_ERROR', ['error' => $e->getMessage()], $userId);
+        }
+    }
 
-        echo json_encode(['status' => true]);
+    private function verifyWebhookMerchant(array $input, string $inputSign, array $merchants): ?array
+    {
+        if (!preg_match('/^[a-f0-9]{64}$/iD', $inputSign)) {
+            return null;
+        }
+        $payload = json_encode($input);
+        if ($payload === false) {
+            return null;
+        }
+        $paymentCurrency = ($input['type'] ?? null) === 'payin' && is_array($input['data'] ?? null)
+            ? strtoupper((string)($input['data']['currency'] ?? ''))
+            : null;
+        $matchedMerchant = null;
+        foreach ($merchants as $merchant) {
+            $sign = hash_hmac('sha256', $payload, (string)$merchant['token']);
+            if (hash_equals($sign, $inputSign)) {
+                if ($paymentCurrency === null || $paymentCurrency === $merchant['currency']) {
+                    return $merchant;
+                }
+                $matchedMerchant ??= $merchant;
+            }
+        }
+        return $matchedMerchant;
+    }
+
+    /** Returns credited, payment_duplicate, or order_duplicate. */
+    private function creditWebhookPayment(string $uuid, string $orderId, string $inputSign, int $userId, float|int $amount, array $data): string
+    {
+        $db = sql::instance();
+        if (!$db instanceof PDO) {
+            throw new RuntimeException('Database connection unavailable');
+        }
+
+        // donate_uuid has no unique key: serialize deliveries of the same order.
+        $lockName = 'severpay:' . sha1($orderId);
+        $lock = $db->prepare('SELECT GET_LOCK(?, 10)');
+        $lock->execute([$lockName]);
+        if ((int)$lock->fetchColumn() !== 1) {
+            throw new RuntimeException('Payment lock unavailable');
+        }
+
+        try {
+            $db->beginTransaction();
+            try {
+                $account = $db->prepare('SELECT id FROM users WHERE id = ? FOR UPDATE');
+                $account->execute([$userId]);
+                if ($account->fetchColumn() === false) {
+                    throw new RuntimeException('Payment user not found');
+                }
+
+                $existing = $db->prepare('SELECT id FROM donate_uuid WHERE uuid = ? AND pay_system = ? LIMIT 1');
+                $existing->execute([$uuid, self::class]);
+                if ($existing->fetchColumn() !== false) {
+                    $db->commit();
+                    return 'payment_duplicate';
+                }
+                // The legacy handler used the callback signature as its receipt ID.
+                $existing->execute([$inputSign, 'severpay']);
+                if ($existing->fetchColumn() !== false) {
+                    $db->commit();
+                    return 'payment_duplicate';
+                }
+                $existing->execute(['order:' . $orderId, self::class]);
+                if ($existing->fetchColumn() !== false) {
+                    $db->commit();
+                    return 'order_duplicate';
+                }
+
+                $balance = $db->prepare('UPDATE users SET donate_point = donate_point + ? WHERE id = ?');
+                $balance->execute([round($amount, 1), $userId]);
+
+                $history = $db->prepare('INSERT INTO donate_history_pay (user_id, point, message, pay_system, id_admin_pay, date, sphere) VALUES (?, ?, ?, ?, NULL, NOW(), 0)');
+                $history->execute([$userId, $amount, payMessage::getRandomPhrase(), $this->getNameClass()]);
+
+                $receipt = $db->prepare('INSERT INTO donate_uuid (uuid, pay_system, ip, request, date) VALUES (?, ?, ?, ?, NOW())');
+                $receipt->execute([
+                    $uuid,
+                    self::class,
+                    $_SERVER['REMOTE_ADDR'] ?? '',
+                    json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                ]);
+                $receipt->execute([
+                    'order:' . $orderId,
+                    self::class,
+                    $_SERVER['REMOTE_ADDR'] ?? '',
+                    json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                ]);
+                $db->commit();
+                return 'credited';
+            } catch (Throwable $e) {
+                if ($db->inTransaction()) {
+                    $db->rollBack();
+                }
+                throw $e;
+            }
+        } finally {
+            try {
+                $release = $db->prepare('SELECT RELEASE_LOCK(?)');
+                $release->execute([$lockName]);
+            } catch (Throwable $e) {
+                error_log('SeverPay payment lock release failed: ' . $e->getMessage());
+            }
+        }
+    }
+
+    private function respondWebhook(bool $success, string $message = '', int $code = 200): void
+    {
+        http_response_code($code);
+        echo json_encode($success ? ['status' => true] : ['status' => false, 'msg' => $message]);
+    }
+
+    private function logWebhookSafely(string $phrase, array $context = [], int $userId = 0): void
+    {
+        try {
+            $this->logWebhook($phrase, $context, $userId);
+        } catch (Throwable $e) {
+            error_log('SeverPay webhook logging failed: ' . $e->getMessage());
+        }
     }
 
     private function request(string $url, array $payload): array
