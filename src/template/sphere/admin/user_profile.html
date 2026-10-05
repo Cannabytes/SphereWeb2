@@ -436,7 +436,7 @@
               </div>
 
               <div class="row g-3 warehouse-items-container">
-                {% if userInfo.countWarehouseItems() == 0 %}
+                {% if warehouseGroups is empty %}
                 <div class="col-12">
                   <div class="text-center p-5 bg-light-secondary rounded shadow-sm">
                     <div class="avatar avatar-lg bg-light-secondary mx-auto mb-3">
@@ -446,36 +446,46 @@
                   </div>
                 </div>
                 {% else %}
-                {% for warehouse in userInfo.getWarehouse() %}
-                <div class="col-xl-3 col-md-4 col-sm-6 warehouse-item" id="warehouse_item_{{warehouse.id}}">
-                  <div class="card custom-card h-100 border shadow-sm">
-                    <div class="card-body text-center p-3">
-                      <div class="mb-3 position-relative">
-                        <img class="img-fluid rounded bg-light p-2" style="max-height: 64px;" src="{{warehouse.item.getIcon()}}" alt="{{warehouse.item.getItemName()}}">
-
-                      </div>
-
-
-
-                      <h6 class="mb-1 text-truncate" data-bs-toggle="tooltip" title="{{warehouse.item.getItemName()}}">
-                          {% if warehouse.enchant > 0 %}
-                             +{{warehouse.enchant}}
-                          {% endif %}
-                        {{warehouse.item.getItemName()}}
+                {% for group in warehouseGroups %}
+                <section class="col-12 warehouse-server-group" data-server-id="{{ group.serverId }}">
+                  <div class="border rounded p-3">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                      <h6 class="mb-0 d-flex flex-wrap align-items-center gap-2">
+                        <i class="ri-server-line text-primary"></i>
+                        <span>{{ group.serverName }}</span>
+                        <span class="text-muted fs-12">ID: {{ group.serverId }}</span>
                       </h6>
-
-                      <span class="">x{{warehouse.count}}</span>
-
-                      <div class="d-flex justify-content-center align-items-center mb-2">
-                        <span class="ms-2 text-muted fs-12">{{phrase(warehouse.phrase)}}</span>
+                      <span class="badge bg-light text-muted">Позиций: <span class="warehouse-server-count">{{ group.items|length }}</span></span>
+                    </div>
+                    <div class="row g-3">
+                      {% for warehouse in group.items %}
+                      <div class="col-xl-3 col-md-4 col-sm-6 warehouse-item" id="warehouse_item_{{warehouse.id}}">
+                        <div class="card custom-card h-100 border shadow-sm">
+                          <div class="card-body text-center p-3">
+                            <div class="mb-3 position-relative">
+                              <img class="img-fluid rounded bg-light p-2" style="max-height: 64px;" src="{{warehouse.item.getIcon()}}" alt="{{warehouse.item.getItemName()}}">
+                            </div>
+                            <h6 class="mb-1 text-truncate" data-bs-toggle="tooltip" title="{{warehouse.item.getItemName()}}">
+                              {% if warehouse.enchant > 0 %}
+                                +{{warehouse.enchant}}
+                              {% endif %}
+                              {{warehouse.item.getItemName()}}
+                            </h6>
+                            <span>x{{warehouse.count}}</span>
+                            <div class="text-muted fs-12">ID предмета: {{ warehouse.item_id }}</div>
+                            <div class="d-flex justify-content-center align-items-center mb-2">
+                              <span class="ms-2 text-muted fs-12">{{phrase(warehouse.phrase)}}</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-danger w-100 mt-2 item-delete-btn" data-id="{{warehouse.id}}">
+                              <i class="ri-delete-bin-line me-1"></i> Удалить
+                            </button>
+                          </div>
+                        </div>
                       </div>
-
-                      <button class="btn btn-sm btn-outline-danger w-100 mt-2 item-delete-btn" data-id="{{warehouse.id}}">
-                        <i class="ri-delete-bin-line me-1"></i> Удалить
-                      </button>
+                      {% endfor %}
                     </div>
                   </div>
-                </div>
+                </section>
                 {% endfor %}
                 {% endif %}
               </div>
@@ -832,7 +842,15 @@ $(document).ready(function() {
       if (result.ok) {
         // Анимация удаления
         itemElement.fadeOut(300, function() {
+          const serverGroup = $(this).closest('.warehouse-server-group');
           $(this).remove();
+
+          const remainingItems = serverGroup.find('.warehouse-item').length;
+          if (remainingItems === 0) {
+            serverGroup.remove();
+          } else {
+            serverGroup.find('.warehouse-server-count').text(remainingItems);
+          }
 
           // Проверяем остались ли предметы
           if ($('.warehouse-item').length === 0) {

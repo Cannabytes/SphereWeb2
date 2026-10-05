@@ -7,6 +7,7 @@ use Ofey\Logan22\component\lang\lang;
 use Ofey\Logan22\model\admin\validation;
 use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\item\item;
+use Ofey\Logan22\model\server\server;
 use Ofey\Logan22\model\template\async;
 use Ofey\Logan22\model\user\auth\user;
 use Ofey\Logan22\template\tpl;
@@ -22,6 +23,7 @@ class users
             board::error("User not found");
         }
         tpl::addVar("userInfo", $userInfo);
+        tpl::addVar("warehouseGroups", self::getUserWarehouseGroups($userInfo->getId()));
 
         $logs = sql::getRows("SELECT `id`, `time`, phrase, `variables` FROM logs_all WHERE user_id = ? ORDER BY id DESC LIMIT 1000", [$id]);
 
@@ -36,6 +38,40 @@ class users
         tpl::addVar("donate_history_pay", $donate_history_pay);
 
         tpl::display("/admin/user_profile.html");
+    }
+
+    private static function getUserWarehouseGroups(int $userId): array
+    {
+        $rows = sql::getRows(
+            "SELECT id, server_id, item_id, count, enchant, phrase FROM `warehouse` WHERE user_id = ? AND issued = 0 ORDER BY server_id, id DESC",
+            [$userId]
+        );
+        $servers = server::getServerAll() ?? [];
+        $groups = [];
+
+        foreach ($rows as $row) {
+            $serverId = (int)$row['server_id'];
+            $server = $servers[$serverId] ?? null;
+            if (!isset($groups[$serverId])) {
+                $groups[$serverId] = [
+                    'serverId' => $serverId,
+                    'serverName' => $server?->getName() ?? 'Сервер',
+                    'items' => [],
+                ];
+            }
+
+            $item = item::getItem($row['item_id'], $server?->getKnowledgeBase() ?: 'highFive');
+            if ($item === null) {
+                $item = new item();
+                $item->setItemId((int)$row['item_id']);
+                $item->setItemName('Предмет #' . $row['item_id']);
+                $item->setIcon('NOIMAGE.webp');
+            }
+            $row['item'] = $item;
+            $groups[$serverId]['items'][] = $row;
+        }
+
+        return array_values($groups);
     }
 
     public static function showAll($sortParam = null, $pageParam = null): void

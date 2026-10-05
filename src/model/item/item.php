@@ -318,10 +318,12 @@ use Ofey\Logan22\model\user\user;
 
     public static function getItem($id, $dbVersion = null): ?item
     {
-        if (isset(self::$arrItems[$id])) {
-            return self::$arrItems[$id];
-        }
         $file = client_icon::includeFileByRange($id, dbVersion: $dbVersion);
+        // Один ID может иметь разные описания в базах знаний разных серверов.
+        $cacheKey = ($file ?: 'missing') . ':' . $id;
+        if (isset(self::$arrItems[$cacheKey])) {
+            return self::$arrItems[$cacheKey];
+        }
         if (!$file) {
             $itemObject = new item();
             $itemObject->setItemId($id);
@@ -329,7 +331,7 @@ use Ofey\Logan22\model\user\user;
             $itemObject->setItemName("NoItemName[id:$id]");
             $itemObject->setIcon("etc_l2_i00.webp");
             $itemObject->setExists(false);
-            self::$arrItems[$id] = $itemObject;
+            self::$arrItems[$cacheKey] = $itemObject;
             return $itemObject;
         }
         $itemArr = require $file;
@@ -363,7 +365,7 @@ use Ofey\Logan22\model\user\user;
                 $itemObject->setIcon($item['icon']??null);
             }
 
-            self::$arrItems[$id] = $itemObject;
+            self::$arrItems[$cacheKey] = $itemObject;
             return $itemObject;
         }
 
