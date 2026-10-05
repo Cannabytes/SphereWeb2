@@ -1,4 +1,10 @@
 <?php
+$requestPath = rawurldecode(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '');
+if (preg_match('~(?:^|/)favicon\.ico$~i', $requestPath)
+    && !is_file(__DIR__ . '/' . ltrim($requestPath, '/'))) {
+    http_response_code(404);
+    exit;
+}
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('display_startup_errors', 1);
