@@ -1,6 +1,6 @@
 <?php
 $requestPath = rawurldecode(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '');
-if (preg_match('~(?:^|/)favicon\.ico$~i', $requestPath)
+if (preg_match('~\.(?:ico|png|apng|jpe?g|gif|webp|svg|avif|bmp|css|m?js|map|woff2?|ttf|otf|eot|mp4|webm|mp3|ogg|wav)$~i', $requestPath)
     && !is_file(__DIR__ . '/' . ltrim($requestPath, '/'))) {
     http_response_code(404);
     exit;
