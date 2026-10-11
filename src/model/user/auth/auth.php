@@ -157,6 +157,7 @@ class auth
             }
             
             self::addAuthLog($user_info['id']);
+            session::regenerate();
             session::add('id', (int) $user_info['id']);
             session::add('email', $email);
             session::add('password', $password);
@@ -170,95 +171,12 @@ class auth
     }
 
     /**
-     * Авторизация или моментальная регистрация через отпечаток пальца / Windows Hello.
-     * Мы храним идентификатор ключа как обычный пароль в формате finger:{id},
-     * чтобы можно было повторно найти пользователя без дополнительной схемы хранения.
+     * Biometric authentication is closed until assertions are verified on the server.
      */
     public static function fingerprint_auth(): void
     {
-        // Гостям доступна только инициализация; авторизованных сразу выходим, чтобы не путать сессии
-        if (\Ofey\Logan22\model\user\user::getUserId()->isAuth()) {
-            board::notice(false, lang::get_phrase(160));
-        }
-
-        // Забираем код, который отдал браузер после прохождения биометрии
-        $finger = $_POST['finger'] ?? '';
-        $finger = trim($finger);
-
-        // Защитимся от пустых или слишком коротких ответов, а также фильтруем допустимые символы
-        if ($finger === '') {
-            board::notice(false, "Отпечаток пальца не получен из браузера");
-        }
-        if (!preg_match('/^[A-Za-z0-9_-]{10,512}$/', $finger)) {
-            board::notice(false, "Некорректный формат отпечатка пальца");
-        }
-
-        // Готовим строку, которую будем хранить в поле password
-        $fingerTag = "finger:" . $finger;
-
-        // Проверяем, есть ли уже пользователь с таким отпечатком (идентификатор платформенного ключа)
-        $user_info = sql::run(
-            'SELECT users.*, users_permission.* FROM users LEFT JOIN users_permission ON users.id = users_permission.user_id WHERE password = ? LIMIT 1;',
-            [$fingerTag]
-        )->fetch();
-
-        if ($user_info) {
-            // Пользователь уже есть — логируем факт, сохраняем сессию и возвращаем успех
-            self::addAuthLog((int)$user_info['id'], 'FINGERPRINT_LOGIN');
-            session::add('id', (int)$user_info['id']);
-            session::add('email', $user_info['email']);
-            session::add('password', $fingerTag);
-            session::add('finger_auth', true);
-            board::response("notice", [
-                "message" => lang::get_phrase(165),
-                "ok" => true,
-                "redirect" => "/main",
-                "mode" => "login",
-            ]);
-            return;
-        }
-
-        // Пользователь не найден — создаём нового аккаунт на лету по стабильному хэшу отпечатка
-        $emailBase = 'finger-' . substr(hash('sha256', $finger), 0, 12);
-        $email     = $emailBase . '@finger.local';
-        $suffix    = 1;
-        while (self::is_user($email)) {
-            // На всякий случай добавляем счётчик, чтобы не попасть в уникальный конфликт email
-            $email = $emailBase . '-' . $suffix . '@finger.local';
-            $suffix++;
-        }
-
-        // Собираем минимальные данные о клиенте, чтобы профиль выглядел аккуратно
-        $ip       = self::getRealIP();
-        $geo      = timezone::get_timezone_ip($ip);
-        $timezone = $geo['timezone'] ?? null;
-        $country  = $geo['country'] ?? null;
-        $city     = $geo['city'] ?? null;
-        $name     = 'finger-' . substr(hash('crc32b', $finger), 0, 8);
-
-        try {
-            // Сохраняем отпечаток как пароль без хэширования (по требованию задачи)
-            $insertSql = "INSERT INTO `users` (`email`, `password`, `name`, `ip`, `timezone`, `country`, `city`, `last_activity`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            sql::run($insertSql, [$email, $fingerTag, $name, $ip, $timezone, $country, $city, time::mysql()]);
-            $userId = sql::lastInsertId();
-
-            // Фиксируем авторизацию и выдаём сессию
-            self::addAuthLog((int)$userId, 'FINGERPRINT_REGISTER');
-            session::add('id', (int)$userId);
-            session::add('email', $email);
-            session::add('password', $fingerTag);
-            session::add('finger_auth', true);
-
-            board::response("notice", [
-                "message"  => lang::get_phrase(207),
-                "ok"       => true,
-                "redirect" => "/main",
-                "mode"     => "register",
-                "email"    => $email,
-            ]);
-        } catch (Exception $e) {
-            board::notice(false, "Ошибка при сохранении отпечатка: " . $e->getMessage());
-        }
+        // Credential IDs are public identifiers, not authentication proofs.
+        board::error('Биометрический вход временно отключён. Используйте пароль или подтверждённый вход через OAuth.');
     }
 
     public static function addAuthLog(int $userId = 0, string $signature = "GOOGLE"): void

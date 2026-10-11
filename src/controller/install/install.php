@@ -302,11 +302,12 @@ class install
         /**
          * Создаем проверочный файл
          */
-        $filenameCheck = substr(bin2hex(random_bytes(10)), 0, 10) . ".txt";
+        $installChallenge = bin2hex(random_bytes(32));
+        $filenameCheck = "sphere-install-" . $installChallenge . ".txt";
 
         if(!file_exists(fileSys::get_dir('/data/token.php'))){
             try {
-                $file = file_put_contents($filenameCheck, "OK");
+                $file = file_put_contents($filenameCheck, "SPHERE_INSTALL_VERIFY:" . $installChallenge);
                 if ($file === false) {
                     throw new Exception("Failed to create check file");
                 }
@@ -317,12 +318,13 @@ class install
 
                 $response = server::send(type::SPHERE_INSTALL, [
                     'filename' => $filenameCheck,
+                    'challenge' => $installChallenge,
                 ])->show(false)->getResponse();
                 if (!$response['success']) {
                     throw new Exception("Failed to install sphere");
                 }
                 $token = $response['token'];
-                file_put_contents("data/token.php", "<?php const __TOKEN__ = \"$token\";\n");
+                file_put_contents("data/token.php", "<?php const __TOKEN__ = " . var_export($token, true) . ";\n");
                 unlink($filenameCheck);
             } catch (Exception $e) {
                 echo json_encode([

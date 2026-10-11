@@ -25,11 +25,11 @@ class telegram
     {
         $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $charactersLength = strlen($characters);
-        $length = rand(5, 8); // Случайная длина от 5 до 8 символов
+        $length = 8;
         $token = '';
         
         for ($i = 0; $i < $length; $i++) {
-            $token .= $characters[rand(0, $charactersLength - 1)];
+            $token .= $characters[random_int(0, $charactersLength - 1)];
         }
         
         return $token;
@@ -113,6 +113,7 @@ class telegram
         if ($existingUser) {
             // Пользователь уже существует - авторизуем его
             \Ofey\Logan22\model\user\auth\auth::addAuthLog($existingUser->getId(), "TELEGRAM");
+            session::regenerate();
             session::add('id', $existingUser->getId());
             session::add('email', $existingUser->getEmail());
             session::add('password', "TELEGRAM");
@@ -168,6 +169,7 @@ class telegram
 
         if ($insert) {
             \Ofey\Logan22\model\user\auth\auth::addAuthLog($userID, "TELEGRAM");
+            session::regenerate();
             session::add('id', $userID);
             session::add('email', $email);
             session::add('password', "TELEGRAM");

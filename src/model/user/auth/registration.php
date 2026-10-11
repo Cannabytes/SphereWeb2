@@ -131,6 +131,7 @@ class registration {
             sql::rollBack();
             board::notice(false, "Произошла ошибка при регистрации: " . $e->getMessage());
         }
+        session::regenerate();
         return $account_name;
     }
 

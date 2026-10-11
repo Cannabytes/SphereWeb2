@@ -26,8 +26,8 @@ class auth
         
         $tokenData = $_GET;
         $unique_id = $tokenData['unique_id'];
-        $host = $tokenData['host'];
-        $getterUrl = "{$host}/google/getter.php";
+        // The origin must match the OAuth broker used by the login link.
+        $getterUrl = 'https://sphereweb.net/google/getter.php';
         $postData = [
             'unique_id' => $unique_id
         ];
@@ -36,6 +36,7 @@ class auth
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
 
         $response = curl_exec($ch);
@@ -63,6 +64,9 @@ class auth
             $userInfoResponse = curl_exec($ch);
             curl_close($ch);
             $userInfo = json_decode($userInfoResponse, true);
+            if (!is_array($userInfo) || empty($userInfo['id']) || empty($userInfo['email']) || empty($userInfo['verified_email'])) {
+                board::error('Google не подтвердил учётную запись');
+            }
             $id = $userInfo['id'];
             $email = $userInfo['email'];
             $name = $userInfo['name'];
@@ -71,6 +75,7 @@ class auth
             $emailData = user::getUserByEmail($email);
             if ($emailData != null) {
                 \Ofey\Logan22\model\user\auth\auth::addAuthLog($emailData->getId(), "GOOGLE");
+                session::regenerate();
                 session::add('id', $emailData->getId());
                 session::add('email', $emailData->getEmail());
                 session::add('password', "GOOGLE");
@@ -100,6 +105,7 @@ class auth
             $userID = sql::lastInsertId();
             if ($insert) {
                 \Ofey\Logan22\model\user\auth\auth::addAuthLog($userID);
+                session::regenerate();
                 session::add('id', $userID);
                 session::add('email', $email);
                 session::add('password', "GOOGLE");

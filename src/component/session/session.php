@@ -157,6 +157,12 @@ class session
             $sessionId = bin2hex(random_bytes(32));
         }
 
+        self::setSessionCookie($sessionId);
+        return $sessionId;
+    }
+
+    private static function setSessionCookie(string $sessionId): void
+    {
         $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || ($_SERVER['REQUEST_SCHEME'] ?? '') === 'https';
         $httpOnly = true;
         $sameSite = 'Lax';
@@ -170,7 +176,28 @@ class session
             'samesite' => $sameSite
         ]);
 
-        return $sessionId;
+    }
+
+    /** Replace the guest session before granting authenticated privileges. */
+    public static function regenerate(): void
+    {
+        $oldId = self::$currentSessionId ?? ($_COOKIE['sphere_session'] ?? null);
+        $newId = bin2hex(random_bytes(32));
+        $result = sql::run(
+            'INSERT INTO sessions (session_id, user_id, ip_address, user_agent, last_activity, data) VALUES (?, ?, ?, ?, ?, ?)',
+            [$newId, $_SESSION['id'] ?? null, self::getIpAddress(), self::sanitizeForDatabase($_SERVER['HTTP_USER_AGENT'] ?? ''), time(), json_encode($_SESSION)]
+        );
+        if (!$result) {
+            throw new \RuntimeException('Unable to renew session');
+        }
+        if ($oldId !== null) {
+            if (!sql::run('DELETE FROM sessions WHERE session_id = ?', [$oldId])) {
+                throw new \RuntimeException('Unable to revoke session');
+            }
+        }
+        self::$currentSessionId = $newId;
+        $_COOKIE['sphere_session'] = $newId;
+        self::setSessionCookie($newId);
     }
 
     /**

@@ -1,0 +1,10 @@
+Options -Indexes
+<FilesMatch "(?i)\.(?:svg|html?)$">
+    Require all denied
+</FilesMatch>
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    <FilesMatch "(?i)\.(?:pdf|zip|7z|rar|dll|ini|dat|u|xdat|log|txt|int|exe|vxd|bat|cmd|sys|bin|des|gly|ffe)$">
+        Header set Content-Disposition "attachment"
+    </FilesMatch>
+</IfModule>

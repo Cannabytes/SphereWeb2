@@ -37,7 +37,7 @@ class XenForoPasswordHandler
         $xenforoHash = substr($storedHash, 8); // strlen('xenforo:') = 8
 
         // Пробуем десериализовать данные XenForo
-        $data = @unserialize($xenforoHash);
+        $data = @unserialize($xenforoHash, ['allowed_classes' => false]);
         if ($data === false) {
             // Если десериализация не удалась, возможно это просто хэш без соли
             // Пробуем стандартную проверку bcrypt/Argon2

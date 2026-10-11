@@ -511,7 +511,7 @@ class StreamingImporter
             return 'xenforo:' . bin2hex(random_bytes(32));
         }
         
-        $data = @unserialize($authData);
+        $data = @unserialize($authData, ['allowed_classes' => false]);
         if ($data === false || !isset($data['hash'])) {
             return 'xenforo:' . bin2hex(random_bytes(32));
         }

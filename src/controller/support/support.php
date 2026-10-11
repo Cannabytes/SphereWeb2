@@ -879,7 +879,7 @@ class support
     {
         self::isEnable();
         if (isset($_FILES['filepond'])) {
-            $imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg'];
+            $imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp'];
             $allowedAttachmentExtensions = array_merge($imageExtensions, [
                 'pdf', 'zip', '7z', 'rar', 'dll', 'ini', 'dat', 'u', 'xdat', 'log', 'txt',
                 'int', 'exe', 'vxd', 'bat', 'cmd', 'sys', 'bin', 'des', 'gly', 'ffe'

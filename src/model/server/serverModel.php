@@ -1334,7 +1334,7 @@ class serverModel
                 return null;
             }
 
-            $data = unserialize($serializedData);
+            $data = unserialize($serializedData, ['allowed_classes' => false]);
 
             return is_array($data) ? $data : null;
 

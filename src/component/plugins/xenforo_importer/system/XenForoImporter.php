@@ -184,7 +184,7 @@ class XenForoImporter
         }
 
         // XenForo хранит данные в сериализованном виде
-        $data = @unserialize($authData);
+        $data = @unserialize($authData, ['allowed_classes' => false]);
 
         if ($data === false || !isset($data['hash'])) {
             // Если не удалось десериализовать, генерируем новый пароль

@@ -1,5 +1,8 @@
 <IfModule mod_rewrite.c>
 	RewriteEngine On
+    RewriteRule (^|/)\.(git|svn|hg)(/|$) - [F,L,NC]
+    RewriteRule ^data(/|$) - [F,L,NC]
+    RewriteRule ^(errors\.(txt|log)|sql_error_log\.txt)$ - [F,L,NC]
 	RewriteCond %{REQUEST_FILENAME} -f [OR]
 	RewriteCond %{REQUEST_FILENAME} -l [OR]
 	RewriteCond %{REQUEST_FILENAME} -d

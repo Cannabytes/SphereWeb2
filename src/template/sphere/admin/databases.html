@@ -408,8 +408,8 @@
 <script src="{{template}}/assets/libs/sweetalert2/sweetalert2.min.js"></script>
 <script>
     $(document).ready(function () {
-        const collectionInfo = JSON.parse('{{collections|raw}}');
-        const collectionsPTS = JSON.parse('{{collectionsPTS|raw}}');
+        const collectionInfo = JSON.parse('{{collections|e('js')}}');
+        const collectionsPTS = JSON.parse('{{collectionsPTS|e('js')}}');
         const clientList = JSON.parse('{{ client_list_default|json_encode|raw }}');
 
         $(".deleteGameServer").on("click", function () {

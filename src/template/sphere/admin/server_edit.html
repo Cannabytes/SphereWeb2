@@ -721,8 +721,8 @@
 </script>
 
 <script>
-    const collectionInfo = JSON.parse('{{collections|raw}}');
-    const collectionInfoPTS = JSON.parse('{{collectionsPTS|raw}}');
+    const collectionInfo = JSON.parse('{{collections|e('js')}}');
+    const collectionInfoPTS = JSON.parse('{{collectionsPTS|e('js')}}');
 
     const allChronicleOptionsHtml = $('#version_client').html();
 

@@ -103,7 +103,6 @@ class XssSecurity
         $content = self::cleanStyleAttributes($content);
         $content = self::blockBase64Content($content);
         $content = self::cleanHtmlEntities($content);
-        $content = htmlspecialchars_decode($content, ENT_QUOTES | ENT_HTML5);
         $content = self::removeDangerousAttributes($content);
         $content = self::blockDangerousProtocols($content);
 
@@ -232,6 +231,13 @@ class XssSecurity
             foreach ($aMatches as $m) {
                 $attrName = strtolower($m[1]);
                 $attrVal = isset($m[3]) && $m[3] !== '' ? $m[3] : (isset($m[4]) && $m[4] !== '' ? $m[4] : (isset($m[5]) ? $m[5] : ''));
+                $attrVal = html_entity_decode($attrVal, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                if (in_array($attrName, ['href', 'src'], true)) {
+                    $protocolValue = preg_replace('/[\x00-\x20\x7f]+/', '', $attrVal);
+                    if (preg_match('/^(javascript|data|vbscript):/i', $protocolValue)) {
+                        continue;
+                    }
+                }
 
                 // Always skip dangerous attributes
                 if (in_array($attrName, self::DANGEROUS_ATTRIBUTES, true)) {
