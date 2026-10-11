@@ -26,21 +26,75 @@ use Ofey\Logan22\model\db\sql;
 use Ofey\Logan22\model\install\install;
 use Ofey\Logan22\model\item\item;
 use Ofey\Logan22\model\log\logTypes;
+use Ofey\Logan22\model\server\server as ServerRepository;
+use Ofey\Logan22\model\server\serverModel;
 use Ofey\Logan22\model\user\user;
 use Ofey\Logan22\template\tpl;
 
 class options
 {
 
+    private static function requireServer($rawId): serverModel
+    {
+        validation::user_protection("admin");
+        if (!is_int($rawId) && !is_string($rawId)) {
+            board::error("Сервер не найден");
+        }
+        $serverId = filter_var($rawId, FILTER_VALIDATE_INT);
+        $servers = ServerRepository::getServerAll() ?? [];
+        if ($serverId === false || $serverId <= 0 || !isset($servers[$serverId])) {
+            board::error("Сервер не найден");
+        }
+        return $servers[$serverId];
+    }
+
+    private static function databaseId($rawId): int
+    {
+        if (!is_int($rawId) && !is_string($rawId)) {
+            board::error("Некорректный ID подключения к БД");
+        }
+        $id = filter_var($rawId, FILTER_VALIDATE_INT);
+        if ($id === false || $id < 0) {
+            board::error("Некорректный ID подключения к БД");
+        }
+        return $id;
+    }
+
+    private static function requireDatabaseConnections(int $loginId, int $gameId): void
+    {
+        if ($loginId === 0 && $gameId === 0) {
+            return;
+        }
+        $database = \Ofey\Logan22\component\sphere\server::send(type::GET_DATABASE_LIST)->show(false)->getResponse();
+        if (!is_array($database) || isset($database['error']) || !array_key_exists('loginservers', $database) || !array_key_exists('gameservers', $database)) {
+            board::error("Не удалось проверить подключения к БД");
+        }
+        foreach (['loginservers' => $loginId, 'gameservers' => $gameId] as $key => $id) {
+            if ($id === 0) {
+                continue;
+            }
+            $found = false;
+            $connections = $database[$key] ?? [];
+            if (!is_array($connections)) {
+                board::error("Не удалось проверить подключения к БД");
+            }
+            foreach ($connections as $connection) {
+                if (is_array($connection) && filter_var($connection['id'] ?? null, FILTER_VALIDATE_INT) === $id) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                board::error("Подключение к БД не принадлежит этому сайту");
+            }
+        }
+    }
+
     //POST
     public static function delete_server(): void
     {
-        $server_id = $_POST['serverId'] ?? board::error("Server id is empty");
-
-        $serverInfo = \Ofey\Logan22\model\server\server::getServer($server_id);
-        if ($serverInfo->getId() != $server_id) {
-            redirect::location("/admin/server/list");
-        }
+        $serverInfo = self::requireServer($_POST['serverId'] ?? null);
+        $server_id = $serverInfo->getId();
 
         $servers_id = \Ofey\Logan22\component\sphere\server::send(type::SERVER_LIST)->show(false)->getResponse();
         if (isset($servers_id['error']) or $servers_id === null) {
@@ -83,6 +137,7 @@ class options
     //POST - Регистрация сервера
     public static function create_server(): void
     {
+        validation::user_protection("admin");
         $name = $_POST['name'] ?? "Bartz_" . random_int(1, 999);
         $rateExp = (int)$_POST['rateExp'] ?? 1;
         $rateSp = (int)$_POST['rateSp'] ?? 1;
@@ -145,16 +200,18 @@ class options
         }
 
         if (isset($_POST['loginserver'])) {
-            $loginserver = (int)$_POST['loginserver'] ?? 0;
+            $loginserver = self::databaseId($_POST['loginserver']);
         } else {
             board::error("Выберите подключение к БД LoginServer");
         }
 
         if (isset($_POST['gameserver'])) {
-            $gameserver = (int)$_POST['gameserver'] ?? 0;
+            $gameserver = self::databaseId($_POST['gameserver']);
         } else {
             board::error("Добавьте данные БД к GameServer");
         }
+
+        self::requireDatabaseConnections($loginserver, $gameserver);
 
         $statusServer = [
             "enable" => $enableStatusServer,
@@ -227,14 +284,14 @@ class options
     {
         $platform = $_POST['platform'];
         $version_client = $_POST['version_client'];
-        $serverId = (int)$_POST['serverId'];
+        $server = self::requireServer($_POST['serverId'] ?? null);
+        $serverId = $server->getId();
         $collection = $_POST['collection'];
         $response = \Ofey\Logan22\component\sphere\server::send(type::UPDATE_COLLECTION, [
             "id" => $serverId,
             "name" => $collection,
         ])->show(true)->getResponse();
         if ($response['success']) {
-            $server = \Ofey\Logan22\model\server\server::getServer((int)$_POST['serverId']);
             $server->setChronicle($_POST['version_client']);
             $server->setCollection($_POST['collection']);
             $server->save();
@@ -262,7 +319,7 @@ class options
         if ($server_id == null) {
             redirect::location("/admin/server/list");
         }
-        $server = \Ofey\Logan22\model\server\server::getServer($server_id);
+        $server = self::requireServer($server_id);
         $database = \Ofey\Logan22\component\sphere\server::send(type::GET_DATABASE_LIST)->show()->getResponse();
         $cached = [];
 
@@ -367,7 +424,8 @@ class options
 
     static public function server_edit_save()
     {
-        $serverId = (int)$_POST['id'] ?? board::error("Server id is empty");
+        $server = self::requireServer($_POST['id'] ?? null);
+        $serverId = $server->getId();
         $name = $_POST['name'] ?? board::error("Set server name");
         $rateExp = $_POST['rateExp'] ?? 1;
         $rateSp = $_POST['rateSp'] ?? 1;
@@ -401,8 +459,9 @@ class options
             }
         }
 
-        $loginServerID = $_POST['loginserver'] ?? board::error("Set DB LoginServer");
-        $gameserverID = $_POST['gameserver'] ?? board::error("Set DB GameServer");
+        $loginServerID = self::databaseId($_POST['loginserver'] ?? null);
+        $gameserverID = self::databaseId($_POST['gameserver'] ?? null);
+        self::requireDatabaseConnections($loginServerID, $gameserverID);
 
 
         $dateStartServer = $_POST['dateStartServer'] ?? null;
@@ -413,10 +472,6 @@ class options
         $showOnlineInStatusServer = (bool)filter_var($_POST['showOnlineInStatusServer'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $resetItemsToWarehouse = (bool)filter_var($_POST['resetItemsToWarehouse'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
-        if (!\Ofey\Logan22\model\server\server::getServer($serverId)) {
-            board::error("Server not find");
-        }
-        
         $statusServer = [
             "enable" => $enableStatusServer,
             "statusLoginServerIP" => $statusLoginServerIP,
@@ -425,7 +480,6 @@ class options
             "statusGameServerPort" => $statusGameServerPort,
         ];
 
-        $server = \Ofey\Logan22\model\server\server::getServer($serverId);
         if (array_key_exists('resetPlayerToVillage', $_POST)) {
             $resetPlayerToVillage = (bool)filter_var($_POST['resetPlayerToVillage'], FILTER_VALIDATE_BOOLEAN);
         } else {
@@ -460,14 +514,7 @@ class options
             'resetPlayerToVillage' => $resetPlayerToVillage,
         ]);
 
-        $data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        sql::run(
-            "UPDATE `servers` SET `data` = ? WHERE `id` = ?",
-            [
-                $data,
-                $serverId,
-            ]
-        );
+        $storedData = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         //Смена ID логин и гейм сервера
         $data = \Ofey\Logan22\component\sphere\server::send(type::CONNECT_DB_UPDATE, [
             "serverId" => $serverId,
@@ -495,7 +542,8 @@ class options
             ],
         ])->show()->getResponse();
 
-        if (isset($data["success"])) {
+        if (($data["success"] ?? false) === true) {
+            sql::run("UPDATE `servers` SET `data` = ? WHERE `id` = ?", [$storedData, $serverId]);
             board::redirect("/admin/server/list");
             board::success("Данные сервера обновлены");
         }
@@ -503,6 +551,7 @@ class options
         if (isset($data["error"])) {
             board::error($data['error']);
         }
+        board::error("Не удалось обновить данные сервера");
 
     }
 
@@ -573,16 +622,16 @@ class options
 
     public static function saveGeneral(): void
     {
-        $server_id = $_POST['serverId'] ?? board::error("Server id is empty");
+        $server = self::requireServer($_POST['serverId'] ?? null);
+        $server_id = $server->getId();
         $isDefault = (bool)$_POST['isDefault'] ?? false;
 
         //Отменяем дефолтные сервера у других
-        foreach (\Ofey\Logan22\model\server\server::getServerAll() as $server) {
-            $server->setIsDefault(false);
-            $server->save();
+        foreach (\Ofey\Logan22\model\server\server::getServerAll() as $otherServer) {
+            $otherServer->setIsDefault(false);
+            $otherServer->save();
         }
 
-        $server = \Ofey\Logan22\model\server\server::getServer($server_id);
         $data = json_encode(array_replace($server->toStorageArray(), [
             "id" => $server_id,
             "default" => $isDefault,
@@ -631,7 +680,7 @@ class options
 
     public static function saveOther(): void
     {
-        $server_id = $_POST['serverId'];
+        $server_id = self::requireServer($_POST['serverId'] ?? null)->getId();
         $start_time = $_POST['date_start_server'];
         $max_online = $_POST['max_online'] ?? board::error("Server max_online is empty");
         $knowledge_base = $_POST['knowledge_base'] ?? board::error("Server knowlege_base is empty");
@@ -701,8 +750,9 @@ class options
 
     static public function saveMySQL(): void
     {
-        $server_id = $_POST['serverId'];
-        $loginserver_id = $_POST['loginserver_id'] ?? 0;
+        $server_id = self::requireServer($_POST['serverId'] ?? null)->getId();
+        $loginserver_id = self::databaseId($_POST['loginserver_id'] ?? 0);
+        self::requireDatabaseConnections($loginserver_id, 0);
         $login_host = $_POST['login_host'] ?? board::error("No select login host");
         $login_port = $_POST['login_port'] ?? 3306;
         $login_user = $_POST['login_user'] ?? board::error("No select login user");
@@ -733,6 +783,9 @@ class options
         ];
 
         $data = \Ofey\Logan22\component\sphere\server::send(type::CONNECT_DB_UPDATE, $arr)->show()->getResponse();
+        if (($data['success'] ?? false) !== true) {
+            board::error($data['error'] ?? "Не удалось обновить подключения к БД");
+        }
 
         $save_data_MySQL = filter_var($_POST['save_data_MySQL'], FILTER_VALIDATE_BOOL);
         sql::sql("DELETE FROM `server_cache` WHERE `server_id` = ? AND `type` = 'mysql_data_connect'", [$server_id]);
@@ -911,7 +964,7 @@ class options
     public static function saveConfigReferral(): void
     {
         $post = json_encode($_POST);
-        $serverId = $_POST['server_id'];
+        $serverId = self::requireServer($_POST['server_id'] ?? null)->getId();
         if (!$post) {
             board::error("Ошибка парсинга JSON");
         }
@@ -946,8 +999,13 @@ class options
     public static function removeLoginserver(): void
     {
         validation::user_protection("admin");
+        $loginId = self::databaseId($_POST['loginId'] ?? null);
+        if ($loginId === 0) {
+            board::error("Некорректный ID подключения к БД");
+        }
+        self::requireDatabaseConnections($loginId, 0);
         $data = \Ofey\Logan22\component\sphere\server::send(type::DELETE_LOGINSERVER, [
-            "loginId" => (int)$_POST['loginId'],
+            "loginId" => $loginId,
         ])->show()->getResponse();
         if (isset($data["success"])) {
             board::alert([
@@ -1045,10 +1103,13 @@ class options
     {
         if (isset($_POST['positions'])) {
             $positions = $_POST['positions'];
-            foreach ($positions as $data) {
-                $server_id = $data['id'];
+            $servers = [];
+            foreach ($positions as $index => $data) {
+                $servers[$index] = self::requireServer($data['id'] ?? null);
+            }
+            foreach ($positions as $index => $data) {
                 $position = $data['position'];
-                $server = \Ofey\Logan22\model\server\server::getServer($server_id);
+                $server = $servers[$index];
                 $server->setPosition($position)->save();
             }
             echo 'ok';
@@ -1057,7 +1118,7 @@ class options
 
     public static function setDefaultServer()
     {
-        $serverId = $_POST['id'] ?? board::error("Не получен ID сервера");
+        $serverId = self::requireServer($_POST['id'] ?? null)->getId();
         foreach (\Ofey\Logan22\model\server\server::getServerAll() as $server) {
             if ($server->isDefault()) {
                 $server->setIsDefault(0);
@@ -1091,9 +1152,7 @@ class options
 
     static public function getServerFunction(null|int $serverId = null): void
     {
-        if ($serverId == null or !\Ofey\Logan22\model\server\server::getServer($serverId)){
-            board::error("Сервер не найден");
-        }
+        self::requireServer($serverId);
 
         tpl::addVar([
             "serverId" => $serverId,
@@ -1118,15 +1177,7 @@ class options
             ]);
         }
 
-        $serverId = (int)$requestData['serverId'];
-        $server = \Ofey\Logan22\model\server\server::getServer($serverId);
-        if (!$server) {
-            http_response_code(404);
-            board::alert([
-                'success' => false,
-                'error' => 'Сервер не найден'
-            ]);
-        }
+        $serverId = self::requireServer($requestData['serverId'])->getId();
 
         // Проверяем наличие и валидность массива ID предметов
         $itemIds = $requestData['itemIds'] ?? [];
@@ -1176,7 +1227,7 @@ class options
 
     static public function getAllItemsInWarehouse(): void
     {
-        $serverId = $_POST['server_id'];
+        $serverId = self::requireServer($_POST['server_id'] ?? null)->getId();
         $rows = sql::getRows("SELECT `user_id`, `item_id`, `count`, `enchant`, `phrase` FROM `warehouse` WHERE server_id = ?", [$serverId]);
         foreach($rows AS &$item){
             $user_id = $item['user_id'];
@@ -1200,13 +1251,13 @@ class options
     // Настройки стакуемых предметов сервера
     public static function saveStackItems(): void
     {
-        $serverId = (int)$_POST['serverId'];
+        $server = self::requireServer($_POST['serverId'] ?? null);
         $allowAllItemsStacking = filter_var($_POST['allowAllItemsStacking'], FILTER_VALIDATE_BOOLEAN);
         $allowAllItemsSplitting = filter_var($_POST['allowAllItemsSplitting'], FILTER_VALIDATE_BOOLEAN);
         $stackableItems = $_POST['stackableItems'] ?? [];
         $splittableItems = $_POST['splittableItems'] ?? [];
-        \Ofey\Logan22\model\server\server::getServer($serverId)->stackableItem()->set($allowAllItemsStacking, $allowAllItemsSplitting, $stackableItems, $splittableItems);
-        \Ofey\Logan22\model\server\server::getServer($serverId)->save();
+        $server->stackableItem()->set($allowAllItemsStacking, $allowAllItemsSplitting, $stackableItems, $splittableItems);
+        $server->save();
         board::notice(true, "Настройки сохранены");
     }
 
@@ -1217,15 +1268,7 @@ class options
 
     public static function saveRegistrationBonusItems(): void
     {
-        $serverId = filter_var($_POST['server_id'] ?? $_POST['serverId'] ?? null, FILTER_VALIDATE_INT);
-        if ($serverId === false || $serverId <= 0) {
-            board::notice(false, "Сервер не найден");
-        }
-
-        $server = \Ofey\Logan22\model\server\server::getServer($serverId);
-        if ($server === null || $server->getId() !== $serverId) {
-            board::notice(false, "Сервер не найден");
-        }
+        $server = self::requireServer($_POST['server_id'] ?? $_POST['serverId'] ?? null);
 
         $server->bonus()->setRegistrationBonusItems(
             $_POST['enabled'] ?? false,
@@ -1238,15 +1281,10 @@ class options
 
     public static function saveItemsSendTime(): void
     {
-        $serverId = (int)($_POST['server_id'] ?? 0);
+        $server = self::requireServer($_POST['server_id'] ?? null);
         $enabled = filter_var($_POST['enabled'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $availableFromRaw = trim($_POST['available_from'] ?? '');
         $showTime = filter_var($_POST['show_time'] ?? true, FILTER_VALIDATE_BOOLEAN);
-
-        $server = \Ofey\Logan22\model\server\server::getServer($serverId);
-        if (!$serverId || !$server) {
-            board::notice(false, "Сервер не найден");
-        }
 
         if (!$enabled) {
             $server->setItemsSendAvailableFrom(null);

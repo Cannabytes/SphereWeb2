@@ -10,6 +10,7 @@ use Ofey\Logan22\component\request\clear;
 use Ofey\Logan22\component\sphere\server;
 use Ofey\Logan22\component\sphere\type;
 use Ofey\Logan22\model\admin\validation;
+use Ofey\Logan22\model\server\server as ServerRepository;
 use Ofey\Logan22\template\tpl;
 
 class collection
@@ -38,10 +39,22 @@ class collection
     public function checkQuery()
     {
         validation::user_protection("admin");
-        $query = $_POST['query'];
+        $query = $_POST['query'] ?? null;
         $params = $_POST['params'] ?? null;
-        $query_name = $_POST['query_name'];
-        $serverId = (int)$_POST['server_id'] ?? null;
+        $query_name = $_POST['query_name'] ?? null;
+        $rawServerId = $_POST['server_id'] ?? null;
+        $serverId = (is_int($rawServerId) || is_string($rawServerId)) ? filter_var($rawServerId, FILTER_VALIDATE_INT) : false;
+
+        if (!is_string($query_name) || !in_array($query_name, ['getAccount', 'countOnline', 'getCharactersAccount', 'statistic_castle', 'statistic_clan', 'statistic_exp', 'statistic_online', 'statistic_pk', 'statistic_pvp'], true)) {
+            board::error("Недопустимый тип SQL-запроса");
+        }
+        if (!is_string($query) || trim($query) === '' || ($params !== null && !is_array($params))) {
+            board::error("Некорректный SQL-запрос или параметры");
+        }
+        $servers = ServerRepository::getServerAll() ?? [];
+        if ($serverId === false || $serverId <= 0 || !isset($servers[$serverId])) {
+            board::error("Сервер не найден");
+        }
 
         $request = \Ofey\Logan22\component\sphere\server::send(type::GAME_SERVER_REQUEST, [
             'query' => clear::cleanSQLQuery($query),

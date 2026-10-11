@@ -14,6 +14,19 @@ use Ofey\Logan22\template\tpl;
 
 class server_backup
 {
+    private static function requireServerId($rawId): int
+    {
+        if (!is_int($rawId) && !is_string($rawId)) {
+            board::error(lang::get_phrase("server_backup_error_invalid_server"));
+        }
+        $serverId = filter_var($rawId, FILTER_VALIDATE_INT);
+        $servers = server::getServerAll() ?? [];
+        if ($serverId === false || $serverId <= 0 || !isset($servers[$serverId])) {
+            board::error(lang::get_phrase("server_backup_error_invalid_server"));
+        }
+        return $serverId;
+    }
+
     /**
      * Display admin panel
      */
@@ -59,7 +72,7 @@ class server_backup
     {
         validation::user_protection("admin");
 
-        $serverId = $_POST['server_id'] ?? null;
+        $serverId = self::requireServerId($_POST['server_id'] ?? null);
         $backupTime = $_POST['backup_time'] ?? null;
         $ftpEnabled = isset($_POST['ftp_enabled']) && $_POST['ftp_enabled'] == '1';
         
@@ -165,7 +178,7 @@ class server_backup
         // Get JSON data from request body
         $jsonData = json_decode(file_get_contents('php://input'), true) ?? [];
         
-        $serverId = $jsonData['server_id'] ?? $_POST['server_id'] ?? null;
+        $serverId = self::requireServerId($jsonData['server_id'] ?? $_POST['server_id'] ?? null);
         $ftpHost = $jsonData['ftp_host'] ?? $_POST['ftp_host'] ?? null;
         $ftpPort = $jsonData['ftp_port'] ?? $_POST['ftp_port'] ?? 21;
         $ftpUser = $jsonData['ftp_user'] ?? $_POST['ftp_user'] ?? null;
@@ -218,7 +231,7 @@ class server_backup
         // Get JSON data from request body
         $jsonData = json_decode(file_get_contents('php://input'), true) ?? [];
         
-        $serverId = $jsonData['server_id'] ?? $_POST['server_id'] ?? null;
+        $serverId = self::requireServerId($jsonData['server_id'] ?? $_POST['server_id'] ?? null);
         $ftpHost = $jsonData['ftp_host'] ?? $_POST['ftp_host'] ?? null;
         $ftpPort = $jsonData['ftp_port'] ?? $_POST['ftp_port'] ?? 21;
         $ftpUser = $jsonData['ftp_user'] ?? $_POST['ftp_user'] ?? null;
@@ -266,7 +279,7 @@ class server_backup
     {
         validation::user_protection("admin");
 
-        $serverId = $_POST['server_id'] ?? null;
+        $serverId = self::requireServerId($_POST['server_id'] ?? null);
         $limit = (int)($_POST['limit'] ?? 50);
         $offset = (int)($_POST['offset'] ?? 0);
         
@@ -301,7 +314,7 @@ class server_backup
     {
         validation::user_protection("admin");
 
-        $serverId = $_POST['server_id'] ?? null;
+        $serverId = self::requireServerId($_POST['server_id'] ?? null);
         
         if (!$serverId) {
             board::error("server_backup_error_no_server");
@@ -322,21 +335,11 @@ class server_backup
     {
         validation::user_protection("admin");
 
-        $serverId = $_POST['server_id'] ?? null;
+        $serverId = self::requireServerId($_POST['server_id'] ?? null);
         $enabled = isset($_POST['enabled']) && $_POST['enabled'] == 1;
 
         if (!$serverId) {
             board::error("server_backup_error_invalid_params");
-        }
-
-        // Validate that the server belongs to this user
-        try {
-            $server = server::getServer($serverId);
-            if (!$server) {
-                board::error("server_backup_error_invalid_server");
-            }
-        } catch (\Exception $e) {
-            board::error("server_backup_error_invalid_server");
         }
 
         // Send request to Go API
@@ -365,7 +368,7 @@ class server_backup
     {
         validation::user_protection("admin");
 
-        $serverId = $_POST['server_id'] ?? null;
+        $serverId = self::requireServerId($_POST['server_id'] ?? null);
         
         if (!$serverId) {
             board::error("server_backup_error_no_server");
