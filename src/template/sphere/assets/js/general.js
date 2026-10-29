@@ -501,7 +501,7 @@ function ResponseNotice(response) {
         noticeError(response.message)
     }
 
-    if(response.reloadCaptcha){
+    if(response.reloadCaptcha && typeof get_captcha === 'function'){
         get_captcha()
     }
     let timeout = 1000;

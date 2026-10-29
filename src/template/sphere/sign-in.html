@@ -216,9 +216,6 @@
               {% elseif config().captcha().isCloudflareCaptcha() %}
                 <div id="cf-turnstile" class="cf-turnstile"></div>
                 <input type="hidden" id="cf-turnstile-response" name="cf-turnstile-response">
-              {% elseif config().captcha().isDefaultCaptcha() %}
-                <script async defer src="https://js.hcaptcha.com/1/api.js?hl={{getUser().getLang()}}"></script>
-                <div class="h-captcha text-center" data-sitekey="0c545d06-4fe6-45d4-b704-7b809af8db9c"></div>
               {% endif %}
 
               <input type="hidden" name="finger" id="finger">
@@ -492,8 +489,6 @@
     }
   };
 </script>
-{% elseif config().captcha().isDefaultCaptcha() %}
-
 {% elseif config().captcha().isCloudflareCaptcha() %}
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
 <script>
@@ -517,11 +512,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Проверяем, какая капча используется
     if (captcha === "google") {
       grecaptcha.reset();
-    } else if (captcha === "default") {
-      // Сброс hCaptcha
-      if (typeof hcaptcha !== 'undefined') {
-        hcaptcha.reset();
-      }
     } else if (captcha === "cloudflare") {
       // Сброс Cloudflare Turnstile
       if (typeof turnstile !== 'undefined') {

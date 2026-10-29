@@ -219,12 +219,6 @@
                                                     href="#captcha-isEnable" aria-selected="true">Отключение</a>
                                             </li>
                                             <li class="nav-item" role="presentation">
-                                                <a class="nav-link {% if config().captcha().isDefaultCaptcha() %}active{% endif %}"
-                                                    data-bs-toggle="tab" role="tab" aria-current="page"
-                                                    href="#captcha-default" aria-selected="true">Sphere Cloudflare
-                                                    Captcha</a>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
                                                 <a class="nav-link {% if config().captcha().isGoogleCaptcha() %}active{% endif %}"
                                                     data-bs-toggle="tab" role="tab" aria-current="page"
                                                     href="#captcha-google" aria-selected="false" tabindex="-1">Google
@@ -257,28 +251,6 @@
                                                                 config().captcha().isEnabled()==false %}checked="" {%
                                                                 endif %}>
                                                             <label for="isEnableCaptcha"
-                                                                class="label-success mb-1"></label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="tab-pane text-muted {% if config().captcha().isDefaultCaptcha() %}active show{% endif %}"
-                                                id="captcha-default" role="tabpanel">
-                                                <div
-                                                    class="d-sm-flex d-block align-items-top justify-content-between mt-3">
-                                                    <div>
-                                                        <p class="fs-14 mb-1 fw-semibold">
-                                                            Включить капчу используя встроенные ключи сервера Cloudflare
-                                                        </p>
-                                                        <p class="fs-12 mb-0 text-muted"></p>
-                                                    </div>
-                                                    <div>
-                                                        <div class="custom-toggle-switch float-sm-end">
-                                                            <input class="btnCaptcha" id="defaultCaptcha"
-                                                                name="defaultCaptcha" type="checkbox" {% if
-                                                                config().captcha().isDefaultCaptcha() %}checked="" {%
-                                                                endif %}>
-                                                            <label for="defaultCaptcha"
                                                                 class="label-success mb-1"></label>
                                                         </div>
                                                     </div>

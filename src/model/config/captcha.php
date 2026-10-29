@@ -9,10 +9,6 @@ use Ofey\Logan22\component\captcha\google;
 class captcha
 {
 
-    private bool $enable = true;
-
-    private bool $defaultCaptcha = true;
-
     private bool $googleCaptcha = false;
 
     private string $googleClientKey = "";
@@ -28,8 +24,8 @@ class captcha
     public function __construct($setting)
     {
         if ($setting) {
-            $this->enable = isset($setting['enable']) ? filter_var($setting['enable'], FILTER_VALIDATE_BOOLEAN) : false;
-            $this->defaultCaptcha = isset($setting['defaultCaptcha']) ? filter_var($setting['defaultCaptcha'], FILTER_VALIDATE_BOOLEAN) : false;
+            // Старый параметр defaultCaptcha (встроенная капча Sphere) больше не поддерживается и игнорируется:
+            // если была выбрана она, капча считается отключенной.
             $this->googleCaptcha = isset($setting['googleCaptcha']) ? filter_var($setting['googleCaptcha'], FILTER_VALIDATE_BOOLEAN) : false;
             $this->googleClientKey = $setting['googleClientKey'] ?? "";
             $this->googleServerKey = $setting['googleServerKey'] ?? "";
@@ -41,21 +37,15 @@ class captcha
 
     public function isEnabled(): bool
     {
-        if ($this->defaultCaptcha) {
-            return true;
-        }
-        if ($this->googleCaptcha) {
-            return true;
-        }
-        if ($this->cloudflareCaptcha) {
-            return true;
-        }
-        return $this->enable;
+        return $this->getCaptcha() !== "disabled";
     }
 
+    /**
+     * Встроенная капча Sphere удалена. Метод оставлен для совместимости со сторонними шаблонами.
+     */
     public function isDefaultCaptcha(): bool
     {
-        return $this->defaultCaptcha;
+        return false;
     }
 
     public function getGoogleClientKey(): string
@@ -70,7 +60,7 @@ class captcha
 
     public function isCloudflareCaptcha(): bool
     {
-        return $this->cloudflareCaptcha;
+        return $this->cloudflareCaptcha && $this->cloudflareSiteKey !== "" && $this->cloudflareSecretKey !== "";
     }
 
     public function getCloudflareSiteKey(): string
@@ -85,10 +75,8 @@ class captcha
 
     public function validator(): void
     {
-        if (!$this->isEnabled()) {
-            return;
-        }
-        if ($this->getCaptcha() == "google") {
+        $captcha = $this->getCaptcha();
+        if ($captcha == "google") {
             // Существующая логика для Google reCAPTCHA
             if(!isset($_POST['g-recaptcha-response'])){
                 board::notice(false, "Google recaptcha не вернула ответ");
@@ -101,7 +89,7 @@ class captcha
                     board::notice(false, "Google recaptcha не вернула ответ");
                 }
             }
-        } else if ($this->getCaptcha() == "cloudflare") {
+        } else if ($captcha == "cloudflare") {
             $token = $_POST['cf-turnstile-response'] ?? '';
             if (empty($token)) {
                 board::notice(false, "Пожалуйста, пройдите проверку капчи");
@@ -123,36 +111,6 @@ class captcha
                         $errorMessage = "Проверка капчи не пройдена";
                     }
                 }
-                board::notice(false, $errorMessage);
-            }
-        } else {
-            $token = $_POST['h-captcha-response'] ?? '';
-//            $token = $_POST['cf-turnstile-response'] ?? '';
-            if (empty($token)) {
-                board::notice(false, "Пожалуйста, пройдите проверку капчи");
-            }
-//            $result = $this->verifySphereCloudflareTurnstile($token);
-            $result = $this->verifySphereHCaptcha($token);
-            if ($result['success'] === true) {
-                return;
-            }
-            // Проверка результата
-            if (!isset($result['success']) || $result['success'] !== true) {
-                if(isset($result['error'])){
-                    $errorMessage = $result['error'];
-                }else{
-                    $errorMessage = "Проверка капчи не пройдена";
-
-                    if (isset($result['error-codes']) && is_array($result['error-codes'])) {
-                        // Специальная обработка для timeout-or-duplicate
-                        if (in_array('timeout-or-duplicate', $result['error-codes'])) {
-                            $errorMessage = "Токен проверки устарел или уже использован. Обновите страницу и попробуйте снова.";
-                        } else {
-                            $errorMessage .= ": " . implode(', ', $result['error-codes']);
-                        }
-                    }
-                }
-
                 board::notice(false, $errorMessage);
             }
         }
@@ -254,190 +212,29 @@ class captcha
         return $result;
     }
 
-    /**
-     * Проверка Cloudflare Turnstile через сервер-посредник
-     *
-     * @param string $token Токен от Cloudflare Turnstile
-     * @return array Результат проверки
-     */
-    private function verifySphereCloudflareTurnstile(string $token): array
-    {
-        // Добавляем уникальный идентификатор к запросу для предотвращения кэширования
-        $uniqueId = uniqid('verify_', true);
-
-        // URL сервера для проверки токена
-        $getterUrl = 'https://sphereweb.net/cloudflare/getter.php';
-
-        // Подготовка данных для отправки
-        $data = [
-            'token' => $token,
-            'user_ip' => $_SERVER['REMOTE_ADDR'],
-            'unique_id' => $uniqueId // Добавляем уникальный идентификатор
-        ];
-
-        // Инициализация cURL
-        $ch = curl_init($getterUrl);
-
-        // Настройка параметров запроса
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/x-www-form-urlencoded',
-            'Origin: ' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'],
-            'Cache-Control: no-cache, no-store, must-revalidate',
-            'Pragma: no-cache'
-        ]);
-
-        // Выполнение запроса
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
-
-        // Закрытие соединения
-        curl_close($ch);
-
-        // Обработка ошибок соединения
-        if ($response === false) {
-            // Запись в журнал ошибок
-
-            return [
-                'success' => false,
-                'error' => 'Ошибка соединения с сервером проверки капчи',
-                'error-codes' => ['connection_failed']
-            ];
-        }
-
-        // Если код ответа не 200, значит есть проблема
-        if ($httpCode !== 200) {
-            error_log("Сервер проверки капчи вернул код ошибки: " . $httpCode);
-
-            return [
-                'success' => false,
-                'error' => 'Сервер проверки капчи вернул код ошибки: ' . $httpCode,
-                'error-codes' => ['invalid_response']
-            ];
-        }
-
-        // Декодирование JSON-ответа
-        $result = json_decode($response, true);
-        // Проверка корректности JSON
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            error_log("Ошибка декодирования JSON-ответа: " . json_last_error_msg());
-
-            return [
-                'success' => false,
-                'error' => 'Некорректный ответ сервера проверки капчи',
-                'error-codes' => ['invalid_json']
-            ];
-        }
-        return $result;
-    }
-
-    private function verifySphereHCaptcha($token)
-    {
-        $uniqueId = uniqid('verify_', true);
-        $getterUrl = 'https://sphereweb.net/hcaptcha/check.php';
-        $data = [
-            'token' => $token,
-            'user_ip' => $_SERVER['REMOTE_ADDR'],
-            'unique_id' => $uniqueId,
-        ];
-
-        $ch = curl_init($getterUrl);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/x-www-form-urlencoded',
-            'Origin: ' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'],
-            'Cache-Control: no-cache, no-store, must-revalidate',
-            'Pragma: no-cache'
-        ]);
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
-        curl_close($ch);
-        if ($response === false) {
-            return [
-                'success' => false,
-                'error' => 'Ошибка соединения с сервером проверки капчи',
-                'error-codes' => ['connection_failed']
-            ];
-        }
-
-        // Если код ответа не 200, значит есть проблема
-        if ($httpCode !== 200) {
-            return [
-                'success' => false,
-                'error' => 'Сервер проверки капчи вернул код ошибки: ' . $httpCode,
-                'error-codes' => ['invalid_response']
-            ];
-        }
-
-        // Декодирование JSON-ответа
-        $result = json_decode($response, true);
-
-        // Проверка корректности JSON
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            error_log("Ошибка декодирования JSON-ответа: " . json_last_error_msg());
-
-            return [
-                'success' => false,
-                'error' => 'Некорректный ответ сервера проверки капчи',
-                'error-codes' => ['invalid_json']
-            ];
-        }
-
-        if (!$result['success']){
-            return [
-                'success' => false,
-                'error-codes' => $result['error-codes'],
-            ];
-        }
-
-        return $result;
-    }
 
     /**
-     * Возвращает название капчи, которая будет использоваться.
+     * Возвращает название капчи, которая будет использоваться: google, cloudflare или disabled.
+     * Капча без заполненных ключей считается отключенной.
      *
      * @return string
      */
     public function getCaptcha(): string
     {
-        if (!$this->isEnabled()) {
-            return "disabled";
-        }
-        if ($this->defaultCaptcha) {
-            return "default";
-        }
-        if ($this->googleCaptcha) {
-            if (empty($this->googleClientKey) or empty($this->googleServerKey)) {
-                return "default";
-            }
-
+        if ($this->isGoogleCaptcha()) {
             return "google";
         }
 
-        if ($this->cloudflareCaptcha) {
-            if (empty($this->cloudflareSiteKey) or empty($this->cloudflareSecretKey)) {
-                return "default";
-            }
-
+        if ($this->isCloudflareCaptcha()) {
             return "cloudflare";
         }
 
-        return "default";
+        return "disabled";
     }
 
     public function isGoogleCaptcha(): bool
     {
-        return $this->googleCaptcha;
+        return $this->googleCaptcha && $this->googleClientKey !== "" && $this->googleServerKey !== "";
     }
 
 
