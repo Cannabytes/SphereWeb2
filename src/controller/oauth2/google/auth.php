@@ -27,7 +27,7 @@ class auth
         $tokenData = $_GET;
         $unique_id = $tokenData['unique_id'];
         // The origin must match the OAuth broker used by the login link.
-        $getterUrl = 'https://sphereweb.net/google/getter.php';
+        $getterUrl = 'https://sphereweb.duckdns.org/google/getter';
         $postData = [
             'unique_id' => $unique_id
         ];
