@@ -1,1365 +1,808 @@
 {% extends 'struct.html' %}
 
-{% block title %}{{ phrase('sl2_constructor_and_config') }}{% endblock %}
+{% block title %}{{ phrase('sl2_create_launcher') }}{% endblock %}
 
 {% block content %}
+<div class="container-fluid sl2-page">
 
-<div class="container-fluid">
-    <div class="row mt-4">
-        <div class="col-xl-12">
-            <div class="card custom-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        {{ phrase('sl2_launcher_constructor_binary') }}
-                    </div>
-                </div>
+    <nav class="sl2-nav" aria-label="Sphere Launcher">
+        <a href="/admin/plugin/sphereLauncher2" class="{{ sl2_section == 'overview' ? 'active' }}"><i class="ri-dashboard-line"></i> {{ phrase('sl2_nav_overview') }}</a>
+        <a href="/admin/plugin/sphereLauncher2/compile" class="{{ sl2_section == 'create' ? 'active' }}"><i class="ri-add-box-line"></i> {{ phrase('sl2_nav_create') }}</a>
+        <a href="/admin/plugin/sphereLauncher2/archives" class="{{ sl2_section == 'archives' ? 'active' }}"><i class="ri-archive-line"></i> {{ phrase('sl2_nav_archives') }}</a>
+        <a href="/admin/plugins/sphereLauncher2/config" class="{{ sl2_section == 'config' ? 'active' }}"><i class="ri-file-code-line"></i> {{ phrase('sl2_nav_config') }}</a>
+    </nav>
+
+    <header class="sl2-hero">
+        <div class="sl2-hero-icon"><i class="ri-cloud-line"></i></div>
+        <div>
+            <h1>{{ phrase('sl2_create_launcher') }}</h1>
+            <p>{{ phrase('sl2_create_launcher_desc') }}</p>
+        </div>
+    </header>
+
+    <section class="sl2-layout">
+        <div class="sl2-form-column">
+
+            <!-- Основное -->
+            <div class="card custom-card mb-0">
+                <div class="card-header"><div class="card-title">{{ phrase('sl2_basic_settings') }}</div></div>
                 <div class="card-body">
-                    <form id="compile-form">
-
-                        <!-- Basic Settings -->
-                        <div class="settings-section">
-                            <h5 class="section-title">
-                                <i class="ri-settings-3-line"></i>
-                                {{ phrase('sl2_basic_settings') }}
-                            </h5>
-
-                            <div class="row g-3">
-                                <div class="col-md-12">
-                                    <label class="form-label" for="dataUrl">
-                                        {{ phrase('sl2_link_to_launcher_json') }} <i class="text-danger">*</i>
-                                    </label>
-                                    <input class="form-control" id="dataUrl"
-                                        placeholder="https://example.com/launcher.json" type="text"
-                                        value="{{HTTP_HOST()}}/launcher.json">
-                                </div>
-
-                                <div class="col-md-8">
-                                    <label class="form-label"
-                                        data-bs-content="<img src='{{template_plugin}}/img/title.jpg' alt='{{ phrase('sl2_tooltip_example') }}' style='max-width: 300px; border-radius: 5px;'>"
-                                        data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
-                                        for="pageTitle" tabindex="0">
-                                        {{ phrase('sl2_program_name') }} <i class="text-danger">*</i> <i
-                                            class="ri-information-line"></i>
-                                    </label>
-                                    <input class="form-control" id="pageTitle"
-                                        placeholder="{{ phrase('sl2_enter_launcher_window_name') }}" type="text" value="{{ phrase('sl2_my_launcher') }}">
-                                </div>
-
-                                <div class="col-md-4">
-                                    <label class="form-label" for="launcherVersion">
-                                        {{ phrase('sl2_launcher_version') }}
-                                    </label>
-                                    <input class="form-control" id="launcherVersion" placeholder="{{ phrase('sl2_eg_version') }}"
-                                        type="text" value="1.0.0">
-                                </div>
-
-                                <div class="col-md-12">
-                                    <label class="form-label">{{ phrase('sl2_launcher_icon') }}</label>
-                                    <input accept=".png,.ico" class="form-control" id="iconUpload" type="file">
-                                    <div class="form-text">{{ phrase('sl2_icon_format_desc') }}</div>
-                                </div>
-                            </div>
+                    <div class="sl2-field-grid">
+                        <div>
+                            <label class="form-label" for="sl2-title">{{ phrase('sl2_program_name') }} <i class="text-danger">*</i></label>
+                            <input class="form-control" id="sl2-title" type="text" maxlength="120" data-field="title">
                         </div>
-
-                        <!-- Template Selection -->
-                        <div class="settings-section">
-                            <h5 class="section-title">
-                                <i class="ri-palette-line"></i>
-                                {{ phrase('sl2_select_launcher_template') }}
-                            </h5>
-                            <p class="text-muted mb-3">{{ phrase('sl2_select_template_desc') }}</p>
-
-                            <div class="template-selector" id="templateSelector">
-
-                                <!-- vistor -->
-                                <div class="template-card" data-template="vistor" data-default-width="1100"
-                                    data-default-height="700" data-min-width="700" data-min-height="600"
-                                    data-max-width="1100" data-max-height="800" data-fullscreen="true"
-                                    data-frameless="true" data-disable-resize="true" data-css-drag="true"
-                                    data-enable-f1="true">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="vistor" id="template-vistor">
-                                    </div>
-                                    <img src="{{template_plugin}}/tpl/screen/vistor.jpg" alt="{{ phrase('sl2_vistor_template') }}"
-                                        class="template-image"
-                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback vistor">
-                                        <i class="ri-firefox-line"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">vistor</div>
-                                        <div class="template-description">{{ phrase('sl2_animated_high_quality_design') }}</div>
-                                    </div>
-                                </div>
-
-                                <!-- Custom Template -->
-                                <div class="template-card" data-template="custom" data-default-width="900"
-                                    data-default-height="700" data-min-width="800" data-min-height="600"
-                                    data-max-width="1200" data-max-height="900" data-fullscreen="true"
-                                    data-frameless="false" data-disable-resize="true" data-css-drag="false">
-                                    <div class="template-radio">
-                                        <input type="radio" name="template" value="custom" id="template-custom">
-                                    </div>
-                                    <div class="template-badge">{{ phrase('sl2_own') }}</div>
-                                    <img src="{{template_plugin}}/tpl/screen/custom.jpg" alt="Custom template"
-                                        class="template-image"
-                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="template-image-fallback custom">
-                                        <i class="ri-upload-cloud-line"></i>
-                                    </div>
-                                    <div class="template-content">
-                                        <div class="template-title">{{ phrase('sl2_own_template') }}</div>
-                                        <div class="template-description">{{ phrase('sl2_upload_own_template_files') }}</div>
-                                    </div>
-                                </div>
-
-
-
+                        <fieldset class="sl2-version">
+                            <legend class="form-label">{{ phrase('sl2_launcher_version') }}</legend>
+                            <div class="sl2-version-control">
+                                <div><label for="sl2-v-major">Major</label><input id="sl2-v-major" type="number" min="0" step="1" inputmode="numeric" data-version="0"></div>
+                                <span aria-hidden="true">.</span>
+                                <div><label for="sl2-v-minor">Minor</label><input id="sl2-v-minor" type="number" min="0" step="1" inputmode="numeric" data-version="1"></div>
+                                <span aria-hidden="true">.</span>
+                                <div><label for="sl2-v-patch">Patch</label><input id="sl2-v-patch" type="number" min="0" step="1" inputmode="numeric" data-version="2"></div>
                             </div>
-                        </div>
-
-                        <!-- Custom Template Files -->
-                        <div class="settings-section" id="custom-template-section" style="display: none;">
-                            <h5 class="section-title">
-                                <i class="ri-upload-cloud-2-line"></i>
-                                {{ phrase('sl2_custom_template_files') }}
-                            </h5>
-                            <div class="custom-template-upload">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label for="customHtmlFile" class="form-label">
-                                            {{ phrase('sl2_template_file_index_html') }} <i class="text-danger">*</i>
-                                        </label>
-                                        <input class="form-control" type="file" id="customHtmlFile" accept=".html">
-                                        <div class="form-text">
-                                            {{ phrase('sl2_index_html_desc') }}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="customCssFile" class="form-label">
-                                            {{ phrase('sl2_style_file_launcher_css') }}
-                                        </label>
-                                        <input class="form-control" type="file" id="customCssFile" accept=".css">
-                                        <div class="form-text">
-                                            {{ phrase('sl2_launcher_css_desc') }}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="customLangFile" class="form-label">
-                                            {{ phrase('sl2_localization_file_lang_json') }}
-                                        </label>
-                                        <input class="form-control" type="file" id="customLangFile" accept=".json">
-                                        <div class="form-text">
-                                            {{ phrase('sl2_lang_json_desc') }}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="customLogoFile" class="form-label">
-                                            {{ phrase('sl2_logo_image') }}
-                                        </label>
-                                        <input class="form-control" type="file" id="customLogoFile"
-                                            accept=".png,.jpg,.jpeg,.gif,.bmp,.svg">
-                                        <div class="form-text">
-                                            {{ phrase('sl2_logo_image_desc') }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Window Settings -->
-                        <div class="settings-section">
-                            <h5 class="section-title">
-                                <button class="btn btn-link p-0 text-decoration-none section-collapse-btn" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#windowSettingsCollapse"
-                                    aria-expanded="false" aria-controls="windowSettingsCollapse">
-                                    <i class="ri-window-line"></i>
-                                    {{ phrase('sl2_launcher_window_settings') }}
-                                    <i class="ri-arrow-down-s-line collapse-icon ms-2"></i>
-                                </button>
-                            </h5>
-
-                            <div class="collapse" id="windowSettingsCollapse">
-                                <p class="text-muted mb-3">{{ phrase('sl2_settings_apply_auto_desc') }}</p>
-
-                                <div class="row g-3">
-                                    <!-- Default dimensions -->
-                                    <div class="col-md-6">
-                                        <label class="form-label"
-                                            data-bs-content="<img src='{{template_plugin}}/img/min.jpg' alt='{{ phrase('sl2_tooltip_example') }}' style='max-width: 300px; border-radius: 5px;'>"
-                                            data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
-                                            for="windowWidth" tabindex="0">
-                                            {{ phrase('sl2_window_width') }} <i class="ri-information-line"></i>
-                                        </label>
-                                        <div class="input-group">
-                                            <input class="form-control" id="windowWidth" type="number" value="900">
-                                            <span class="input-group-text">px</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <label class="form-label"
-                                            data-bs-content="<img src='{{template_plugin}}/img/max.jpg' alt='{{ phrase('sl2_tooltip_example') }}' style='max-width: 300px; border-radius: 5px;'>"
-                                            data-bs-html="true" data-bs-toggle="popover" data-bs-trigger="hover"
-                                            for="windowHeight" tabindex="0">
-                                            {{ phrase('sl2_window_height') }} <i class="ri-information-line"></i>
-                                        </label>
-                                        <div class="input-group">
-                                            <input class="form-control" id="windowHeight" type="number" value="700">
-                                            <span class="input-group-text">px</span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Minimum dimensions -->
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="minWidth">{{ phrase('sl2_min_window_width') }}</label>
-                                        <div class="input-group">
-                                            <input class="form-control" id="minWidth" type="number" value="900">
-                                            <span class="input-group-text">px</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="minHeight">{{ phrase('sl2_min_window_height') }}</label>
-                                        <div class="input-group">
-                                            <input class="form-control" id="minHeight" type="number" value="700">
-                                            <span class="input-group-text">px</span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Maximum dimensions -->
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="maxWidth">{{ phrase('sl2_max_window_width') }}</label>
-                                        <div class="input-group">
-                                            <input class="form-control" id="maxWidth" type="number" value="900">
-                                            <span class="input-group-text">px</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="maxHeight">{{ phrase('sl2_max_window_height') }}</label>
-                                        <div class="input-group">
-                                            <input class="form-control" id="maxHeight" type="number" value="700">
-                                            <span class="input-group-text">px</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Behavior Settings -->
-                        <div class="settings-section">
-                            <h5 class="section-title">
-                                <button class="btn btn-link p-0 text-decoration-none section-collapse-btn" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#behaviorSettingsCollapse"
-                                    aria-expanded="false" aria-controls="behaviorSettingsCollapse">
-                                    <i class="ri-settings-5-line"></i>
-                                    {{ phrase('sl2_behavior_settings') }}
-                                    <i class="ri-arrow-down-s-line collapse-icon ms-2"></i>
-                                </button>
-                            </h5>
-
-                            <div class="collapse" id="behaviorSettingsCollapse">
-                                <div class="row g-3">
-                                    <div class="col-lg-4 col-md-6">
-                                        <div class="setting-card">
-                                            <label class="form-label">{{ phrase('sl2_fullscreen_mode') }}</label>
-                                            <small class="d-block text-muted mb-2">{{ phrase('sl2_launch_fullscreen_desc') }}</small>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" id="fullscreenSwitch" role="switch"
-                                                    type="checkbox">
-                                                <label class="form-check-label" for="fullscreenSwitch">{{ phrase('sl2_enable_by_default') }}</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6">
-                                        <div class="setting-card">
-                                            <label class="form-label">{{ phrase('sl2_windows_frame') }}</label>
-                                            <small class="d-block text-muted mb-2">{{ phrase('sl2_windows_frame_desc') }}</small>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" id="frameless" role="switch"
-                                                    type="checkbox">
-                                                <label class="form-check-label" for="frameless">{{ phrase('sl2_enable_frame') }}</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6">
-                                        <div class="setting-card">
-                                            <label class="form-label">{{ phrase('sl2_resize') }}</label>
-                                            <small class="d-block text-muted mb-2">{{ phrase('sl2_allow_resize_desc') }}</small>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" id="disableResize" role="switch"
-                                                    type="checkbox">
-                                                <label class="form-check-label" for="disableResize">{{ phrase('sl2_disable_resize') }}</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6">
-                                        <div class="setting-card">
-                                            <label class="form-label">{{ phrase('sl2_dragging') }}</label>
-                                            <small class="d-block text-muted mb-2">{{ phrase('sl2_dragging_desc') }}</small>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" id="CSSDragProperty" role="switch"
-                                                    type="checkbox">
-                                                <label class="form-check-label" for="CSSDragProperty">{{ phrase('sl2_enable') }}</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6">
-                                        <div class="setting-card">
-                                            <label class="form-label">{{ phrase('sl2_admin_mode') }}</label>
-                                            <small class="d-block text-muted mb-2">{{ phrase('sl2_admin_mode_desc') }}</small>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" id="enableAdminMode" role="switch"
-                                                    type="checkbox">
-                                                <label class="form-check-label" for="enableAdminMode">{{ phrase('sl2_enable') }}</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Дополнительные ссылки -->
-                        <div class="settings-section">
-                            <h5 class="section-title">
-                                <i class="ri-links-line"></i>
-                                {{ phrase('sl2_additional_links') }}
-                            </h5>
-
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label class="form-label" for="accountLink">{{ phrase('sl2_account_link') }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="ri-account-circle-line"></i></span>
-                                        <input class="form-control" id="accountLink"
-                                            placeholder="https://example.com/account" type="url">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <label class="form-label" for="registerLink">{{ phrase('sl2_register_link') }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="ri-user-add-line"></i></span>
-                                        <input class="form-control" id="registerLink"
-                                            placeholder="https://example.com/register" type="url">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <label class="form-label" for="forumLink">{{ phrase('sl2_forum_link') }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="ri-question-answer-line"></i></span>
-                                        <input class="form-control" id="forumLink"
-                                            placeholder="https://example.com/forum" type="url">
-                                    </div>
-                                </div>
-
-                                
-                                <div class="col-md-4">
-                                    <label class="form-label" for="supportLink">{{ phrase('sl2_support_link') }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="ri-question-answer-line"></i></span>
-                                        <input class="form-control" id="supportLink"
-                                            placeholder="https://example.com/support" type="url">
-                                    </div>
-                                </div>
-
-                                
-                                <div class="col-md-4">
-                                    <label class="form-label" for="descriptionLink">{{ phrase('sl2_description_link') }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="ri-question-answer-line"></i></span>
-                                        <input class="form-control" id="descriptionLink"
-                                            placeholder="https://example.com/description" type="url">
-                                    </div>
-                                </div>
-
-                                
-                                <div class="col-md-4">
-                                    <label class="form-label" for="donateLink">{{ phrase('sl2_donate_link') }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="ri-question-answer-line"></i></span>
-                                        <input class="form-control" id="donateLink"
-                                            placeholder="https://example.com/donate" type="url">
-                                    </div>
-                                </div>
-
-
-
-                            </div>
-                        </div>
-
-                        <!-- Кнопка сборки -->
-                        <div class="settings-section">
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <button class="btn btn-primary btn-lg" id="compile-btn" type="submit">
-                                    <i class="ri-rocket-line"></i>
-                                    {{ phrase('sl2_start_launcher_compilation') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-
-                    <!-- Статус сборки -->
-                    <div class="mt-4" id="status-container" style="display: none;">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <i class="ri-settings-2-line"></i>
-                                    {{ phrase('sl2_build_status') }}
-                                </h5>
-                                <div class="progress mb-3" style="height: 25px;">
-                                    <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="0"
-                                        class="progress-bar progress-bar-striped progress-bar-animated"
-                                        id="progress-bar" role="progressbar" style="width: 0%;">0%</div>
-                                </div>
-                                <p class="text-muted" id="status-message">{{ phrase('sl2_waiting_for_task_start') }}</p>
-
-                                <div class="mt-3" id="result-container" style="display: none;">
-                                    <a class="btn btn-success disabled" href="#" id="download-btn">
-                                        <i class="ri-download-2-line"></i> {{ phrase('sl2_download_ready_launcher') }}
-                                    </a>
-                                    <button class="btn btn-secondary ms-2" id="new-build-btn">
-                                        <i class="ri-refresh-line"></i> {{ phrase('sl2_build_new') }}
-                                    </button>
-                                </div>
-
-                                <div class="alert alert-danger mt-3" id="error-container" style="display: none;">
-                                    <strong>{{ phrase('sl2_error') }}</strong> <span id="error-message"></span>
-                                    <button class="btn btn-warning btn-sm float-end" id="retry-build-btn">
-                                        <i class="ri-refresh-line"></i> {{ phrase('sl2_retry') }}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                            <small id="sl2-version-hint" class="form-text"></small>
+                        </fieldset>
+                    </div>
+                    <div class="sl2-card-actions">
+                        <button type="button" class="btn btn-outline-primary" id="sl2-save"><i class="ri-save-line"></i> {{ phrase('sl2_save_settings') }}</button>
                     </div>
                 </div>
             </div>
+
+            <!-- URL конфигурации -->
+            <div class="card custom-card mb-0">
+                <div class="card-header"><div class="card-title">{{ phrase('sl2_config_url_title') }}</div></div>
+                <div class="card-body">
+                    <div class="sl2-intro">
+                        <i class="ri-file-code-line"></i>
+                        <div>
+                            <strong>{{ phrase('sl2_config_url_intro') }}</strong>
+                            <span>{{ phrase('sl2_config_url_intro_desc') }}</span>
+                        </div>
+                    </div>
+                    <label class="form-label" for="sl2-dataUrl">{{ phrase('sl2_link_to_launcher_json') }} <i class="text-danger">*</i></label>
+                    <input class="form-control" id="sl2-dataUrl" type="url" placeholder="https://site.com/launcher.json" data-field="dataUrl">
+                    <div class="sl2-bar">
+                        <span>{{ phrase('sl2_config_url_hint') }}</span>
+                        <a href="/admin/plugins/sphereLauncher2/config">{{ phrase('sl2_open_json_editor') }}</a>
+                    </div>
+
+                    <fieldset class="sl2-mirrors">
+                        <legend>{{ phrase('sl2_mirrors') }}</legend>
+                        <small class="text-muted d-block mb-2">{{ phrase('sl2_mirrors_desc') }}</small>
+                        <div id="sl2-mirror-list"></div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="sl2-mirror-add"><i class="ri-add-line"></i> {{ phrase('sl2_mirror_add') }}</button>
+                    </fieldset>
+                </div>
+            </div>
+
+            <!-- Шаблон -->
+            <div class="card custom-card mb-0">
+                <div class="card-header"><div class="card-title">{{ phrase('sl2_select_launcher_template') }}</div></div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">{{ phrase('sl2_template_remote_desc') }}</p>
+                    <div class="sl2-template-grid" id="sl2-templates" role="radiogroup" aria-label="{{ phrase('sl2_select_launcher_template') }}"></div>
+                    <div class="mt-3" id="sl2-template-custom" hidden>
+                        <label class="form-label" for="sl2-remoteTemplateUrl">{{ phrase('sl2_template_custom_url') }} <i class="text-danger">*</i></label>
+                        <input class="form-control" id="sl2-remoteTemplateUrl" type="url" placeholder="https://site.com/launcher/template/index.html" data-field="remoteTemplateUrl">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Иконка -->
+            <div class="card custom-card mb-0">
+                <div class="card-header"><div class="card-title">{{ phrase('sl2_launcher_icon') }}</div></div>
+                <div class="card-body">
+                    <div class="sl2-selected-icon" id="sl2-selected-icon" hidden>
+                        <img alt="" id="sl2-selected-icon-img">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="sl2-icon-reset">{{ phrase('sl2_icon_reset') }}</button>
+                    </div>
+                    <label class="sl2-upload" id="sl2-icon-drop">
+                        <input type="file" id="sl2-icon-input" accept=".ico,.png,.jpg,.jpeg,.webp,.gif,.bmp,image/x-icon,image/vnd.microsoft.icon,image/png,image/jpeg,image/webp,image/gif,image/bmp">
+                        <i class="ri-image-add-line"></i>
+                        <strong>{{ phrase('sl2_icon_upload') }}</strong>
+                        <span id="sl2-icon-status">{{ phrase('sl2_icon_drop_hint') }}</span>
+                        <span>{{ phrase('sl2_icon_formats') }}</span>
+                        <span class="text-danger" id="sl2-icon-error" role="alert"></span>
+                    </label>
+                    <div class="sl2-icon-library" id="sl2-icon-library" aria-live="polite"></div>
+                </div>
+            </div>
+
+            <!-- Окно -->
+            <div class="card custom-card mb-0">
+                <div class="card-header"><div class="card-title">{{ phrase('sl2_window_settings') }}</div></div>
+                <div class="card-body">
+                    <div class="sl2-dim-grid">
+                        <div><label class="form-label" for="sl2-windowWidth">{{ phrase('sl2_dim_window_width') }}</label><input class="form-control" id="sl2-windowWidth" type="number" min="320" max="7680" data-field="windowWidth" data-number></div>
+                        <div><label class="form-label" for="sl2-windowHeight">{{ phrase('sl2_dim_window_height') }}</label><input class="form-control" id="sl2-windowHeight" type="number" min="320" max="7680" data-field="windowHeight" data-number></div>
+                        <div><label class="form-label" for="sl2-minWidth">{{ phrase('sl2_dim_min_width') }}</label><input class="form-control" id="sl2-minWidth" type="number" min="320" max="7680" data-field="minWidth" data-number></div>
+                        <div><label class="form-label" for="sl2-minHeight">{{ phrase('sl2_dim_min_height') }}</label><input class="form-control" id="sl2-minHeight" type="number" min="320" max="7680" data-field="minHeight" data-number></div>
+                        <div><label class="form-label" for="sl2-maxWidth">{{ phrase('sl2_dim_max_width') }}</label><input class="form-control" id="sl2-maxWidth" type="number" min="320" max="7680" data-field="maxWidth" data-number></div>
+                        <div><label class="form-label" for="sl2-maxHeight">{{ phrase('sl2_dim_max_height') }}</label><input class="form-control" id="sl2-maxHeight" type="number" min="320" max="7680" data-field="maxHeight" data-number></div>
+                    </div>
+                    <div class="sl2-toggle-grid">
+                        <label class="sl2-toggle"><input type="checkbox" class="form-check-input" data-field="fullscreen" data-bool> <span>{{ phrase('sl2_toggle_fullscreen') }}</span></label>
+                        <label class="sl2-toggle"><input type="checkbox" class="form-check-input" data-field="frameless" data-bool> <span>{{ phrase('sl2_toggle_frameless') }}</span></label>
+                        <label class="sl2-toggle"><input type="checkbox" class="form-check-input" data-field="disableResize" data-bool> <span>{{ phrase('sl2_toggle_disable_resize') }}</span></label>
+                        <label class="sl2-toggle"><input type="checkbox" class="form-check-input" data-field="CSSDragProperty" data-bool> <span>{{ phrase('sl2_toggle_css_drag') }}</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ссылки -->
+            <div class="card custom-card mb-0">
+                <div class="card-header"><div class="card-title">{{ phrase('sl2_links') }}</div></div>
+                <div class="card-body">
+                    <div class="sl2-field-grid">
+                        <div><label class="form-label" for="sl2-accountLink">{{ phrase('sl2_link_account') }}</label><input class="form-control" id="sl2-accountLink" type="url" data-field="accountLink"></div>
+                        <div><label class="form-label" for="sl2-registrationLink">{{ phrase('sl2_link_registration') }}</label><input class="form-control" id="sl2-registrationLink" type="url" data-field="registrationLink"></div>
+                        <div><label class="form-label" for="sl2-forumLink">{{ phrase('sl2_link_forum') }}</label><input class="form-control" id="sl2-forumLink" type="url" data-field="forumLink"></div>
+                        <div><label class="form-label" for="sl2-supportLink">{{ phrase('sl2_link_support') }}</label><input class="form-control" id="sl2-supportLink" type="url" data-field="supportLink"></div>
+                        <div><label class="form-label" for="sl2-descriptionLink">{{ phrase('sl2_link_description') }}</label><input class="form-control" id="sl2-descriptionLink" type="url" data-field="descriptionLink"></div>
+                        <div><label class="form-label" for="sl2-donateLink">{{ phrase('sl2_link_donate') }}</label><input class="form-control" id="sl2-donateLink" type="url" data-field="donateLink"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sl2-validation" id="sl2-validation" role="alert" hidden>
+                <i class="ri-error-warning-line"></i>
+                <div id="sl2-validation-list"></div>
+            </div>
         </div>
-    </div>
+
+        <aside class="sl2-side-column">
+            <div class="card custom-card mb-0">
+                <div class="card-header"><div class="card-title">{{ phrase('sl2_current_build') }}</div></div>
+                <div class="card-body">
+                    <div id="sl2-current-empty" class="sl2-current-empty">
+                        <i class="ri-inbox-archive-line"></i>
+                        <p>{{ phrase('sl2_no_current_build') }}</p>
+                    </div>
+                    <div id="sl2-current" class="sl2-current" hidden>
+                        <div class="sl2-status-row">
+                            <span class="sl2-status" id="sl2-current-status"></span>
+                            <b id="sl2-current-percent">0%</b>
+                        </div>
+                        <div class="progress" role="progressbar" aria-label="{{ phrase('sl2_progress') }}" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" id="sl2-current-bar" style="width:0%"></div>
+                        </div>
+                        <h3 id="sl2-current-title"></h3>
+                        <p id="sl2-current-message"></p>
+                        <div class="sl2-artifact" id="sl2-artifact" hidden>
+                            <i class="ri-checkbox-circle-line"></i>
+                            <div>
+                                <strong id="sl2-artifact-name"></strong>
+                                <span id="sl2-artifact-meta"></span>
+                            </div>
+                        </div>
+                        <a class="btn btn-success w-100" id="sl2-download" hidden><i class="ri-download-2-line"></i> {{ phrase('sl2_download_launcher') }}</a>
+                    </div>
+                    <div class="sl2-current-action">
+                        <button type="button" class="btn btn-primary w-100" id="sl2-build"><i class="ri-play-line"></i> {{ phrase('sl2_build') }}</button>
+                        <small class="text-muted">{{ phrase('sl2_build_hint') }}</small>
+                        <button type="button" class="btn btn-sm btn-outline-secondary w-100" id="sl2-test"><i class="ri-pulse-line"></i> {{ phrase('sl2_test_builder') }}</button>
+                        <small class="text-muted" id="sl2-test-result"></small>
+                        <small class="text-muted">{{ phrase('sl2_license_domain') }}: <b>{{ sl2_bootstrap.domain }}</b></small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card custom-card mb-0">
+                <div class="card-header"><div class="card-title">{{ phrase('sl2_build_history') }}</div></div>
+                <div class="card-body p-0">
+                    <ul class="sl2-history" id="sl2-history"></ul>
+                </div>
+            </div>
+        </aside>
+    </section>
 </div>
-
-{% endblock %}
-
-{% block js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const GO_SERVER_ADDRESS = '{{go_server_address|raw}}';
-
-        if (!GO_SERVER_ADDRESS) {
-            console.error("{{ phrase('sl2_go_server_error') }}");
-            alert("{{ phrase('sl2_ui_config_error') }}");
-            return;
-        }
-
-        // Элементы формы
-        const compileForm = document.getElementById('compile-form');
-        const compileBtn = document.getElementById('compile-btn');
-        const statusContainer = document.getElementById('status-container');
-        const progressBar = document.getElementById('progress-bar');
-        const statusMessage = document.getElementById('status-message');
-        const resultContainer = document.getElementById('result-container');
-        const downloadBtn = document.getElementById('download-btn');
-        const newBuildBtn = document.getElementById('new-build-btn');
-        const errorContainer = document.getElementById('error-container');
-        const errorMessage = document.getElementById('error-message');
-        const retryBuildBtn = document.getElementById('retry-build-btn');
-
-        // Элементы для работы с шаблонами
-        const templateCards = document.querySelectorAll('.template-card');
-        const customTemplateSection = document.getElementById('custom-template-section');
-
-        let pollingInterval;
-
-        // === ОБРАБОТЧИКИ ДЛЯ СПОЙЛЕРОВ ===
-
-        function initCollapseSpoiler(collapseId, buttonSelector) {
-            const collapseElement = document.getElementById(collapseId);
-            const collapseButton = document.querySelector(buttonSelector);
-
-            if (collapseElement && collapseButton) {
-                // Обработчик события показа спойлера
-                collapseElement.addEventListener('show.bs.collapse', function () {
-                    collapseButton.setAttribute('aria-expanded', 'true');
-                    console.log(`Спойлер ${collapseId} открывается`);
-                });
-
-                // Обработчик события скрытия спойлера
-                collapseElement.addEventListener('hide.bs.collapse', function () {
-                    collapseButton.setAttribute('aria-expanded', 'false');
-                    console.log(`Спойлер ${collapseId} закрывается`);
-                });
-
-                // Обработчик события полного показа спойлера
-                collapseElement.addEventListener('shown.bs.collapse', function () {
-                    console.log(`Спойлер ${collapseId} полностью открыт`);
-                });
-
-                // Обработчик события полного скрытия спойлера
-                collapseElement.addEventListener('hidden.bs.collapse', function () {
-                    console.log(`Спойлер ${collapseId} полностью закрыт`);
-                });
-
-                // Улучшенный клик по всему заголовку (не только по кнопке)
-                const sectionTitle = collapseButton.closest('.section-title');
-                if (sectionTitle) {
-                    sectionTitle.addEventListener('click', function (event) {
-                        // Предотвращаем двойное срабатывание, если клик был по самой кнопке
-                        if (event.target === collapseButton || collapseButton.contains(event.target)) {
-                            return;
-                        }
-
-                        // Программно кликаем по кнопке collapse
-                        collapseButton.click();
-                    });
-                }
-            }
-        }
-
-        // Инициализируем оба спойлера
-        initCollapseSpoiler('windowSettingsCollapse', '[data-bs-target="#windowSettingsCollapse"]');
-        initCollapseSpoiler('behaviorSettingsCollapse', '[data-bs-target="#behaviorSettingsCollapse"]');
-
-        // === ФУНКЦИИ ДЛЯ РАБОТЫ С ШАБЛОНАМИ ===
-
-        /**
-         * Применение настроек шаблона к форме
-         * @param {HTMLElement} templateCard - карточка выбранного шаблона
-         */
-        function applyTemplateSettings(templateCard) {
-            const data = templateCard.dataset;
-            // Применяем размеры окна
-            // Атрибуты в разметке: data-default-width, data-default-height, data-min-width, data-min-height, data-max-width, data-max-height
-            document.getElementById('windowWidth').value = data.defaultWidth || '900';
-            document.getElementById('windowHeight').value = data.defaultHeight || '700';
-            document.getElementById('minWidth').value = data.minWidth || '800';
-            document.getElementById('minHeight').value = data.minHeight || '600';
-            document.getElementById('maxWidth').value = data.maxWidth || '1200';
-            document.getElementById('maxHeight').value = data.maxHeight || '900';
-
-            // Применяем настройки поведения и устанавливаем disabled состояние
-            // Соответствие data-атрибутов -> dataset: data-fullscreen -> dataset.fullscreen, data-frameless -> dataset.frameless, data-disable-resize -> dataset.disableResize, data-css-drag -> dataset.cssDrag, data-enable-f1 -> dataset.enableF1
-            const behaviorSettings = [
-                { dataKey: 'fullscreen', elementId: 'fullscreenSwitch', defaultValue: false },
-                { dataKey: 'frameless', elementId: 'frameless', defaultValue: false, inverted: true },
-                { dataKey: 'disableResize', elementId: 'disableResize', defaultValue: false },
-                { dataKey: 'cssDrag', elementId: 'CSSDragProperty', defaultValue: false },
-                { dataKey: 'enableF1', elementId: 'enableAdminMode', defaultValue: false }
-            ];
-
-            behaviorSettings.forEach(setting => {
-                const element = document.getElementById(setting.elementId);
-                const rawValue = data[setting.dataKey]; // may be 'true', 'false', 'off' or undefined
-
-                if (!element) return;
-
-                // Если явно указан 'off' — делаем control disabled и сбрасываем значение
-                if (rawValue === 'off') {
-                    element.disabled = true;
-                    element.checked = false;
-                    const parentCard = element.closest('.setting-card');
-                    if (parentCard) parentCard.classList.add('disabled-setting');
-                    return;
-                }
-
-                // Обычное состояние — включаем control
-                element.disabled = false;
-                const parentCard = element.closest('.setting-card');
-                if (parentCard) parentCard.classList.remove('disabled-setting');
-
-                // Вычисляем checked: если rawValue задан как 'true'/'false' — используем его, иначе берем defaultValue
-                let checked;
-                if (rawValue === undefined) {
-                    checked = !!setting.defaultValue;
-                } else {
-                    checked = rawValue === 'true';
-                }
-
-                if (setting.inverted) checked = !checked;
-                element.checked = checked;
-            });
-
-            console.log(`Применены настройки для шаблона: ${data.template || templateCard.getAttribute('data-template')}`);
-        }
-
-        /**
-         * Обновление выбранного шаблона
-         * @param {string} selectedValue - значение выбранного шаблона
-         */
-        function updateSelectedTemplate(selectedValue) {
-            let selectedCard = null;
-
-            templateCards.forEach(card => {
-                const radio = card.querySelector('input[type="radio"]');
-                if (radio.value === selectedValue) {
-                    card.classList.add('selected');
-                    radio.checked = true;
-                    selectedCard = card;
-                } else {
-                    card.classList.remove('selected');
-                    radio.checked = false;
-                }
-            });
-
-            // Показать/скрыть секцию кастомного шаблона
-            toggleCustomTemplateSection(selectedValue === 'custom');
-
-            // Применить настройки выбранного шаблона
-            if (selectedCard) {
-                applyTemplateSettings(selectedCard);
-            }
-        }
-
-        /**
-         * Переключение видимости секции кастомного шаблона
-         * @param {boolean} show - показать или скрыть секцию
-         */
-        function toggleCustomTemplateSection(show = false) {
-            if (customTemplateSection) {
-                customTemplateSection.style.display = show ? 'block' : 'none';
-
-                const customCard = document.querySelector('[data-template="custom"]');
-                if (customCard) {
-                    if (show) {
-                        customCard.classList.add('custom-template-highlight');
-                    } else {
-                        customCard.classList.remove('custom-template-highlight');
-                    }
-                }
-            }
-        }
-
-        /**
-         * Получение выбранного шаблона
-         * @returns {string} - значение выбранного шаблона
-         */
-        function getSelectedTemplate() {
-            const selectedRadio = document.querySelector('input[name="template"]:checked');
-            return selectedRadio ? selectedRadio.value : 'default';
-        }
-
-        // === ИНИЦИАЛИЗАЦИЯ СЕЛЕКТОРА ШАБЛОНОВ ===
-
-        // Обработчик кликов по карточкам шаблонов
-        templateCards.forEach(card => {
-            card.addEventListener('click', function () {
-                const templateValue = this.dataset.template;
-                updateSelectedTemplate(templateValue);
-            });
-        });
-
-        // Обработчик изменения радиокнопок
-        document.querySelectorAll('input[name="template"]').forEach(radio => {
-            radio.addEventListener('change', function () {
-                if (this.checked) {
-                    updateSelectedTemplate(this.value);
-                }
-            });
-        });
-
-        // Инициализация - выбираем первый доступный шаблон на странице и применяем его настройки
-        (function initDefaultTemplate() {
-            const firstCard = document.querySelector('.template-card');
-            if (firstCard && firstCard.dataset && firstCard.dataset.template) {
-                updateSelectedTemplate(firstCard.dataset.template);
-            } else {
-                updateSelectedTemplate('default');
-            }
-        })();
-
-        // === ОСНОВНЫЕ ОБРАБОТЧИКИ СОБЫТИЙ ===
-
-        compileForm.addEventListener('submit', handleCompileRequest);
-        newBuildBtn.addEventListener('click', resetUI);
-        retryBuildBtn.addEventListener('click', resetUI);
-
-        function resetUI() {
-            compileForm.style.display = 'block';
-            statusContainer.style.display = 'none';
-            errorContainer.style.display = 'none';
-            resultContainer.style.display = 'none';
-            downloadBtn.classList.add('disabled');
-            downloadBtn.href = "#";
-            downloadBtn.style.display = 'inline-block';
-            downloadBtn.innerHTML = '<i class="ri-download-2-line"></i> Скачать готовый лаунчер';
-            compileBtn.disabled = false;
-
-            if (pollingInterval) {
-                clearInterval(pollingInterval);
-            }
-            updateProgress(0, "Ожидание...");
-        }
-
-        function updateProgress(progress, message) {
-            const p = Math.max(0, Math.min(100, progress));
-            progressBar.style.width = p + '%';
-            progressBar.innerText = p + '%';
-            progressBar.setAttribute('aria-valuenow', p);
-            progressBar.classList.remove('bg-success', 'bg-danger');
-            if (p < 100) {
-                progressBar.classList.add('progress-bar-animated', 'progress-bar-striped');
-            }
-            statusMessage.innerText = message;
-        }
-
-        function handleCompileRequest(event) {
-            event.preventDefault();
-            compileBtn.disabled = true;
-
-            // Проверка выбора шаблона
-            const selectedTemplateRadio = document.querySelector('input[name="template"]:checked');
-            if (!selectedTemplateRadio) {
-                noticeError('Пожалуйста, выберите шаблон лаунчера перед компиляцией.');
-                compileBtn.disabled = false;
-                return;
-            }
-
-            // Сбор данных формы
-            const buildData = {
-                dataUrl: document.getElementById('dataUrl').value,
-                title: document.getElementById('pageTitle').value,
-                windowWidth: parseInt(document.getElementById('windowWidth').value) || 900,
-                windowHeight: parseInt(document.getElementById('windowHeight').value) || 700,
-                minWidth: parseInt(document.getElementById('minWidth').value) || 800,
-                minHeight: parseInt(document.getElementById('minHeight').value) || 600,
-                maxWidth: parseInt(document.getElementById('maxWidth').value) || 1200,
-                maxHeight: parseInt(document.getElementById('maxHeight').value) || 900,
-                launcherVersion: document.getElementById('launcherVersion').value || "1.0.0",
-                template: getSelectedTemplate(),
-                accountLink: document.getElementById('accountLink').value,
-                registrationLink: document.getElementById('registerLink').value,
-                forumLink: document.getElementById('forumLink').value,
-                supportLink: document.getElementById('supportLink').value,
-                descriptionLink: document.getElementById('descriptionLink').value,
-                donateLink: document.getElementById('donateLink').value,
-                fullscreen: document.getElementById('fullscreenSwitch').checked,
-                frameless: !document.getElementById('frameless').checked, // Инвертируем логику!
-                disableResize: document.getElementById('disableResize').checked,
-                CSSDragProperty: document.getElementById('CSSDragProperty').checked,
-                enableAdminMode: document.getElementById('enableAdminMode').checked,
-                iconBase64: "",
-                customHtmlBase64: "",
-                customCssBase64: "",
-                customLangJsonBase64: "",
-                customLogoBase64: ""
-            };
-
-            const iconFile = document.getElementById('iconUpload').files[0];
-            const customHtmlFile = document.getElementById('customHtmlFile').files[0];
-            const customCssFile = document.getElementById('customCssFile').files[0];
-            const customLangFile = document.getElementById('customLangFile').files[0];
-            const customLogoFile = document.getElementById('customLogoFile').files[0];
-
-            const MAX_SIZE = 300 * 1024; // 300 КБ
-            const MAX_LOGO_SIZE = 250 * 1024; // 250 КБ для лого
-
-            // Проверки размеров файлов
-            if (iconFile && iconFile.size > MAX_SIZE) {
-                alert('Ошибка: Размер иконки не должен превышать 300 КБ.');
-                compileBtn.disabled = false;
-                return;
-            }
-
-            if (buildData.template === 'custom') {
-                if (!customHtmlFile) {
-                    alert('Для пользовательского шаблона необходимо выбрать как минимум файл index.html.');
-                    compileBtn.disabled = false;
-                    return;
-                }
-                if (customHtmlFile.size > MAX_SIZE) {
-                    alert('Ошибка: Размер HTML файла не должен превышать 300 КБ.');
-                    compileBtn.disabled = false;
-                    return;
-                }
-                if (customCssFile && customCssFile.size > MAX_SIZE) {
-                    alert('Ошибка: Размер CSS файла не должен превышать 300 КБ.');
-                    compileBtn.disabled = false;
-                    return;
-                }
-                if (customLangFile && customLangFile.size > MAX_SIZE) {
-                    alert('Ошибка: Размер lang.json файла не должен превышать 300 КБ.');
-                    compileBtn.disabled = false;
-                    return;
-                }
-                if (customLogoFile && customLogoFile.size > MAX_LOGO_SIZE) {
-                    alert('Ошибка: Размер файла лого не должен превышать 250 КБ.');
-                    compileBtn.disabled = false;
-                    return;
-                }
-            }
-
-            // Функции для чтения файлов
-            const readFileAsBase64 = (file) => new Promise((resolve, reject) => {
-                if (!file) return resolve("");
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result.split(',')[1]);
-                reader.onerror = (error) => reject(error);
-                reader.readAsDataURL(file);
-            });
-
-            const checkImageDimensions = (file) => new Promise((resolve, reject) => {
-                if (!file) return resolve();
-                const image = new Image();
-                image.onload = () => {
-                    if (image.width > 128 || image.height > 128) {
-                        reject(new Error('Разрешение иконки не должно превышать 128x128 пикселей.'));
-                    } else {
-                        resolve();
-                    }
-                };
-                image.onerror = () => reject(new Error('Не удалось прочитать файл иконки.'));
-                image.src = URL.createObjectURL(file);
-            });
-
-            // Чтение файлов и отправка запроса
-            checkImageDimensions(iconFile)
-                .then(() => {
-                    return Promise.all([
-                        readFileAsBase64(iconFile),
-                        readFileAsBase64(customHtmlFile),
-                        readFileAsBase64(customCssFile),
-                        readFileAsBase64(customLangFile),
-                        readFileAsBase64(customLogoFile),
-                    ]);
-                })
-                .then(([iconBase64, customHtml, customCss, customLang, customLogo]) => {
-                    buildData.iconBase64 = iconBase64;
-                    buildData.customHtmlBase64 = customHtml;
-                    buildData.customCssBase64 = customCss;
-                    buildData.customLangJsonBase64 = customLang;
-                    buildData.customLogoBase64 = customLogo;
-
-                    sendInitialRequest(buildData);
-                })
-                .catch(err => {
-                    alert('Ошибка подготовки данных: ' + err.message);
-                    compileBtn.disabled = false;
-                });
-        }
-
-        // Функция отправки запроса (остается без изменений)
-        function sendInitialRequest(data) {
-            compileForm.style.display = 'none';
-            statusContainer.style.display = 'block';
-            errorContainer.style.display = 'none';
-            resultContainer.style.display = 'none';
-            updateProgress(0, 'Отправка запроса на сервер...');
-
-            fetch('/admin/plugin/sphereLauncher2/compile', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(errorData => {
-                            throw new Error(errorData.error || `Сервер вернул ошибку ${response.status}`);
-                        });
-                    }
-                    return response.json();
-                })
-                .then(result => {
-                    if (result.error) {
-                        throw new Error(result.error);
-                    }
-                    if (result.task_id) {
-                        updateProgress(2, 'Задача создана. Начинаем отслеживание статуса...');
-                        startPolling(result.task_id);
-                    } else {
-                        throw new Error('Сервер не вернул ID задачи.');
-                    }
-                })
-                .catch(err => {
-                    statusContainer.style.display = 'block';
-                    errorContainer.style.display = 'block';
-                    errorMessage.innerText = err.message;
-                    resultContainer.style.display = 'block';
-                    downloadBtn.style.display = 'none';
-                    compileBtn.disabled = false;
-                });
-        }
-
-        function startPolling(taskId) {
-            if (pollingInterval) {
-                clearInterval(pollingInterval);
-            }
-            pollingInterval = setInterval(() => {
-                pollTaskStatus(taskId);
-            }, 2000);
-        }
-
-        function pollTaskStatus(taskId) {
-            const statusUrl = `/admin/plugin/sphereLauncher2/status/${taskId}`;
-
-            fetch(statusUrl)
-                .then(response => {
-                    if (response.status === 404) {
-                        throw new Error('Задача не найдена на сервере. Возможно, сервер был перезапущен.');
-                    }
-                    if (!response.ok) {
-                        throw new Error('Ошибка сети при запросе статуса.');
-                    }
-                    return response.json();
-                })
-                .then(task => {
-                    console.log("Получен статус задачи:", task);
-
-                    if (task.error && task.status !== 'failed') {
-                        throw new Error(task.error);
-                    }
-
-                    updateProgress(task.progress, task.message);
-
-                    if (task.status === 'completed' || task.status === 'failed') {
-                        clearInterval(pollingInterval);
-
-                        if (task.status === 'completed') {
-                            statusMessage.innerText = "Сборка успешно завершена! Сохраняем файл на ваш сервер...";
-                            progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
-                            progressBar.classList.add('bg-success');
-                            resultContainer.style.display = 'block';
-                            downloadBtn.style.display = 'inline-block';
-                            downloadBtn.classList.add('disabled');
-                            downloadBtn.innerHTML = "Идёт сохранение...";
-
-                            fetch('/admin/plugin/sphereLauncher2/download', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Accept': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    result_url: task.result_url
-                                })
-                            })
-                                .then(response => {
-                                    if (!response.ok) {
-                                        return response.json().then(err => {
-                                            throw new Error(err.error || 'Ошибка при сохранении файла на сервер.');
-                                        });
-                                    }
-                                    return response.json();
-                                })
-                                .then(data => {
-                                    if (data.success) {
-                                        statusMessage.innerText = "Файл готов к скачиванию!";
-                                        downloadBtn.href = data.file_path;
-                                        downloadBtn.innerHTML = '<i class="ri-download-2-line"></i> Скачать Launcher.exe';
-                                        downloadBtn.classList.remove('disabled');
-                                        downloadBtn.target = '_blank';
-                                    } else {
-                                        throw new Error(data.error || 'Неизвестная ошибка при сохранении файла.');
-                                    }
-                                })
-                                .catch(err => {
-                                    console.error('Ошибка при сохранении файла:', err);
-                                    errorContainer.style.display = 'block';
-                                    errorMessage.innerText = 'Не удалось сохранить готовый лаунчер на ваш сервер. ' + err.message;
-                                    downloadBtn.style.display = 'none';
-                                });
-
-                        } else {
-                            statusMessage.innerText = "Сборка завершилась с ошибкой.";
-                            progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
-                            progressBar.classList.add('bg-danger');
-                            errorContainer.style.display = 'block';
-                            errorMessage.innerText = task.error;
-                            resultContainer.style.display = 'block';
-                            downloadBtn.style.display = 'none';
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Ошибка при опросе статуса:', error);
-                    clearInterval(pollingInterval);
-                    errorContainer.style.display = 'block';
-                    errorMessage.innerText = error.message;
-                    resultContainer.style.display = 'block';
-                    downloadBtn.style.display = 'none';
-                });
-        }
-    });
-</script>
 {% endblock %}
 
 {% block css %}
 <style>
-    /* Основные стили для улучшенной структуры */
-    .settings-section {
-        margin-bottom: 1rem;
-        border-radius: 10px;
+    .sl2-page { display: grid; gap: 20px; max-width: 1440px; margin: 0 auto; padding-top: 1rem; }
+    .sl2-nav { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px; border: 1px solid var(--default-border, rgba(127,127,127,.25)); border-radius: 12px; background: var(--custom-white, transparent); }
+    .sl2-nav a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; color: var(--default-text-color, inherit); font-weight: 500; text-decoration: none; }
+    .sl2-nav a:hover { background: rgba(var(--primary-rgb, 13,110,253), .08); }
+    .sl2-nav a.active { background: rgb(var(--primary-rgb, 13,110,253)); color: #fff; }
+    .sl2-hero { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 14px; padding: 20px; border: 1px solid var(--default-border, rgba(127,127,127,.25)); border-radius: 12px; background: linear-gradient(135deg, rgba(var(--primary-rgb, 13,110,253), .12), transparent); }
+    .sl2-hero-icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 12px; background: rgba(var(--primary-rgb, 13,110,253), .16); color: rgb(var(--primary-rgb, 13,110,253)); font-size: 28px; }
+    .sl2-hero h1 { margin: 0 0 5px; font-size: 24px; line-height: 1.15; }
+    .sl2-hero p { margin: 0; opacity: .75; font-size: 13px; }
+    .sl2-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+    .sl2-form-column, .sl2-side-column { display: grid; gap: 16px; min-width: 0; }
+    .sl2-side-column { position: sticky; top: 84px; }
+    .sl2-field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .sl2-dim-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .sl2-card-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+    .sl2-version { margin: 0; padding: 0; border: 0; min-width: 0; }
+    .sl2-version-control { display: flex; align-items: flex-end; gap: 6px; }
+    .sl2-version-control > div { display: grid; gap: 2px; flex: 1; }
+    .sl2-version-control label { font-size: 11px; opacity: .65; }
+    .sl2-version-control input { width: 100%; padding: .375rem .5rem; border: 1px solid var(--input-border, #ced4da); border-radius: .375rem; background: transparent; color: inherit; text-align: center; }
+    .sl2-version-control > span { padding-bottom: 6px; font-weight: 700; }
+    .sl2-version-hint-error { color: #e26d6d !important; }
+    .sl2-intro { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; margin-bottom: 14px; border-radius: 10px; background: rgba(var(--primary-rgb, 13,110,253), .07); }
+    .sl2-intro > i { font-size: 20px; color: rgb(var(--primary-rgb, 13,110,253)); }
+    .sl2-intro div { display: grid; gap: 2px; font-size: 13px; }
+    .sl2-intro span { opacity: .75; }
+    .sl2-bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-top: 8px; font-size: 12px; opacity: .85; }
+    .sl2-mirrors { margin: 18px 0 0; padding: 14px; border: 1px dashed var(--default-border, rgba(127,127,127,.35)); border-radius: 10px; }
+    .sl2-mirrors legend { float: none; width: auto; margin: 0 0 4px; padding: 0 6px; font-size: 14px; font-weight: 600; }
+    .sl2-mirror-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; margin-bottom: 8px; }
+    .sl2-template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .sl2-template { display: grid; gap: 4px; padding: 12px; border: 2px solid var(--default-border, rgba(127,127,127,.25)); border-radius: 10px; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+    .sl2-template:hover { border-color: rgba(var(--primary-rgb, 13,110,253), .5); }
+    .sl2-template[aria-checked="true"] { border-color: rgb(var(--primary-rgb, 13,110,253)); background: rgba(var(--primary-rgb, 13,110,253), .07); }
+    .sl2-template strong { font-size: 14px; }
+    .sl2-template small { opacity: .7; font-size: 12px; }
+    .sl2-template a { font-size: 12px; }
+    .sl2-upload { position: relative; display: grid; justify-items: center; gap: 4px; padding: 22px; border: 2px dashed var(--default-border, rgba(127,127,127,.35)); border-radius: 12px; text-align: center; cursor: pointer; }
+    .sl2-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .sl2-upload > i { font-size: 24px; color: rgb(var(--primary-rgb, 13,110,253)); }
+    .sl2-upload span { font-size: 12px; opacity: .75; }
+    .sl2-upload.drag-over, .sl2-upload.uploaded { border-color: rgb(var(--primary-rgb, 13,110,253)); background: rgba(var(--primary-rgb, 13,110,253), .05); }
+    .sl2-upload[aria-busy="true"] { opacity: .6; }
+    .sl2-selected-icon { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+    .sl2-selected-icon img { width: 64px; height: 64px; object-fit: contain; border-radius: 10px; background: rgba(127,127,127,.12); }
+    .sl2-icon-library { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; font-size: 13px; }
+    .sl2-saved-icon { display: grid; gap: 4px; justify-items: center; }
+    .sl2-saved-icon button { display: grid; justify-items: center; gap: 4px; padding: 6px; border: 2px solid transparent; border-radius: 10px; background: rgba(127,127,127,.08); color: inherit; font-size: 11px; }
+    .sl2-saved-icon button[aria-pressed="true"] { border-color: rgb(var(--primary-rgb, 13,110,253)); }
+    .sl2-saved-icon img { width: 48px; height: 48px; object-fit: contain; }
+    .sl2-saved-icon .sl2-icon-delete { padding: 0 6px; background: transparent; color: #e26d6d; }
+    .sl2-toggle-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+    .sl2-toggle { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--default-border, rgba(127,127,127,.25)); border-radius: 10px; cursor: pointer; }
+    .sl2-toggle input { margin: 0; }
+    .sl2-validation { display: flex; gap: 10px; padding: 12px 14px; border: 1px solid rgba(226,109,109,.45); border-radius: 10px; background: rgba(226,109,109,.08); color: #e26d6d; }
+    .sl2-validation p { margin: 0; }
+    .sl2-current-empty { display: grid; justify-items: center; gap: 6px; padding: 10px 0 16px; opacity: .65; text-align: center; }
+    .sl2-current-empty i { font-size: 30px; }
+    .sl2-current { display: grid; gap: 10px; margin-bottom: 14px; }
+    .sl2-current h3 { margin: 0; font-size: 16px; word-break: break-word; }
+    .sl2-current p { margin: 0; font-size: 13px; opacity: .8; white-space: pre-wrap; word-break: break-word; }
+    .sl2-status-row { display: flex; align-items: center; justify-content: space-between; }
+    .sl2-status { display: inline-flex; align-items: center; padding: 4px 10px; border: 1px solid var(--default-border, rgba(127,127,127,.35)); border-radius: 999px; font-size: 12px; }
+    .sl2-status.st-completed { border-color: rgba(78,203,141,.5); color: #4ecb8d; background: rgba(78,203,141,.09); }
+    .sl2-status.st-failed { border-color: rgba(226,109,109,.5); color: #e26d6d; background: rgba(226,109,109,.09); }
+    .sl2-status.st-running, .sl2-status.st-queued { border-color: rgba(var(--primary-rgb, 13,110,253), .5); color: rgb(var(--primary-rgb, 13,110,253)); }
+    .sl2-artifact { display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 10px; background: rgba(78,203,141,.08); }
+    .sl2-artifact i { font-size: 20px; color: #4ecb8d; }
+    .sl2-artifact div { display: grid; min-width: 0; }
+    .sl2-artifact strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sl2-artifact span { font-size: 12px; opacity: .75; }
+    .sl2-current-action { display: grid; gap: 8px; }
+    .sl2-history { margin: 0; padding: 0; list-style: none; }
+    .sl2-history li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 10px 16px; border-top: 1px solid var(--default-border, rgba(127,127,127,.15)); }
+    .sl2-history li:first-child { border-top: 0; }
+    .sl2-history .sl2-h-main { display: grid; min-width: 0; cursor: pointer; }
+    .sl2-history .sl2-h-main strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+    .sl2-history .sl2-h-main small { opacity: .65; font-size: 11px; }
+    .sl2-history .sl2-h-actions { display: flex; gap: 4px; }
+    .sl2-history-empty { padding: 16px; opacity: .65; font-size: 13px; text-align: center; }
+    @media (max-width: 1199px) {
+        .sl2-layout { grid-template-columns: 1fr; }
+        .sl2-side-column { position: static; }
     }
-
-    .section-title {
-        font-weight: 600;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-    }
-
-    .section-title i {
-        margin-right: 0.5rem;
-    }
-
-    /* Стили для карточек настроек */
-    .setting-card {
-        padding: 1rem;
-        border-radius: 8px;
-        height: 100%;
-    }
-
-    .setting-card:hover {
-        border-color: #0d6efd;
-        box-shadow: 0 2px 8px rgba(13, 110, 253, 0.1);
-    }
-
-    /* Стили для загрузки кастомного шаблона */
-    .custom-template-upload {
-        padding: 1.5rem;
-        border-radius: 8px;
-    }
-
-    /* Селектор шаблонов */
-    .template-selector {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
-        margin: 20px 0;
-    }
-
-    .template-card {
-        position: relative;
-        border-radius: 12px;
-        overflow: hidden;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .template-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        border-color: #0d6efd;
-    }
-
-    .template-card.selected {
-        border-color: #0d6efd;
-        box-shadow: 0 8px 25px rgba(13, 110, 253, 0.2);
-        transform: translateY(-2px);
-    }
-
-    .template-card.selected::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #0d6efd, #6610f2);
-        z-index: 2;
-    }
-
-    .template-image {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-        object-position: center;
-        display: block;
-    }
-
-    .template-image-fallback {
-        width: 100%;
-        height: 180px;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 48px;
-        position: relative;
-    }
-
-    /* Цвета для fallback изображений */
-    .template-image-fallback.default {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .template-image-fallback.cyberpunk {
-        background: linear-gradient(135deg, #ff0080 0%, #7928ca 100%);
-    }
-
-    .template-image-fallback.flat {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .template-image-fallback.duxy {
-        background: linear-gradient(135deg, #8360c3 0%, #2ebf91 100%);
-    }
-
-    .template-image-fallback.fonar {
-        background: linear-gradient(135deg, #434343 0%, #000000 100%);
-    }
-
-    .template-image-fallback.futuristic {
-        background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-    }
-
-    .template-image-fallback.material {
-        background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
-    }
-
-    .template-image-fallback.skeuomorphism {
-        background: linear-gradient(135deg, #8360c3 0%, #2ebf91 100%);
-    }
-
-    .template-image-fallback.gsax {
-        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-        color: #333;
-    }
-
-    .template-image-fallback.gagarka {
-        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-        color: #333;
-    }
-
-    .template-image-fallback.lafa {
-        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-        color: #333;
-    }
-
-    .template-image-fallback.pinocolate {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    }
-
-    .template-image-fallback.sfox {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        color: #333;
-    }
-
-    .template-image-fallback.custom {
-        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-        color: #333;
-    }
-
-    .template-content {
-        padding: 16px;
-    }
-
-    .template-title {
-        font-weight: 600;
-        font-size: 18px;
-        margin-bottom: 8px;
-    }
-
-    .template-description {
-        font-size: 14px;
-        color: #6c757d;
-        margin-bottom: 0;
-        line-height: 1.4;
-    }
-
-    .template-radio {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        z-index: 3;
-    }
-
-    .template-radio input[type="radio"] {
-        width: 20px;
-        height: 20px;
-        accent-color: #0d6efd;
-    }
-
-    .template-badge {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 4px 10px;
-        border-radius: 15px;
-        font-size: 12px;
-        font-weight: 500;
-        z-index: 3;
-    }
-
-    .custom-template-highlight {
-        border: 2px dashed #ffc107 !important;
-        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%) !important;
-    }
-
-    /* Анимации */
-    .template-card {
-        animation: fadeInUp 0.6s ease-out;
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Адаптивность */
-    @media (max-width: 768px) {
-        .template-selector {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .template-image,
-        .template-image-fallback {
-            height: 150px;
-            font-size: 36px;
-        }
-
-        .template-content {
-            padding: 12px;
-        }
-
-        .settings-section {
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-        }
-    }
-
-    /* Улучшенные switch элементы */
-    .form-check-input:checked {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
-
-    .form-check-input:focus {
-        border-color: #86b7fe;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-
-    /* Стили для progress bar */
-    .progress {
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .progress-bar {
-        border-radius: 10px;
-    }
-
-    /* Кнопки */
-    .btn-lg {
-        padding: 0.75rem 2rem;
-        font-size: 1.1rem;
-    }
-
-    /* Стили для disabled настроек */
-    .setting-card.disabled-setting {
-        opacity: 0.6;
-        background-color: #f8f9fa;
-        border: 1px solid #e9ecef;
-        pointer-events: none;
-        position: relative;
-    }
-
-    .setting-card.disabled-setting::before {
-        content: "Недоступно для выбранного шаблона";
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        background: #6c757d;
-        color: white;
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-size: 11px;
-        font-weight: 500;
-        z-index: 2;
-    }
-
-    .setting-card.disabled-setting .form-check-input:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    .setting-card.disabled-setting .form-label,
-    .setting-card.disabled-setting small {
-        color: #6c757d !important;
-    }
-
-    /* Анимация для плавного перехода */
-    .setting-card {
-        transition: all 0.3s ease;
-    }
-
-    /* Стили для спойлеров настроек */
-    .section-collapse-btn {
-        color: inherit !important;
-        font-weight: 600;
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-        width: 100%;
-        text-align: left;
-        display: flex;
-        align-items: center;
-        margin: 0;
-        padding: 0;
-        font-size: inherit;
-    }
-
-    .section-collapse-btn:hover {
-        color: #0d6efd !important;
-    }
-
-    .section-collapse-btn:focus {
-        color: #0d6efd !important;
-    }
-
-    .collapse-icon {
-        transition: transform 0.3s ease;
-        margin-left: auto;
-    }
-
-    .section-collapse-btn[aria-expanded="true"] .collapse-icon {
-        transform: rotate(180deg);
-    }
-
-    .section-collapse-btn[aria-expanded="false"] .collapse-icon {
-        transform: rotate(0deg);
-    }
-
-    /* Анимация для содержимого спойлера */
-    .collapse {
-        transition: all 0.35s ease;
-    }
-
-    .collapsing {
-        transition: height 0.35s ease;
-    }
-
-    /* Улучшенный hover эффект для заголовка спойлера */
-    .section-title:has(.section-collapse-btn) {
-        border-radius: 8px;
-        padding: 0.75rem 1rem;
-        margin-bottom: 0;
-        transition: background-color 0.2s ease;
-        cursor: pointer;
-    }
-
-    .section-title:has(.section-collapse-btn):hover {
-        background-color: rgba(13, 110, 253, 0.05);
-    }
-
-    /* Дополнительный отступ для содержимого спойлера */
-    .collapse .row {
-        padding-top: 1rem;
+    @media (max-width: 767px) {
+        .sl2-field-grid, .sl2-toggle-grid { grid-template-columns: 1fr; }
+        .sl2-dim-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 </style>
+{% endblock %}
+
+{% block js %}
+<script type="application/json" id="sl2-bootstrap">{{ sl2_bootstrap|json_encode|raw }}</script>
+<script>
+(function () {
+    'use strict';
+
+    const T = {
+        status_queued: {{ phrase('sl2_status_queued')|json_encode|raw }},
+        status_running: {{ phrase('sl2_status_running')|json_encode|raw }},
+        status_completed: {{ phrase('sl2_status_completed')|json_encode|raw }},
+        status_failed: {{ phrase('sl2_status_failed')|json_encode|raw }},
+        compiling: {{ phrase('sl2_compiling')|json_encode|raw }},
+        saving_file: {{ phrase('sl2_saving_file')|json_encode|raw }},
+        saved: {{ phrase('sl2_settings_saved')|json_encode|raw }},
+        build_started: {{ phrase('sl2_build_started')|json_encode|raw }},
+        v_title: {{ phrase('sl2_v_title')|json_encode|raw }},
+        v_version: {{ phrase('sl2_v_version')|json_encode|raw }},
+        v_data_url: {{ phrase('sl2_v_data_url')|json_encode|raw }},
+        v_mirrors: {{ phrase('sl2_v_mirrors')|json_encode|raw }},
+        v_template: {{ phrase('sl2_v_template')|json_encode|raw }},
+        v_dim_range: {{ phrase('sl2_v_dim_range')|json_encode|raw }},
+        v_dims: {{ phrase('sl2_v_dims')|json_encode|raw }},
+        v_links: {{ phrase('sl2_v_links')|json_encode|raw }},
+        version_ok: {{ phrase('sl2_version_ok')|json_encode|raw }},
+        version_hint: {{ phrase('sl2_version_hint')|json_encode|raw }},
+        mirror_label: {{ phrase('sl2_mirror_label')|json_encode|raw }},
+        mirror_remove: {{ phrase('sl2_mirror_remove')|json_encode|raw }},
+        template_custom: {{ phrase('sl2_template_custom')|json_encode|raw }},
+        template_custom_desc: {{ phrase('sl2_template_custom_desc')|json_encode|raw }},
+        template_builtin: {{ phrase('sl2_template_builtin')|json_encode|raw }},
+        template_preview: {{ phrase('sl2_template_preview')|json_encode|raw }},
+        icon_preparing: {{ phrase('sl2_icon_preparing')|json_encode|raw }},
+        icon_saved_selected: {{ phrase('sl2_icon_saved_selected')|json_encode|raw }},
+        icon_select: {{ phrase('sl2_icon_select')|json_encode|raw }},
+        icon_selected: {{ phrase('sl2_icon_selected')|json_encode|raw }},
+        icon_delete: {{ phrase('sl2_icon_delete')|json_encode|raw }},
+        icon_delete_confirm: {{ phrase('sl2_icon_delete_confirm')|json_encode|raw }},
+        icon_library_empty: {{ phrase('sl2_icon_library_empty')|json_encode|raw }},
+        icon_one_file: {{ phrase('sl2_icon_one_file')|json_encode|raw }},
+        icon_bad_format: {{ phrase('sl2_icon_bad_format')|json_encode|raw }},
+        icon_empty: {{ phrase('sl2_icon_empty')|json_encode|raw }},
+        icon_too_big: {{ phrase('sl2_icon_too_big')|json_encode|raw }},
+        icon_unreadable: {{ phrase('sl2_icon_unreadable')|json_encode|raw }},
+        icon_cannot_fit: {{ phrase('sl2_icon_cannot_fit')|json_encode|raw }},
+        history_empty: {{ phrase('sl2_history_empty')|json_encode|raw }},
+        history_delete_confirm: {{ phrase('sl2_history_delete_confirm')|json_encode|raw }},
+        download: {{ phrase('sl2_download_launcher')|json_encode|raw }},
+        delete: {{ phrase('sl2_delete')|json_encode|raw }},
+        test_ok: {{ phrase('sl2_test_ok')|json_encode|raw }},
+        test_busy: {{ phrase('sl2_test_busy')|json_encode|raw }},
+        request_failed: {{ phrase('sl2_request_failed')|json_encode|raw }}
+    };
+
+    const BASE = '/admin/plugin/sphereLauncher2';
+    const MAX_MIRRORS = 10;
+    const VERSION_RE = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
+    const boot = JSON.parse(document.getElementById('sl2-bootstrap').textContent || '{}');
+    const templates = boot.templates || [];
+    const draft = Object.assign({}, boot.settings.defaults);
+    draft.dataUrls = Array.isArray(draft.dataUrls) ? draft.dataUrls.slice() : [];
+    let builds = boot.builds || [];
+    let activeTaskId = '';
+    let pollTimer = null;
+    let iconBusy = false;
+    let iconError = '';
+    let iconSelection = 0;
+    let icons = [];
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (v) => String(v == null ? '' : v).replace(/[&<>"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+    const ok = (m) => (typeof noticeSuccess === 'function' ? noticeSuccess(m) : console.log(m));
+    const fail = (m) => (typeof noticeError === 'function' ? noticeError(m) : alert(m));
+    const isWorking = (s) => s === 'queued' || s === 'running';
+    const isHttpUrl = (v) => { try { const u = new URL(v); return u.protocol === 'http:' || u.protocol === 'https:'; } catch (e) { return false; } };
+    const formatBytes = (v) => { v = v || 0; if (v < 1024) return v + ' B'; if (v < 1048576) return (v / 1024).toFixed(1) + ' KB'; return (v / 1048576).toFixed(1) + ' MB'; };
+    const formatDate = (v) => { const d = new Date(v); return isNaN(d.getTime()) ? '' : d.toLocaleString(); };
+
+    async function api(path, options) {
+        const opts = Object.assign({ headers: { 'Accept': 'application/json' }, credentials: 'same-origin' }, options || {});
+        if (opts.json !== undefined) {
+            opts.method = opts.method || 'POST';
+            opts.headers['Content-Type'] = 'application/json';
+            opts.body = JSON.stringify(opts.json);
+            delete opts.json;
+        }
+        const response = await fetch(BASE + path, opts);
+        let data = null;
+        try { data = await response.json(); } catch (e) { /* not JSON */ }
+        if (!response.ok || (data && data.error)) {
+            throw new Error((data && data.error) || (T.request_failed + ' (HTTP ' + response.status + ')'));
+        }
+        return data;
+    }
+
+    /* ---------- форма ---------- */
+
+    function fillForm() {
+        document.querySelectorAll('[data-field]').forEach((el) => {
+            const key = el.dataset.field;
+            if (el.hasAttribute('data-bool')) el.checked = !!draft[key];
+            else el.value = draft[key] == null ? '' : draft[key];
+        });
+        const parts = String(draft.launcherVersion || '').split('.');
+        document.querySelectorAll('[data-version]').forEach((el) => { el.value = parts[+el.dataset.version] || ''; });
+        renderMirrors();
+        renderTemplates();
+        renderSelectedIcon();
+        validate();
+    }
+
+    document.querySelectorAll('[data-field]').forEach((el) => {
+        el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', () => {
+            const key = el.dataset.field;
+            if (el.hasAttribute('data-bool')) draft[key] = el.checked;
+            else if (el.hasAttribute('data-number')) draft[key] = Number(el.value) || 0;
+            else draft[key] = el.value;
+            validate();
+        });
+    });
+
+    document.querySelectorAll('[data-version]').forEach((el) => {
+        el.addEventListener('input', () => {
+            if (!/^\d{0,9}$/.test(el.value)) { el.value = el.value.replace(/\D/g, '').slice(0, 9); }
+            const parts = String(draft.launcherVersion || '').split('.');
+            while (parts.length < 3) parts.push('');
+            parts[+el.dataset.version] = el.value;
+            draft.launcherVersion = parts.slice(0, 3).join('.');
+            validate();
+        });
+    });
+
+    function renderMirrors() {
+        const list = $('sl2-mirror-list');
+        list.innerHTML = '';
+        draft.dataUrls.forEach((value, index) => {
+            const row = document.createElement('div');
+            row.className = 'sl2-mirror-row';
+            row.innerHTML = '<input class="form-control" type="url" placeholder="https://cdn.site.com/launcher.json" aria-label="' + esc(T.mirror_label.replace('%s', index + 2)) + '">' +
+                '<button type="button" class="btn btn-outline-danger" aria-label="' + esc(T.mirror_remove) + '"><i class="ri-delete-bin-line"></i></button>';
+            const input = row.querySelector('input');
+            input.value = value;
+            input.addEventListener('input', () => { draft.dataUrls[index] = input.value; validate(); });
+            row.querySelector('button').addEventListener('click', () => { draft.dataUrls.splice(index, 1); renderMirrors(); validate(); });
+            list.appendChild(row);
+        });
+        $('sl2-mirror-add').disabled = draft.dataUrls.length >= MAX_MIRRORS;
+    }
+    $('sl2-mirror-add').addEventListener('click', () => {
+        if (draft.dataUrls.length >= MAX_MIRRORS) return;
+        draft.dataUrls.push('');
+        renderMirrors();
+        const inputs = $('sl2-mirror-list').querySelectorAll('input');
+        if (inputs.length) inputs[inputs.length - 1].focus();
+    });
+
+    function renderTemplates() {
+        const grid = $('sl2-templates');
+        grid.innerHTML = '';
+        const options = templates.map((t) => ({ key: t.key, name: t.name, desc: T.template_builtin, url: t.url }))
+            .concat([{ key: '', name: T.template_custom, desc: T.template_custom_desc, url: '' }]);
+        options.forEach((opt) => {
+            const card = document.createElement('div');
+            card.className = 'sl2-template';
+            card.setAttribute('role', 'radio');
+            card.tabIndex = 0;
+            const selected = (draft.remoteTemplateKey || '') === opt.key;
+            card.setAttribute('aria-checked', selected ? 'true' : 'false');
+            card.innerHTML = '<strong>' + esc(opt.name) + '</strong><small>' + esc(opt.desc) + '</small>' +
+                (opt.url ? '<a href="' + esc(opt.url) + '" target="_blank" rel="noopener">' + esc(T.template_preview) + '</a>' : '');
+            const choose = () => {
+                draft.remoteTemplateKey = opt.key;
+                if (opt.key) draft.remoteTemplateUrl = opt.url;
+                else if (templates.some((t) => t.url === draft.remoteTemplateUrl)) draft.remoteTemplateUrl = '';
+                $('sl2-remoteTemplateUrl').value = draft.remoteTemplateUrl || '';
+                renderTemplates();
+                validate();
+            };
+            card.addEventListener('click', (e) => { if (e.target.tagName !== 'A') choose(); });
+            card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(); } });
+            grid.appendChild(card);
+        });
+        $('sl2-template-custom').hidden = !!draft.remoteTemplateKey;
+    }
+
+    function validate() {
+        const errors = [];
+        if (!String(draft.title || '').trim()) errors.push(T.v_title);
+        if (!VERSION_RE.test(draft.launcherVersion || '')) errors.push(T.v_version);
+        if (!isHttpUrl(String(draft.dataUrl || '').trim())) errors.push(T.v_data_url);
+        if (draft.dataUrls.some((v) => v.trim() !== '' && !isHttpUrl(v.trim())) || draft.dataUrls.length > MAX_MIRRORS) errors.push(T.v_mirrors);
+        if (!draft.remoteTemplateKey && !isHttpUrl(String(draft.remoteTemplateUrl || '').trim())) errors.push(T.v_template);
+        const dims = [draft.windowWidth, draft.windowHeight, draft.minWidth, draft.minHeight, draft.maxWidth, draft.maxHeight];
+        if (dims.some((v) => !(v >= 320 && v <= 7680))) errors.push(T.v_dim_range);
+        if (draft.minWidth > draft.windowWidth || draft.windowWidth > draft.maxWidth || draft.minHeight > draft.windowHeight || draft.windowHeight > draft.maxHeight) errors.push(T.v_dims);
+        if (['accountLink', 'registrationLink', 'forumLink', 'supportLink', 'descriptionLink', 'donateLink'].some((k) => String(draft[k] || '').trim() !== '' && !isHttpUrl(String(draft[k]).trim()))) errors.push(T.v_links);
+
+        const versionOk = VERSION_RE.test(draft.launcherVersion || '');
+        const hint = $('sl2-version-hint');
+        hint.textContent = versionOk ? T.version_ok.replace('%s', draft.launcherVersion) : T.version_hint;
+        hint.classList.toggle('sl2-version-hint-error', !versionOk);
+
+        $('sl2-validation').hidden = errors.length === 0;
+        $('sl2-validation-list').innerHTML = errors.map((e) => '<p>' + esc(e) + '</p>').join('');
+        updateButtons(errors.length);
+        return errors;
+    }
+
+    function updateButtons(errorCount) {
+        if (errorCount === undefined) errorCount = $('sl2-validation').hidden ? 0 : 1;
+        const current = builds.find((b) => b.taskId === activeTaskId);
+        const blocked = iconBusy || !!iconError || errorCount > 0;
+        $('sl2-save').disabled = blocked;
+        $('sl2-build').disabled = blocked || (current && isWorking(current.status));
+    }
+
+    function payload() {
+        const p = Object.assign({}, draft);
+        p.template = 'remote';
+        p.dataUrls = draft.dataUrls.map((v) => v.trim()).filter(Boolean);
+        ['title', 'dataUrl', 'remoteTemplateUrl', 'accountLink', 'registrationLink', 'forumLink', 'supportLink', 'descriptionLink', 'donateLink']
+            .forEach((k) => { p[k] = String(p[k] || '').trim(); });
+        delete p.domain;
+        return p;
+    }
+
+    $('sl2-save').addEventListener('click', async () => {
+        const btn = $('sl2-save');
+        btn.disabled = true;
+        try {
+            const settings = await api('/settings', { json: { defaults: payload() } });
+            Object.assign(draft, settings.defaults);
+            ok(T.saved);
+        } catch (e) { fail(e.message); }
+        finally { updateButtons(); }
+    });
+
+    $('sl2-test').addEventListener('click', async () => {
+        const btn = $('sl2-test');
+        const out = $('sl2-test-result');
+        btn.disabled = true;
+        out.textContent = '…';
+        try {
+            const r = await api('/test', { method: 'POST' });
+            out.textContent = (r.buildRunning ? T.test_busy : T.test_ok).replace('%s', r.queueDepth);
+            out.className = r.ok ? 'text-success' : 'text-warning';
+        } catch (e) {
+            out.textContent = e.message;
+            out.className = 'text-danger';
+        } finally { btn.disabled = false; }
+    });
+
+    /* ---------- иконка ---------- */
+
+    function renderSelectedIcon() {
+        const has = !!draft.iconBase64;
+        $('sl2-selected-icon').hidden = !has;
+        if (has) $('sl2-selected-icon-img').src = 'data:image/png;base64,' + draft.iconBase64;
+        $('sl2-icon-drop').classList.toggle('uploaded', has);
+        renderIconLibrary();
+    }
+
+    function renderIconLibrary() {
+        const box = $('sl2-icon-library');
+        box.innerHTML = '';
+        if (!icons.length) { box.innerHTML = '<p class="text-muted mb-0">' + esc(T.icon_library_empty) + '</p>'; return; }
+        icons.forEach((icon) => {
+            const item = document.createElement('div');
+            item.className = 'sl2-saved-icon';
+            const selected = draft.iconBase64 === icon.base64;
+            item.innerHTML = '<button type="button" aria-pressed="' + selected + '"><img alt="" src="data:image/png;base64,' + icon.base64 + '"><span>' + esc(selected ? T.icon_selected : T.icon_select) + '</span></button>' +
+                '<button type="button" class="sl2-icon-delete">' + esc(T.icon_delete) + '</button>';
+            const [pick, del] = item.querySelectorAll('button');
+            pick.disabled = iconBusy;
+            pick.addEventListener('click', () => {
+                draft.iconBase64 = icon.base64;
+                iconError = '';
+                $('sl2-icon-error').textContent = '';
+                $('sl2-icon-status').textContent = T.icon_saved_selected;
+                renderSelectedIcon();
+                validate();
+            });
+            del.addEventListener('click', async () => {
+                if (!confirm(T.icon_delete_confirm)) return;
+                try {
+                    await api('/icons/' + icon.id + '/delete', { method: 'POST' });
+                    icons = icons.filter((i) => i.id !== icon.id);
+                    renderIconLibrary();
+                } catch (e) { fail(e.message); }
+            });
+            box.appendChild(item);
+        });
+    }
+
+    async function loadIcons() {
+        try { icons = (await api('/icons')).items || []; } catch (e) { icons = []; }
+        renderIconLibrary();
+    }
+
+    // Подготовка иконки как в SphereWeb3: PNG не больше 256×256 и 300 КБ.
+    async function prepareIcon(file) {
+        if (!/\.(png|ico|jpe?g|webp|gif|bmp)$/i.test(file.name)) throw new Error(T.icon_bad_format);
+        if (!file.size) throw new Error(T.icon_empty);
+        if (file.size > 20 * 1024 * 1024) throw new Error(T.icon_too_big);
+        const url = URL.createObjectURL(file);
+        const image = new Image();
+        let timeout;
+        try {
+            image.src = url;
+            try {
+                await Promise.race([image.decode(), new Promise((_, reject) => { timeout = setTimeout(() => reject(new Error('timeout')), 15000); })]);
+            } catch (e) { throw new Error(T.icon_unreadable); }
+            finally { clearTimeout(timeout); }
+            const width = image.naturalWidth, height = image.naturalHeight;
+            if (!width || !height || width > 32768 || height > 32768 || width * height > 64 * 1024 * 1024) throw new Error(T.icon_unreadable);
+            const canvas = document.createElement('canvas');
+            const scale = Math.min(1, 512 / Math.max(width, height));
+            canvas.width = Math.max(1, Math.round(width * scale));
+            canvas.height = Math.max(1, Math.round(height * scale));
+            const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+            for (const limit of [256, 192, 128, 96, 64, 32, 16]) {
+                const out = document.createElement('canvas');
+                const factor = Math.min(1, limit / Math.max(width, height));
+                out.width = Math.max(1, Math.round(width * factor));
+                out.height = Math.max(1, Math.round(height * factor));
+                const octx = out.getContext('2d');
+                octx.imageSmoothingEnabled = true;
+                octx.imageSmoothingQuality = 'high';
+                octx.drawImage(canvas, 0, 0, out.width, out.height);
+                const blob = await new Promise((resolve) => out.toBlob(resolve, 'image/png'));
+                if (!blob || blob.size > 300 * 1024) continue;
+                const bytes = new Uint8Array(await blob.arrayBuffer());
+                let binary = '';
+                for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+                return { base64: btoa(binary), width: out.width, height: out.height, size: blob.size };
+            }
+            throw new Error(T.icon_cannot_fit);
+        } finally {
+            clearTimeout(timeout);
+            image.src = '';
+            URL.revokeObjectURL(url);
+        }
+    }
+
+    async function handleIcon(file) {
+        if (!file) return;
+        const selection = ++iconSelection;
+        iconBusy = true;
+        iconError = '';
+        $('sl2-icon-error').textContent = '';
+        $('sl2-icon-drop').setAttribute('aria-busy', 'true');
+        $('sl2-icon-status').textContent = T.icon_preparing;
+        updateButtons();
+        try {
+            const icon = await prepareIcon(file);
+            if (selection !== iconSelection) return;
+            const saved = await api('/icons', { json: { base64: icon.base64 } });
+            icons = [saved].concat(icons.filter((i) => i.id !== saved.id));
+            if (selection !== iconSelection) return;
+            draft.iconBase64 = saved.base64;
+            $('sl2-icon-status').textContent = file.name + ' → ' + icon.width + '×' + icon.height + ', ' + formatBytes(icon.size);
+        } catch (e) {
+            if (selection !== iconSelection) return;
+            iconError = e.message;
+            $('sl2-icon-error').textContent = e.message;
+        } finally {
+            if (selection === iconSelection) {
+                iconBusy = false;
+                $('sl2-icon-drop').removeAttribute('aria-busy');
+                renderSelectedIcon();
+                validate();
+            }
+        }
+    }
+
+    $('sl2-icon-input').addEventListener('change', (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ''; handleIcon(f); });
+    const drop = $('sl2-icon-drop');
+    drop.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; drop.classList.add('drag-over'); });
+    drop.addEventListener('dragleave', (e) => { if (!drop.contains(e.relatedTarget)) drop.classList.remove('drag-over'); });
+    drop.addEventListener('drop', (e) => {
+        e.preventDefault();
+        drop.classList.remove('drag-over');
+        if (e.dataTransfer.files.length !== 1) { iconError = T.icon_one_file; $('sl2-icon-error').textContent = iconError; updateButtons(); return; }
+        handleIcon(e.dataTransfer.files[0]);
+    });
+    $('sl2-icon-reset').addEventListener('click', () => {
+        draft.iconBase64 = '';
+        iconError = '';
+        $('sl2-icon-error').textContent = '';
+        $('sl2-icon-status').textContent = {{ phrase('sl2_icon_drop_hint')|json_encode|raw }};
+        renderSelectedIcon();
+        validate();
+    });
+
+    /* ---------- сборка ---------- */
+
+    function upsertBuild(job) {
+        const i = builds.findIndex((b) => b.taskId === job.taskId);
+        if (i >= 0) builds[i] = job; else builds.unshift(job);
+    }
+
+    function renderCurrent() {
+        const job = builds.find((b) => b.taskId === activeTaskId);
+        $('sl2-current-empty').hidden = !!job;
+        $('sl2-current').hidden = !job;
+        if (!job) { updateButtons(); return; }
+        const status = $('sl2-current-status');
+        status.className = 'sl2-status st-' + job.status;
+        status.textContent = T['status_' + job.status] || job.status;
+        $('sl2-current-percent').textContent = job.progress + '%';
+        const bar = $('sl2-current-bar');
+        bar.style.width = job.progress + '%';
+        bar.parentElement.setAttribute('aria-valuenow', job.progress);
+        bar.classList.toggle('progress-bar-animated', isWorking(job.status));
+        bar.classList.toggle('progress-bar-striped', isWorking(job.status));
+        bar.classList.toggle('bg-success', job.status === 'completed');
+        bar.classList.toggle('bg-danger', job.status === 'failed');
+        $('sl2-current-title').textContent = job.title;
+        let message = job.status === 'running' ? T.compiling : (job.error || job.message);
+        if (job.status === 'completed' && !job.downloadUrl) message = T.saving_file;
+        $('sl2-current-message').textContent = message || '';
+        const done = job.status === 'completed' && !!job.downloadUrl;
+        $('sl2-artifact').hidden = !done;
+        $('sl2-download').hidden = !done;
+        if (done) {
+            $('sl2-artifact-name').textContent = job.fileName;
+            $('sl2-artifact-meta').textContent = formatBytes(job.fileSize) + ' · SHA-256 ' + String(job.sha256 || '').slice(0, 12) + '…';
+            $('sl2-download').href = job.downloadUrl;
+        }
+        updateButtons();
+    }
+
+    function renderHistory() {
+        const list = $('sl2-history');
+        list.innerHTML = '';
+        if (!builds.length) { list.innerHTML = '<li class="sl2-history-empty">' + esc(T.history_empty) + '</li>'; return; }
+        builds.forEach((job) => {
+            const li = document.createElement('li');
+            li.innerHTML = '<div class="sl2-h-main"><strong>' + esc(job.title) + '</strong><small><span class="sl2-status st-' + esc(job.status) + '">' + esc(T['status_' + job.status] || job.status) + '</span> ' + esc(formatDate(job.createdAt)) + '</small></div>' +
+                '<div class="sl2-h-actions">' +
+                (job.downloadUrl ? '<a class="btn btn-sm btn-success-light" title="' + esc(T.download) + '" href="' + esc(job.downloadUrl) + '"><i class="ri-download-2-line"></i></a>' : '') +
+                (!isWorking(job.status) ? '<button type="button" class="btn btn-sm btn-danger-light" title="' + esc(T.delete) + '"><i class="ri-delete-bin-line"></i></button>' : '') +
+                '</div>';
+            li.querySelector('.sl2-h-main').addEventListener('click', () => { activeTaskId = job.taskId; renderCurrent(); if (isWorking(job.status) || (job.status === 'completed' && !job.downloadUrl)) startPolling(); });
+            const del = li.querySelector('button');
+            if (del) del.addEventListener('click', async () => {
+                if (!confirm(T.history_delete_confirm)) return;
+                try {
+                    await api('/builds/' + job.taskId + '/delete', { method: 'POST' });
+                    builds = builds.filter((b) => b.taskId !== job.taskId);
+                    if (activeTaskId === job.taskId) activeTaskId = '';
+                    renderHistory();
+                    renderCurrent();
+                } catch (e) { fail(e.message); }
+            });
+            list.appendChild(li);
+        });
+    }
+
+    function stopPolling() { if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; } }
+
+    function startPolling() {
+        stopPolling();
+        const tick = async () => {
+            const taskId = activeTaskId;
+            if (!taskId) return;
+            try {
+                const job = await api('/builds/' + taskId);
+                upsertBuild(job);
+                if (taskId === activeTaskId) renderCurrent();
+                renderHistory();
+                const waitingFile = job.status === 'completed' && !job.downloadUrl;
+                if (isWorking(job.status) || waitingFile) pollTimer = setTimeout(tick, 2000);
+            } catch (e) {
+                const job = builds.find((b) => b.taskId === taskId);
+                if (job && taskId === activeTaskId) { $('sl2-current-message').textContent = e.message; }
+                // Временная ошибка сети или сервера сборки — пробуем ещё раз реже.
+                pollTimer = setTimeout(tick, 5000);
+            }
+        };
+        tick();
+    }
+
+    $('sl2-build').addEventListener('click', async () => {
+        if (validate().length) return;
+        const btn = $('sl2-build');
+        btn.disabled = true;
+        try {
+            const job = await api('/builds', { json: payload() });
+            upsertBuild(job);
+            activeTaskId = job.taskId;
+            renderCurrent();
+            renderHistory();
+            ok(T.build_started);
+            startPolling();
+        } catch (e) {
+            fail(e.message);
+        } finally { updateButtons(); }
+    });
+
+    /* ---------- старт ---------- */
+
+    fillForm();
+    renderHistory();
+    loadIcons();
+    const running = builds.find((b) => isWorking(b.status) || (b.status === 'completed' && !b.downloadUrl));
+    if (running) { activeTaskId = running.taskId; renderCurrent(); startPolling(); }
+    else if (builds[0]) { activeTaskId = builds[0].taskId; renderCurrent(); }
+})();
+</script>
 {% endblock %}

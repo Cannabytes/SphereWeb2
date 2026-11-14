@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sphere Launcher</title>
+    <link rel="manifest" href="/favicon/manifest.json">
+    <meta name="theme-color" content="#f0f8ff">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body style="--wails-draggable:drag">
+
+    <div class="launcher-container">
+        <!-- Video Background -->
+        <video class="launcher-video-bg" autoplay muted loop playsinline>
+            <source src="https://raw.githubusercontent.com/Cannabytes/otherobject/refs/heads/main/bg_hell.webm" type="video/webm">
+        </video>
+
+        <video class="launcher-video-bg" autoplay muted loop playsinline>
+            <source src="https://raw.githubusercontent.com/Cannabytes/otherobject/refs/heads/main/fire_hell.webm" type="video/webm">
+        </video>
+
+        <!-- Launcher Header with Integrated Controls -->
+        <div class="launcher-header">
+            <div class="launcher-title">
+                <span class="title">Sphere Launcher</span>
+            </div>
+
+            <div class="header-controls">
+                <div class="window-controls no-drag">
+                    <button class="control-btn minimize-btn no-drag" onclick="window.go.main.App.WindowMinimize()">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button class="control-btn close-btn no-drag" onclick="window.go.main.App.WindowClose()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- News Section - Left Tentacle -->
+            <div class="news-column">
+                <div class="news-column-header-actions">
+                    <button class="jellyfish-btn primary accountLink" style="display: none;">
+                        <i class="fa fa-id-card"></i>
+                        <span data-i18n="myAccount">Личный Кабинет</span>
+                        <div class="btn-ripple"></div>
+                    </button>
+                    <button class="jellyfish-btn primary registrationLink" style="display: none;">
+                        <i class="fas fa-user-plus"></i>
+                        <span data-i18n="registration">Регистрация</span>
+                        <div class="btn-ripple"></div>
+                    </button>
+                    <button class="jellyfish-btn primary forumLink" style="display: none;">
+                        <i class="fas fa-comments"></i>
+                        <span data-i18n="forum">Сообщество</span>
+                        <div class="btn-ripple"></div>
+                    </button>
+                    <button class="jellyfish-btn primary supportLink" style="display: none;">
+                        <i class="fas fa-headset"></i>
+                        <span data-i18n="support">Техподдержка</span>
+                        <div class="btn-ripple"></div>
+                    </button>
+                    <button class="jellyfish-btn primary descriptionLink" style="display: none;">
+                        <i class="fas fa-info-circle"></i>
+                        <span data-i18n="description">Описание</span>
+                        <div class="btn-ripple"></div>
+                    </button>
+                    <button class="jellyfish-btn primary donateLink" style="display: none;">
+                        <i class="fas fa-heart"></i>
+                        <span data-i18n="donations">Пожертвования</span>
+                        <div class="btn-ripple"></div>
+                    </button>
+                </div>
+
+                <div class="news-container" id="news-container">
+                    <!-- News items will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Main Download Section - Jellyfish Body -->
+            <div class="download-column">
+                <div class="jellyfish-body">
+                    <!-- Progress Section -->
+                    <div class="download-section">
+                        <div class="progress-label">
+                            <span data-i18n="overallProgress">Общий прогресс</span>
+                            <div class="progress-percentage" id="progress-percentage">0%</div>
+                        </div>
+                        <div class="progress-container overall-progress-bar-container">
+                            <div id="total-overall-progress" class="progress-bar"></div>
+                        </div>
+
+                        <!-- File List -->
+                        <div class="file-list-container">
+                            <div class="file-list-title" data-i18n="filesForUpdate">Файлы для обновления:</div>
+                            <div id="file-list" class="file-list">
+                                <p class="no-files" data-i18n="pressStartUpdate">Нажмите "Обновить игру" для проверки
+                                    файлов</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <div class="split-button-container">
+                            <button id="update-game-btn" class="jellyfish-btn action-danger split-button-main">
+                                <i class="fas fa-sync-alt"></i>
+                                <span data-i18n="startUpdateGame">Обновить игру</span>
+                            </button>
+                            <button id="update-options-toggle" class="jellyfish-btn action-danger split-button-toggle">
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                            <div id="update-options-menu" class="split-button-menu">
+                                <button id="full-update-btn" class="dropdown-item"
+                                    title="Проверяет все файлы принудительно, включая те, что помечены как force=0">
+                                    <i class="fas fa-redo-alt"></i>
+                                    <span data-i18n="fullFileCheck">Полная проверка файлов</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button id="cancel-download-btn" class="jellyfish-btn action-danger" disabled
+                            style="display: none;">
+                            <i class="fas fa-times"></i>
+                            <span data-i18n="cancel">Отменить</span>
+                        </button>
+                        <div id="launch-buttons-container" class="launch-buttons-container">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Statistics Bar -->
+        <div class="bottom-bar">
+            <div class="bottom-left">
+                <div id="settings-btn-launcher" class="settings-btn settings-yellow">
+                    <i class="fas fa-cog"></i>
+                    <span data-i18n="settings">Настройки</span>
+                </div>
+            </div>
+
+            <div class="download-stats-table">
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span class="stat-label" data-i18n="speed">Скорость:</span>
+                        <span class="stat-value" id="current-speed">0 КБ/с</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-archive"></i>
+                        <span class="stat-label" data-i18n="loadingFiles">Файлы:</span>
+                        <span class="stat-value" id="downloaded-files-count">-- / --</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-search"></i>
+                        <span class="stat-label" data-i18n="scanningTime">Сканирование:</span>
+                        <span class="stat-value" id="scan-time">--</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-download"></i>
+                        <span class="stat-label" data-i18n="loadingTime">Загрузка:</span>
+                        <span class="stat-value" id="download-time">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal">
+            <div class="modal-overlay"></div>
+            <div class="modal-content jellyfish-modal">
+                <div class="modal-header">
+                    <h2>
+                        <i class="fas fa-cogs"></i>
+                        <span data-i18n="settingsTitle">Настройки лаунчера</span>
+                    </h2>
+                    <button id="close-modal-btn" class="close-modal-btn no-drag">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="setting-item">
+                        <label for="setting-max-concurrent-downloads" data-i18n="maxDownloads">Макс. одновременных
+                            загрузок:</label>
+                        <div class="input-group">
+                            <input type="number" id="setting-max-concurrent-downloads" value="3" min="1" max="20">
+                            <span>(1-20)</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="setting-archive-in-appdata">
+                            <input type="checkbox" id="setting-archive-in-appdata" class="jellyfish-checkbox">
+                            <span class="checkbox-custom"></span>
+                            <span data-i18n="saveToAppData">
+                                Кэшировать загрузки в <span id="open-appdata-archive-link"
+                                    class="clickable-link">AppData</span>
+                            </span>
+                        </label>
+                        <small data-i18n="descSaveToAppData">Ускоряет повторную проверку файлов, но занимает место в
+                            системной папке.</small>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="lang-switcher" data-i18n="langInterface">Язык интерфейса:</label>
+                        <div class="input-group">
+                            <select id="lang-switcher" name="language" class="jellyfish-select">
+                                <option value="ru">Русский</option>
+                                <option value="en">English</option>
+                                <option value="pt">Português</option>
+                                <option value="es">Español</option>
+                                <option value="el">Ελληνικά</option>
+                                <option value="uk">Українська</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button id="save-settings-btn" class="jellyfish-btn modal-primary">
+                        <i class="fas fa-save"></i>
+                        <span data-i18n="save">Сохранить</span>
+                    </button>
+                    <button id="cancel-settings-btn" class="jellyfish-btn modal-secondary">
+                        <i class="fas fa-times"></i>
+                        <span data-i18n="close">Закрыть</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accounts Modal -->
+        <div id="accounts-modal" class="modal">
+            <div class="modal-overlay"></div>
+            <div class="modal-content jellyfish-modal" style="max-width: 720px;">
+                <div class="modal-header">
+                    <h2>
+                        <i class="fas fa-users"></i>
+                        <span data-i18n="accountsTitle">Управление аккаунтами</span>
+                    </h2>
+                    <button id="close-accounts-modal-btn" class="close-modal-btn no-drag">&times;</button>
+                </div>
+                <div class="modal-body" style="gap:16px">
+                    <div style="overflow:auto; max-height: 40vh;">
+                        <table class="accounts-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:28%" data-i18n="accountLogin">Аккаунт</th>
+                                    <th style="width:28%" data-i18n="accountPassword">Пароль</th>
+                                    <th style="width:28%" data-i18n="accountCharacter">Персонаж</th>
+                                    <th style="width:16%">&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody id="accounts-table-body">
+                                <tr>
+                                    <td colspan="4" class="accounts-empty" data-i18n="noAccounts">Список пуст</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="accounts-inline-form">
+                        <input id="add-account-name" type="text" placeholder="Логин" data-i18n-attr="placeholder"
+                            data-i18n="accountLogin">
+                        <input id="add-account-password" type="password" placeholder="Пароль"
+                            data-i18n-attr="placeholder" data-i18n="accountPassword">
+                        <input id="add-account-character" type="text" placeholder="Персонаж"
+                            data-i18n-attr="placeholder" data-i18n="accountCharacter">
+                        <button id="add-account-btn" class="jellyfish-btn modal-primary" title="Добавить"
+                            data-i18n-attr="title" data-i18n="addAccount"
+                            style="padding:8px 10px; min-width:auto; width:42px; display:inline-flex; justify-content:center;">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel-accounts-btn" class="jellyfish-btn modal-secondary"><i
+                            class="fas fa-times"></i><span data-i18n="close">Закрыть</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Notification -->
+    <div id="update-notification" class="update-notification">
+        <div class="notification-content">
+            <div class="notification-icon">
+                <i class="fas fa-arrow-alt-circle-up"></i>
+            </div>
+            <div class="notification-text">
+                <span id="update-notification-text"></span>
+            </div>
+            <button id="update-now-btn" class="jellyfish-btn notification-btn"
+                data-i18n="updateLauncherButton">Обновить...</button>
+        </div>
+    </div>
+
+    <script>
+        function openUrl(url) { window.open(url, '_blank'); }
+        document.getElementById('cancel-settings-btn').addEventListener('click', () => { document.getElementById('settings-modal').style.display = 'none'; });
+        function openExternalUrl(url) {
+            window.go.main.App.OpenURLInDefaultBrowser(url).then(() => {
+                console.log("URL должен был открыться в браузере по умолчанию.");
+            }).catch((err) => {
+                console.error("Ошибка при попытке открыть URL:", err);
+            });
+        }
+    </script>
+
+    <script src="fileio.js"></script>
+    <script src="launcher.js?v=0.0.0.10"></script>
+    <script src="interface.js?v=0.0.0.1"></script>
+
+    <script>
+        // Ждем, пока вся страница (HTML) не будет полностью загружена.
+        // Это гарантирует, что все кнопки уже существуют, когда скрипт попытается их найти.
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Находим наши кнопки и меню по их ID
+            const toggleButton = document.getElementById('update-options-toggle');
+            const menu = document.getElementById('update-options-menu');
+            const fullUpdateButton = document.getElementById('full-update-btn');
+
+            // Проверяем, нашлись ли все элементы, чтобы избежать ошибок
+            if (toggleButton && menu && fullUpdateButton) {
+
+                // Добавляем обработчик клика на кнопку со стрелкой
+                toggleButton.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Останавливаем "всплытие" клика, чтобы он не закрыл меню сразу же
+                    menu.classList.toggle('show'); // Показываем или скрываем меню, добавляя/убирая класс 'show'
+                });
+
+                // Добавляем обработчик клика на кнопку "Полное обновление"
+                fullUpdateButton.addEventListener('click', () => {
+                    menu.classList.remove('show'); // Прячем меню после выбора опции
+                });
+
+                // Добавляем обработчик клика на всё окно, чтобы закрывать меню при клике в любом другом месте
+                window.addEventListener('click', (event) => {
+                    // Если меню показано, и клик был НЕ по кнопке-стрелке и НЕ внутри самого меню
+                    if (menu.classList.contains('show') && !toggleButton.contains(event.target) && !menu.contains(event.target)) {
+                        menu.classList.remove('show'); // Прячем меню
+                    }
+                });
+
+            } else {
+                // Если какой-то элемент не найден, выводим ошибку в консоль разработчика (F12)
+                console.error('Не удалось найти один или несколько элементов для выпадающего меню. Проверьте ID в HTML.');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -4,13 +4,25 @@
 
 {% block content %}
 
+<style>
+    .sl2-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1rem; padding: 6px; border: 1px solid var(--default-border, rgba(127,127,127,.25)); border-radius: 12px; }
+    .sl2-nav a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; color: var(--default-text-color, inherit); font-weight: 500; text-decoration: none; }
+    .sl2-nav a:hover { background: rgba(var(--primary-rgb, 13,110,253), .08); }
+    .sl2-nav a.active { background: rgb(var(--primary-rgb, 13,110,253)); color: #fff; }
+</style>
 <div class="container-fluid">
+    <nav class="sl2-nav mb-3" aria-label="Sphere Launcher">
+        <a href="/admin/plugin/sphereLauncher2" class="{{ sl2_section == 'overview' ? 'active' }}"><i class="ri-dashboard-line"></i> {{ phrase('sl2_nav_overview') }}</a>
+        <a href="/admin/plugin/sphereLauncher2/compile" class="{{ sl2_section == 'create' ? 'active' }}"><i class="ri-add-box-line"></i> {{ phrase('sl2_nav_create') }}</a>
+        <a href="/admin/plugin/sphereLauncher2/archives" class="{{ sl2_section == 'archives' ? 'active' }}"><i class="ri-archive-line"></i> {{ phrase('sl2_nav_archives') }}</a>
+        <a href="/admin/plugins/sphereLauncher2/config" class="{{ sl2_section == 'config' ? 'active' }}"><i class="ri-file-code-line"></i> {{ phrase('sl2_nav_config') }}</a>
+    </nav>
     <div class="row ">
         <div class="col-xl-12">
             <div class="card custom-card">
                 <div class="card-header">
                     <div class="card-title">
-                        1. {{ phrase('sl2_json_config_generator_launcher') }}
+                        1.{{ phrase('sl2_json_config_generator_launcher') }}
                     </div>
                 </div>
                 <div class="card-body">

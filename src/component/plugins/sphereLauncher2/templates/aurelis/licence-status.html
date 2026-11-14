@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статус Лицензии</title>
+
+    <script src="/wails/runtime.js" defer></script>
+    <script src="/wailsjs/go/main/App.js" defer></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* CSS-переменные для консистентности со стилем проекта */
+        :root {
+            --primary: #00d4ff;
+            --primary-dark: #0099cc;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg-primary: rgba(8, 8, 16, 0.95);
+            --bg-secondary: rgba(15, 15, 30, 0.9);
+            --bg-glass: rgba(25, 25, 50, 0.6);
+            --text-primary: #ffffff;
+            --text-secondary: #b4b8c7;
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-accent: rgba(0, 212, 255, 0.3);
+            --border-radius: 12px;
+            --transition-base: 0.25s ease;
+        }
+
+        /* Базовые стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Анимированный фон (взят со страницы create.html для консистентности) */
+        .cyber-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .gradient-layer {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, #0a0015, #1a0033, #000a1a, #0d1b2a, #0a0015);
+            animation: gradientShift 20s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .grid-overlay {
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 30s linear infinite;
+        }
+
+        @keyframes gridMove {
+            100% {
+                transform: translateX(50px) translateY(50px);
+            }
+        }
+
+        /* Основная карточка статуса */
+        .status-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            transition: border-color var(--transition-base), box-shadow var(--transition-base);
+            position: relative;
+        }
+
+        /* --- Стили для состояний --- */
+        .status-card.status-active {
+            border-color: var(--success);
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .status-card.status-warning {
+            border-color: var(--warning);
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .status-card.status-expired {
+            border-color: var(--error);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Заголовок карточки */
+        .status-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .status-icon {
+            font-size: 32px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-base);
+        }
+
+        .status-active .status-icon {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .status-warning .status-icon {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            animation: pulse-warning 2s infinite;
+        }
+
+        .status-expired .status-icon {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--error);
+            animation: pulse-error 1.2s infinite;
+        }
+
+        @keyframes pulse-warning {
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+            }
+        }
+
+        @keyframes pulse-error {
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+            }
+        }
+
+        .status-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Главная информация (оставшиеся дни) */
+        .status-main {
+            margin-bottom: 30px;
+        }
+
+        #daysLeftDisplay {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 72px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .status-active #daysLeftDisplay {
+            color: var(--success);
+        }
+
+        .status-warning #daysLeftDisplay {
+            color: var(--warning);
+        }
+
+        .status-expired #daysLeftDisplay {
+            color: var(--error);
+        }
+
+        #statusMessage {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        /* Детали лицензии */
+        .status-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+        }
+
+        .detail-value {
+            font-weight: 500;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Кнопка */
+        .btn-renew {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border: 1px solid;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            color: #fff;
+        }
+
+        .status-warning .btn-renew {
+            background-color: var(--warning);
+            border-color: var(--warning);
+        }
+
+        .status-expired .btn-renew {
+            background-color: var(--error);
+            border-color: var(--error);
+        }
+
+        .btn-renew:hover {
+            transform: translateY(-2px);
+        }
+
+        .status-warning .btn-renew:hover {
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .status-expired .btn-renew:hover {
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5);
+        }
+
+        /* Стили для кнопки "Продолжить" */
+        .btn-continue {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            color: #fff;
+            background-color: var(--primary);
+        }
+
+        .btn-continue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4);
+            background-color: var(--primary-dark);
+        }
+
+        #continueButtonContainer {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cyber-background">
+        <div class="gradient-layer"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <div id="statusCard" class="status-card">
+        <div class="status-header">
+            <div id="statusIcon" class="status-icon">
+                <i class="fas fa-shield-halved"></i>
+            </div>
+            <h1 id="statusTitle">Статус лицензии</h1>
+        </div>
+
+        <div class="status-main">
+            <div id="daysLeftDisplay">--</div>
+            <p id="statusMessage">Получение данных...</p>
+        </div>
+
+        <div class="status-details">
+            <div class="detail-item">
+                <span class="detail-label">Дата истечения:</span>
+                <span id="licenseExpiry" class="detail-value">—</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Льготный период:</span>
+                <span id="graceDays" class="detail-value">—</span>
+            </div>
+        </div>
+
+        <!-- Кнопка "Продолжить" -->
+        <div id="continueButtonContainer" style="display: none;">
+            <button id="continueButton" class="btn-continue">
+                <i class="fas fa-arrow-right"></i>
+                Продолжить
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        class LicenseStatusManager {
+            constructor() {
+                // Получаем все необходимые DOM-элементы по их ID
+                this.card = document.getElementById('statusCard');
+                this.icon = document.getElementById('statusIcon').querySelector('i');
+                this.title = document.getElementById('statusTitle');
+                this.message = document.getElementById('statusMessage');
+                this.daysLeftDisplay = document.getElementById('daysLeftDisplay');
+                this.expiry = document.getElementById('licenseExpiry');
+                this.graceDays = document.getElementById('graceDays');
+                this.continueButtonContainer = document.getElementById('continueButtonContainer');
+                this.continueButton = document.getElementById('continueButton');
+
+                // Добавляем обработчик нажатия на кнопку "Продолжить"
+                if (this.continueButton) {
+                    this.continueButton.addEventListener('click', () => {
+                        window.location.href = '/index.html';
+                    });
+                }
+            }
+
+            // Функция для правильного склонения слова "день"
+            getDaysUnit(days) {
+                days = Math.abs(days);
+                if (days % 10 === 1 && days % 100 !== 11) {
+                    return 'день';
+                }
+                if ([2, 3, 4].includes(days % 10) && ![12, 13, 14].includes(days % 100)) {
+                    return 'дня';
+                }
+                return 'дней';
+            }
+
+            updateStatus(status) {
+                // Если защита не включена, ничего не делаем
+                if (!status || !status.enabled) {
+                    this.message.textContent = 'Защита по времени не активна.';
+                    this.continueButtonContainer.style.display = 'none';
+                    return;
+                }
+
+                // Получаем данные из Go
+                const daysLeft = status.daysLeft || 0;
+                const graceDays = status.graceDays || 0;
+                const totalValidDays = daysLeft + graceDays;
+
+                this.expiry.textContent = status.expiryDate || '—';
+                this.graceDays.textContent = `${graceDays} ${this.getDaysUnit(graceDays)}`;
+
+                let statusClass = 'active';
+                let iconClass = 'fas fa-shield-halved';
+                let titleText = 'Лицензия активна';
+                let messageText = '';
+                let daysDisplayText = daysLeft;
+
+                if (daysLeft < 0) { // Лицензия истекла
+                    if (totalValidDays < 0) { // Истек и льготный период
+                        statusClass = 'expired';
+                        iconClass = 'fas fa-ban';
+                        titleText = 'Лицензия истекла';
+                        messageText = `Срок действия закончился ${-totalValidDays} ${this.getDaysUnit(-totalValidDays)} назад`;
+                        daysDisplayText = '0';
+                        // Показываем кнопку "Продолжить" когда лицензия полностью истекла
+                        this.continueButtonContainer.style.display = 'block';
+                    } else { // Активен льготный период
+                        statusClass = 'warning';
+                        iconClass = 'fas fa-hourglass-half';
+                        titleText = 'Льготный период';
+                        messageText = `Осталось ${totalValidDays} ${this.getDaysUnit(totalValidDays)} до полной блокировки`;
+                        daysDisplayText = totalValidDays;
+                        // Скрываем кнопку "Продолжить" в льготном периоде
+                        this.continueButtonContainer.style.display = 'none';
+                    }
+                } else if (daysLeft < 30) { // Скоро истекает
+                    statusClass = 'warning';
+                    iconClass = 'fas fa-triangle-exclamation';
+                    titleText = 'Лицензия скоро истечёт';
+                    messageText = `Осталось ${daysLeft} ${this.getDaysUnit(daysLeft)}`;
+                    // Скрываем кнопку "Продолжить"
+                    this.continueButtonContainer.style.display = 'none';
+                } else { // Всё в порядке
+                    messageText = `Осталось ${daysLeft} ${this.getDaysUnit(daysLeft)}`;
+                    // Скрываем кнопку "Продолжить"
+                    this.continueButtonContainer.style.display = 'none';
+                }
+
+                // Применяем классы и текст
+                this.card.className = `status-card status-${statusClass}`;
+                this.icon.className = iconClass;
+                this.title.textContent = titleText;
+                this.message.textContent = messageText;
+                this.daysLeftDisplay.textContent = daysDisplayText;
+
+
+            }
+        }
+
+        // --- Логика инициализации и обновления ---
+        const licenseManager = new LicenseStatusManager();
+
+        function fetchAndUpdateStatus() {
+            if (window.go && window.go.main && window.go.main.App && window.go.main.App.GetTimeLockStatus) {
+                window.go.main.App.GetTimeLockStatus()
+                    .then(status => {
+                        licenseManager.updateStatus(status);
+                    })
+                    .catch(err => {
+                        console.error('Ошибка получения статуса лицензии:', err);
+                        licenseManager.message.textContent = 'Ошибка получения данных о лицензии.';
+                    });
+            } else {
+                console.warn("Wails GO runtime не готов, повторная попытка...");
+                setTimeout(fetchAndUpdateStatus, 200);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAndUpdateStatus(); // Запускаем при загрузке
+            setInterval(fetchAndUpdateStatus, 15 * 60 * 1000); // Периодически обновляем (каждые 15 минут)
+        });
+
+    </script>
+</body>
+
+</html>

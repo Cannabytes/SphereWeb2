@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Обновление</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: transparent; /* Для эффекта Mica/акрила */
+      color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container {
+      /* Можно добавить фон, если эффект прозрачности не сработает */
+      /* background-color: rgba(36, 36, 36, 0.8); */
+      padding: 40px;
+      border-radius: 12px;
+    }
+    h2 {
+      font-size: 22px;
+      margin-bottom: 15px;
+      color: #00d4ff;
+      text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+    }
+    p {
+      font-size: 16px;
+      margin-bottom: 30px;
+      color: #b0b0b0;
+    }
+    .spinner {
+      margin: 0 auto;
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #00d4ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2 id="title">Updating...</h2>
+  <p id="message">Please wait...</p>
+  <div class="spinner"></div>
+</div>
+
+<script>
+  function loadTranslations() {
+    // Проверяем доступность Go бэкенда
+    if (window.go && window.go.main && window.go.main.UpdaterApp) {
+      // Получаем переводы от Go бэкенда
+      window.go.main.UpdaterApp.GetTranslations()
+              .then(translations => {
+                console.log('[UpdaterWindow] Получены переводы:', translations);
+
+                // Обновляем текст на странице
+                const titleElement = document.getElementById('title');
+                const messageElement = document.getElementById('message');
+
+                if (titleElement && translations.title) {
+                  titleElement.textContent = translations.title;
+                }
+
+                if (messageElement && translations.wait) {
+                  messageElement.textContent = translations.wait;
+                }
+
+                // Обновляем заголовок страницы
+                if (translations.title) {
+                  document.title = translations.title;
+                }
+              })
+              .catch(error => {
+                console.error('[UpdaterWindow] Ошибка получения переводов:', error);
+                // Используем fallback на английский
+                document.getElementById('title').textContent = 'Updating Launcher...';
+                document.getElementById('message').textContent = 'Please wait. The application will restart automatically.';
+                document.title = 'Updating Launcher...';
+              });
+    } else {
+      console.warn('[UpdaterWindow] Go бэкенд недоступен, повторная попытка через 100мс...');
+      // Пробуем еще раз через 100мс
+      setTimeout(loadTranslations, 100);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Даем небольшую задержку для инициализации Wails
+    setTimeout(loadTranslations, 50);
+  });
+</script>
+</body>
+</html>

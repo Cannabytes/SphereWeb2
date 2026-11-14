@@ -1,0 +1,1586 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        /* Global Reset and Base Styles */
+        html {
+            background: transparent;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #e8e8e8;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: transparent;
+            position: relative;
+        }
+
+        /* Main Launcher Container */
+        .launcher-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(25, 30, 40, 1);
+            border-radius: 30px;
+            overflow: hidden;
+            z-index: 1;
+            clip-path: ellipse(95% 100% at center);
+            border: none;
+            box-shadow: none;
+        }
+
+        /* Video Background */
+        .launcher-video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0.4;
+            border-radius: 30px;
+        }
+
+        /* Launcher Header with Window Controls */
+        .launcher-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            border-bottom: 1px solid rgba(173, 216, 230, 0.2);
+            border-radius: 30px 30px 0 0;
+        }
+
+        .launcher-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #e8e8e8;
+            letter-spacing: 0.5px;
+        }
+
+        .launcher-title i {
+            color: #4a90e2;
+            font-size: 24px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+
+        .launcher-version {
+            font-size: 12px;
+            color: #74a9ff;
+            font-weight: 500;
+            background: rgba(74, 144, 226, 0.1);
+            padding: 4px 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(74, 144, 226, 0.2);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .control-btn:hover::before {
+            opacity: 1;
+        }
+
+        .minimize-btn {
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.2), rgba(116, 169, 255, 0.1));
+            color: #4a90e2;
+            border: 1px solid rgba(74, 144, 226, 0.3);
+        }
+
+        .close-btn {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(192, 57, 43, 0.1));
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+
+        .control-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .minimize-btn:hover {
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.3), rgba(116, 169, 255, 0.2));
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .close-btn:hover {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.3), rgba(192, 57, 43, 0.2));
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Preview Mode Banner Styles */
+        #preview-mode-banner button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        #preview-mode-banner button:active {
+            transform: scale(0.95);
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            padding: 10px 10px 0 10px;
+            min-height: 0;
+        }
+
+        /* News Column - Left Tentacle */
+        .news-column {
+            flex: 0 0 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e8e8e8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .section-title i {
+            color: #74a9ff;
+            font-size: 20px;
+        }
+
+        .news-column-header-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Jellyfish Buttons */
+        .jellyfish-btn {
+            position: relative;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .jellyfish-btn.primary {
+            background: linear-gradient(135deg, #4a90e200, #5ba3f500);
+            color: white;
+        }
+
+        .jellyfish-btn.secondary {
+            background: linear-gradient(135deg, #2c3e50, rgb(44 56 67 / 80%));
+            color: #4a90e2;
+            border: 1px solid rgba(74, 144, 226, 0.2);
+        }
+
+        .jellyfish-btn.action-primary {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+
+        .jellyfish-btn.action-danger {
+            background: linear-gradient(135deg, #a10000, #470303);
+            color: white;
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+
+        .jellyfish-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .jellyfish-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* News Container */
+        .news-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .news-item {
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(173, 216, 230, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .news-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(173, 216, 230, 0.3);
+            border-color: rgba(74, 144, 226, 0.4);
+        }
+
+        .news-date {
+            font-size: 12px;
+            color: #ddeedd;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .news-header {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ddeedd;
+        }
+
+        .news-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #ddeedd;
+        }
+
+        /* Download Column - Main Jellyfish Body */
+        .download-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            /* Фиксированная высота */
+            max-height: 100%;
+            /* Максимальная высота */
+            overflow: hidden;
+            /* Предотвращаем переполнение */
+        }
+
+        .jellyfish-body {
+            height: 100%;
+            /* Фиксированная высота */
+            max-height: 100%;
+            /* Максимальная высота */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow: hidden;
+            /* Предотвращаем переполнение */
+        }
+
+        /* ИСПРАВЛЕННАЯ Progress Section - адаптируем из рабочего шаблона */
+        .progress-container.overall-progress-bar-container {
+            margin-bottom: 10px;
+            height: 12px;
+            min-height: 12px;
+            max-height: 12px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #0a0908 0%, #181614 30%, #141210 70%, #0a0908 100%);
+            border: 1px solid #3a3530;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9),
+                inset 0 -2px 2px rgba(70, 65, 60, 0.2),
+                0 2px 4px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            flex-shrink: 0;
+            /* Не сжимается */
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #dbdbdb;
+            height: 20px;
+            /* Фиксированная высота */
+            flex-shrink: 0;
+            /* Не сжимается */
+        }
+
+        .progress-percentage {
+            font-size: 14px;
+            color: #4a90e2;
+        }
+
+
+
+        /* КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Базовые стили прогресс-бара как в рабочем шаблоне */
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+
+            /* Основной градиент для обычного состояния - адаптируем зеленый из рабочего шаблона в синий */
+            background: linear-gradient(90deg,
+                    #2c4a6b 0%,
+                    #3c5a7b 15%,
+                    #4c6a8b 30%,
+                    #5c7a9b 50%,
+                    #4c6a8b 70%,
+                    #3c5a7b 85%,
+                    #2c4a6b 100%);
+
+            /* Добавляем свечение в стиле jellyfish */
+            box-shadow: 0 0 8px rgba(92, 122, 155, 0.6),
+                inset 0 1px 2px rgba(124, 152, 185, 0.8),
+                inset 0 -1px 1px rgba(44, 74, 107, 0.8);
+        }
+
+        /* Специальное правило для общего прогресс-бара */
+        .overall-progress-bar-container .progress-bar {
+            border-radius: 5px;
+            height: 100%;
+        }
+
+        /* Анимированный эффект для активной загрузки */
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    rgba(255, 255, 255, 0.1) 25%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    rgba(255, 255, 255, 0.1) 75%,
+                    transparent 100%);
+            border-radius: inherit;
+        }
+
+        /* Анимация мерцающего эффекта */
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* Эффект пульсации для активной загрузки */
+        .progress-bar.downloading {
+            animation: pulse-glow 1.5s ease-in-out infinite alternate;
+        }
+
+        .progress-bar.downloading::before {
+            animation: shimmer 2s infinite linear;
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 8px rgba(92, 122, 155, 0.6),
+                    inset 0 1px 2px rgba(124, 152, 185, 0.8),
+                    inset 0 -1px 1px rgba(44, 74, 107, 0.8);
+            }
+
+            100% {
+                box-shadow: 0 0 15px rgba(92, 122, 155, 0.9),
+                    0 0 25px rgba(92, 122, 155, 0.4),
+                    inset 0 1px 2px rgba(124, 152, 185, 1),
+                    inset 0 -1px 1px rgba(44, 74, 107, 0.8);
+            }
+        }
+
+        /* Состояния прогресс-бара */
+        .progress-bar.checking {
+            background: linear-gradient(90deg, #f39c12, #e67e22, #f39c12);
+            box-shadow: 0 0 8px rgba(243, 156, 18, 0.6),
+                inset 0 1px 2px rgba(255, 183, 77, 0.8),
+                inset 0 -1px 1px rgba(183, 125, 14, 0.8);
+        }
+
+        .progress-bar.completed {
+            background: linear-gradient(90deg, #27ae60, #2ecc71, #27ae60);
+            box-shadow: 0 0 10px rgba(39, 174, 96, 0.7),
+                inset 0 1px 2px rgba(77, 208, 135, 0.9),
+                inset 0 -1px 1px rgba(31, 139, 76, 0.8);
+            animation: none;
+        }
+
+        .progress-bar.error {
+            background: linear-gradient(90deg, #e74c3c, #c0392b, #e74c3c);
+            box-shadow: 0 0 8px rgba(231, 76, 60, 0.6),
+                inset 0 1px 2px rgba(255, 107, 92, 0.8),
+                inset 0 -1px 1px rgba(192, 57, 43, 0.8);
+            animation: none;
+        }
+
+        .progress-bar.cancelled {
+            background: linear-gradient(90deg, #95a5a6, #7f8c8d, #95a5a6);
+            box-shadow: 0 0 5px rgba(149, 165, 166, 0.4),
+                inset 0 1px 1px rgba(189, 195, 199, 0.6),
+                inset 0 -1px 1px rgba(127, 140, 141, 0.8);
+            animation: none;
+        }
+
+        /* Дополнительные классы от JavaScript */
+        .progress-bar.updating {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .progress-bar.near-completion {
+            box-shadow: 0 0 10px rgba(39, 174, 96, 0.5);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Download Section - ИСПРАВЛЕНО: строгая высота без растягивания */
+        .download-section {
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 60px);
+            /* Фиксированная высота, отнимаем место для кнопок */
+            max-height: calc(100% - 60px);
+            /* Максимальная высота */
+            overflow: hidden;
+            gap: 10px;
+        }
+
+        /* Ensure progress label and action buttons align horizontally when present */
+        .download-section .progress-label,
+        .download-section .download-actions,
+        .download-section .action-buttons {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        /* File List Container - ИСПРАВЛЕНО: строгие ограничения высоты */
+        .file-list-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 5%);
+            /* Фиксированная высота с отступом 5% */
+            max-height: calc(100% - 5%);
+            /* Максимальная высота */
+            overflow: hidden;
+            min-height: 200px;
+            /* Минимальная высота для читаемости */
+        }
+
+        .file-list-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e8e8e8;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(100, 150, 180, 0.3);
+            flex-shrink: 0;
+            height: auto;
+            /* Автоматическая высота только для заголовка */
+        }
+
+        .file-list {
+            flex: 1;
+            overflow-y: auto;
+            /* Прокрутка при переполнении */
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(100, 150, 180, 0.2);
+            max-height: 100%;
+            /* Жесткое ограничение высоты */
+            min-height: 150px;
+            /* Минимальная высота для списка */
+        }
+
+        .no-files {
+            text-align: center;
+            padding: 40px 20px;
+            color: #ddeedd;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .file-item {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            border-left: 4px solid #4a90e2;
+            transition: all 0.3s ease;
+        }
+
+        .file-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(173, 216, 230, 0.2);
+        }
+
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: #ddeedd;
+            max-width: 70%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-size-info {
+            font-size: 12px;
+            color: #ddeedd;
+        }
+
+        .file-status-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .file-status {
+            font-weight: 500;
+            color: #4a90e2;
+        }
+
+        .file-downloaded-bytes {
+            color: #ddeedd;
+        }
+
+        .file-item .progress-container {
+            height: 4px;
+            background: rgba(173, 216, 230, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .file-item .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4a90e2, #74a9ff);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        /* Action Buttons - ИСПРАВЛЕНО: фиксированная высота */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            align-items: center;
+            flex-shrink: 0;
+            /* Не сжимаются */
+            height: 50px;
+            /* Фиксированная высота */
+            min-height: 50px;
+            /* Минимальная высота */
+            max-height: 50px;
+            /* Максимальная высота */
+            padding: 10px 0;
+            /* Внутренние отступы */
+        }
+
+        /* Launch Buttons Container */
+        .launch-buttons-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Launch Game Buttons Styling */
+        .launch-buttons-container .btn,
+        .launch-buttons-container button {
+            position: relative;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 25px;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: white;
+            min-width: 120px;
+        }
+
+        .launch-buttons-container .btn:hover,
+        .launch-buttons-container button:hover {
+            transform: translateY(-2px);
+        }
+
+        .launch-buttons-container .btn:active,
+        .launch-buttons-container button:active {
+            transform: translateY(0);
+        }
+
+        .launch-buttons-container .btn:disabled,
+        .launch-buttons-container button:disabled {
+            background: rgba(30, 38, 46, 0.35) !important;
+            color: rgba(116, 132, 143, 0.7);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .launch-buttons-container .btn:disabled:hover,
+        .launch-buttons-container button:disabled:hover {
+            transform: none;
+        }
+
+        .launch-buttons-container .btn i,
+        .launch-buttons-container button i {
+            font-size: 14px;
+            color: inherit;
+        }
+
+        /* Bottom Statistics Bar */
+        .bottom-bar {
+            padding: 5px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #4a90e2;
+            font-weight: 500;
+        }
+
+        .settings-btn:hover {
+            background: rgba(28, 106, 106, 0.58);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(173, 216, 230, 0.3);
+        }
+
+        /* Yellow variant for settings button: icon + text in yellow */
+        .settings-btn.settings-yellow {
+            color: #f1c40f;
+            /* friendly yellow */
+        }
+
+        .settings-btn.settings-yellow i {
+            color: inherit;
+            /* ensure icon follows text color */
+        }
+
+        /* Slightly warmer hover for the yellow settings button */
+        .settings-btn.settings-yellow:hover {
+            background: rgba(241, 196, 15, 0.08);
+            box-shadow: 0 6px 18px rgba(241, 196, 15, 0.08);
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .stat-item i {
+            color: #4a90e2;
+            font-size: 14px;
+        }
+
+        .stat-label {
+            color: #ddeedd;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            color: #ddeedd;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Update Notification */
+        .update-notification {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(230, 243, 255, 0.9));
+            border-top: 1px solid rgba(173, 216, 230, 0.3);
+            padding: 20px;
+            transform: translateY(100%);
+            visibility: hidden;
+            transition: transform 0.4s ease-in-out, visibility 0s linear 0.4s;
+            z-index: 10001;
+        }
+
+        .update-notification.visible {
+            transform: translateY(0);
+            visibility: visible;
+            transition: transform 0.4s ease-in-out, visibility 0s;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .notification-icon {
+            font-size: 24px;
+            color: #4a90e2;
+        }
+
+        .notification-text {
+            flex: 1;
+            font-size: 14px;
+            color: #ddeedd;
+            font-weight: 500;
+        }
+
+        .jellyfish-btn.notification-btn {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.3);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: absolute;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            animation: fade-in 0.3s ease-out;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 30px;
+            clip-path: ellipse(95% 100% at center);
+        }
+
+        .jellyfish-modal {
+            background: linear-gradient(135deg, #111518, rgb(36 53 69 / 71%));
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(173, 216, 230, 0.4);
+            border: 1px solid rgba(173, 216, 230, 0.3);
+            width: 90%;
+            max-width: 500px;
+            animation: modal-slide-in 0.3s ease-out;
+            position: relative;
+            z-index: 10001;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes modal-slide-in {
+            from {
+                transform: translateY(-30px) scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid rgba(173, 216, 230, 0.2);
+            border-radius: 25px 25px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ddeedd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header h2 i {
+            color: #4a90e2;
+        }
+
+        .close-modal-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #ddeedd;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal-btn:hover {
+            background: rgba(173, 216, 230, 0.2);
+            color: #e74c3c;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            z-index: 100;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .setting-item>label:first-child {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ded;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            z-index: 100;
+        }
+
+        .input-group input[type="number"],
+        .jellyfish-select {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid rgba(173, 216, 230, 0.4);
+            border-radius: 15px;
+            background: rgba(32, 44, 48, 0.90);
+            font-size: 14px;
+            color: #ded;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1000;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .input-group input[type="number"]:focus,
+        .jellyfish-select:focus {
+            outline: none;
+            border-color: #ded;
+            background: rgba(32, 44, 48, 0.95);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            z-index: 1001;
+        }
+
+        .jellyfish-select option {
+            background: rgba(32, 44, 48, 0.95);
+            color: #ded;
+            padding: 8px 12px;
+        }
+
+        .jellyfish-select option:hover {
+            background: rgba(74, 144, 226, 0.2);
+        }
+
+        /* Custom Checkbox */
+        .jellyfish-checkbox {
+            display: none;
+        }
+
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(173, 216, 230, 0.4);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.8);
+            position: relative;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .jellyfish-checkbox:checked+.checkbox-custom {
+            background: linear-gradient(135deg, #4a90e2, #74a9ff);
+            border-color: #4a90e2;
+        }
+
+        .jellyfish-checkbox:checked+.checkbox-custom::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .setting-item label[for="setting-archive-in-appdata"] {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 500;
+            color: #ded;
+        }
+
+        .clickable-link {
+            color: #4a90e2;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .clickable-link:hover {
+            color: #2980b9;
+        }
+
+        .setting-item small {
+            font-size: 12px;
+            color: #ddeedd;
+            line-height: 1.4;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid rgba(173, 216, 230, 0.2);
+            border-radius: 0 0 25px 25px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .jellyfish-btn.modal-primary {
+            background: linear-gradient(135deg, #4a90e2, #5ba3f5);
+            color: white;
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+        }
+
+        .jellyfish-btn.modal-secondary {
+            background: linear-gradient(135deg, #5a6c7d, #4a4a4a);
+            color: #ddeedd;
+            border: 1px solid rgba(173, 216, 230, 0.3);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(173, 216, 230, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(173, 216, 230, 0.6), rgba(74, 144, 226, 0.4));
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(173, 216, 230, 0.8), rgba(74, 144, 226, 0.6));
+        }
+
+        /* File Status Colors */
+        .file-status.pending {
+            color: #ddeedd;
+        }
+
+        .file-status.checking {
+            color: #f39c12;
+        }
+
+        .file-status.downloading {
+            color: #4a90e2;
+        }
+
+        .file-status.completed {
+            color: #27ae60;
+        }
+
+        .file-status.error {
+            color: #e74c3c;
+        }
+
+        /* Jellyfish Theme Enhancements */
+        .jellyfish-btn:disabled {
+            background: linear-gradient(135deg, rgba(173, 216, 230, 0.3), rgba(173, 216, 230, 0.2));
+            color: rgba(116, 132, 143, 0.6);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .jellyfish-btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* для правильной работы no-drag в Wails */
+        .no-drag {
+            --wails-draggable: no-drag !important;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .launcher-container {
+                width: 95%;
+                height: 90vh;
+                border-radius: 20px;
+            }
+
+            .main-content {
+                flex-direction: column;
+                gap: 20px;
+                padding: 10px 10px 0 10px;
+            }
+
+            .news-column {
+                flex: 0 0 auto;
+                max-height: 35vh;
+            }
+
+            .file-list-container {
+                height: 280px;
+            }
+
+            .launcher-header {
+                padding: 12px 20px;
+            }
+
+            .launcher-title {
+                font-size: 18px;
+            }
+
+            .stats-container {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .launcher-container {
+                width: 98%;
+                height: 95vh;
+                border-radius: 15px;
+            }
+
+            .launcher-header {
+                padding: 10px 15px;
+            }
+
+            .launcher-title {
+                font-size: 16px;
+            }
+
+            .control-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .jellyfish-body {
+                padding: 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-buttons .jellyfish-btn {
+                width: 100%;
+            }
+
+            .stats-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .launcher-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            }
+
+            .header-controls {
+                order: -1;
+            }
+
+            .tentacle-header {
+                padding: 15px;
+            }
+
+            .section-title {
+                font-size: 16px;
+            }
+
+            .jellyfish-btn {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+
+            .news-item {
+                padding: 15px;
+            }
+
+            .file-item {
+                padding: 12px;
+            }
+
+            .bottom-bar {
+                padding: 10px 15px;
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        /* Статистика с анимациями */
+        .stat-value.active {
+            color: #4a90e2;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .stat-value.completed {
+            color: #27ae60;
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                color: #4a90e2;
+                text-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+            }
+
+            50% {
+                color: #74a9ff;
+                text-shadow: 0 0 10px rgba(74, 144, 226, 0.6);
+            }
+        }
+
+        /* --- Стили для составной кнопки (Split Button) --- */
+
+        /* --- Стили для составной кнопки (Split Button) --- */
+        .split-button-container {
+            position: relative;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .split-button-container .jellyfish-btn {
+            margin: 0 !important;
+            transition: background-color 0.2s ease, filter .2s ease, transform .2s ease;
+        }
+
+        .split-button-main {
+            border-radius: 25px 0 0 25px !important;
+            border-right: none !important;
+        }
+
+        /* If there's no toggle present, make the main button fully rounded */
+        .split-button-container.no-toggle .split-button-main {
+            border-radius: 25px !important;
+        }
+
+        .split-button-toggle {
+            border-radius: 0 25px 25px 0 !important;
+            padding: 6px 8px !important;
+            border-left: 1px solid rgba(255, 255, 255, 0.15) !important;
+            min-width: auto !important;
+            width: 40px !important;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .split-button-container:hover .jellyfish-btn {
+            filter: brightness(1.08);
+        }
+
+        .split-button-menu {
+            display: none;
+            position: absolute;
+            /* ИЗМЕНЕНИЕ: позиционируем низ меню относительно верха кнопки */
+            bottom: calc(100% + 5px);
+            left: 0;
+            width: 100%;
+            background: rgba(20, 26, 32, 0.45);
+            border: 1px solid rgba(173, 216, 230, 0.25);
+            border-radius: 10px;
+            /* ИЗМЕНЕНИЕ: тень теперь отбрасывается вверх для реалистичности */
+            box-shadow: 0 -10px 24px rgba(0, 0, 0, 0.35);
+            z-index: 100;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .split-button-menu.show {
+            display: block;
+        }
+
+        .split-button-menu .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            background: transparent;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            --wails-draggable: no-drag !important;
+        }
+
+        .split-button-menu .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        /* Автоматическое отключение перетаскивания для всех интерактивных элементов */
+        button,
+        input,
+        select,
+        textarea,
+        .jellyfish-btn,
+        .control-btn,
+        .settings-btn,
+        .clickable-link,
+        .close-modal-btn,
+        .checkbox-custom,
+        .jellyfish-checkbox,
+        .stat-item {
+            --wails-draggable: no-drag !important;
+            -webkit-user-drag: none !important;
+            -khtml-user-drag: none !important;
+            -moz-user-drag: none !important;
+            -o-user-drag: none !important;
+        }
+
+        /* для правильной работы no-drag в Wails (оставляем для дополнительного использования) */
+        .no-drag {
+            --wails-draggable: no-drag !important;
+        }
+
+        /* --- Accounts modal table styles --- */
+        .accounts-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .accounts-table th,
+        .accounts-table td {
+            border-bottom: 1px solid rgba(173, 216, 230, 0.15);
+            padding: 10px 8px;
+            font-size: 14px;
+            color: #ddeedd;
+        }
+
+        .accounts-table th {
+            text-align: left;
+            font-weight: 600;
+            color: #e8e8e8;
+        }
+
+        .accounts-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .accounts-inline-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .accounts-inline-form input[type="text"],
+        .accounts-inline-form input[type="password"] {
+            padding: 10px 12px;
+            border: 1px solid rgba(173, 216, 230, 0.4);
+            border-radius: 12px;
+            background: rgba(32, 44, 48, 0.90);
+            color: #ded;
+        }
+
+        .accounts-empty {
+            font-size: 14px;
+            color: #a8b8c8;
+            text-align: center;
+            padding: 8px 0;
+        }
+
+        /* Slightly dim overlay with blur for modals */
+        .modal .modal-overlay {
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+        }
+
+        /* Glass/transparent buttons (Play / Update) */
+        .jellyfish-btn.action-primary,
+        .jellyfish-btn.action-danger {
+            background: rgba(30, 38, 46, 0.35) !important;
+            border: 1px solid rgba(173, 216, 230, 0.25) !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        .jellyfish-btn.action-primary:hover,
+        .jellyfish-btn.action-danger:hover {
+            background: rgba(30, 38, 46, 0.45) !important;
+            border-color: rgba(173, 216, 230, 0.35) !important;
+            transform: translateY(-2px);
+        }
+
+        .jellyfish-btn.action-primary:active,
+        .jellyfish-btn.action-danger:active {
+            transform: translateY(0);
+        }
+
+        /* Glass modal for accounts */
+        #accounts-modal .jellyfish-modal {
+            background: rgba(16, 22, 28, 0.55) !important;
+            border: 1px solid rgba(173, 216, 230, 0.25) !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* Top alert (showAlert) */
+        .top-alert-container {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10050;
+            pointer-events: none;
+        }
+
+        .top-alert {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 720px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: rgba(18, 24, 30, 0.6);
+            border: 1px solid rgba(173, 216, 230, 0.25);
+            color: #ddeedd;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            pointer-events: auto;
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: opacity .2s ease, transform .2s ease;
+        }
+
+        .top-alert.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .top-alert .title {
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+        .top-alert .msg {
+            font-size: 14px;
+        }
+
+        .top-alert .close {
+            margin-left: 8px;
+            background: transparent;
+            border: 0;
+            color: #ddeedd;
+            cursor: pointer;
+        }
+
+        .top-alert.error {
+            border-color: rgba(231, 76, 60, 0.35);
+        }
+
+        .top-alert.success {
+            border-color: rgba(46, 204, 113, 0.35);
+        }
+
+        .top-alert.warning {
+            border-color: rgba(241, 196, 15, 0.35);
+        }
+
+        .top-alert.info {
+            border-color: rgba(74, 144, 226, 0.35);
+        }

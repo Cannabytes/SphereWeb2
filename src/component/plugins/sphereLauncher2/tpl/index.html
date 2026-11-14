@@ -5,29 +5,95 @@
 {% block content %}
 
 
-<div class="container-fluid">
+<div class="container-fluid sl2-page">
 
-    <div class="row">
-        <div class="col-xl-6">
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="mb-4 fw-semibold">{{ phrase('sl2_compile_launcher') }}</h2>
-                    <h5 class="lh-base fw-normal">{{ phrase('sl2_compile_launcher_desc') }}</h5>
-                    <p class="lh-base">
-                    </p>
-                    <a href="/admin/plugin/sphereLauncher2/compile" class="btn btn-primary mt-2">{{ phrase('sl2_go_to') }}</a>
-                </div>
-            </div>
+    <nav class="sl2-nav" aria-label="Sphere Launcher">
+        <a href="/admin/plugin/sphereLauncher2" class="{{ sl2_section == 'overview' ? 'active' }}"><i class="ri-dashboard-line"></i> {{ phrase('sl2_nav_overview') }}</a>
+        <a href="/admin/plugin/sphereLauncher2/compile" class="{{ sl2_section == 'create' ? 'active' }}"><i class="ri-add-box-line"></i> {{ phrase('sl2_nav_create') }}</a>
+        <a href="/admin/plugin/sphereLauncher2/archives" class="{{ sl2_section == 'archives' ? 'active' }}"><i class="ri-archive-line"></i> {{ phrase('sl2_nav_archives') }}</a>
+        <a href="/admin/plugins/sphereLauncher2/config" class="{{ sl2_section == 'config' ? 'active' }}"><i class="ri-file-code-line"></i> {{ phrase('sl2_nav_config') }}</a>
+    </nav>
+
+    <header class="sl2-hub-hero">
+        <div class="sl2-hub-copy">
+            <span class="sl2-eyebrow"><i class="ri-shield-check-line"></i> SphereWeb2 · Windows Launcher</span>
+            <h1>Sphere Launcher</h1>
+            <p>{{ phrase('sl2_hub_desc') }}</p>
+            <a href="/admin/plugin/sphereLauncher2/compile" class="btn btn-primary">{{ phrase('sl2_create_launcher') }} <i class="ri-arrow-right-line"></i></a>
         </div>
-        <div class="col-xl-6">
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="mb-4 fw-semibold">{{ phrase('sl2_create_json_config') }}</h2>
-                    <h5 class="lh-base fw-normal">{{ phrase('sl2_json_config_desc') }}</h5>
-                    <p class="lh-base">{{ phrase('sl2_upload_to_ftp_desc') }}</p>
-                    <a href="/admin/plugins/sphereLauncher2/config" class="btn btn-primary mt-2">{{ phrase('sl2_go_to') }}</a>
-                </div>
+        <div class="sl2-flow" aria-label="{{ phrase('sl2_hub_flow') }}">
+            <span><b>1</b> {{ phrase('sl2_hub_step1') }}</span>
+            <i class="ri-arrow-right-line"></i>
+            <span><b>2</b> {{ phrase('sl2_hub_step2') }}</span>
+            <i class="ri-arrow-right-line"></i>
+            <span><b>3</b> {{ phrase('sl2_hub_step3') }}</span>
+        </div>
+    </header>
+
+    <section class="sl2-actions">
+        <a class="sl2-action sl2-accent" href="/admin/plugin/sphereLauncher2/compile">
+            <span class="sl2-action-icon"><i class="ri-add-box-line"></i></span>
+            <strong>{{ phrase('sl2_create_launcher') }}</strong>
+            <p>{{ phrase('sl2_hub_create_desc') }}</p>
+            <span class="sl2-action-link">{{ phrase('sl2_go_to') }} <i class="ri-arrow-right-line"></i></span>
+        </a>
+        <a class="sl2-action" href="/admin/plugin/sphereLauncher2/archives">
+            <span class="sl2-action-icon"><i class="ri-archive-line"></i></span>
+            <strong>{{ phrase('sl2_archives_title') }}</strong>
+            <p>{{ phrase('sl2_hub_archives_desc') }}</p>
+            <span class="sl2-action-link">{{ phrase('sl2_go_to') }} <i class="ri-arrow-right-line"></i></span>
+        </a>
+        <a class="sl2-action" href="/admin/plugins/sphereLauncher2/config">
+            <span class="sl2-action-icon"><i class="ri-file-code-line"></i></span>
+            <strong>{{ phrase('sl2_create_json_config') }}</strong>
+            <p>{{ phrase('sl2_json_config_desc') }} {{ phrase('sl2_upload_to_ftp_desc') }}</p>
+            <span class="sl2-action-link">{{ phrase('sl2_go_to') }} <i class="ri-arrow-right-line"></i></span>
+        </a>
+    </section>
+
+    <div class="card custom-card mb-0">
+        <div class="card-header justify-content-between">
+            <div class="card-title">{{ phrase('sl2_build_history') }}</div>
+            <small class="text-muted">{{ phrase('sl2_builder_server') }}: {{ sl2_builder_url }}</small>
+        </div>
+        <div class="card-body p-0">
+            {% if sl2_builds is empty %}
+                <p class="text-muted text-center p-3 mb-0">{{ phrase('sl2_history_empty') }}</p>
+            {% else %}
+            <div class="table-responsive">
+                <table class="table text-nowrap mb-0">
+                    <thead>
+                    <tr>
+                        <th>{{ phrase('sl2_program_name') }}</th>
+                        <th>{{ phrase('sl2_status') }}</th>
+                        <th>{{ phrase('sl2_date') }}</th>
+                        <th class="text-end"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for build in sl2_builds %}
+                        <tr>
+                            <td>{{ build.title }}{% if build.fileName %}<br><small class="text-muted">{{ build.fileName }}</small>{% endif %}</td>
+                            <td>
+                                {% if build.status == 'completed' %}<span class="badge bg-success-transparent">{{ phrase('sl2_status_completed') }}</span>
+                                {% elseif build.status == 'failed' %}<span class="badge bg-danger-transparent">{{ phrase('sl2_status_failed') }}</span>
+                                {% elseif build.status == 'running' %}<span class="badge bg-primary-transparent">{{ phrase('sl2_status_running') }} {{ build.progress }}%</span>
+                                {% else %}<span class="badge bg-secondary-transparent">{{ phrase('sl2_status_queued') }}</span>{% endif %}
+                            </td>
+                            <td><small>{{ build.createdAt|date('d.m.Y H:i') }}</small></td>
+                            <td class="text-end">
+                                {% if build.downloadUrl %}
+                                    <a class="btn btn-sm btn-success-light" href="{{ build.downloadUrl }}"><i class="ri-download-2-line"></i> {{ phrase('sl2_download_launcher') }}</a>
+                                {% else %}
+                                    <a class="btn btn-sm btn-light" href="/admin/plugin/sphereLauncher2/compile">{{ phrase('sl2_go_to') }}</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            {% endif %}
         </div>
     </div>
 
@@ -167,6 +233,30 @@
 {% endblock %}
 
 {% block css %}
+<style>
+    .sl2-page { display: grid; gap: 20px; max-width: 1440px; margin: 0 auto; padding-top: 1rem; }
+    .sl2-nav { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px; border: 1px solid var(--default-border, rgba(127,127,127,.25)); border-radius: 12px; }
+    .sl2-nav a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; color: var(--default-text-color, inherit); font-weight: 500; text-decoration: none; }
+    .sl2-nav a:hover { background: rgba(var(--primary-rgb, 13,110,253), .08); }
+    .sl2-nav a.active { background: rgb(var(--primary-rgb, 13,110,253)); color: #fff; }
+    .sl2-hub-hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 20px; padding: 26px; border: 1px solid var(--default-border, rgba(127,127,127,.25)); border-radius: 14px; background: linear-gradient(135deg, rgba(var(--primary-rgb, 13,110,253), .14), transparent); }
+    .sl2-hub-copy { display: grid; gap: 10px; justify-items: start; }
+    .sl2-hub-copy h1 { margin: 0; font-size: 28px; }
+    .sl2-hub-copy p { margin: 0; max-width: 640px; opacity: .8; }
+    .sl2-eyebrow { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; font-weight: 600; letter-spacing: .02em; color: rgb(var(--primary-rgb, 13,110,253)); }
+    .sl2-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; }
+    .sl2-flow span { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border: 1px solid var(--default-border, rgba(127,127,127,.25)); border-radius: 10px; }
+    .sl2-flow b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: rgb(var(--primary-rgb, 13,110,253)); color: #fff; font-size: 12px; }
+    .sl2-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .sl2-action { display: grid; gap: 8px; align-content: start; padding: 20px; border: 1px solid var(--default-border, rgba(127,127,127,.25)); border-radius: 14px; color: inherit; text-decoration: none; transition: border-color .15s, transform .15s; }
+    .sl2-action:hover { border-color: rgb(var(--primary-rgb, 13,110,253)); transform: translateY(-2px); color: inherit; }
+    .sl2-accent { background: rgba(var(--primary-rgb, 13,110,253), .07); }
+    .sl2-action-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(var(--primary-rgb, 13,110,253), .14); color: rgb(var(--primary-rgb, 13,110,253)); font-size: 22px; }
+    .sl2-action strong { font-size: 16px; }
+    .sl2-action p { margin: 0; font-size: 13px; opacity: .8; }
+    .sl2-action-link { display: inline-flex; gap: 4px; align-items: center; font-size: 13px; font-weight: 600; color: rgb(var(--primary-rgb, 13,110,253)); }
+    @media (max-width: 991px) { .sl2-hub-hero { grid-template-columns: 1fr; } }
+</style>
 {% endblock %}
 
 {% block js %}

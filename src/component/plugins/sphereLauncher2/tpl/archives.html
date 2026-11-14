@@ -1,0 +1,706 @@
+{% extends 'struct.html' %}
+
+{% block title %}{{ phrase('sl2_archives_title') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid sl2-page">
+
+    <nav class="sl2-nav" aria-label="Sphere Launcher">
+        <a href="/admin/plugin/sphereLauncher2" class="{{ sl2_section == 'overview' ? 'active' }}"><i class="ri-dashboard-line"></i> {{ phrase('sl2_nav_overview') }}</a>
+        <a href="/admin/plugin/sphereLauncher2/compile" class="{{ sl2_section == 'create' ? 'active' }}"><i class="ri-add-box-line"></i> {{ phrase('sl2_nav_create') }}</a>
+        <a href="/admin/plugin/sphereLauncher2/archives" class="{{ sl2_section == 'archives' ? 'active' }}"><i class="ri-archive-line"></i> {{ phrase('sl2_nav_archives') }}</a>
+        <a href="/admin/plugins/sphereLauncher2/config" class="{{ sl2_section == 'config' ? 'active' }}"><i class="ri-file-code-line"></i> {{ phrase('sl2_nav_config') }}</a>
+    </nav>
+
+    <header class="sl2-hero sl2-hero-archives">
+        <div class="sl2-hero-icon"><i class="ri-archive-line"></i></div>
+        <div>
+            <h1>{{ phrase('sl2_archives_title') }}</h1>
+            <p>{{ phrase('sl2_archives_desc') }}</p>
+        </div>
+        <span class="sl2-conn" id="sl2-conn" data-state="connecting"><i class="ri-wifi-line"></i> <span id="sl2-conn-text">{{ phrase('sl2_bridge_connecting') }}</span></span>
+    </header>
+
+    <section class="sl2-layout">
+        <div class="sl2-form-column">
+
+            <!-- Источник и режим -->
+            <div class="card custom-card mb-0">
+                <div class="card-header"><div class="card-title"><i class="ri-hard-drive-2-line me-1"></i> {{ phrase('sl2_arch_source') }}</div></div>
+                <div class="card-body">
+                    <label class="form-label" for="sl2-gamePath">{{ phrase('sl2_arch_game_path') }}</label>
+                    <div class="sl2-path-row">
+                        <input class="form-control" id="sl2-gamePath" type="text" placeholder="C:\Games\Lineage II">
+                        <button type="button" class="btn btn-outline-secondary" id="sl2-pick-dir"><i class="ri-folder-open-line"></i> {{ phrase('sl2_arch_pick') }}</button>
+                    </div>
+                    <div class="sl2-toggle-grid">
+                        <label class="sl2-toggle"><input type="checkbox" class="form-check-input" data-setting="skipExisting"><span><strong>{{ phrase('sl2_arch_incremental') }}</strong><small>{{ phrase('sl2_arch_incremental_desc') }}</small></span></label>
+                        <label class="sl2-toggle"><input type="checkbox" class="form-check-input" data-setting="uploadToFTP"><span><strong>{{ phrase('sl2_arch_upload') }}</strong><small>{{ phrase('sl2_arch_upload_desc') }}</small></span></label>
+                        <label class="sl2-toggle"><input type="checkbox" class="form-check-input" data-setting="keepLocalArchives"><span><strong>{{ phrase('sl2_arch_keep_local') }}</strong><small>{{ phrase('sl2_arch_keep_local_desc') }}</small></span></label>
+                    </div>
+                    <p class="sl2-note" id="sl2-upload-note" hidden>{{ phrase('sl2_arch_upload_note') }}</p>
+                </div>
+            </div>
+
+            <!-- Исключения -->
+            <div class="card custom-card mb-0">
+                <div class="card-header"><div class="card-title"><i class="ri-filter-3-line me-1"></i> {{ phrase('sl2_arch_exclusions') }}</div></div>
+                <div class="card-body">
+                    <label class="form-label" for="sl2-ignoredExtensions">{{ phrase('sl2_arch_ext') }}</label>
+                    <input class="form-control" id="sl2-ignoredExtensions" type="text">
+                    <small class="form-text">{{ phrase('sl2_arch_ext_hint') }}</small>
+                    <div class="sl2-list-header">
+                        <span><strong>{{ phrase('sl2_arch_files') }}</strong><small>{{ phrase('sl2_arch_files_hint') }}</small></span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="sl2-ignore-add"><i class="ri-add-line"></i> {{ phrase('sl2_arch_add') }}</button>
+                    </div>
+                    <div id="sl2-ignore-list"></div>
+                </div>
+            </div>
+
+            <!-- FTP/SFTP -->
+            <div class="card custom-card mb-0" id="sl2-ftp-card" hidden>
+                <div class="card-header justify-content-between">
+                    <div class="card-title"><i class="ri-upload-cloud-2-line me-1"></i> {{ phrase('sl2_arch_servers') }}</div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="sl2-server-add"><i class="ri-add-line"></i> {{ phrase('sl2_arch_server_add') }}</button>
+                </div>
+                <div class="card-body">
+                    <div id="sl2-server-list" class="sl2-server-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="sl2-side-column">
+            <div class="card custom-card mb-0">
+                <div class="card-header"><div class="card-title"><i class="ri-dashboard-3-line me-1"></i> {{ phrase('sl2_arch_operation') }}</div></div>
+                <div class="card-body sl2-operation">
+                    <div class="sl2-pairing" id="sl2-pairing">
+                        <i class="ri-error-warning-line"></i>
+                        <div>
+                            <strong>{{ phrase('sl2_bridge_connect_title') }}</strong>
+                            <small>{{ phrase('sl2_bridge_connect_desc') }}</small>
+                            <small>{{ phrase('sl2_bridge_connect_permission') }}</small>
+                            <button type="button" class="btn btn-sm btn-outline-secondary mt-1" id="sl2-reconnect"><i class="ri-refresh-line"></i> {{ phrase('sl2_bridge_retry') }}</button>
+                        </div>
+                    </div>
+
+                    <section class="sl2-op-error" id="sl2-op-error" role="alert" hidden>
+                        <strong><i class="ri-error-warning-line"></i> {{ phrase('sl2_arch_attention') }}</strong>
+                        <p id="sl2-op-error-msg"></p>
+                        <code id="sl2-op-error-file" hidden></code>
+                        <p>{{ phrase('sl2_arch_attention_desc') }}</p>
+                        <details id="sl2-op-error-details" hidden><summary>{{ phrase('sl2_arch_error_details') }}</summary><pre></pre></details>
+                    </section>
+
+                    <div class="sl2-progress-heading">
+                        <span id="sl2-progress-label">{{ phrase('sl2_arch_ready') }}</span>
+                        <strong id="sl2-progress-percent">0%</strong>
+                    </div>
+                    <div class="progress" role="progressbar" aria-label="{{ phrase('sl2_arch_progress') }}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" id="sl2-progress-bar" style="width:0%"></div>
+                    </div>
+                    <div class="sl2-stats">
+                        <span><small>{{ phrase('sl2_arch_total') }}</small><strong id="sl2-st-total">0</strong></span>
+                        <span><small>{{ phrase('sl2_arch_processed') }}</small><strong id="sl2-st-processed">0</strong></span>
+                        <span><small>{{ phrase('sl2_arch_archived') }}</small><strong id="sl2-st-archived">0</strong></span>
+                        <span><small>{{ phrase('sl2_arch_errors') }}</small><strong id="sl2-st-errors">0</strong></span>
+                    </div>
+                    <div class="sl2-current-file" id="sl2-current-file" hidden>
+                        <small>{{ phrase('sl2_arch_current_file') }}</small>
+                        <code id="sl2-current-file-name"></code>
+                    </div>
+                    <div class="sl2-speeds" id="sl2-speeds" hidden></div>
+                    <div class="sl2-validation-inline" id="sl2-validation" hidden><i class="ri-error-warning-line"></i> <span id="sl2-validation-text"></span></div>
+                    <div class="sl2-op-actions">
+                        <button type="button" class="btn btn-primary w-100" id="sl2-start"><i class="ri-archive-line"></i> {{ phrase('sl2_arch_start') }}</button>
+                        <button type="button" class="btn btn-danger w-100" id="sl2-stop" hidden><i class="ri-stop-line"></i> {{ phrase('sl2_arch_stop') }}</button>
+                        <button type="button" class="btn btn-outline-secondary w-100" id="sl2-save"><i class="ri-save-line"></i> {{ phrase('sl2_save_settings') }}</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card custom-card mb-0">
+                <div class="card-header justify-content-between">
+                    <div class="card-title"><i class="ri-terminal-box-line me-1"></i> {{ phrase('sl2_arch_log') }}</div>
+                    <button type="button" class="btn btn-sm btn-link p-0" id="sl2-log-clear" hidden>{{ phrase('sl2_arch_log_clear') }}</button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="sl2-log" id="sl2-log" aria-live="polite"><p class="sl2-empty">{{ phrase('sl2_arch_log_empty') }}</p></div>
+                </div>
+            </div>
+        </aside>
+    </section>
+</div>
+{% endblock %}
+
+{% block css %}
+<style>
+    .sl2-page { display: grid; gap: 20px; max-width: 1440px; margin: 0 auto; padding-top: 1rem; }
+    .sl2-nav { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px; border: 1px solid var(--default-border, rgba(127,127,127,.25)); border-radius: 12px; }
+    .sl2-nav a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; color: var(--default-text-color, inherit); font-weight: 500; text-decoration: none; }
+    .sl2-nav a:hover { background: rgba(var(--primary-rgb, 13,110,253), .08); }
+    .sl2-nav a.active { background: rgb(var(--primary-rgb, 13,110,253)); color: #fff; }
+    .sl2-hero { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; padding: 20px; border: 1px solid var(--default-border, rgba(127,127,127,.25)); border-radius: 12px; background: linear-gradient(135deg, rgba(var(--primary-rgb, 13,110,253), .12), transparent); }
+    .sl2-hero-icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 12px; background: rgba(var(--primary-rgb, 13,110,253), .16); color: rgb(var(--primary-rgb, 13,110,253)); font-size: 28px; }
+    .sl2-hero h1 { margin: 0 0 5px; font-size: 24px; line-height: 1.15; }
+    .sl2-hero p { margin: 0; opacity: .75; font-size: 13px; }
+    .sl2-conn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid var(--default-border, rgba(127,127,127,.35)); border-radius: 999px; font-size: 12px; white-space: nowrap; }
+    .sl2-conn[data-state="connected"] { border-color: rgba(78,203,141,.5); color: #4ecb8d; background: rgba(78,203,141,.09); }
+    .sl2-conn[data-state="disconnected"] { border-color: rgba(226,109,109,.5); color: #e26d6d; background: rgba(226,109,109,.08); }
+    .sl2-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
+    .sl2-form-column, .sl2-side-column { display: grid; gap: 16px; min-width: 0; }
+    .sl2-side-column { position: sticky; top: 84px; }
+    .sl2-path-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+    .sl2-toggle-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+    .sl2-toggle { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1px solid var(--default-border, rgba(127,127,127,.25)); border-radius: 10px; cursor: pointer; }
+    .sl2-toggle input { margin: 3px 0 0; flex-shrink: 0; }
+    .sl2-toggle span { display: grid; gap: 2px; }
+    .sl2-toggle small { opacity: .7; font-size: 12px; }
+    .sl2-note { margin: 12px 0 0; padding: 10px 12px; border-radius: 10px; background: rgba(var(--primary-rgb, 13,110,253), .07); font-size: 13px; }
+    .sl2-list-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 18px 0 10px; }
+    .sl2-list-header span { display: grid; }
+    .sl2-list-header small { opacity: .7; font-size: 12px; }
+    .sl2-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; margin-bottom: 8px; }
+    .sl2-empty { margin: 0; padding: 12px 16px; opacity: .65; font-size: 13px; }
+    .sl2-server-list { display: grid; gap: 14px; }
+    .sl2-server { padding: 14px; border: 1px solid var(--default-border, rgba(127,127,127,.25)); border-radius: 12px; }
+    .sl2-server header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .sl2-server header span { display: inline-flex; gap: 8px; align-items: center; font-weight: 600; }
+    .sl2-server-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .sl2-server-grid .sl2-wide { grid-column: 1 / -1; }
+    .sl2-perf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 10px; }
+    .sl2-server details { margin-top: 12px; }
+    .sl2-server summary { cursor: pointer; font-size: 13px; font-weight: 600; }
+    .sl2-remote-check { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; font-size: 13px; }
+    .sl2-remote-dirs { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
+    .sl2-remote-dirs button { padding: 2px 8px; border: 1px solid var(--default-border, rgba(127,127,127,.3)); border-radius: 999px; background: transparent; color: inherit; font-size: 12px; }
+    .sl2-operation { display: grid; gap: 12px; }
+    .sl2-pairing { display: flex; gap: 10px; padding: 12px; border: 1px solid rgba(226,170,60,.45); border-radius: 10px; background: rgba(226,170,60,.08); }
+    .sl2-pairing > i { font-size: 18px; color: #e2aa3c; }
+    .sl2-pairing div { display: grid; gap: 4px; }
+    .sl2-pairing small { opacity: .8; font-size: 12px; }
+    .sl2-op-error { display: grid; gap: 6px; padding: 12px; border: 1px solid rgba(226,109,109,.45); border-radius: 10px; background: rgba(226,109,109,.08); color: #e26d6d; font-size: 13px; }
+    .sl2-op-error p { margin: 0; }
+    .sl2-op-error pre { max-height: 200px; margin: 6px 0 0; overflow: auto; white-space: pre-wrap; font-size: 12px; }
+    .sl2-progress-heading { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
+    .sl2-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+    .sl2-stats span { display: grid; gap: 2px; padding: 8px; border-radius: 8px; background: rgba(127,127,127,.08); text-align: center; }
+    .sl2-stats small { opacity: .7; font-size: 11px; }
+    .sl2-current-file { display: grid; gap: 2px; }
+    .sl2-current-file code { word-break: break-all; font-size: 12px; }
+    .sl2-speeds { display: grid; gap: 4px; font-size: 12px; }
+    .sl2-speeds span { display: flex; justify-content: space-between; gap: 8px; }
+    .sl2-validation-inline { display: flex; gap: 6px; padding: 8px 10px; border-radius: 8px; background: rgba(226,109,109,.08); color: #e26d6d; font-size: 12px; }
+    .sl2-op-actions { display: grid; gap: 8px; }
+    .sl2-log { max-height: 420px; overflow: auto; font-size: 12px; }
+    .sl2-log article { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; padding: 6px 16px; border-top: 1px solid var(--default-border, rgba(127,127,127,.12)); }
+    .sl2-log article:first-child { border-top: 0; }
+    .sl2-log time { opacity: .55; }
+    .sl2-log span { display: grid; word-break: break-word; }
+    .sl2-log small { opacity: .7; }
+    .sl2-log article[data-level="error"] span { color: #e26d6d; }
+    .sl2-log article[data-level="warning"] span { color: #e2aa3c; }
+    .sl2-log article[data-level="success"] span { color: #4ecb8d; }
+    @media (max-width: 1199px) { .sl2-layout { grid-template-columns: 1fr; } .sl2-side-column { position: static; } }
+    @media (max-width: 767px) { .sl2-hero { grid-template-columns: auto 1fr; } .sl2-conn { grid-column: 1 / -1; justify-self: start; } .sl2-toggle-grid, .sl2-server-grid { grid-template-columns: 1fr; } .sl2-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>
+{% endblock %}
+
+{% block js %}
+<script>
+(function () {
+    'use strict';
+
+    const T = {
+        connecting: {{ phrase('sl2_bridge_connecting')|json_encode|raw }},
+        connected: {{ phrase('sl2_bridge_connected')|json_encode|raw }},
+        disconnected: {{ phrase('sl2_bridge_disconnected')|json_encode|raw }},
+        not_connected: {{ phrase('sl2_bridge_not_connected')|json_encode|raw }},
+        timeout: {{ phrase('sl2_bridge_timeout')|json_encode|raw }},
+        server_n: {{ phrase('sl2_arch_server_n')|json_encode|raw }},
+        name: {{ phrase('sl2_arch_srv_name')|json_encode|raw }},
+        protocol: {{ phrase('sl2_arch_srv_protocol')|json_encode|raw }},
+        sftp_recommended: {{ phrase('sl2_arch_srv_sftp')|json_encode|raw }},
+        host: {{ phrase('sl2_arch_srv_host')|json_encode|raw }},
+        port: {{ phrase('sl2_arch_srv_port')|json_encode|raw }},
+        user: {{ phrase('sl2_arch_srv_user')|json_encode|raw }},
+        pass: {{ phrase('sl2_arch_srv_pass')|json_encode|raw }},
+        path: {{ phrase('sl2_arch_srv_path')|json_encode|raw }},
+        perf: {{ phrase('sl2_arch_srv_perf')|json_encode|raw }},
+        max_packet: {{ phrase('sl2_arch_srv_max_packet')|json_encode|raw }},
+        max_packet_hint: {{ phrase('sl2_arch_srv_max_packet_hint')|json_encode|raw }},
+        connections: {{ phrase('sl2_arch_srv_connections')|json_encode|raw }},
+        parallel: {{ phrase('sl2_arch_srv_parallel')|json_encode|raw }},
+        buffer: {{ phrase('sl2_arch_srv_buffer')|json_encode|raw }},
+        chunk: {{ phrase('sl2_arch_srv_chunk')|json_encode|raw }},
+        check: {{ phrase('sl2_arch_srv_check')|json_encode|raw }},
+        check_ok: {{ phrase('sl2_arch_srv_check_ok')|json_encode|raw }},
+        check_dirs: {{ phrase('sl2_arch_srv_check_dirs')|json_encode|raw }},
+        check_fill: {{ phrase('sl2_arch_srv_check_fill')|json_encode|raw }},
+        delete_server: {{ phrase('sl2_arch_srv_delete')|json_encode|raw }},
+        servers_empty: {{ phrase('sl2_arch_servers_empty')|json_encode|raw }},
+        ignore_empty: {{ phrase('sl2_arch_ignore_empty')|json_encode|raw }},
+        ignore_remove: {{ phrase('sl2_arch_ignore_remove')|json_encode|raw }},
+        v_game_path: {{ phrase('sl2_arch_v_game_path')|json_encode|raw }},
+        v_servers: {{ phrase('sl2_arch_v_servers')|json_encode|raw }},
+        v_server: {{ phrase('sl2_arch_v_server')|json_encode|raw }},
+        untitled: {{ phrase('sl2_arch_untitled')|json_encode|raw }},
+        saved: {{ phrase('sl2_arch_saved')|json_encode|raw }},
+        started: {{ phrase('sl2_arch_started')|json_encode|raw }},
+        stop_requested: {{ phrase('sl2_arch_stop_requested')|json_encode|raw }},
+        command_sent: {{ phrase('sl2_arch_command_sent')|json_encode|raw }},
+        running: {{ phrase('sl2_arch_running')|json_encode|raw }},
+        ready: {{ phrase('sl2_arch_ready')|json_encode|raw }},
+        progress_update: {{ phrase('sl2_arch_progress_update')|json_encode|raw }},
+        log_empty: {{ phrase('sl2_arch_log_empty')|json_encode|raw }}
+    };
+
+    const BRIDGE_URL = 'ws://127.0.0.1:28791/ws';
+    const REQUEST_TIMEOUT = 20000;
+    const RECONNECT_MS = 3000;
+    const $ = (id) => document.getElementById(id);
+    const esc = (v) => String(v == null ? '' : v).replace(/[&<>"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+    const ok = (m) => (typeof noticeSuccess === 'function' ? noticeSuccess(m) : console.log(m));
+    const fail = (m) => (typeof noticeError === 'function' ? noticeError(m) : alert(m));
+    const requestID = () => (window.crypto && crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2));
+    const terminal = (type) => type === 'process_complete' || type === 'process_error' || type === 'process_cancelled';
+
+    const emptySettings = () => ({
+        gamePath: '', skipExisting: true, uploadToFTP: false, keepLocalArchives: false, uploadCsvToFtp: true,
+        ftpConfigs: [], ignoredExtensions: '.log, .tmp, .bak', ignoredFiles: []
+    });
+    const newServer = (i) => ({
+        name: T.server_n.replace('%s', i + 1), protocol: 'sftp', host: '', port: '22', user: '', pass: '', path: '/',
+        maxPacket: 0, maxConnections: 4, bufferSize: 1048576, chunkSize: 4194304, parallelChunks: 4
+    });
+
+    let settings = emptySettings();
+    let socket = null;
+    let connected = false;
+    let version = '';
+    let running = false;
+    let busy = false;
+    let progress = null;
+    let reconnectTimer = null;
+    const pending = new Map();
+    const speeds = {};
+    const remoteChecks = {};
+    let checkingIndex = null;
+
+    /* ===================== Мост лаунчера ===================== */
+
+    function setConnection(state) {
+        const badge = $('sl2-conn');
+        badge.dataset.state = state;
+        $('sl2-conn-text').textContent = state === 'connected'
+            ? T.connected + (version ? ' · ' + version : '')
+            : (state === 'connecting' ? T.connecting : T.disconnected);
+        $('sl2-pairing').hidden = state === 'connected';
+        render();
+    }
+
+    function connect() {
+        clearTimeout(reconnectTimer);
+        if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) return;
+        setConnection('connecting');
+        let ws;
+        try { ws = new WebSocket(BRIDGE_URL); } catch (e) { scheduleReconnect(); return; }
+        socket = ws;
+        ws.onmessage = (event) => {
+            let msg;
+            try { msg = JSON.parse(event.data); } catch (e) { return; }
+            handleMessage(msg);
+        };
+        ws.onclose = () => {
+            if (socket !== ws) return;
+            socket = null;
+            connected = false;
+            pending.forEach((p) => { clearTimeout(p.timer); p.reject(new Error(T.not_connected)); });
+            pending.clear();
+            setConnection('disconnected');
+            scheduleReconnect();
+        };
+        ws.onerror = () => { /* onclose обработает переподключение */ };
+    }
+
+    function scheduleReconnect() {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(connect, RECONNECT_MS);
+    }
+
+    async function onReady() {
+        connected = true;
+        setConnection('connected');
+        try {
+            const loaded = await request('archive.settings.request');
+            settings = normalizeSettings(loaded);
+            renderForm();
+        } catch (e) { fail(e.message); }
+        try {
+            const status = await request('archive.status.request');
+            running = !!status.running;
+            if (status.progress) applyProgress(status.progress, false);
+            render();
+        } catch (e) { /* статус не критичен */ }
+    }
+
+    function handleMessage(msg) {
+        const id = msg.requestId || msg.request_id;
+        if (id && pending.has(id)) {
+            const p = pending.get(id);
+            pending.delete(id);
+            clearTimeout(p.timer);
+            const payload = msg.payload || {};
+            if (msg.type === 'bridge.error') p.reject(new Error(payload.message || T.not_connected));
+            else if (payload.accepted === false) p.reject(new Error(payload.error || T.not_connected));
+            else p.resolve(payload);
+            return;
+        }
+        switch (msg.type) {
+            case 'launcher.ready':
+                version = (msg.payload && msg.payload.version) || '';
+                onReady();
+                break;
+            case 'archive.progress':
+                if (msg.payload) applyProgress(msg.payload, true);
+                break;
+            case 'archive.upload.speed':
+                if (msg.payload) { speeds[msg.payload.server || 'FTP/SFTP'] = msg.payload.bytesPerSecond || 0; renderSpeeds(); }
+                break;
+        }
+    }
+
+    function request(type, payload) {
+        return new Promise((resolve, reject) => {
+            if (!socket || socket.readyState !== WebSocket.OPEN || !connected) { reject(new Error(T.not_connected)); return; }
+            const id = requestID();
+            const timer = setTimeout(() => { pending.delete(id); reject(new Error(T.timeout)); }, REQUEST_TIMEOUT);
+            pending.set(id, { resolve, reject, timer });
+            const message = { type: type, requestId: id };
+            if (payload !== undefined) message.payload = payload;
+            socket.send(JSON.stringify(message));
+        });
+    }
+
+    /* ===================== Настройки ===================== */
+
+    function normalizeSettings(value) {
+        const s = Object.assign(emptySettings(), value || {});
+        s.ftpConfigs = Array.isArray(s.ftpConfigs) ? s.ftpConfigs.map((c, i) => Object.assign(newServer(i), c || {})) : [];
+        s.ignoredFiles = Array.isArray(s.ignoredFiles) ? s.ignoredFiles : [];
+        s.ignoredExtensions = s.ignoredExtensions || '';
+        return s;
+    }
+
+    function cleanSettings() {
+        const s = JSON.parse(JSON.stringify(settings));
+        s.gamePath = s.gamePath.trim();
+        s.ignoredFiles = s.ignoredFiles.map((v) => v.trim()).filter(Boolean);
+        s.ftpConfigs = s.ftpConfigs.map((c) => Object.assign(c, {
+            name: String(c.name || '').trim(), host: String(c.host || '').trim(), user: String(c.user || '').trim(),
+            port: String(c.port || '').trim(), path: String(c.path || '').trim() || '/',
+            maxPacket: Number(c.maxPacket) || 0, maxConnections: Number(c.maxConnections) || 4,
+            parallelChunks: Number(c.parallelChunks) || 4, bufferSize: Number(c.bufferSize) || 1048576,
+            chunkSize: Number(c.chunkSize) || 4194304
+        }));
+        return s;
+    }
+
+    function validation() {
+        if (!settings.gamePath.trim()) return T.v_game_path;
+        if (!settings.uploadToFTP) return '';
+        if (!settings.ftpConfigs.length) return T.v_servers;
+        const bad = settings.ftpConfigs.find((c) => !String(c.host).trim() || !String(c.user).trim() || !c.pass);
+        return bad ? T.v_server.replace('%s', bad.name || T.untitled) : '';
+    }
+
+    function renderForm() {
+        $('sl2-gamePath').value = settings.gamePath;
+        $('sl2-ignoredExtensions').value = settings.ignoredExtensions;
+        document.querySelectorAll('[data-setting]').forEach((el) => { el.checked = !!settings[el.dataset.setting]; });
+        renderIgnored();
+        renderServers();
+        render();
+    }
+
+    $('sl2-gamePath').addEventListener('input', (e) => { settings.gamePath = e.target.value; render(); });
+    $('sl2-ignoredExtensions').addEventListener('input', (e) => { settings.ignoredExtensions = e.target.value; });
+    document.querySelectorAll('[data-setting]').forEach((el) => el.addEventListener('change', () => {
+        settings[el.dataset.setting] = el.checked;
+        renderServers();
+        render();
+    }));
+
+    function renderIgnored() {
+        const list = $('sl2-ignore-list');
+        list.innerHTML = '';
+        if (!settings.ignoredFiles.length) { list.innerHTML = '<p class="sl2-empty px-0">' + esc(T.ignore_empty) + '</p>'; return; }
+        settings.ignoredFiles.forEach((value, i) => {
+            const row = document.createElement('div');
+            row.className = 'sl2-row';
+            row.innerHTML = '<input class="form-control" placeholder="system/logs/*"><button type="button" class="btn btn-outline-danger" aria-label="' + esc(T.ignore_remove) + '"><i class="ri-delete-bin-line"></i></button>';
+            const input = row.querySelector('input');
+            input.value = value;
+            input.addEventListener('input', () => { settings.ignoredFiles[i] = input.value; });
+            row.querySelector('button').addEventListener('click', () => { settings.ignoredFiles.splice(i, 1); renderIgnored(); });
+            list.appendChild(row);
+        });
+    }
+    $('sl2-ignore-add').addEventListener('click', () => {
+        settings.ignoredFiles.push('');
+        renderIgnored();
+        const inputs = $('sl2-ignore-list').querySelectorAll('input');
+        inputs[inputs.length - 1].focus();
+    });
+
+    function field(label, key, attrs, wide) {
+        return '<div' + (wide ? ' class="sl2-wide"' : '') + '><label class="form-label">' + esc(label) + '</label><input class="form-control" data-key="' + key + '" ' + (attrs || '') + '></div>';
+    }
+
+    function renderServers() {
+        $('sl2-ftp-card').hidden = !settings.uploadToFTP;
+        $('sl2-upload-note').hidden = !settings.uploadToFTP;
+        const list = $('sl2-server-list');
+        list.innerHTML = '';
+        if (!settings.ftpConfigs.length) { list.innerHTML = '<p class="sl2-empty px-0">' + esc(T.servers_empty) + '</p>'; return; }
+        settings.ftpConfigs.forEach((server, index) => {
+            const card = document.createElement('article');
+            card.className = 'sl2-server';
+            card.innerHTML =
+                '<header><span><i class="ri-server-line"></i><span class="sl2-srv-title"></span></span>' +
+                '<button type="button" class="btn btn-sm btn-outline-danger" data-action="delete" aria-label="' + esc(T.delete_server) + '"><i class="ri-delete-bin-line"></i></button></header>' +
+                '<div class="sl2-server-grid">' +
+                field(T.name, 'name', 'type="text"') +
+                '<div><label class="form-label">' + esc(T.protocol) + '</label><select class="form-select" data-key="protocol"><option value="sftp">' + esc(T.sftp_recommended) + '</option><option value="ftp">FTP</option></select></div>' +
+                field(T.host, 'host', 'type="text" placeholder="storage.example.com"') +
+                field(T.port, 'port', 'type="number" min="1" max="65535"') +
+                field(T.user, 'user', 'type="text" autocomplete="off"') +
+                field(T.pass, 'pass', 'type="password" autocomplete="new-password"') +
+                field(T.path, 'path', 'type="text" placeholder="/launcher/client"', true) +
+                '</div>' +
+                '<details><summary>' + esc(T.perf) + '</summary><div class="sl2-perf-grid">' +
+                field(T.max_packet, 'maxPacket', 'type="number" min="0" title="' + esc(T.max_packet_hint) + '"') +
+                field(T.connections, 'maxConnections', 'type="number" min="1" max="32"') +
+                field(T.parallel, 'parallelChunks', 'type="number" min="1" max="32"') +
+                field(T.buffer, 'bufferSize', 'type="number" min="65536"') +
+                field(T.chunk, 'chunkSize', 'type="number" min="1048576"') +
+                '</div></details>' +
+                '<div class="sl2-remote-check"><button type="button" class="btn btn-sm btn-outline-secondary" data-action="check"></button><span class="sl2-check-result"></span><div class="sl2-remote-dirs"></div></div>';
+
+            const title = card.querySelector('.sl2-srv-title');
+            title.textContent = server.name || T.server_n.replace('%s', index + 1);
+            card.querySelectorAll('[data-key]').forEach((el) => {
+                const key = el.dataset.key;
+                el.value = server[key] == null ? '' : server[key];
+                el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => {
+                    server[key] = el.value;
+                    if (key === 'protocol') {
+                        server.port = el.value === 'sftp' ? '22' : '21';
+                        card.querySelector('[data-key="port"]').value = server.port;
+                    }
+                    if (key === 'name') title.textContent = el.value || T.server_n.replace('%s', index + 1);
+                    render();
+                });
+            });
+            card.querySelector('[data-action="delete"]').addEventListener('click', () => {
+                settings.ftpConfigs.splice(index, 1);
+                Object.keys(remoteChecks).forEach((k) => delete remoteChecks[k]);
+                renderServers();
+                render();
+            });
+            const checkBtn = card.querySelector('[data-action="check"]');
+            const checking = checkingIndex === index;
+            checkBtn.innerHTML = '<i class="' + (checking ? 'ri-loader-4-line' : 'ri-checkbox-circle-line') + '"></i> ' + esc(T.check);
+            checkBtn.disabled = checking || !connected;
+            checkBtn.addEventListener('click', () => checkRemote(server, index));
+            if (remoteChecks[index]) {
+                card.querySelector('.sl2-check-result').textContent = T.check_dirs.replace('%s', remoteChecks[index].length);
+                const dirs = card.querySelector('.sl2-remote-dirs');
+                remoteChecks[index].slice(0, 30).forEach((name) => {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.textContent = name;
+                    b.title = name;
+                    b.addEventListener('click', () => {
+                        const base = String(server.path || '/').replace(/\/+$/, '');
+                        server.path = (base || '') + '/' + name;
+                        card.querySelector('[data-key="path"]').value = server.path;
+                    });
+                    dirs.appendChild(b);
+                });
+            }
+            list.appendChild(card);
+        });
+    }
+    $('sl2-server-add').addEventListener('click', () => {
+        settings.ftpConfigs.push(newServer(settings.ftpConfigs.length));
+        renderServers();
+        render();
+    });
+
+    async function checkRemote(server, index) {
+        if (!String(server.host).trim() || !String(server.user).trim() || !server.pass) { fail(T.check_fill); return; }
+        checkingIndex = index;
+        renderServers();
+        try {
+            const config = cleanSettings().ftpConfigs[index];
+            const result = await request('archive.remote.browse', { config: config, path: config.path || '/' });
+            remoteChecks[index] = Array.isArray(result.directories) ? result.directories : [];
+            ok(T.check_ok.replace('%s', server.name || T.server_n.replace('%s', index + 1)));
+        } catch (e) {
+            delete remoteChecks[index];
+            fail(e.message);
+        } finally {
+            checkingIndex = null;
+            renderServers();
+        }
+    }
+
+    $('sl2-pick-dir').addEventListener('click', async () => {
+        busy = true; render();
+        try {
+            const result = await request('archive.directory.select');
+            if (result.path) { settings.gamePath = result.path; $('sl2-gamePath').value = result.path; }
+        } catch (e) { fail(e.message); }
+        finally { busy = false; render(); }
+    });
+
+    /* ===================== Операция ===================== */
+
+    function applyProgress(next, log) {
+        progress = Object.assign({}, progress || {}, next);
+        if (terminal(next.type)) running = false;
+        else if (next.type === 'status_update' || next.type === 'progress_update') running = running || log;
+        if (next.type === 'process_error' || next.type === 'file_error' || next.statusType === 'error') showError(next);
+        if (log) appendLog(next);
+        render();
+    }
+
+    function showError(entry) {
+        $('sl2-op-error').hidden = false;
+        $('sl2-op-error-msg').textContent = entry.message || '';
+        const file = $('sl2-op-error-file');
+        file.hidden = !entry.fileProcessed;
+        file.textContent = entry.fileProcessed || '';
+        const details = $('sl2-op-error-details');
+        details.hidden = !entry.details;
+        details.querySelector('pre').textContent = entry.details || '';
+    }
+    function hideError() { $('sl2-op-error').hidden = true; }
+
+    function appendLog(entry) {
+        if (entry.type === 'progress_update' && !entry.message) return;
+        const box = $('sl2-log');
+        const empty = box.querySelector('.sl2-empty');
+        if (empty) empty.remove();
+        const item = document.createElement('article');
+        item.dataset.level = entry.statusType || 'info';
+        item.innerHTML = '<time>' + esc(new Date().toLocaleTimeString()) + '</time><span>' + esc(entry.message || entry.fileProcessed || T.progress_update) +
+            (entry.details ? '<small>' + esc(entry.details) + '</small>' : '') + '</span>';
+        box.appendChild(item);
+        while (box.children.length > 500) box.removeChild(box.firstChild);
+        box.scrollTop = box.scrollHeight;
+        $('sl2-log-clear').hidden = false;
+    }
+    $('sl2-log-clear').addEventListener('click', () => {
+        $('sl2-log').innerHTML = '<p class="sl2-empty">' + esc(T.log_empty) + '</p>';
+        $('sl2-log-clear').hidden = true;
+    });
+
+    function formatSpeed(b) {
+        if (b < 1024) return b.toFixed(0) + ' B/s';
+        if (b < 1048576) return (b / 1024).toFixed(1) + ' KB/s';
+        return (b / 1048576).toFixed(1) + ' MB/s';
+    }
+    function renderSpeeds() {
+        const box = $('sl2-speeds');
+        const entries = Object.entries(speeds);
+        box.hidden = !entries.length;
+        box.innerHTML = entries.map(([server, speed]) => '<span><span><i class="ri-server-line"></i> ' + esc(server) + '</span><b>' + esc(formatSpeed(speed)) + '</b></span>').join('');
+    }
+
+    function render() {
+        const percent = Math.max(0, Math.min(100, (progress && progress.currentProgress) || 0));
+        const active = running && !(progress && terminal(progress.type));
+        $('sl2-progress-percent').textContent = percent.toFixed(0) + '%';
+        const bar = $('sl2-progress-bar');
+        bar.style.width = percent + '%';
+        bar.parentElement.setAttribute('aria-valuenow', percent.toFixed(0));
+        bar.classList.toggle('progress-bar-striped', active);
+        bar.classList.toggle('progress-bar-animated', active);
+        bar.classList.toggle('bg-success', !!progress && progress.type === 'process_complete');
+        bar.classList.toggle('bg-danger', !!progress && progress.type === 'process_error');
+        $('sl2-progress-label').textContent = active ? T.running : (progress && terminal(progress.type) ? progress.message : T.ready);
+        $('sl2-st-total').textContent = (progress && progress.totalFiles) || 0;
+        $('sl2-st-processed').textContent = (progress && progress.processedFiles) || 0;
+        $('sl2-st-archived').textContent = (progress && progress.archivedFiles) || 0;
+        $('sl2-st-errors').textContent = (progress && progress.errorsCount) || 0;
+        $('sl2-current-file').hidden = !(progress && progress.fileProcessed);
+        $('sl2-current-file-name').textContent = (progress && progress.fileProcessed) || '';
+
+        const v = validation();
+        $('sl2-validation').hidden = !v;
+        $('sl2-validation-text').textContent = v;
+        $('sl2-start').hidden = active;
+        $('sl2-stop').hidden = !active;
+        $('sl2-start').disabled = !connected || busy || !!v;
+        $('sl2-stop').disabled = busy;
+        $('sl2-save').disabled = !connected || busy || active;
+        $('sl2-pick-dir').disabled = !connected || busy;
+        document.querySelectorAll('[data-action="check"]').forEach((b) => { if (checkingIndex === null) b.disabled = !connected; });
+    }
+
+    $('sl2-save').addEventListener('click', async () => {
+        busy = true; render();
+        try {
+            await request('archive.settings.save', cleanSettings());
+            ok(T.saved);
+        } catch (e) { fail(e.message); }
+        finally { busy = false; render(); }
+    });
+
+    $('sl2-start').addEventListener('click', async () => {
+        const v = validation();
+        if (v) { fail(v); return; }
+        busy = true;
+        hideError();
+        $('sl2-log').innerHTML = '';
+        Object.keys(speeds).forEach((k) => delete speeds[k]);
+        renderSpeeds();
+        progress = { type: 'status_update', message: T.command_sent, statusType: 'info', currentProgress: 0 };
+        running = true;
+        appendLog(progress);
+        render();
+        try {
+            await request('archive.start', { settings: cleanSettings(), saveSettings: true });
+            ok(T.started);
+        } catch (e) {
+            running = false;
+            const entry = { type: 'process_error', message: e.message, statusType: 'error' };
+            progress = Object.assign({}, progress, entry);
+            showError(entry);
+            appendLog(entry);
+            fail(e.message);
+        } finally { busy = false; render(); }
+    });
+
+    $('sl2-stop').addEventListener('click', async () => {
+        busy = true; render();
+        try {
+            await request('archive.stop');
+            ok(T.stop_requested);
+        } catch (e) { fail(e.message); }
+        finally { busy = false; render(); }
+    });
+
+    $('sl2-reconnect').addEventListener('click', () => {
+        if (socket) { try { socket.close(); } catch (e) {} socket = null; }
+        connect();
+    });
+
+    window.addEventListener('beforeunload', () => { clearTimeout(reconnectTimer); if (socket) socket.close(); });
+
+    renderForm();
+    connect();
+})();
+</script>
+{% endblock %}
